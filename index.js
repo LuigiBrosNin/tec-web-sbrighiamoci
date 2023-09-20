@@ -32,6 +32,7 @@ app.use('/images', express.static('/webapp/images/', {
     },
 }));
  
+console.log("Loading complete!");
 
 // ci serve per pubblicare i nostri sorgenti
 // potremmo fare anche a mano
