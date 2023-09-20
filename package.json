@@ -1,0 +1,22 @@
+{
+  "name": "tec-web-sbrighiamoci",
+  "version": "1.0.0",
+  "description": "Squealer best social network (real)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LuigiBrosNin/tec-web-sbrighiamoci.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LuigiBrosNin/tec-web-sbrighiamoci/issues"
+  },
+  "homepage": "https://github.com/LuigiBrosNin/tec-web-sbrighiamoci#readme",
+  "dependencies": {
+    "@vue/cli-init": "^5.0.8"
+  }
+}
