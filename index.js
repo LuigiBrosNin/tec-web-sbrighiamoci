@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
-const session = require('express-session');
-const serveIndex = require('serve-index')
+//const session = require('express-session');
+//const serveIndex = require('serve-index')
 const app = express();
  
 const BASE_SITE = 'https://site222326.tw.cs.unibo.it'
