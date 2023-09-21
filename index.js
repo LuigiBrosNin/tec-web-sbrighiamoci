@@ -44,6 +44,7 @@ app.use('/images', express.static('/webapp/images/', {
 
 /* SEZIONE MONGODB ALEX */
 
+const { MongoClient } = require("mongodb");
 const mongouri = `mongodb://site222326:ui9aeG5f@mongo_site222326?writeConcern=majority`
 const mongo = new MongoClient(mongouri)
 mongo.connect()
