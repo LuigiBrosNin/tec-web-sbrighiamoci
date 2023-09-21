@@ -10,6 +10,7 @@ exports.BASE_SITE = BASE_SITE;
 const port = 8000;
  
 app.set('trust proxy', 1); // trust first proxy
+
  
 let cors = require('cors');
 app.use(cors({
@@ -23,11 +24,15 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
+app.listen(port, function(){
+	console.log("Listen ongoing!");
+})
+
 app.get("/", async  (req, res) => {
     res.status(200).sendFile(__dirname + '/hello.html');
 })
 
- /*
+
 app.use('/app', express.static(path.join(__dirname, 'app/dist/')));
 app.use('/smm', express.static(path.join(__dirname, 'smm/build/')));
 app.use('/images', express.static('/webapp/images/', {
@@ -36,8 +41,6 @@ app.use('/images', express.static('/webapp/images/', {
         res.set("Content-type", "image");
     },
 }));
- */
-console.log("Loading complete!");
 
 // ci serve per pubblicare i nostri sorgenti
 // potremmo fare anche a mano
