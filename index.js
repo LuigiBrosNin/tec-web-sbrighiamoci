@@ -42,6 +42,14 @@ app.use('/images', express.static('/webapp/images/', {
     },
 }));
 
+/* SEZIONE MONGODB ALEX */
+
+const mongouri = `mongodb://site222326:ui9aeG5f@mongo_site222326?writeConcern=majority`
+const mongo = new MongoClient(mongouri)
+mongo.connect()
+
+/* FINE SEZIONE MONGODB ALEX */
+
 // ci serve per pubblicare i nostri sorgenti
 // potremmo fare anche a mano
 /*
