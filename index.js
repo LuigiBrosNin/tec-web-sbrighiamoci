@@ -22,7 +22,12 @@ app.use(cors({
  
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
- 
+
+app.get("/", async  (req, res) => {
+    res.status(200).sendFile(__dirname + '/hello.html');
+})
+
+ /*
 app.use('/app', express.static(path.join(__dirname, 'app/dist/')));
 app.use('/smm', express.static(path.join(__dirname, 'smm/build/')));
 app.use('/images', express.static('/webapp/images/', {
@@ -31,7 +36,7 @@ app.use('/images', express.static('/webapp/images/', {
         res.set("Content-type", "image");
     },
 }));
- 
+ */
 console.log("Loading complete!");
 
 // ci serve per pubblicare i nostri sorgenti
