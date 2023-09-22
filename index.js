@@ -35,7 +35,7 @@ app.get("/", async  (req, res) => {
 
 app.use('/app', express.static(path.join(__dirname, 'app/dist/')));
 app.use('/smm', express.static(path.join(__dirname, 'smm/build/')));
-app.use('/images', express.static('/webapp/images/', {
+app.use('/images', express.static('/images/', {
     index: false,
     setHeaders: function (res, path) {
         res.set("Content-type", "image");
