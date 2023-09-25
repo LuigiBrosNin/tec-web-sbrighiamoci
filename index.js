@@ -55,7 +55,7 @@ app.get("/", async (req, res) => {
 })
 
 app.get("/login", async (req, res) => {
-  res.status(200).sendFile(global.rootDir + '/login.html');
+  res.status(200).sendFile(__dirname + '/login.html');
 })
 
 app.post("/login", bodyParser.json(), async (req, res) => {
