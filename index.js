@@ -1,7 +1,6 @@
-//
 const express = require('express');
 const path = require('path');
-//const session = require('express-session');
+const session = require('express-session');
 //const serveIndex = require('serve-index')
 const app = express();
  
@@ -19,19 +18,60 @@ app.use(cors({
     credentials: true,
 }));
  
-// used for login, has to be changed accordingly with how we handle them
-// app.use(session({secret: 'n4t"7y4t7?874!f0t78nqc94nrut7483_t', resave: false, saveUninitialized: true}));
+// used for login
+app.use(session({
+    secret: "secretString", // TODO: change this periodically (like every 6 hours)
+    resave: false, 
+    saveUninitialized: false
+}));
  
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
+
+
 
 app.listen(port, function(){
 	console.log("Listen ongoing!");
 })
 
-app.get("/", async  (req, res) => {
+
+
+let username = "admin";
+let password = "qwerty";
+let token = "12345";
+
+//html files indexing
+app.get("/", async (req, res) => {
+  console.log(req.cookies);
+  console.log(req.session.user);
+  if(req.session.user == username){
     res.status(200).sendFile(__dirname + '/hello.html');
+  }
+  else {
+    res.redirect("/login");
+  }
+
 })
+
+app.get("/login", async (req, res) => {
+  res.status(200).sendFile(global.rootDir + '/login.html');
+})
+
+app.post("/login", bodyParser.json(), async (req, res) => {
+  if(req.body.username == username && req.body.password == password){
+    req.session.user = username;
+    res.send("");
+  } else {
+    res.send("wrong username or password");
+    console.log("wrong username or password");
+  }
+})
+
+app.get("/logout", async (req, res) => {
+  req.session.destroy();
+  res.redirect("/");
+})
+
 
 
 app.use('/app', express.static(path.join(__dirname, 'app/dist/')));
