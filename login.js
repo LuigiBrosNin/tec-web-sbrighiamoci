@@ -1,5 +1,4 @@
 function sub(){
-  console.log("sub");
   fetch("https://site222326.tw.cs.unibo.it/login", {
     method: "POST",
     body: JSON.stringify({

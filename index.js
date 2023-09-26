@@ -1,3 +1,4 @@
+global.rootDir = __dirname;
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
@@ -26,6 +27,7 @@ app.use(session({
     saveUninitialized: false
 }));
  
+app.use(express.static(global.rootDir));
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
@@ -39,14 +41,12 @@ app.listen(port, function(){
 
 let username = "admin";
 let password = "qwerty";
-let token = "12345";
 
 //html files indexing
 app.get("/", async (req, res) => {
-  console.log(req.cookies);
   console.log(req.session.user);
   if(req.session.user == username){
-    res.status(200).sendFile(__dirname + '/hello.html');
+    res.status(200).sendFile(global.rootDir + '/hello.html');
   }
   else {
     res.redirect("/login");
@@ -55,7 +55,7 @@ app.get("/", async (req, res) => {
 })
 
 app.get("/login", async (req, res) => {
-  res.status(200).sendFile(__dirname + '/login.html');
+  res.status(200).sendFile(global.rootDir + '/login.html');
 })
 
 app.post("/login", bodyParser.json(), async (req, res) => {
@@ -75,8 +75,8 @@ app.get("/logout", async (req, res) => {
 
 
 
-app.use('/app', express.static(path.join(__dirname, 'app/dist/')));
-app.use('/smm', express.static(path.join(__dirname, 'smm/build/')));
+app.use('/app', express.static(path.join(global.rootDir, 'app/dist/')));
+app.use('/smm', express.static(path.join(global.rootDir, 'smm/build/')));
 app.use('/images', express.static('/images/', {
     index: false,
     setHeaders: function (res, path) {
@@ -85,12 +85,12 @@ app.use('/images', express.static('/images/', {
 }));
 
 /* SEZIONE MONGODB ALEX */
-
+/*
 const { MongoClient } = require("mongodb");
 const mongouri = `mongodb://site222326:ui9aeG5f@mongo_site222326?writeConcern=majority`
 const mongo = new MongoClient(mongouri)
 mongo.connect()
-
+*/
 /* FINE SEZIONE MONGODB ALEX */
 
 // ci serve per pubblicare i nostri sorgenti
