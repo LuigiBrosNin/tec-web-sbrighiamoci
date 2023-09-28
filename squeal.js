@@ -6,7 +6,33 @@ const squealCollection = "Squeals";
 
 app.get("/squeals/", async (req, res) => {
     try {
-        //let author = req.query.author;
+        let author = req.query.author;
+        let startIndex = req.query.startindex;
+        let endIndex = req.query.endindex;
+        if(!author || !startIndex || !endIndex){
+            res.status(400).json({ message: "author, startindex and endindex are required" });
+        }
+
+        await mongo.connect();
+        const database = mongo.db(dbName);
+        const collection = database.collection(squealCollection);
+        const squeals = await collection.find({ author }) // returns the squeals made by author
+                                        .sort({ timestamp: -1 }) // ordered inverse chronological order
+                                        .skip(startIndex) // starting from startIndex
+                                        .limit(endIndex); // returns endIndex squeals
+        res.status(200).json(squeals);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    } finally {
+        await mongo.close();
+    }
+})
+
+
+
+
+/*
+    try {
         await mongo.connect();
         const database = mongo.db(dbName);
         const collection = database.collection(squealCollection);
@@ -17,4 +43,4 @@ app.get("/squeals/", async (req, res) => {
     } finally {
         await mongo.close();
     }
-})
+*/
