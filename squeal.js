@@ -36,31 +36,15 @@ app.get("/squeals/", async (req, res) => {
     }
 })
 
-// aggiungere uno squeal al database
-//todo controllare il contenuto del req.body per verificare se il contenuto è corretto
+// aggiunge/sovrascrive uno squeal al database
 //todo controllare se l'utente è loggato
-/* required fields for req.body:
-"id", "author", "text", "receiver", "date", "positive_reactions", "positive_reactions_users", "negative_reactions", "negative_reactions_users", "media", "reply_to", "replies_num", "replies", "keywords", "mentions", "impressions"
-*/
 app.put("/squeals/", bodyParser.json(), async (req, res) => {
     try {
         const requiredFields = [
             "id",
             "author",
             "text",
-            "receiver",
-            "date",
-            "positive_reactions",
-            "positive_reactions_users",
-            "negative_reactions",
-            "negative_reactions_users",
-            "media",
-            "reply_to",
-            "replies_num",
-            "replies",
-            "keywords",
-            "mentions",
-            "impressions"
+            "receiver"
         ];
 
         // Check if all required fields are present in the request body
@@ -72,13 +56,46 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
         }
         // If all required fields are present, continue with the insertion
 
+        // defining the required fields as well as initializing the standard fields
+        let newSqueal = {
+            id: req.body.id,
+            author: req.body.author,
+            text: req.body.text,
+            receiver: req.body.receiver,
+            date: Date.now(),
+            positive_reactions: 0,
+            positive_reactions_users: [],
+            negative_reactions: 0,
+            negative_reactions_users: [],
+            replies_num: 0,
+            impressions: 0
+        }
+
+        const optionalFields = [
+            "media",
+            "reply_to",
+            "replies",
+            "keywords",
+            "mentions"
+        ];
+
+        // Check if the optional fields are present in the request body
+        // If they are, add them to the newSqueal object
+        for (const field in optionalFields) {
+            if (req.body[field] !== undefined) {
+                newSqueal[field] = req.body[field];
+            }
+        }
+
         await mongoClient.connect();
         const database = mongoClient.db(dbName);
         const collection = database.collection(squealCollection);
 
-        const result = await collection.insertOne(req.body);
+        // Insert the new squeal in the database while converting it to a JSON string
+        const result = await collection.insertOne(JSON.stringify(newSqueal));
 
         console.log('Documento inserito con successo:', result.insertedId);
+        res.status(200).json({ message: "squeal added successfully with db id:" + result.insertedId });
     } catch (errore) {
         console.error('Errore durante l inserimento del documento: ', errore);
     } finally {
