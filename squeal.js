@@ -1,6 +1,7 @@
 global.rootDir = __dirname;
 
 const { app, mongoClient } = require("./index.js");
+const bodyParser = require('body-parser');
 const dbName = "SquealerDB";
 const squealCollection = "Squeals";
 
