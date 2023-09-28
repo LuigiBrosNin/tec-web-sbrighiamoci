@@ -107,4 +107,4 @@ app.use('/source', express.static('/webapp/tec-web-sbrighiamoci/source', {
 }), serveIndex('/webapp/tec-web-sbrighiamoci/source', { 'icons': true }));
  */
 
-module.exports = {mongo};
+module.exports = {app, mongo};

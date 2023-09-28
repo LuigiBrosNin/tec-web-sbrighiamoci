@@ -1,8 +1,6 @@
 global.rootDir = __dirname;
-const express = require('express');
-let app = express();
 
-const mongo = require("./index.js");
+const {app, mongo} = require("./index.js");
 const dbName = "SquealerDB";
 const squealCollection = "Squeals";
 
