@@ -82,7 +82,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
     } catch (errore) {
         console.error('Errore durante l inserimento del documento: ', errore);
     } finally {
-        await client.close(); // Chiudi la connessione al database quando hai finito
+        await mongoClient.close(); // Chiudi la connessione al database quando hai finito
     }
 })
 
