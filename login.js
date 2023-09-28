@@ -11,37 +11,40 @@ function sub(){
   });
 }
 
-function addSquealTest(){
+function addSquealTest() {
+  const body = {
+    id: "test",
+    author: "Gigi",
+    text: "I'm.",
+    receiver: "Lana",
+    date: 745675,
+    positive_reactions: 2,
+    positive_reactions_users: [
+      "Luiso",
+      "Matilde"
+    ],
+    negative_reactions: 1,
+    negative_reactions_users: [
+      "Alex",
+    ],
+    media: "URI...",
+    reply_to: ["squeal1"],
+    replies_num: 0,
+    replies: ["id1", "id2"],
+    keywords: ["sea", "mountain"],
+    mentions: ["user1"],
+    impressions: 34
+  };
+
   fetch("https://site222326.tw.cs.unibo.it/squeals/", {
     method: "PUT",
-    body: JSON.stringify({
-        id: "test",
-        author: "Gigi",
-        text: "I'm.",
-        receiver: "Lana",
-        date: 745675,
-        positive_reactions: 2,
-        positive_reactions_users: [
-          "Luiso",
-          "Matilde"
-        ],
-        negative_reactions: 1,
-        negative_reactions_users: [
-          "Alex",
-        ],
-        media: "URI...",
-        reply_to: ["squeal1"],
-        replies_num: 0,
-        replies: ["id1", "id2"],
-        keywords: ["sea", "mountain"],
-        mentions: ["user1"],
-        impressions: 34
-      }),
-      headers: {
-        "Content-type": "application/json; charset=UTF-8"
-      }
-    })
-    .then(response => response.json())
-    .then(data => console.log(data))
-    .catch(error => console.error(error));}
+    headers: {
+      "Content-type": "application/json; charset=UTF-8"
+    },
+    body: JSON.stringify(body)
+  })
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error(error));
+}
 
