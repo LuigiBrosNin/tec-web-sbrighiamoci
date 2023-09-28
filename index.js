@@ -5,8 +5,6 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 //const serveIndex = require('serve-index')
 const app = express();
-
-require("./squeal.js");
  
 const BASE_SITE = 'https://site222326.tw.cs.unibo.it'
 exports.BASE_SITE = BASE_SITE;
@@ -108,3 +106,5 @@ app.use('/source', express.static('/webapp/tec-web-sbrighiamoci/source', {
  */
 
 module.exports = {app, mongo};
+
+require("./squeal.js");
