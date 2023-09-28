@@ -5,6 +5,8 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 //const serveIndex = require('serve-index')
 const app = express();
+
+require("./squeal.js");
  
 const BASE_SITE = 'https://site222326.tw.cs.unibo.it'
 exports.BASE_SITE = BASE_SITE;
@@ -85,12 +87,11 @@ app.use('/images', express.static('/images/', {
 }));
 
 /* SEZIONE MONGODB ALEX */
-/*
+
 const { MongoClient } = require("mongodb");
-const mongouri = `mongodb://site222326:ui9aeG5f@mongo_site222326?writeConcern=majority`
-const mongo = new MongoClient(mongouri)
-mongo.connect()
-*/
+const mongouri = `mongodb://site222326:ui9aeG5f@mongo_site222326?writeConcern=majority`;
+const mongo = new MongoClient(mongouri);
+
 /* FINE SEZIONE MONGODB ALEX */
 
 // ci serve per pubblicare i nostri sorgenti
@@ -105,3 +106,5 @@ app.use('/source', express.static('/webapp/tec-web-sbrighiamoci/source', {
     },
 }), serveIndex('/webapp/tec-web-sbrighiamoci/source', { 'icons': true }));
  */
+
+module.exports = {mongo};
