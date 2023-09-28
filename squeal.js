@@ -40,7 +40,6 @@ app.get("/squeals/", async (req, res) => {
 //todo controllare se l'utente è loggato
 app.put("/squeals/", bodyParser.json(), async (req, res) => {
     try {
-
         console.log('Request Body:', req.body);
 
         const requiredFields = [
@@ -99,10 +98,10 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
         const result = await collection.insertOne(newSqueal);
 
         console.log('Documento inserito con successo:', result.insertedId);
-        res.status(200).json({ message: "squeal added successfully with db id:" + result.insertedId });
+        res.status(200).send(JSON.stringify({ message: "squeal added successfully with db id:" + result.insertedId }));
     } catch (error) {
         console.error('Errore durante l inserimento del documento: ', error);
-        res.status(500).json({ message: error.message });
+        res.status(500).send(JSON.stringify({ message: error.message }));
     } finally {
         await mongoClient.close(); // Chiudi la connessione al database quando hai finito
     }
