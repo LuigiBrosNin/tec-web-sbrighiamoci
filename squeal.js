@@ -7,8 +7,8 @@ const squealCollection = "Squeals";
 app.get("/squeals/", async (req, res) => {
     try {
         let author = req.query.author;
-        let startIndex = req.query.startindex;
-        let endIndex = req.query.endindex;
+        let startIndex = parseInt(req.query.startindex);
+        let endIndex = parseInt(req.query.endindex);
         if(!author || !startIndex || !endIndex){
             res.status(400).json({ message: "author, startindex and endindex are required" });
             return;
