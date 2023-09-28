@@ -9,11 +9,11 @@ app.get("/squeals/", async (req, res) => {
         let author = req.query.author;
         let startIndex = parseInt(req.query.startindex);
         let endIndex = parseInt(req.query.endindex);
-        if(!author || !startIndex || !endIndex){
+        if(author === undefined || startIndex === undefined || startIndex === NaN || endIndex === undefined || endIndex === NaN){
             res.status(400).json({ message: "author, startindex and endindex are required" });
             return;
         }
-
+        
         await mongo.connect();
         const database = mongo.db(dbName);
         const collection = database.collection(squealCollection);
