@@ -37,7 +37,7 @@ function addSquealTest() {
   };
 
   Log.println("Sending body: " + JSON.stringify(body));
-
+/*
   fetch("https://site222326.tw.cs.unibo.it/squeals/", {
     method: "PUT",
     headers: {
@@ -47,5 +47,5 @@ function addSquealTest() {
   })
   .then(response => response.json())
   .then(data => console.log(data))
-  .catch(error => console.error(error));
+  .catch(error => console.error(error));*/
 }
