@@ -36,6 +36,8 @@ function addSquealTest() {
     impressions: 34
   };
 
+  Log.println("Sending body: " + JSON.stringify(body));
+
   fetch("https://site222326.tw.cs.unibo.it/squeals/", {
     method: "PUT",
     headers: {
@@ -47,4 +49,3 @@ function addSquealTest() {
   .then(data => console.log(data))
   .catch(error => console.error(error));
 }
-
