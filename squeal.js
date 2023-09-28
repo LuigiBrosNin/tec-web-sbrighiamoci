@@ -40,6 +40,9 @@ app.get("/squeals/", async (req, res) => {
 //todo controllare se l'utente è loggato
 app.put("/squeals/", bodyParser.json(), async (req, res) => {
     try {
+
+        console.log('Request Body:', req.body);
+
         const requiredFields = [
             "id",
             "author",
@@ -91,6 +94,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
         const database = mongoClient.db(dbName);
         const collection = database.collection(squealCollection);
 
+        console.log('Makes it here');
         // Insert the new squeal in the database while converting it to a JSON string
         const result = await collection.insertOne(JSON.stringify(newSqueal));
 
