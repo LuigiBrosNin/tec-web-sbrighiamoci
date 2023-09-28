@@ -95,13 +95,14 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
         const collection = database.collection(squealCollection);
 
         console.log('Makes it here');
-        // Insert the new squeal in the database while converting it to a JSON string
-        const result = await collection.insertOne(JSON.stringify(newSqueal));
+        // Insert the new squeal in the database without converting it to a JSON string
+        const result = await collection.insertOne(newSqueal);
 
         console.log('Documento inserito con successo:', result.insertedId);
         res.status(200).json({ message: "squeal added successfully with db id:" + result.insertedId });
-    } catch (errore) {
-        console.error('Errore durante l inserimento del documento: ', errore);
+    } catch (error) {
+        console.error('Errore durante l inserimento del documento: ', error);
+        res.status(500).json({ message: error.message });
     } finally {
         await mongoClient.close(); // Chiudi la connessione al database quando hai finito
     }
