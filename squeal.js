@@ -42,7 +42,7 @@ app.get("/squeals/", async (req, res) => {
 /* required fields for req.body:
 "id", "author", "text", "receiver", "date", "positive_reactions", "positive_reactions_users", "negative_reactions", "negative_reactions_users", "media", "reply_to", "replies_num", "replies", "keywords", "mentions", "impressions"
 */
-app.put("/squeals", bodyParser.json(), async (req, res) => {
+app.put("/squeals/", bodyParser.json(), async (req, res) => {
     try {
         const requiredFields = [
             "id",
@@ -73,9 +73,10 @@ app.put("/squeals", bodyParser.json(), async (req, res) => {
         // If all required fields are present, continue with the insertion
 
         await mongoClient.connect();
-        const database = mongoClient.db();
+        const database = mongoClient.db(dbName);
+        const collection = database.collection(squealCollection);
 
-        const result = await collezione.insertOne(req.body);
+        const result = await collection.insertOne(req.body);
 
         console.log('Documento inserito con successo:', result.insertedId);
     } catch (errore) {

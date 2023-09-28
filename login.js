@@ -12,7 +12,7 @@ function sub(){
 }
 
 function addSquealTest(){
-  fetch("https://site222326.tw.cs.unibo.it/squeals", {
+  fetch("https://site222326.tw.cs.unibo.it/squeals/", {
     method: "PUT",
     body: JSON.stringify({
         id: "test",
