@@ -11,6 +11,7 @@ app.get("/squeals/", async (req, res) => {
         let endIndex = req.query.endindex;
         if(!author || !startIndex || !endIndex){
             res.status(400).json({ message: "author, startindex and endindex are required" });
+            return;
         }
 
         await mongo.connect();
