@@ -14,7 +14,7 @@ function sub(){
 function addSquealTest(){
   fetch("https://site222326.tw.cs.unibo.it/squeals/", {
     method: "PUT",
-    body: {
+    body: JSON.stringify({
         id: "test",
         author: "Gigi",
         text: "I'm.",
@@ -36,9 +36,9 @@ function addSquealTest(){
         keywords: ["sea", "mountain"],
         mentions: ["user1"],
         impressions: 34
-    },
-    headers: {
+      }),
+      headers: {
         "Content-type": "application/json; charset=UTF-8"
-    }
-  });}
-
+      }
+    });
+  }
