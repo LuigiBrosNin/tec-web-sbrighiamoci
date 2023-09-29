@@ -381,7 +381,7 @@ app.get("/squeals/:id/replies", async (req, res) => {
             return;
         }
 
-        console.log('Replies:', JSON.stringify(squeal.replies));
+        console.log('Number of Replies:', JSON.stringify(squeal.replies_num));
 
         // if the squeal is found, return its replies
         res.status(200).json(squeal.replies_num);
