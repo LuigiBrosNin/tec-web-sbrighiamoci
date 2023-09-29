@@ -401,6 +401,8 @@ app.get("/squeals/:id/replies", async (req, res) => {
 //* GET
 // ritorna la lista delle replies dello squeal con id = id ricevuto come parametro
 
+// ! non veine chiamata dall'uri /squeals/:id/replies/, /squeals/:id/replies viene chiamata al suo posto
+// ! non so come risolvere...
 // TODO aggiungere paginazione obbligatoria come per /squeals/
 app.get("/squeals/:id/replies/", async (req, res) => {
     try {

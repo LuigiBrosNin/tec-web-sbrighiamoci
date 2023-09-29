@@ -55,3 +55,13 @@ function addSquealTest() {
   .then(data => console.log(data))
   .catch(error => console.error(error));
 }
+
+// Squeals ID DELETE request
+function deleteSquealTest() {
+  fetch("https://site222326.tw.cs.unibo.it/squeals/test", {
+    method: "DELETE"
+  })
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error(error));
+}
