@@ -39,6 +39,10 @@ app.get("/squeals/", async (req, res) => {
             .sort({ timestamp: -1 }) // ordered inverse chronological order
             .skip(startIndex) // starting from startIndex
             .limit(endIndex); // returns endIndex squeals
+
+        console.log('Squeals found:', squeals.length);
+        console.log('Squeals:', squeals);
+        
         res.status(200).json(squeals); // returns the squeals
 
     } catch (error) {
@@ -418,6 +422,7 @@ app.get("/squeals/:id/replies", async (req, res) => {
 //? squeal che non appartengono a canali pubblici, quindi bisogna controllare
 //? il login dell'utente?!?
 // TODO controllare se l'utente è loggato ???
+// TODO aggiungere paginazione obbligatoria come per /squeals/
 app.get("/squeals/:id/replies/", async (req, res) => {
     try {
         const squealId = req.params.id;
