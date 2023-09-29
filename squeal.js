@@ -41,7 +41,7 @@ app.get("/squeals/", async (req, res) => {
             //.limit(endIndex); // returns endIndex squeals
 
         console.log('Squeals found:', squeals.length);
-        console.log('Squeals:', squeals);
+        console.log('Squeals:', JSON.stringify(squeals));
         
         res.status(200).json(squeals); // returns the squeals
 
