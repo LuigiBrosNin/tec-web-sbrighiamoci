@@ -36,7 +36,7 @@ app.get("/squeals/", async (req, res) => {
         const database = mongoClient.db(dbName);
         const collection = database.collection(squealCollection);
         const squeals = await collection.find({ author }) // returns the squeals made by author
-            .sort({ timestamp: -1 }); // ordered inverse chronological order
+            //.sort({ timestamp: -1 }); // ordered inverse chronological order
             //.skip(startIndex) // starting from startIndex
             //.limit(endIndex); // returns endIndex squeals
 
