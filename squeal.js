@@ -15,10 +15,6 @@ const squealCollection = "Squeals";
 // ritorna una lista di squeal del database, da startindex ad endindex
 
 //? supporta quali campi?
-//? dalla documentazione, se un utente non è loggato non potrebbe visualizzare
-//? squeal che non appartengono a canali pubblici, quindi bisogna controllare
-//? il login dell'utente?!?
-// TODO controllare se l'utente è loggato ???
 app.get("/squeals/", async (req, res) => {
     try {
         // take the parameters from the request
@@ -148,11 +144,6 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
 
 // * GET
 // ritorna lo squeal con id = id ricevuto come parametro
-
-// ? dalla documentazione, se un utente non è loggato non potrebbe visualizzare
-// ? squeal che non appartengono a canali pubblici, quindi bisogna controllare
-// ? il login dell'utente?!?
-// TODO controllare se l'utente è loggato ???
 app.get("/squeals/:id", async (req, res) => {
     try {
         const squealId = req.params.id;
@@ -339,11 +330,6 @@ app.post("/squeals/:id", bodyParser.json(), async (req, res) => {
 
 //* GET
 // ritorna il campo media dello squeal con id = id ricevuto come parametro
-
-//? dalla documentazione, se un utente non è loggato non potrebbe visualizzare
-//? squeal che non appartengono a canali pubblici, quindi bisogna controllare
-//? il login dell'utente?!?
-// TODO controllare se l'utente è loggato ???
 app.get("/squeals/:id/media", async (req, res) => {
     try {
         const squealId = req.params.id;
@@ -378,11 +364,6 @@ app.get("/squeals/:id/media", async (req, res) => {
 
 //* GET
 // ritorna il numero di replies dello squeal con id = id ricevuto come parametro
-
-//? dalla documentazione, se un utente non è loggato non potrebbe visualizzare
-//? squeal che non appartengono a canali pubblici, quindi bisogna controllare
-//? il login dell'utente?!?
-// TODO controllare se l'utente è loggato ???
 app.get("/squeals/:id/replies", async (req, res) => {
     try {
         const squealId = req.params.id;
@@ -399,6 +380,8 @@ app.get("/squeals/:id/replies", async (req, res) => {
             res.status(404).json({ message: "squeal not found" });
             return;
         }
+
+        console.log('Replies:', JSON.stringify(squeal.replies));
 
         // if the squeal is found, return its replies
         res.status(200).json(squeal.replies_num);
@@ -418,10 +401,6 @@ app.get("/squeals/:id/replies", async (req, res) => {
 //* GET
 // ritorna la lista delle replies dello squeal con id = id ricevuto come parametro
 
-//? dalla documentazione, se un utente non è loggato non potrebbe visualizzare
-//? squeal che non appartengono a canali pubblici, quindi bisogna controllare
-//? il login dell'utente?!?
-// TODO controllare se l'utente è loggato ???
 // TODO aggiungere paginazione obbligatoria come per /squeals/
 app.get("/squeals/:id/replies/", async (req, res) => {
     try {
@@ -440,6 +419,7 @@ app.get("/squeals/:id/replies/", async (req, res) => {
             return;
         }
 
+        console.log('Replies:', JSON.stringify(squeal.replies));
         // if the squeal is found, return its replies
         res.status(200).json(squeal.replies);
     } catch (error) {
