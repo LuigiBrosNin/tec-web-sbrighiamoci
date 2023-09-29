@@ -11,9 +11,15 @@ function sub(){
   });
 }
 
+/* -------------------------------------------------------------------------- */
+/*                         Luizo's temp test fucntions                        */
+/* -------------------------------------------------------------------------- */
+
+//Squeals PUT request
 function addSquealTest() {
   const body = {
     id: "test",
+    cacca: "dsjdasjdsad",
     author: "Gigi",
     text: "I'm.",
     receiver: "Lana",

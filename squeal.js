@@ -5,8 +5,20 @@ const bodyParser = require('body-parser');
 const dbName = "SquealerDB";
 const squealCollection = "Squeals";
 
+
+/* -------------------------------------------------------------------------- */
+/*                                 /SQUEALS/                                  */
+/*                                 GET & PUT                                  */
+/* -------------------------------------------------------------------------- */
+
+//* GET UNFINISHED
 // ritorna una lista di squeal del database, da startindex ad endindex
-// bisogna specificare l'autore degli squeal
+
+//? supporta quali campi?
+//? dalla documentazione, se un utente non è loggato non potrebbe visualizzare
+//? squeal che non appartengono a canali pubblici, quindi bisogna controllare
+//? il login dell'utente?!?
+// TODO controllare se l'utente è loggato ???
 app.get("/squeals/", async (req, res) => {
     try {
         // take the parameters from the request
@@ -36,14 +48,18 @@ app.get("/squeals/", async (req, res) => {
     }
 })
 
+//* PUT UNFINISHED
 // aggiunge/sovrascrive uno squeal al database
-//todo controllare se l'utente è loggato
+
+//? come gestisco la creazione di un ID univoco per ogni squeal?
+//TODO controllare se l'utente è loggato e se è l'autore dello squeal
+//TODO aggiornare numero squeals del profilo autore
+//TODO aggiornare numero e lista squeals dell'id in reply_to se presente
 app.put("/squeals/", bodyParser.json(), async (req, res) => {
     try {
-        console.log('Request Body:', req.body);
+        // console.log('Request Body:', req.body);
 
         const requiredFields = [
-            "id",
             "author",
             "text",
             "receiver"
@@ -60,7 +76,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
 
         // defining the required fields as well as initializing the standard fields
         let newSqueal = {
-            id: req.body.id,
+            id: "TEMP",//TODO DA DEFINIRE AUTOMATICAMENTE
             author: req.body.author,
             text: req.body.text,
             receiver: req.body.receiver,
@@ -93,7 +109,6 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
         const database = mongoClient.db(dbName);
         const collection = database.collection(squealCollection);
 
-        console.log('Makes it here');
         // Insert the new squeal in the database without converting it to a JSON string
         const result = await collection.insertOne(newSqueal);
 
@@ -120,3 +135,311 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
         await mongo.close();
     }
 */
+
+
+/* -------------------------------------------------------------------------- */
+/*                                /SQUEALS/:ID                                */
+/*                            GET, PUT, DELETE, POST                          */
+/* -------------------------------------------------------------------------- */
+
+// * GET
+// ritorna lo squeal con id = id ricevuto come parametro
+
+// ? dalla documentazione, se un utente non è loggato non potrebbe visualizzare
+// ? squeal che non appartengono a canali pubblici, quindi bisogna controllare
+// ? il login dell'utente?!?
+// TODO controllare se l'utente è loggato ???
+app.get("/squeals/:id", async (req, res) => {
+    try {
+        const squealId = req.params.id;
+
+        // connecting to the database
+        await mongoClient.connect();
+        const database = mongoClient.db(dbName);
+        const collection = database.collection(squealCollection);
+        // fetching the squeal with the given id
+        const squeal = await collection.findOne({ id: squealId });
+
+        // if the squeal is not found, return 404
+        if (squeal === null) {
+            res.status(404).json({ message: "squeal not found" });
+            return;
+        }
+
+        // if the squeal is found, return it in json format
+        res.status(200).json(squeal);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    } finally {
+        await mongoClient.close();
+    }
+});
+
+// * PUT
+// aggiunge/sovrascrive lo squeal con id = id ricevuto come parametro
+
+//? non dovrebbe essere possibile aggiungere squeal, dovremmo definirli tutti noi
+//? questo metodo non ha senso di esistere
+// TODO controllare se l'utente è loggato e se è l'autore dello squeal
+app.put("/squeals/:id", bodyParser.json(), async (req, res) => {
+    try {
+        const squealId = req.params.id;
+
+        // connecting to the database
+        await mongoClient.connect();
+        const database = mongoClient.db(dbName);
+        const collection = database.collection(squealCollection);
+        // fetching the squeal with the given id
+        const squeal = await collection.findOne({ id: squealId });
+        
+        const requiredFields = [
+            "author",
+            "text",
+            "receiver"
+        ];
+
+        // Check if all required fields are present in the request body
+        for (const field of requiredFields) {
+            if (req.body[field] === undefined) {
+                res.status(400).json({ message: `${field} is required` });
+                return;
+            }
+        }
+        // If all required fields are present, continue with the insertion
+
+        // defining the required fields as well as initializing the standard fields
+        let newSqueal = {
+            id: squealId,
+            author: req.body.author,
+            text: req.body.text,
+            receiver: req.body.receiver,
+            date: Date.now(),
+            positive_reactions: 0,
+            positive_reactions_users: [],
+            negative_reactions: 0,
+            negative_reactions_users: [],
+            replies_num: 0,
+            impressions: 0
+        }
+
+        const optionalFields = [
+            "media",
+            "reply_to",
+            "replies",
+            "keywords",
+            "mentions"
+        ];
+
+        // Check if the optional fields are present in the request body
+        // If they are, add them to the newSqueal object
+        for (const field in optionalFields) {
+            if (req.body[field] !== undefined) {
+                newSqueal[field] = req.body[field];
+            }
+        }
+
+        // if the squeal is found, update and return the update
+        if (squeal != null) {
+            const result = await collection.updateOne({ id: squealId }, { $set: newSqueal });
+            res.status(200).json({ message: "squeal updated successfully" });
+            return;
+        }
+        else {
+            // if the squeal is not found, add it to the database
+            const result = await collection.insertOne(newSqueal);
+            res.status(200).json({ message: "squeal added successfully" });
+            return;
+        }
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    } finally {
+        await mongoClient.close();
+    }
+});
+
+// * DELETE UNFINISHED
+// elimina lo squeal con id = id ricevuto come parametro
+
+// ? cosa ne facciamo delle liste di ID figlie? cancellare gli squeal dal db?
+// TODO controllare se l'utente è loggato e se è l'autore dello squeal oppure un admin
+app.delete("/squeals/:id", async (req, res) => {
+    try {
+        const squealId = req.params.id;
+
+        // connecting to the database
+        await mongoClient.connect();
+        const database = mongoClient.db(dbName);
+        const collection = database.collection(squealCollection);
+        // fetching the squeal with the given id
+        const squeal = await collection.findOne({ id: squealId });
+
+        // if the squeal is not found, return 404
+        if (squeal === null) {
+            const result = await collection.insertOne(newSqueal);
+            return;
+        }
+
+        // if the squeal is found, delete it
+        const result = await collection.deleteOne({ id: squealId });
+        res.status(200).json({ message: "squeal deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    } finally {
+        await mongoClient.close();
+    }
+});
+
+//* POST UNFINISHED
+// aggiunge una reazione allo squeal con id = id ricevuto come parametro
+
+//? ho seri dubbi riguardo ai limiti di questo metodo e a che punto bisogna
+//? limitare la richiesta del ricevente, ad esempio
+//? bisogna limitare la differenza di 1 tra il numero di reazioni presenti e quelle ricevute?
+//? realisticamente un utente loggato può aggiungere, togliere e modificare le sue reazioni
+//? solo 1 volta per richiesta se il suo nome non è già nella lista delle reazioni
+//? questa limitazione è solo per utenti comuni, non per admin, come la gestiamo?
+// TODO controllare se l'utente è loggato
+app.post("/squeals/:id", bodyParser.json(), async (req, res) => {
+    try {
+        const squealId = req.params.id;
+
+        // connecting to the database
+        await mongoClient.connect();
+        const database = mongoClient.db(dbName);
+        const collection = database.collection(squealCollection);
+        // fetching the squeal with the given id
+        const squeal = await collection.findOne({ id: squealId });
+
+        // if the squeal is not found, return 404
+        if (squeal === null) {
+            res.status(404).json({ message: "squeal not found" });
+            return;
+        }
+
+        // if the squeal is found, update it
+        const result = await collection.updateOne({ id: squealId }, { $set: req.body });
+        res.status(200).json({ message: "squeal updated successfully" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    } finally {
+        await mongoClient.close();
+    }
+});
+
+
+/* -------------------------------------------------------------------------- */
+/*                             /SQUEALS/:ID/MEDIA                             */
+/*                                    GET                                     */
+/* -------------------------------------------------------------------------- */
+
+//* GET
+// ritorna il campo media dello squeal con id = id ricevuto come parametro
+
+//? dalla documentazione, se un utente non è loggato non potrebbe visualizzare
+//? squeal che non appartengono a canali pubblici, quindi bisogna controllare
+//? il login dell'utente?!?
+// TODO controllare se l'utente è loggato ???
+app.get("/squeals/:id/media", async (req, res) => {
+    try {
+        const squealId = req.params.id;
+
+        // connecting to the database
+        await mongoClient.connect();
+        const database = mongoClient.db(dbName);
+        const collection = database.collection(squealCollection);
+        // fetching the squeal with the given id
+        const squeal = await collection.findOne({ id: squealId });
+
+        // if the squeal is not found, return 404
+        if (squeal === null) {
+            res.status(404).json({ message: "squeal not found" });
+            return;
+        }
+
+        // if the squeal is found, return its media
+        res.status(200).json(squeal.media);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    } finally {
+        await mongoClient.close();
+    }
+});
+
+
+/* -------------------------------------------------------------------------- */
+/*                            /SQUEALS/:ID/REPLIES                            */
+/*                                    GET                                     */
+/* -------------------------------------------------------------------------- */
+
+//* GET
+// ritorna il numero di replies dello squeal con id = id ricevuto come parametro
+
+//? dalla documentazione, se un utente non è loggato non potrebbe visualizzare
+//? squeal che non appartengono a canali pubblici, quindi bisogna controllare
+//? il login dell'utente?!?
+// TODO controllare se l'utente è loggato ???
+app.get("/squeals/:id/replies", async (req, res) => {
+    try {
+        const squealId = req.params.id;
+
+        // connecting to the database
+        await mongoClient.connect();
+        const database = mongoClient.db(dbName);
+        const collection = database.collection(squealCollection);
+        // fetching the squeal with the given id
+        const squeal = await collection.findOne({ id: squealId });
+
+        // if the squeal is not found, return 404
+        if (squeal === null) {
+            res.status(404).json({ message: "squeal not found" });
+            return;
+        }
+
+        // if the squeal is found, return its replies
+        res.status(200).json(squeal.replies_num);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    } finally {
+        await mongoClient.close();
+    }
+});
+
+
+/* -------------------------------------------------------------------------- */
+/*                            /SQUEALS/:ID/REPLIES/                           */
+/*                                    GET                                     */
+/* -------------------------------------------------------------------------- */
+
+//* GET
+// ritorna la lista delle replies dello squeal con id = id ricevuto come parametro
+
+//? dalla documentazione, se un utente non è loggato non potrebbe visualizzare
+//? squeal che non appartengono a canali pubblici, quindi bisogna controllare
+//? il login dell'utente?!?
+// TODO controllare se l'utente è loggato ???
+app.get("/squeals/:id/replies/", async (req, res) => {
+    try {
+        const squealId = req.params.id;
+
+        // connecting to the database
+        await mongoClient.connect();
+        const database = mongoClient.db(dbName);
+        const collection = database.collection(squealCollection);
+        // fetching the squeal with the given id
+        const squeal = await collection.findOne({ id: squealId });
+
+        // if the squeal is not found, return 404
+        if (squeal === null) {
+            res.status(404).json({ message: "squeal not found" });
+            return;
+        }
+
+        // if the squeal is found, return its replies
+        res.status(200).json(squeal.replies);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    } finally {
+        await mongoClient.close();
+    }
+});
