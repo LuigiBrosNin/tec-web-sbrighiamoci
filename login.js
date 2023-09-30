@@ -58,7 +58,7 @@ function addSquealTest() {
 
 // Squeals ID DELETE request
 function deleteSquealTest() {
-  fetch("https://site222326.tw.cs.unibo.it/squeals/test", {
+  fetch("https://site222326.tw.cs.unibo.it/squeals/testDelete", {
     method: "DELETE"
   })
   .then(response => response.json())
