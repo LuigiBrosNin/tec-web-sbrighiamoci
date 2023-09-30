@@ -358,13 +358,13 @@ app.get("/squeals/:id/media", async (req, res) => {
 
 
 /* -------------------------------------------------------------------------- */
-/*                            /SQUEALS/:ID/REPLIES                            */
+/*                         /SQUEALS/:ID/REPLIESNUMBER                         */
 /*                                    GET                                     */
 /* -------------------------------------------------------------------------- */
 
 //* GET
 // ritorna il numero di replies dello squeal con id = id ricevuto come parametro
-app.get("/squeals/:id/replies", async (req, res) => {
+app.get("/squeals/:id/repliesnumber", async (req, res) => {
     try {
         const squealId = req.params.id;
 
@@ -404,7 +404,7 @@ app.get("/squeals/:id/replies", async (req, res) => {
 // ! non veine chiamata dall'uri /squeals/:id/replies/, /squeals/:id/replies viene chiamata al suo posto
 // ! non so come risolvere...
 // TODO aggiungere paginazione obbligatoria come per /squeals/
-app.get("/squeals/:id/replies/:p", async (req, res) => {
+app.get("/squeals/:id/replies/", async (req, res) => {
     try {
         const squealId = req.params.id;
 
