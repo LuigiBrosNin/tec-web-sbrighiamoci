@@ -304,7 +304,7 @@ app.delete("/squeals/:id", async (req, res) => {
             { _id: squeal._id }, 
             {
                 $set: {  
-                    id: `deleted${numDeletedSqueals}`, //? io SPERO che funzioni così
+                    id: `DeletedSqueals${numDeletedSqueals}`, //? io SPERO che funzioni così
                     author: 'DeletedSqueals',
                     media: '',
                     keywords: [],
@@ -324,7 +324,7 @@ app.delete("/squeals/:id", async (req, res) => {
                 const index = tmp.reply_to.indexOf(squealId); 
 
                 if (index !== -1) {
-                    tmp.reply_to[index] = `deleted${numDeletedSqueals}`;
+                    tmp.reply_to[index] = `DeletedSqueals${numDeletedSqueals}`;
 
                     await collection.updateOne({ _id: tmp._id }, { $set: { reply_to: tmp.reply_to } });
 
