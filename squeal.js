@@ -14,7 +14,8 @@ const squealCollection = "Squeals";
 //* GET UNFINISHED
 // ritorna una lista di squeal del database, da startindex ad endindex
 
-//? supporta quali campi?
+// Author, popularity, impopularity, controversals, end_date, start_date, positive_reactions, negative_reactions, impressions
+// receiver (group), Keyword, Mention
 app.get("/squeals/", async (req, res) => {
     try {
         // take the parameters from the request
@@ -51,7 +52,7 @@ app.get("/squeals/", async (req, res) => {
 //* PUT UNFINISHED
 // aggiunge/sovrascrive uno squeal al database
 
-//? come gestisco la creazione di un ID univoco per ogni squeal?
+// nome utente + numero squeals = ID
 //TODO controllare se l'utente è loggato e se è l'autore dello squeal
 //TODO aggiornare numero squeals del profilo autore
 //TODO aggiornare numero e lista squeals dell'id in reply_to se presente
@@ -173,8 +174,6 @@ app.get("/squeals/:id", async (req, res) => {
 // * PUT
 // aggiunge/sovrascrive lo squeal con id = id ricevuto come parametro
 
-//? non dovrebbe essere possibile aggiungere squeal, dovremmo definirli tutti noi
-//? questo metodo non ha senso di esistere
 // TODO controllare se l'utente è loggato e se è l'autore dello squeal
 app.put("/squeals/:id", bodyParser.json(), async (req, res) => {
     try {
@@ -256,7 +255,7 @@ app.put("/squeals/:id", bodyParser.json(), async (req, res) => {
 // * DELETE UNFINISHED
 // elimina lo squeal con id = id ricevuto come parametro
 
-// ? cosa ne facciamo delle liste di ID figlie? cancellare gli squeal dal db?
+// cancella tutti i contenuti, rimpiazza id con deletedXXXXXX e cambia reply_to dei figli in risposta
 // TODO controllare se l'utente è loggato e se è l'autore dello squeal oppure un admin
 app.delete("/squeals/:id", async (req, res) => {
     try {
@@ -294,6 +293,7 @@ app.delete("/squeals/:id", async (req, res) => {
 //? realisticamente un utente loggato può aggiungere, togliere e modificare le sue reazioni
 //? solo 1 volta per richiesta se il suo nome non è già nella lista delle reazioni
 //? questa limitazione è solo per utenti comuni, non per admin, come la gestiamo?
+// uffa
 // TODO controllare se l'utente è loggato
 app.post("/squeals/:id", bodyParser.json(), async (req, res) => {
     try {
@@ -356,43 +356,6 @@ app.get("/squeals/:id/media", async (req, res) => {
     }
 });
 
-
-/* -------------------------------------------------------------------------- */
-/*                            /SQUEALS/:ID/REPLIES                            */
-/*                                    GET                                     */
-/* -------------------------------------------------------------------------- */
-
-//* GET
-// ritorna il numero di replies dello squeal con id = id ricevuto come parametro
-app.get("/squeals/:id/replies", async (req, res) => {
-    try {
-        const squealId = req.params.id;
-
-        // connecting to the database
-        await mongoClient.connect();
-        const database = mongoClient.db(dbName);
-        const collection = database.collection(squealCollection);
-        // fetching the squeal with the given id
-        const squeal = await collection.findOne({ id: squealId });
-
-        // if the squeal is not found, return 404
-        if (squeal === null) {
-            res.status(404).json({ message: "squeal not found" });
-            return;
-        }
-
-        console.log('Number of Replies:', JSON.stringify(squeal.replies_num));
-
-        // if the squeal is found, return its replies
-        res.status(200).json(squeal.replies_num);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    } finally {
-        await mongoClient.close();
-    }
-});
-
-
 /* -------------------------------------------------------------------------- */
 /*                            /SQUEALS/:ID/REPLIES/                           */
 /*                                    GET                                     */
@@ -424,6 +387,42 @@ app.get("/squeals/:id/replies/", async (req, res) => {
         console.log('Replies:', JSON.stringify(squeal.replies));
         // if the squeal is found, return its replies
         res.status(200).json(squeal.replies);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    } finally {
+        await mongoClient.close();
+    }
+});
+
+
+/* -------------------------------------------------------------------------- */
+/*                            /SQUEALS/:ID/REPLIES                            */
+/*                                    GET                                     */
+/* -------------------------------------------------------------------------- */
+
+//* GET
+// ritorna il numero di replies dello squeal con id = id ricevuto come parametro
+app.get("/squeals/:id/replies", async (req, res) => {
+    try {
+        const squealId = req.params.id;
+
+        // connecting to the database
+        await mongoClient.connect();
+        const database = mongoClient.db(dbName);
+        const collection = database.collection(squealCollection);
+        // fetching the squeal with the given id
+        const squeal = await collection.findOne({ id: squealId });
+
+        // if the squeal is not found, return 404
+        if (squeal === null) {
+            res.status(404).json({ message: "squeal not found" });
+            return;
+        }
+
+        console.log('Number of Replies:', JSON.stringify(squeal.replies_num));
+
+        // if the squeal is found, return its replies
+        res.status(200).json(squeal.replies_num);
     } catch (error) {
         res.status(500).json({ message: error.message });
     } finally {
