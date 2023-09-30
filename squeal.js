@@ -356,44 +356,6 @@ app.get("/squeals/:id/media", async (req, res) => {
     }
 });
 
-/* -------------------------------------------------------------------------- */
-/*                            /SQUEALS/:ID/REPLIES/                           */
-/*                                    GET                                     */
-/* -------------------------------------------------------------------------- */
-
-//* GET
-// ritorna la lista delle replies dello squeal con id = id ricevuto come parametro
-
-// ! non veine chiamata dall'uri /squeals/:id/replies/, /squeals/:id/replies viene chiamata al suo posto
-// ! non so come risolvere...
-// TODO aggiungere paginazione obbligatoria come per /squeals/
-app.get("/squeals/:id/replies/", async (req, res) => {
-    try {
-        const squealId = req.params.id;
-
-        // connecting to the database
-        await mongoClient.connect();
-        const database = mongoClient.db(dbName);
-        const collection = database.collection(squealCollection);
-        // fetching the squeal with the given id
-        const squeal = await collection.findOne({ id: squealId });
-
-        // if the squeal is not found, return 404
-        if (squeal === null) {
-            res.status(404).json({ message: "squeal not found" });
-            return;
-        }
-
-        console.log('Replies:', JSON.stringify(squeal.replies));
-        // if the squeal is found, return its replies
-        res.status(200).json(squeal.replies);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    } finally {
-        await mongoClient.close();
-    }
-});
-
 
 /* -------------------------------------------------------------------------- */
 /*                            /SQUEALS/:ID/REPLIES                            */
@@ -423,6 +385,45 @@ app.get("/squeals/:id/replies", async (req, res) => {
 
         // if the squeal is found, return its replies
         res.status(200).json(squeal.replies_num);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    } finally {
+        await mongoClient.close();
+    }
+});
+
+
+/* -------------------------------------------------------------------------- */
+/*                            /SQUEALS/:ID/REPLIES/                           */
+/*                                    GET                                     */
+/* -------------------------------------------------------------------------- */
+
+//* GET
+// ritorna la lista delle replies dello squeal con id = id ricevuto come parametro
+
+// ! non veine chiamata dall'uri /squeals/:id/replies/, /squeals/:id/replies viene chiamata al suo posto
+// ! non so come risolvere...
+// TODO aggiungere paginazione obbligatoria come per /squeals/
+app.get("/squeals/:id/replies/:p", async (req, res) => {
+    try {
+        const squealId = req.params.id;
+
+        // connecting to the database
+        await mongoClient.connect();
+        const database = mongoClient.db(dbName);
+        const collection = database.collection(squealCollection);
+        // fetching the squeal with the given id
+        const squeal = await collection.findOne({ id: squealId });
+
+        // if the squeal is not found, return 404
+        if (squeal === null) {
+            res.status(404).json({ message: "squeal not found" });
+            return;
+        }
+
+        console.log('Replies:', JSON.stringify(squeal.replies));
+        // if the squeal is found, return its replies
+        res.status(200).json(squeal.replies);
     } catch (error) {
         res.status(500).json({ message: error.message });
     } finally {

@@ -32,8 +32,6 @@ app.use(express.static(global.rootDir));
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
-
-
 app.listen(port, function(){
 	console.log("Listen ongoing!");
 })
