@@ -14,25 +14,78 @@ const squealCollection = "Squeals";
 //* GET UNFINISHED
 // ritorna una lista di squeal del database, da startindex ad endindex
 
-// Author, popularity, impopularity, controversals, end_date, start_date, positive_reactions, negative_reactions, impressions
+// Author, pos_popolarity_ratio , neg_popolarity_ratio, abs_popularity_ratio , controversals, end_date, start_date, positive_reactions, negative_reactions, impressions
 // receiver (group), Keyword, Mention
 app.get("/squeals/", async (req, res) => {
     try {
-        // take the parameters from the request
-        let author = req.query.author;
-        let startIndex = parseInt(req.query.startindex);
-        let endIndex = parseInt(req.query.endindex);
 
+        // initializing the start and end index in case they are not specified
+        let startIndex = 0;
+        let endIndex = 10;
         // check if the parameters are valid
-        if (author === undefined || startIndex === undefined || startIndex === NaN || endIndex === undefined || endIndex === NaN) {
-            res.status(400).json({ message: "author, startindex and endindex are required" });
+        if (req.query.startIndex !== undefined && req.query.startIndex !== NaN) {
+            startIndex = parseInt(req.query.startindex);
+        }
+        if (req.query.endindex !== undefined && req.query.endindex !== NaN) {
+            endIndex = parseInt(req.query.endindex);
+        }
+        // check if the parameters are valid
+        if (startIndex > endIndex) {
+            res.status(400).json({ message: "startIndex must be less than endIndex" });
             return;
         }
 
+        // initializing the start and end date in case they are not specified
+        let start_date = 0;
+        let end_date = Date.now();
+        // check if the parameters are valid
+        if (req.query.start_date !== undefined && req.query.start_date !== NaN) {
+            start_date = new Date(req.query.start_date);
+        }
+        if (req.query.end_date !== undefined ) {
+            end_date = new Date(req.query.end_date);
+        }
+        // check if the parameters are valid
+        if (start_date > end_date) {
+            res.status(400).json({ message: "start_date must be less than end_date" });
+            return;
+        }
+
+        // possible query params
+        const possibleParams = [
+            "author",
+            "receiver",
+            "pos_popolarity_ratio",
+            "neg_popolarity_ratio",
+            "abs_popularity_ratio",
+            "controversals",
+            "positive_reactions",
+            "negative_reactions",
+            "impressions",
+            "keywords",
+            "mentions"
+        ];
+
+        // initializing the search object with the date range
+        let search = {
+            date: {
+                $gte: start_date,
+                $lte: end_date
+            }
+        };
+
+        // check if any of the possible query params are present in the request body
+        for (const field of possibleParams) {
+            if (req.body[field] !== undefined) {
+                search[field] = req.body[field];
+            }
+        }
+
+        // connecting to the database and fetching the squeals
         await mongoClient.connect();
         const database = mongoClient.db(dbName);
         const collection = database.collection(squealCollection);
-        const squeals = await collection.find({ author: author }) // returns the squeals made by author
+        const squeals = await collection.find(search)
             .sort({ timestamp: -1 }) // ordered inverse chronological order
             .skip(startIndex) // starting from startIndex
             .limit(endIndex) // returns endIndex squeals
@@ -255,7 +308,8 @@ app.put("/squeals/:id", bodyParser.json(), async (req, res) => {
 // * DELETE UNFINISHED
 // elimina lo squeal con id = id ricevuto come parametro
 
-// cancella tutti i contenuti, rimpiazza id con deletedXXXXXX e cambia reply_to dei figli in risposta
+// TODO cancella dal db se non ci sono reply
+// TODO cancella tutti i contenuti, rimpiazza id con deletedXXXXXX e cambia il campo reply_to dei figli in replies
 // TODO controllare se l'utente è loggato e se è l'autore dello squeal oppure un admin
 
 /*
@@ -497,30 +551,67 @@ app.get("/squeals/:id/repliesnumber", async (req, res) => {
 
 //* GET
 // ritorna la lista delle replies dello squeal con id = id ricevuto come parametro
+// query facoltativa che ritorna le replies da startIndex a endIndex, se non specificati ritorna le prime 10
 
-// ! non veine chiamata dall'uri /squeals/:id/replies/, /squeals/:id/replies viene chiamata al suo posto
-// ! non so come risolvere...
-// TODO aggiungere paginazione obbligatoria come per /squeals/
+//TODO Test the function
 app.get("/squeals/:id/replies/", async (req, res) => {
     try {
         const squealId = req.params.id;
+
+        // initializing the start and end index in case they are not specified
+        let startIndex = 0;
+        let endIndex = 10;
+        // check if the parameters are valid
+        if (req.query.startIndex !== undefined && req.query.startIndex !== NaN) {
+            startIndex = parseInt(req.query.startindex);
+        }
+        if (req.query.endindex !== undefined && req.query.endindex !== NaN) {
+            endIndex = parseInt(req.query.endindex);
+        }
+        // check if the parameters are valid
+        if (startIndex > endIndex) {
+            res.status(400).json({ message: "startIndex must be less than endIndex" });
+            return;
+        }
+
+
 
         // connecting to the database
         await mongoClient.connect();
         const database = mongoClient.db(dbName);
         const collection = database.collection(squealCollection);
         // fetching the squeal with the given id
-        const squeal = await collection.findOne({ id: squealId });
+        const main_squeal = await collection.findOne({ id: squealId });
 
         // if the squeal is not found, return 404
-        if (squeal === null) {
+        if (main_squeal === null) {
             res.status(404).json({ message: "squeal not found" });
             return;
         }
 
-        console.log('Replies:', JSON.stringify(squeal.replies));
+        // only getting the IDs of the wanted replies
+        let idsOfSquealRepliesToReturn = squeals.replies.slice(startIndex, endIndex);
+
+        // what we'll return
+        let squealReplies = {};
+
+        // fetching the replies
+        for(child_squeal_id in idsOfSquealRepliesToReturn){
+            child_squeal = collection.findOne({ id: child_squeal_id });
+
+            // if the squeal is not found, skip it, but log it so we know something's wrong
+            if (child_squeal === null) {
+                console.log("Child squeal with id " + child_squeal_id + " not found");
+            } // if the squeal is found, add it to the list of replies
+            else {
+                squealReplies.push(child_squeal);
+            }
+        }
+
+        console.log('Replies:', JSON.stringify(squealReplies));
         // if the squeal is found, return its replies
-        res.status(200).json(squeal.replies);
+        res.status(200).json(squealReplies);
+        
     } catch (error) {
         res.status(500).json({ message: error.message });
     } finally {
