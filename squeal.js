@@ -42,14 +42,10 @@ app.get("/squeals/", async (req, res) => {
         let end_date = Date.now();
         // check if the parameters are valid
         if (req.query.start_date !== undefined && req.query.start_date !== NaN) {
-            console.log("query start: " + req.query.start_date);
             start_date = parseInt(req.query.start_date);
-            console.log("start: "+start_date);
         }
         if (req.query.end_date !== undefined && req.query.start_date !== NaN) {
-            console.log("query end: "+ req.query.end_date);
             end_date = parseInt(req.query.end_date);
-            console.log("end: "+end_date);
         }
         // check if the parameters are valid
         if (start_date > end_date) {
@@ -562,6 +558,7 @@ app.get("/squeals/:id/repliesnumber", async (req, res) => {
 //TODO Test the function
 app.get("/squeals/:id/replies/", async (req, res) => {
     try {
+        console.log('Request id:', req.params.id);
         const squealId = req.params.id;
 
         // initializing the start and end index in case they are not specified
