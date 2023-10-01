@@ -42,12 +42,12 @@ app.get("/squeals/", async (req, res) => {
         // check if the parameters are valid
         if (req.query.start_date !== undefined && req.query.start_date !== NaN) {
             console.log("query start: " + req.query.start_date);
-            start_date = new Date(req.query.start_date);
+            start_date = new Date(parseInt(req.query.start_date));
             console.log("start: "+start_date);
         }
         if (req.query.end_date !== undefined && req.query.start_date !== NaN) {
             console.log("query end: "+ req.query.end_date);
-            end_date = new Date(req.query.end_date);
+            end_date = new Date(parseInt(req.query.end_date));
             console.log("end: "+end_date);
         }
         // check if the parameters are valid
