@@ -1,5 +1,6 @@
 global.rootDir = __dirname;
 
+const { parse } = require("path");
 const { app, mongoClient } = require("./index.js");
 const bodyParser = require('body-parser');
 const dbName = "SquealerDB";
@@ -37,17 +38,17 @@ app.get("/squeals/", async (req, res) => {
         }
 
         // initializing the start and end date in case they are not specified
-        let start_date = new Date(0);
+        let start_date = 0;
         let end_date = Date.now();
         // check if the parameters are valid
         if (req.query.start_date !== undefined && req.query.start_date !== NaN) {
             console.log("query start: " + req.query.start_date);
-            start_date = new Date(parseInt(req.query.start_date));
+            start_date = parseInt(req.query.start_date);
             console.log("start: "+start_date);
         }
         if (req.query.end_date !== undefined && req.query.start_date !== NaN) {
             console.log("query end: "+ req.query.end_date);
-            end_date = new Date(parseInt(req.query.end_date));
+            end_date = parseInt(req.query.end_date);
             console.log("end: "+end_date);
         }
         // check if the parameters are valid
