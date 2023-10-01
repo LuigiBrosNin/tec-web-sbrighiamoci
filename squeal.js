@@ -11,10 +11,11 @@ const squealCollection = "Squeals";
 /*                                 GET & PUT                                  */
 /* -------------------------------------------------------------------------- */
 
-//* GET UNFINISHED
+//* GET
 // ritorna una lista di squeal del database, da startindex ad endindex
 
-// Author, pos_popolarity_ratio , neg_popolarity_ratio, abs_popularity_ratio , controversals, end_date, start_date, positive_reactions, negative_reactions, impressions
+// Author, pos_popolarity_ratio , neg_popolarity_ratio, abs_popularity_ratio , 
+// controversals, end_date, start_date, positive_reactions, negative_reactions, impressions
 // receiver (group), Keyword, Mention
 app.get("/squeals/", async (req, res) => {
     try {
@@ -81,6 +82,8 @@ app.get("/squeals/", async (req, res) => {
             }
         }
 
+        console.log('Search:', JSON.stringify(search));
+
         // connecting to the database and fetching the squeals
         await mongoClient.connect();
         const database = mongoClient.db(dbName);
@@ -90,8 +93,6 @@ app.get("/squeals/", async (req, res) => {
             .skip(startIndex) // starting from startIndex
             .limit(endIndex) // returns endIndex squeals
             .toArray(); // returns the squeals as an array
-
-        console.log('Squeals:', JSON.stringify(squeals));
         
         res.status(200).json(squeals); // returns the squeals
 
