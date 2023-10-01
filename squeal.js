@@ -558,7 +558,6 @@ app.get("/squeals/:id/repliesnumber", async (req, res) => {
 //TODO Test the function
 app.get("/squeals/:id/replies/", async (req, res) => {
     try {
-        console.log('Request id:', req.params.id);
         const squealId = req.params.id;
 
         // initializing the start and end index in case they are not specified
@@ -577,8 +576,6 @@ app.get("/squeals/:id/replies/", async (req, res) => {
             return;
         }
 
-
-
         // connecting to the database
         await mongoClient.connect();
         const database = mongoClient.db(dbName);
@@ -596,11 +593,11 @@ app.get("/squeals/:id/replies/", async (req, res) => {
         let idsOfSquealRepliesToReturn = main_squeal.replies.slice(startIndex, endIndex);
 
         // what we'll return
-        let squealReplies = {};
+        let squealReplies = [];
 
         // fetching the replies
-        for(child_squeal_id in idsOfSquealRepliesToReturn){
-            child_squeal = collection.findOne({ id: child_squeal_id });
+        for (child_squeal_id in idsOfSquealRepliesToReturn) {
+            child_squeal = await collection.findOne({ id: child_squeal_id });
 
             // if the squeal is not found, skip it, but log it so we know something's wrong
             if (child_squeal === null) {
