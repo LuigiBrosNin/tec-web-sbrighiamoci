@@ -593,7 +593,7 @@ app.get("/squeals/:id/replies/", async (req, res) => {
         }
 
         // only getting the IDs of the wanted replies
-        let idsOfSquealRepliesToReturn = squeals.replies.slice(startIndex, endIndex);
+        let idsOfSquealRepliesToReturn = main_squeal.replies.slice(startIndex, endIndex);
 
         // what we'll return
         let squealReplies = {};
