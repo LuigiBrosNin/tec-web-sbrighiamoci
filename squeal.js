@@ -598,7 +598,7 @@ app.get("/squeals/:id/replies/", async (req, res) => {
         let squealReplies = [];
 
         // fetching the replies
-        for (child_squeal_id in idsOfSquealRepliesToReturn) {
+        for (const child_squeal_id of idsOfSquealRepliesToReturn) {
             child_squeal = await collection.findOne({ id: child_squeal_id });
 
             // if the squeal is not found, skip it, but log it so we know something's wrong
