@@ -2,6 +2,7 @@ global.rootDir = __dirname;
 
 const { parse } = require("path");
 const { app, mongoClient } = require("./index.js");
+const { isAuthorized } = require("./loginUtils.js");
 const bodyParser = require('body-parser');
 const dbName = "SquealerDB";
 const squealCollection = "Squeals";
@@ -20,7 +21,6 @@ const squealCollection = "Squeals";
 // receiver (group), Keyword, Mention
 app.get("/squeals/", async (req, res) => {
     try {
-
         // initializing the start and end index in case they are not specified
         let startIndex = 0;
         let endIndex = 10;
@@ -94,7 +94,7 @@ app.get("/squeals/", async (req, res) => {
             .skip(startIndex) // starting from startIndex
             .limit(endIndex) // returns endIndex squeals
             .toArray(); // returns the squeals as an array
-        
+
         res.status(200).json(squeals); // returns the squeals
 
     } catch (error) {
@@ -130,46 +130,52 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
         }
         // If all required fields are present, continue with the insertion
 
-        // defining the required fields as well as initializing the standard fields
-        let newSqueal = {
-            id: "TEMP",//TODO DA DEFINIRE AUTOMATICAMENTE
-            author: req.body.author,
-            text: req.body.text,
-            receiver: req.body.receiver,
-            date: Date.now(),
-            positive_reactions: 0,
-            positive_reactions_users: [],
-            negative_reactions: 0,
-            negative_reactions_users: [],
-            replies_num: 0,
-            impressions: 0
-        }
-
-        const optionalFields = [
-            "media",
-            "reply_to",
-            "replies",
-            "keywords",
-            "mentions"
-        ];
-
-        // Check if the optional fields are present in the request body
-        // If they are, add them to the newSqueal object
-        for (const field in optionalFields) {
-            if (req.body[field] !== undefined) {
-                newSqueal[field] = req.body[field];
+        if ((isAuthorized(req.session.user, "user") && req.session.user === req.body.author) || (isAuthorized(req.session.user, "admin"))) {
+            // defining the required fields as well as initializing the standard fields
+            let newSqueal = {
+                id: "TEMP",//TODO DA DEFINIRE AUTOMATICAMENTE
+                author: req.body.author,
+                text: req.body.text,
+                receiver: req.body.receiver,
+                date: Date.now(),
+                positive_reactions: 0,
+                positive_reactions_users: [],
+                negative_reactions: 0,
+                negative_reactions_users: [],
+                replies_num: 0,
+                impressions: 0
             }
+
+            const optionalFields = [
+                "media",
+                "reply_to",
+                "replies",
+                "keywords",
+                "mentions"
+            ];
+
+            // Check if the optional fields are present in the request body
+            // If they are, add them to the newSqueal object
+            for (const field in optionalFields) {
+                if (req.body[field] !== undefined) {
+                    newSqueal[field] = req.body[field];
+                }
+            }
+
+            await mongoClient.connect();
+            const database = mongoClient.db(dbName);
+            const collection = database.collection(squealCollection);
+
+            // Insert the new squeal in the database without converting it to a JSON string
+            const result = await collection.insertOne(newSqueal);
+
+            console.log('Documento inserito con successo:', result.insertedId);
+            res.status(200).send(JSON.stringify({ message: "squeal added successfully with db id:" + result.insertedId }));
         }
-
-        await mongoClient.connect();
-        const database = mongoClient.db(dbName);
-        const collection = database.collection(squealCollection);
-
-        // Insert the new squeal in the database without converting it to a JSON string
-        const result = await collection.insertOne(newSqueal);
-
-        console.log('Documento inserito con successo:', result.insertedId);
-        res.status(200).send(JSON.stringify({ message: "squeal added successfully with db id:" + result.insertedId }));
+        else {
+            // https://auth0.com/blog/forbidden-unauthorized-http-status-codes/#Web-APIs-and-HTTP-Status-Codes
+            res.status(403).send();
+        }
     } catch (error) {
         console.error('Errore durante l inserimento del documento: ', error);
         res.status(500).send(JSON.stringify({ message: error.message }));
@@ -240,7 +246,7 @@ app.put("/squeals/:id", bodyParser.json(), async (req, res) => {
         const collection = database.collection(squealCollection);
         // fetching the squeal with the given id
         const squeal = await collection.findOne({ id: squealId });
-        
+
         const requiredFields = [
             "author",
             "text",
@@ -256,50 +262,54 @@ app.put("/squeals/:id", bodyParser.json(), async (req, res) => {
         }
         // If all required fields are present, continue with the insertion
 
-        // defining the required fields as well as initializing the standard fields
-        let newSqueal = {
-            id: squealId,
-            author: req.body.author,
-            text: req.body.text,
-            receiver: req.body.receiver,
-            date: Date.now(),
-            positive_reactions: 0,
-            positive_reactions_users: [],
-            negative_reactions: 0,
-            negative_reactions_users: [],
-            replies_num: 0,
-            impressions: 0
-        }
+        if (isAuthorized(req.session.user, "admin")) {
+            // defining the required fields as well as initializing the standard fields
+            let newSqueal = {
+                id: squealId,
+                author: req.body.author,
+                text: req.body.text,
+                receiver: req.body.receiver,
+                date: Date.now(),
+                positive_reactions: 0,
+                positive_reactions_users: [],
+                negative_reactions: 0,
+                negative_reactions_users: [],
+                replies_num: 0,
+                impressions: 0
+            }
 
-        const optionalFields = [
-            "media",
-            "reply_to",
-            "replies",
-            "keywords",
-            "mentions"
-        ];
+            const optionalFields = [
+                "media",
+                "reply_to",
+                "replies",
+                "keywords",
+                "mentions"
+            ];
 
-        // Check if the optional fields are present in the request body
-        // If they are, add them to the newSqueal object
-        for (const field in optionalFields) {
-            if (req.body[field] !== undefined) {
-                newSqueal[field] = req.body[field];
+            // Check if the optional fields are present in the request body
+            // If they are, add them to the newSqueal object
+            for (const field in optionalFields) {
+                if (req.body[field] !== undefined) {
+                    newSqueal[field] = req.body[field];
+                }
+            }
+
+            // if the squeal is found, update and return the update
+            if (squeal != null) {
+                const result = await collection.updateOne({ id: squealId }, { $set: newSqueal });
+                res.status(200).json({ message: "squeal updated successfully" });
+                return;
+            }
+            else {
+                // if the squeal is not found, add it to the database
+                const result = await collection.insertOne(newSqueal);
+                res.status(200).json({ message: "squeal added successfully" });
+                return;
             }
         }
-
-        // if the squeal is found, update and return the update
-        if (squeal != null) {
-            const result = await collection.updateOne({ id: squealId }, { $set: newSqueal });
-            res.status(200).json({ message: "squeal updated successfully" });
-            return;
-        }
         else {
-            // if the squeal is not found, add it to the database
-            const result = await collection.insertOne(newSqueal);
-            res.status(200).json({ message: "squeal added successfully" });
-            return;
+            res.status(403).send();
         }
-
     } catch (error) {
         res.status(500).json({ message: error.message });
     } finally {
@@ -350,59 +360,65 @@ app.delete("/squeals/:id", async (req, res) => {
         }
 
         // if the squeal is found, reset the fields and move it to the "DeletedSqueals" account
+        if ((isAuthorized(req.session.user, "user") && req.session.user === squeal.author) || (isAuthorized(req.session.user, "admin"))) {
 
-        // retrieve the "DeletedSqueals" account
-        const deletedSquealsProfile = await Profiles.findOne({ name: "DeletedSqueals" })
-        const numDeletedSqueals = deletedSquealsProfile.num_deleted_squeals
 
-        // reset fields of the squeal that is going to be deleted
-        await collection.updateOne( //? forse non necessario collection.updateOne in quanto possiedo già lo squeal di cui devo fare update
-            { _id: squeal._id }, 
-            {
-                $set: {  
-                    id: `DeletedSqueals${numDeletedSqueals}`, //? io SPERO che funzioni così
-                    author: 'DeletedSqueals',
-                    media: '',
-                    keywords: [],
-                    mentions: [],
-                    text: ''
+            // retrieve the "DeletedSqueals" account
+            const deletedSquealsProfile = await Profiles.findOne({ name: "DeletedSqueals" })
+            const numDeletedSqueals = deletedSquealsProfile.num_deleted_squeals
+
+            // reset fields of the squeal that is going to be deleted
+            await collection.updateOne( //? forse non necessario collection.updateOne in quanto possiedo già lo squeal di cui devo fare update
+                { _id: squeal._id },
+                {
+                    $set: {
+                        id: `DeletedSqueals${numDeletedSqueals}`, //? io SPERO che funzioni così
+                        author: 'DeletedSqueals',
+                        media: '',
+                        keywords: [],
+                        mentions: [],
+                        text: ''
+                    }
                 }
-            }
-        );
-        
-        // modify all the squeals that were replying to the deleted one
-        let squealRepliesList = squeal.replies
-        let tmp_squeal = await Profiles.findOne({ name: "DeletedSqueals" })
+            );
 
-        squealRepliesList.forEach(async(reply) => {
-            try {
-                let tmp = await collection.findOne({ id: reply }) 
-                const index = tmp.reply_to.indexOf(squealId); 
+            // modify all the squeals that were replying to the deleted one
+            let squealRepliesList = squeal.replies
+            let tmp_squeal = await Profiles.findOne({ name: "DeletedSqueals" })
 
-                if (index !== -1) {
-                    tmp.reply_to[index] = `DeletedSqueals${numDeletedSqueals}`;
+            squealRepliesList.forEach(async (reply) => {
+                try {
+                    let tmp = await collection.findOne({ id: reply })
+                    const index = tmp.reply_to.indexOf(squealId);
 
-                    await collection.updateOne({ _id: tmp._id }, { $set: { reply_to: tmp.reply_to } });
+                    if (index !== -1) {
+                        tmp.reply_to[index] = `DeletedSqueals${numDeletedSqueals}`;
 
-                    console.log('Sostituzione effettuata con successo.');
+                        await collection.updateOne({ _id: tmp._id }, { $set: { reply_to: tmp.reply_to } });
+
+                        console.log('Sostituzione effettuata con successo.');
+                    }
+                    else { console.log('"XXX" non trovato nella lista.'); }
                 }
-                else { console.log('"XXX" non trovato nella lista.'); }
-            }
-            catch {
-                res.status(500).json({ message: error.message });
-            }
-        });
+                catch {
+                    res.status(500).json({ message: error.message });
+                }
+            });
 
-        // update the progressive number on DeletedProfiles
-        numDeletedSqueals += 1
-        await Profiles.updateOne(
-            { name: "DeletedSqueals" },
-            {
-                $set: { num_deleted_squeals: numDeletedSqueals }
-            }
-        )
+            // update the progressive number on DeletedProfiles
+            numDeletedSqueals += 1
+            await Profiles.updateOne(
+                { name: "DeletedSqueals" },
+                {
+                    $set: { num_deleted_squeals: numDeletedSqueals }
+                }
+            )
 
-        res.status(200).json({ message: "squeal deleted successfully" });
+            res.status(200).json({ message: "squeal deleted successfully" });
+        }
+        else {
+            res.status(403).send();
+        }
     } catch (error) {
         res.status(500).json({ message: error.message });
     } finally {
@@ -466,8 +482,13 @@ app.post("/squeals/:id", bodyParser.json(), async (req, res) => {
         }
 
         // if the squeal is found, update it
+        if (isAuthorized(req.session.user, "user") /* && l'utente non ha già messo una reaziones */){
         const result = await collection.updateOne({ id: squealId }, { $set: req.body });
         res.status(200).json({ message: "squeal updated successfully" });
+        }
+        else {
+            res.status(403).send();
+        }
     } catch (error) {
         res.status(500).json({ message: error.message });
     } finally {
@@ -611,7 +632,7 @@ app.get("/squeals/:id/replies/", async (req, res) => {
         console.log('Replies:', JSON.stringify(squealReplies));
         // if the squeal is found, return its replies
         res.status(200).json(squealReplies);
-        
+
     } catch (error) {
         res.status(500).json({ message: error.message });
     } finally {
