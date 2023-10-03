@@ -1,11 +1,19 @@
 global.rootDir = __dirname;
 
-const { parse } = require("path");
-const { app, mongoClient } = require("./index.js");
-const { isAuthorized } = require("./loginUtils.js");
+const {
+    parse
+} = require("path");
+const {
+    app,
+    mongoClient
+} = require("./index.js");
+const {
+    isAuthorized
+} = require("./loginUtils.js");
 const bodyParser = require('body-parser');
 const dbName = "SquealerDB";
 const squealCollection = "Squeals";
+const profileCollection = "Profiles";
 
 
 /* -------------------------------------------------------------------------- */
@@ -18,7 +26,7 @@ const squealCollection = "Squeals";
 
 // Author, pos_popolarity_ratio , neg_popolarity_ratio, abs_popularity_ratio , 
 // controversals, end_date, start_date, positive_reactions, negative_reactions, impressions
-// receiver (group), Keyword, Mention
+// receiver (group), Keyword, Mention, is_private
 app.get("/squeals/", async (req, res) => {
     try {
         // initializing the start and end index in case they are not specified
@@ -33,7 +41,9 @@ app.get("/squeals/", async (req, res) => {
         }
         // check if the parameters are valid
         if (startIndex > endIndex) {
-            res.status(400).json({ message: "startIndex must be less than endIndex" });
+            res.status(400).json({
+                message: "startIndex must be less than endIndex"
+            });
             return;
         }
 
@@ -49,7 +59,9 @@ app.get("/squeals/", async (req, res) => {
         }
         // check if the parameters are valid
         if (start_date > end_date) {
-            res.status(400).json({ message: "start_date must be less than end_date" });
+            res.status(400).json({
+                message: "start_date must be less than end_date"
+            });
             return;
         }
 
@@ -65,7 +77,8 @@ app.get("/squeals/", async (req, res) => {
             "negative_reactions",
             "impressions",
             "keywords",
-            "mentions"
+            "mentions",
+            "is_private"
         ];
 
         // initializing the search object with the date range
@@ -83,6 +96,15 @@ app.get("/squeals/", async (req, res) => {
             }
         }
 
+        if (!isAuthorized(req.session.user, "admin")) {
+            if (search.is_private === "true") {
+                res.status(403).json({
+                    message: "only admins can access private messages"
+                });
+                return;
+            }
+        }
+
         console.log('Search:', JSON.stringify(search));
 
         // connecting to the database and fetching the squeals
@@ -90,7 +112,9 @@ app.get("/squeals/", async (req, res) => {
         const database = mongoClient.db(dbName);
         const collection = database.collection(squealCollection);
         const squeals = await collection.find(search)
-            .sort({ timestamp: -1 }) // ordered inverse chronological order
+            .sort({
+                timestamp: -1
+            }) // ordered inverse chronological order
             .skip(startIndex) // starting from startIndex
             .limit(endIndex) // returns endIndex squeals
             .toArray(); // returns the squeals as an array
@@ -98,19 +122,18 @@ app.get("/squeals/", async (req, res) => {
         res.status(200).json(squeals); // returns the squeals
 
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({
+            message: error.message
+        });
     } finally {
         await mongoClient.close();
     }
 })
 
-//* PUT UNFINISHED
+//* PUT UNTESTED
 // aggiunge/sovrascrive uno squeal al database
-
+//TODO TEST THE FUNCTION
 // nome utente + numero squeals = ID
-//TODO controllare se l'utente è loggato e se è l'autore dello squeal
-//TODO aggiornare numero squeals del profilo autore
-//TODO aggiornare numero e lista squeals dell'id in reply_to se presente
 app.put("/squeals/", bodyParser.json(), async (req, res) => {
     try {
         // console.log('Request Body:', req.body);
@@ -124,16 +147,18 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
         // Check if all required fields are present in the request body
         for (const field of requiredFields) {
             if (req.body[field] === undefined) {
-                res.status(400).json({ message: `${field} is required` });
+                res.status(400).json({
+                    message: `${field} is required`
+                });
                 return;
             }
         }
         // If all required fields are present, continue with the insertion
 
-        if ((isAuthorized(req.session.user, "user") && req.session.user === req.body.author) || (isAuthorized(req.session.user, "admin"))) {
+        if ((isAuthorized(req.session.user, "user") && req.session.user === requiredFields.author) || (isAuthorized(req.session.user, "admin"))) {
             // defining the required fields as well as initializing the standard fields
             let newSqueal = {
-                id: "TEMP",//TODO DA DEFINIRE AUTOMATICAMENTE
+                id: "",
                 author: req.body.author,
                 text: req.body.text,
                 receiver: req.body.receiver,
@@ -165,20 +190,85 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
             await mongoClient.connect();
             const database = mongoClient.db(dbName);
             const collection = database.collection(squealCollection);
+            const collection_for_profiles = database.connection(profileCollection);
+
+            const profile_author = await collection.find(search.author);
+
+            // if the author does not exist, invalid request
+            if (profile_author === null) {
+                res.status(400).json({
+                    message: "author does not exist"
+                });
+                return;
+            }
+            // if the author exists, update the number of squeals and the list of squeals
+            const squeals_num = profile_author.num_squeals + 1;
+            const squeals_list = profile_author.list_squeal_id;
+
+            // update the author's squeals_num and squeals_list
+            newSqueal.id = `${profile_author.name}${squeals_num}`;
+
+            // adds the new squeal to the list of squeals
+            squeals_list.push(newSqueal.id);
+
+            // update the author's squeals_num and squeals_list
+            await collection_for_profiles.updateOne({
+                name: profile_author.name
+            }, {
+                $set: {
+                    num_squeals: squeals_num,
+                    list_squeal_id: squeals_list
+                }
+            })
+
+            if (newSqueal.reply_to !== undefined) {
+                // retrieve the squeal that is being replied to
+                const squeal_replied_to = await collection.findOne({
+                    id: newSqueal.reply_to
+                });
+
+                // if the squeal is not found, return 404
+                if (squeal_replied_to === null) {
+                    res.status(400).json({
+                        message: "the squeal you are replying to does not exist"
+                    });
+                    return;
+                }
+
+                // if the squeal is found, update the replies_num
+                const replies_num = squeal_replied_to.replies_num + 1;
+
+                // update the list of replies
+                const replies_list = squeal_replied_to.replies;
+                replies_list.push(newSqueal.id);
+
+                // update the squeal_replied_to's replies_num
+                await collection.updateOne({
+                    id: squeal_replied_to.id
+                }, {
+                    $set: {
+                        replies_num: replies_num,
+                        replies: replies_list
+                    }
+                });
+            }
 
             // Insert the new squeal in the database without converting it to a JSON string
             const result = await collection.insertOne(newSqueal);
 
             console.log('Documento inserito con successo:', result.insertedId);
-            res.status(200).send(JSON.stringify({ message: "squeal added successfully with db id:" + result.insertedId }));
-        }
-        else {
+            res.status(200).send(JSON.stringify({
+                message: "squeal added successfully with db id:" + result.insertedId
+            }));
+        } else {
             // https://auth0.com/blog/forbidden-unauthorized-http-status-codes/#Web-APIs-and-HTTP-Status-Codes
             res.status(403).send();
         }
     } catch (error) {
         console.error('Errore durante l inserimento del documento: ', error);
-        res.status(500).send(JSON.stringify({ message: error.message }));
+        res.status(500).send(JSON.stringify({
+            message: error.message
+        }));
     } finally {
         await mongoClient.close(); // Chiudi la connessione al database quando hai finito
     }
@@ -215,18 +305,24 @@ app.get("/squeals/:id", async (req, res) => {
         const database = mongoClient.db(dbName);
         const collection = database.collection(squealCollection);
         // fetching the squeal with the given id
-        const squeal = await collection.findOne({ id: squealId });
+        const squeal = await collection.findOne({
+            id: squealId
+        });
 
         // if the squeal is not found, return 404
         if (squeal === null) {
-            res.status(404).json({ message: "squeal not found" });
+            res.status(404).json({
+                message: "squeal not found"
+            });
             return;
         }
 
         // if the squeal is found, return it in json format
         res.status(200).json(squeal);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({
+            message: error.message
+        });
     } finally {
         await mongoClient.close();
     }
@@ -234,8 +330,6 @@ app.get("/squeals/:id", async (req, res) => {
 
 // * PUT
 // aggiunge/sovrascrive lo squeal con id = id ricevuto come parametro
-
-// TODO controllare se l'utente è loggato e se è l'autore dello squeal
 app.put("/squeals/:id", bodyParser.json(), async (req, res) => {
     try {
         const squealId = req.params.id;
@@ -245,7 +339,9 @@ app.put("/squeals/:id", bodyParser.json(), async (req, res) => {
         const database = mongoClient.db(dbName);
         const collection = database.collection(squealCollection);
         // fetching the squeal with the given id
-        const squeal = await collection.findOne({ id: squealId });
+        const squeal = await collection.findOne({
+            id: squealId
+        });
 
         const requiredFields = [
             "author",
@@ -256,7 +352,9 @@ app.put("/squeals/:id", bodyParser.json(), async (req, res) => {
         // Check if all required fields are present in the request body
         for (const field of requiredFields) {
             if (req.body[field] === undefined) {
-                res.status(400).json({ message: `${field} is required` });
+                res.status(400).json({
+                    message: `${field} is required`
+                });
                 return;
             }
         }
@@ -296,22 +394,30 @@ app.put("/squeals/:id", bodyParser.json(), async (req, res) => {
 
             // if the squeal is found, update and return the update
             if (squeal != null) {
-                const result = await collection.updateOne({ id: squealId }, { $set: newSqueal });
-                res.status(200).json({ message: "squeal updated successfully" });
+                const result = await collection.updateOne({
+                    id: squealId
+                }, {
+                    $set: newSqueal
+                });
+                res.status(200).json({
+                    message: "squeal updated successfully"
+                });
                 return;
-            }
-            else {
+            } else {
                 // if the squeal is not found, add it to the database
                 const result = await collection.insertOne(newSqueal);
-                res.status(200).json({ message: "squeal added successfully" });
+                res.status(200).json({
+                    message: "squeal added successfully"
+                });
                 return;
             }
-        }
-        else {
+        } else {
             res.status(403).send();
         }
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({
+            message: error.message
+        });
     } finally {
         await mongoClient.close();
     }
@@ -343,7 +449,7 @@ TODO se non ci sono dipendenze nel reply_to e replies si cancella interamente da
 
 app.delete("/squeals/:id", async (req, res) => {
     try {
-        const squealId = req.params.id;  // squeal to delete
+        const squealId = req.params.id; // squeal to delete
 
         // connecting to the database
         await mongoClient.connect();
@@ -351,11 +457,15 @@ app.delete("/squeals/:id", async (req, res) => {
         const collection = database.collection(squealCollection);
 
         // fetching the squeal with the given id
-        const squeal = await collection.findOne({ id: squealId });
+        const squeal = await collection.findOne({
+            id: squealId
+        });
 
         // if the squeal is not found, return 404
         if (squeal === null) {
-            res.status(404).json({ message: "Error: ID not found in database." });
+            res.status(404).json({
+                message: "Error: ID not found in database."
+            });
             return;
         }
 
@@ -364,13 +474,16 @@ app.delete("/squeals/:id", async (req, res) => {
 
 
             // retrieve the "DeletedSqueals" account
-            const deletedSquealsProfile = await Profiles.findOne({ name: "DeletedSqueals" })
+            const deletedSquealsProfile = await Profiles.findOne({
+                name: "DeletedSqueals"
+            })
             const numDeletedSqueals = deletedSquealsProfile.num_deleted_squeals
 
             // reset fields of the squeal that is going to be deleted
             await collection.updateOne( //? forse non necessario collection.updateOne in quanto possiedo già lo squeal di cui devo fare update
-                { _id: squeal._id },
                 {
+                    _id: squeal._id
+                }, {
                     $set: {
                         id: `DeletedSqueals${numDeletedSqueals}`, //? io SPERO che funzioni così
                         author: 'DeletedSqueals',
@@ -384,43 +497,59 @@ app.delete("/squeals/:id", async (req, res) => {
 
             // modify all the squeals that were replying to the deleted one
             let squealRepliesList = squeal.replies
-            let tmp_squeal = await Profiles.findOne({ name: "DeletedSqueals" })
+            let tmp_squeal = await Profiles.findOne({
+                name: "DeletedSqueals"
+            })
 
             squealRepliesList.forEach(async (reply) => {
                 try {
-                    let tmp = await collection.findOne({ id: reply })
+                    let tmp = await collection.findOne({
+                        id: reply
+                    })
                     const index = tmp.reply_to.indexOf(squealId);
 
                     if (index !== -1) {
                         tmp.reply_to[index] = `DeletedSqueals${numDeletedSqueals}`;
 
-                        await collection.updateOne({ _id: tmp._id }, { $set: { reply_to: tmp.reply_to } });
+                        await collection.updateOne({
+                            _id: tmp._id
+                        }, {
+                            $set: {
+                                reply_to: tmp.reply_to
+                            }
+                        });
 
                         console.log('Sostituzione effettuata con successo.');
+                    } else {
+                        console.log('"XXX" non trovato nella lista.');
                     }
-                    else { console.log('"XXX" non trovato nella lista.'); }
-                }
-                catch {
-                    res.status(500).json({ message: error.message });
+                } catch {
+                    res.status(500).json({
+                        message: error.message
+                    });
                 }
             });
 
             // update the progressive number on DeletedProfiles
             numDeletedSqueals += 1
-            await Profiles.updateOne(
-                { name: "DeletedSqueals" },
-                {
-                    $set: { num_deleted_squeals: numDeletedSqueals }
+            await Profiles.updateOne({
+                name: "DeletedSqueals"
+            }, {
+                $set: {
+                    num_deleted_squeals: numDeletedSqueals
                 }
-            )
+            })
 
-            res.status(200).json({ message: "squeal deleted successfully" });
-        }
-        else {
+            res.status(200).json({
+                message: "squeal deleted successfully"
+            });
+        } else {
             res.status(403).send();
         }
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({
+            message: error.message
+        });
     } finally {
         await mongoClient.close();
     }
@@ -453,49 +582,77 @@ app.delete("/squeals/:id", async (req, res) => {
     }
 });*/
 
-//* POST UNFINISHED
-// aggiunge una reazione allo squeal con id = id ricevuto come parametro
+//* POST
+// solo per admin -> modifica quello che vuole (tranne id)
+// the admin has the power to break some logics, use carefully
 
-//? ho seri dubbi riguardo ai limiti di questo metodo e a che punto bisogna
-//? limitare la richiesta del ricevente, ad esempio
-//? bisogna limitare la differenza di 1 tra il numero di reazioni presenti e quelle ricevute?
-//? realisticamente un utente loggato può aggiungere, togliere e modificare le sue reazioni
-//? solo 1 volta per richiesta se il suo nome non è già nella lista delle reazioni
-//? questa limitazione è solo per utenti comuni, non per admin, come la gestiamo?
-// uffa
-// TODO controllare se l'utente è loggato
+// TODO TEST THE FUNCTION
 app.post("/squeals/:id", bodyParser.json(), async (req, res) => {
     try {
-        const squealId = req.params.id;
+        if (isAuthorized(req.session.user, "admin")) {
+            const squealId = req.params.id;
 
-        // connecting to the database
-        await mongoClient.connect();
-        const database = mongoClient.db(dbName);
-        const collection = database.collection(squealCollection);
-        // fetching the squeal with the given id
-        const squeal = await collection.findOne({ id: squealId });
+            // possible body params
+            const possibleParams = [
+                "author",
+                "receiver",
+                "pos_popolarity_ratio",
+                "neg_popolarity_ratio",
+                "abs_popularity_ratio",
+                "controversals",
+                "positive_reactions",
+                "negative_reactions",
+                "impressions",
+                "keywords",
+                "mentions",
+                "is_private"
+            ];
 
-        // if the squeal is not found, return 404
-        if (squeal === null) {
-            res.status(404).json({ message: "squeal not found" });
-            return;
-        }
+            let update = {};
 
-        // if the squeal is found, update it
-        if (isAuthorized(req.session.user, "user") /* && l'utente non ha già messo una reaziones */){
-        const result = await collection.updateOne({ id: squealId }, { $set: req.body });
-        res.status(200).json({ message: "squeal updated successfully" });
-        }
-        else {
+            for (const field of possibleParams) {
+                if (req.body[field] !== undefined) {
+                    update[field] = req.body[field];
+                }
+            }
+
+            // connecting to the database
+            await mongoClient.connect();
+            const database = mongoClient.db(dbName);
+            const collection = database.collection(squealCollection);
+            // fetching the squeal with the given id
+            const squeal = await collection.findOne({
+                id: squealId
+            });
+
+            // if the squeal is not found, return 404
+            if (squeal === null) {
+                res.status(404).json({
+                    message: "squeal not found"
+                });
+                return;
+            }
+
+            // if the squeal is found, update it
+            const result = await collection.updateOne({
+                id: squealId
+            }, {
+                $set: update
+            });
+            res.status(200).json({
+                message: "squeal updated successfully"
+            });
+        } else {
             res.status(403).send();
         }
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({
+            message: error.message
+        });
     } finally {
         await mongoClient.close();
     }
 });
-
 
 /* -------------------------------------------------------------------------- */
 /*                             /SQUEALS/:ID/MEDIA                             */
@@ -513,18 +670,24 @@ app.get("/squeals/:id/media", async (req, res) => {
         const database = mongoClient.db(dbName);
         const collection = database.collection(squealCollection);
         // fetching the squeal with the given id
-        const squeal = await collection.findOne({ id: squealId });
+        const squeal = await collection.findOne({
+            id: squealId
+        });
 
         // if the squeal is not found, return 404
         if (squeal === null) {
-            res.status(404).json({ message: "squeal not found" });
+            res.status(404).json({
+                message: "squeal not found"
+            });
             return;
         }
 
         // if the squeal is found, return its media
         res.status(200).json(squeal.media);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({
+            message: error.message
+        });
     } finally {
         await mongoClient.close();
     }
@@ -547,11 +710,15 @@ app.get("/squeals/:id/repliesnumber", async (req, res) => {
         const database = mongoClient.db(dbName);
         const collection = database.collection(squealCollection);
         // fetching the squeal with the given id
-        const squeal = await collection.findOne({ id: squealId });
+        const squeal = await collection.findOne({
+            id: squealId
+        });
 
         // if the squeal is not found, return 404
         if (squeal === null) {
-            res.status(404).json({ message: "squeal not found" });
+            res.status(404).json({
+                message: "squeal not found"
+            });
             return;
         }
 
@@ -560,7 +727,9 @@ app.get("/squeals/:id/repliesnumber", async (req, res) => {
         // if the squeal is found, return its replies
         res.status(200).json(squeal.replies_num);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({
+            message: error.message
+        });
     } finally {
         await mongoClient.close();
     }
@@ -575,8 +744,6 @@ app.get("/squeals/:id/repliesnumber", async (req, res) => {
 //* GET
 // ritorna la lista delle replies dello squeal con id = id ricevuto come parametro
 // query facoltativa che ritorna le replies da startIndex a endIndex, se non specificati ritorna le prime 10
-
-//TODO Test the function
 app.get("/squeals/:id/replies/", async (req, res) => {
     try {
         const squealId = req.params.id;
@@ -593,7 +760,9 @@ app.get("/squeals/:id/replies/", async (req, res) => {
         }
         // check if the parameters are valid
         if (startIndex > endIndex) {
-            res.status(400).json({ message: "startIndex must be less than endIndex" });
+            res.status(400).json({
+                message: "startIndex must be less than endIndex"
+            });
             return;
         }
 
@@ -602,11 +771,15 @@ app.get("/squeals/:id/replies/", async (req, res) => {
         const database = mongoClient.db(dbName);
         const collection = database.collection(squealCollection);
         // fetching the squeal with the given id
-        const main_squeal = await collection.findOne({ id: squealId });
+        const main_squeal = await collection.findOne({
+            id: squealId
+        });
 
         // if the squeal is not found, return 404
         if (main_squeal === null) {
-            res.status(404).json({ message: "squeal not found" });
+            res.status(404).json({
+                message: "squeal not found"
+            });
             return;
         }
 
@@ -618,7 +791,9 @@ app.get("/squeals/:id/replies/", async (req, res) => {
 
         // fetching the replies
         for (const child_squeal_id of idsOfSquealRepliesToReturn) {
-            child_squeal = await collection.findOne({ id: child_squeal_id });
+            child_squeal = await collection.findOne({
+                id: child_squeal_id
+            });
 
             // if the squeal is not found, skip it, but log it so we know something's wrong
             if (child_squeal === null) {
@@ -634,7 +809,135 @@ app.get("/squeals/:id/replies/", async (req, res) => {
         res.status(200).json(squealReplies);
 
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({
+            message: error.message
+        });
+    } finally {
+        await mongoClient.close();
+    }
+});
+
+
+/* -------------------------------------------------------------------------- */
+/*                         /SQUEALS/:ID/:REACTION_LIST                        */
+/*                                 GET & POST                                 */
+/* -------------------------------------------------------------------------- */
+
+//* GET
+// ritorna la lista di utenti che hanno reagito allo squeal con id = id ricevuto come parametro
+
+// TODO TEST THE FUNCTION
+app.get("/squeals/:id/:reaction_list", async (req, res) => {
+    try {
+        const squealId = req.params.id;
+        const reactions = req.params.reaction_list;
+
+        // check if the reaction list is valid
+        if (reactions != "positive_reactions_users" && reactions != "negative_reactions_users") {
+            res.status(400).json({
+                message: "invalid reaction list"
+            });
+            return;
+        }
+
+
+
+        const reaction_list = req.params.reaction_list;
+
+        // connecting to the database
+        await mongoClient.connect();
+        const database = mongoClient.db(dbName);
+        const collection = database.collection(squealCollection);
+        // fetching the squeal with the given id
+        const squeal = await collection.findOne({
+            id: squealId
+        });
+
+        // if the squeal is not found, return 404
+        if (squeal === null) {
+            res.status(404).json({
+                message: "squeal not found"
+            });
+            return;
+        }
+
+        // if the squeal is found, return its reaction list
+        res.status(200).json(squeal[reaction_list]);
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    } finally {
+        await mongoClient.close();
+    }
+});
+
+//* POST
+// aggiunge un utente alla lista di reazioni positive/negative dello squeal con id = id ricevuto come parametro
+// se l'utente è già presente nella lista, lo rimuove
+
+// TODO TEST THE FUNCTION
+app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
+    try{
+        const squealId = req.params.id;
+        const reactions = req.params.reaction_list;
+
+        // check if the reaction list is valid
+        if (reactions != "positive_reactions_users" && reactions != "negative_reactions_users") {
+            res.status(400).json({
+                message: "invalid reaction list"
+            });
+            return;
+        }
+
+        // check if the user is logged in
+        if (req.session.user === undefined) {
+            res.status(403).json({
+                message: "you must be logged in to react to a squeal"
+            });
+            return;
+        }
+
+        // connecting to the database
+        await mongoClient.connect();
+        const database = mongoClient.db(dbName);
+        const collection = database.collection(squealCollection);
+        // fetching the squeal with the given id
+        const squeal = await collection.findOne({
+            id: squealId
+        });
+
+        // if the squeal is not found, return 404
+        if (squeal === null) {
+            res.status(404).json({
+                message: "squeal not found"
+            });
+            return;
+        }
+
+        // if the squeal is found, update its reaction list
+        // if the user is already in the list, remove it
+        if (squeal[reactions].includes(req.session.user)) {
+            squeal[reactions].splice(squeal[reactions].indexOf(req.session.user), 1);
+            console.log("User removed from the list");
+        } else { // if the user is not in the list, add it
+            squeal[reactions].push(req.session.user);
+            console.log("User added to the list");
+        }
+
+        const result = await collection.updateOne({
+            id: squealId
+        }, {
+            $set: squeal
+        });
+
+        res.status(200).json({
+            message: "reaction updated successfully"
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
     } finally {
         await mongoClient.close();
     }
