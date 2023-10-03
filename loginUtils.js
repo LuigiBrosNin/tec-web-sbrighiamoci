@@ -9,4 +9,4 @@ function isAuthorized(user, level){
     }
 }
 
-module.exports({isAuthorized});
+module.exports = {isAuthorized};
