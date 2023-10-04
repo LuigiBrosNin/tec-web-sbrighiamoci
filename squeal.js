@@ -200,10 +200,29 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
                     message: "author does not exist"
                 });
                 return;
+
+            } // check if the authos has enough credit 
+            else if ((profile_author.credit["g"] < newSqueal.text.length || profile_author.credit["s"] < newSqueal.text.length || profile_author.credit["m"] < newSqueal.text.length) && !isAuthorized(req.session.user, "admin")) {
+                res.status(400).json({
+                    message: "author does not have enough credit\navailable\ng: " + profile_author.credit["g"] + " s: " + profile_author.credit["s"] + " m: " + profile_author.credit["m"] + ")\nrequired\n " + newSqueal.text.length
+                });
+                return;
             }
-            // if the author exists, update the number of squeals and the list of squeals
+            // if the author exists, update the number of squeals, the list of squeals and it's credit
             const squeals_num = profile_author.num_squeals + 1;
             const squeals_list = profile_author.list_squeal_id;
+
+            // if the author is an admin, don't subtract the credit
+            if (isAuthorized(req.session.user, "admin")) {
+                const g = profile_author.credit["g"];
+                const s = profile_author.credit["s"];
+                const m = profile_author.credit["m"];
+            } else {
+                const g = profile_author.credit["g"] - newSqueal.text.length;
+                const s = profile_author.credit["s"] - newSqueal.text.length;
+                const m = profile_author.credit["m"] - newSqueal.text.length;
+            }
+
 
             // update the author's squeals_num and squeals_list
             newSqueal.id = `${profile_author.name}${squeals_num}`;
@@ -217,7 +236,12 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
             }, {
                 $set: {
                     num_squeals: squeals_num,
-                    list_squeal_id: squeals_list
+                    list_squeal_id: squeals_list,
+                    credit: {
+                        "g": g,
+                        "s": s,
+                        "m": m
+                    }
                 }
             })
 
@@ -878,7 +902,7 @@ app.get("/squeals/:id/:reaction_list", async (req, res) => {
 
 // TODO TEST THE FUNCTION
 app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
-    try{
+    try {
         const squealId = req.params.id;
         const reactions = req.params.reaction_list;
 
@@ -940,5 +964,90 @@ app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
         });
     } finally {
         await mongoClient.close();
+    }
+});
+
+/* -------------------------------------------------------------------------- */
+/*                          /SQUEALS/:ID/IMPRESSIONS                          */
+/*                                 GET & POST                                 */
+/* -------------------------------------------------------------------------- */
+
+//* GET UNTESTED
+// ritorna il numero di impressioni dello squeal con id = id ricevuto come parametro
+
+//TODO TEST THE FUNCTION
+app.get("/squeals/:id/impressions", async (req, res) => {
+    try {
+        const squealId = req.params.id;
+
+        // connecting to the database
+        await mongoClient.connect();
+        const database = mongoClient.db(dbName);
+        const collection = database.collection(squealCollection);
+        // fetching the squeal with the given id
+        const squeal = await collection.findOne({
+            id: squealId
+        });
+
+        // if the squeal is not found, return 404
+        if (squeal === null) {
+            res.status(404).json({
+                message: "squeal not found"
+            });
+            return;
+        }
+
+        // if the squeal is found, return its impressions
+        res.status(200).json(squeal.impressions);
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    } finally {
+        await mongoClient.close()
+    }
+});
+
+//* POST
+// aggiunge un' impressione allo squeal con id = id ricevuto come parametro
+
+//TODO TEST THE FUNCTION
+app.post("/squeals/:id/impressions", async (req, res) => {
+    try {
+        const squealId = req.params.id;
+
+        // connecting to the database
+        await mongoClient.connect();
+        const database = mongoClient.db(dbName);
+        const collection = database.collection(squealCollection);
+        // fetching the squeal with the given id
+        const squeal = await collection.findOne({
+            id: squealId
+        });
+
+        // if the squeal is not found, return 404
+        if (squeal === null) {
+            res.status(404).json({
+                message: "squeal not found"
+            });
+            return;
+        }
+
+        // if the squeal is found, update its impressions
+        squeal.impressions += 1;
+
+        // update the squeal's impressions
+        const result = await collection.updateOne({
+            id: squealId
+        }, {
+            $set: squeal.impressions
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    } finally {
+        await mongoClient.close()
     }
 });
