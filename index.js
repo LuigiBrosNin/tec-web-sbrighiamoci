@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const app = express();
 
-const {canLogIn} = require("./loginUtils.js");
+const {isAuthorizedOrHigher, canLogIn} = require("./loginUtils.js");
  
 const BASE_SITE = 'https://site222326.tw.cs.unibo.it'
 //const BASE_SITE = 'http://localhost'
@@ -39,13 +39,20 @@ app.listen(port, function(){
 
 
 
-let username = "admin";
-let password = "qwerty";
+/* SEZIONE MONGODB ALEX */
+
+const { MongoClient } = require("mongodb");
+const mongouri = `mongodb://site222326:ui9aeG5f@mongo_site222326?writeConcern=majority`;
+const mongoClient = new MongoClient(mongouri);
+
+/* FINE SEZIONE MONGODB ALEX */
+
+
 
 //html files indexing
 app.get("/", async (req, res) => {
   console.log(req.session.user);
-  if(req.session.user == username){
+  if(isAuthorizedOrHigher(req.session.user)){
     res.status(200).sendFile(global.rootDir + '/hello.html');
   }
   else {
@@ -59,7 +66,7 @@ app.get("/login", async (req, res) => {
 })
 
 app.post("/login", bodyParser.json(), async (req, res) => {
-  if(req.body.username == username && req.body.password == password){
+  if(canLogIn(req.body.username, req.body.password)){
     req.session.user = username;
     res.send("");
   } else {
@@ -84,13 +91,7 @@ app.use('/images', express.static('/images/', {
     },
 }));
 
-/* SEZIONE MONGODB ALEX */
 
-const { MongoClient } = require("mongodb");
-const mongouri = `mongodb://site222326:ui9aeG5f@mongo_site222326?writeConcern=majority`;
-const mongoClient = new MongoClient(mongouri);
-
-/* FINE SEZIONE MONGODB ALEX */
 
 // ci serve per pubblicare i nostri sorgenti
 // potremmo fare anche a mano
