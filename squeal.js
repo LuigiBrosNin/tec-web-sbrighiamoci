@@ -146,7 +146,7 @@ app.get("/squeals/", async (req, res) => {
             .skip(startIndex) // starting from startIndex
             .limit(endIndex) // returns endIndex squeals
             .toArray(); // returns the squeals as an array
-ì
+            
         res.status(200).json(squeals); // returns the squeals
 
     } catch (error) {
