@@ -46,13 +46,13 @@ async function isAuthorized(user, level) {
 
 async function isAuthorizedOrHigher(user, level) {
     if (level === typeOfProfile.user) {
-        return isAuthorized(user, typeOfProfile.user) || isAuthorized(user, typeOfProfile.premium) || isAuthorized(user, typeOfProfile.smm) || isAuthorized(user, typeOfProfile.admin);
+        return await isAuthorized(user, typeOfProfile.user) || await isAuthorized(user, typeOfProfile.premium) || await isAuthorized(user, typeOfProfile.smm) || await isAuthorized(user, typeOfProfile.admin);
     } else if (level === typeOfProfile.premium) {
-        return isAuthorized(user, typeOfProfile.premium) || isAuthorized(user, typeOfProfile.admin);
+        return await isAuthorized(user, typeOfProfile.premium) || await isAuthorized(user, typeOfProfile.admin);
     } else if (level === typeOfProfile.smm) {
-        return isAuthorized(user, typeOfProfile.smm) || isAuthorized(user, typeOfProfile.admin);
+        return await isAuthorized(user, typeOfProfile.smm) || await isAuthorized(user, typeOfProfile.admin);
     } else { // level === typeOfProfile.admin
-        return isAuthorized(user, level);
+        return await isAuthorized(user, level);
     }
 }
 
