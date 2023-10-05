@@ -12,9 +12,7 @@ const {
     isAuthorized
 } = require("./loginUtils.js");
 const bodyParser = require('body-parser');
-const dbName = "SquealerDB";
-const squealCollection = "Squeals";
-const profileCollection = "Profiles";
+const {dbName, squealCollection, profileCollection} = require("./const.js");
 
 
 /* -------------------------------------------------------------------------- */

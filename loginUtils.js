@@ -1,3 +1,5 @@
+const {dbName, squealCollection, profileCollection} = require("./const.js");
+
 const typeOfProfile = {
     user : "user",
     premium : "premium",
@@ -6,7 +8,7 @@ const typeOfProfile = {
 }
 
 async function isAuthorized(user, level){
-    const userFromDB = await db.Profiles.findOne({ name: user });
+    const userFromDB = await dbName.profileCollection.findOne({ name: user });
     if(userFromDB !== null && userFromDB !== undefined && userFromDB.account_type === level){
         return true;
     }
@@ -32,7 +34,7 @@ async function canLogIn(username, password){
         return false;
     }
 
-    const userFromDB = await db.Profiles.findOne({ name: username });
+    const userFromDB = await dbName.profileCollection.findOne({ name: username });
     if(userFromDB !== null && userFromDB !== undefined && !userFromDB.is_banned){
         return isPasswordCorrect(username, password);
     } else if(userFromDB.is_banned){

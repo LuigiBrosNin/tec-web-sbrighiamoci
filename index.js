@@ -106,6 +106,6 @@ app.use('/source', express.static('/webapp/tec-web-sbrighiamoci/source', {
 }), serveIndex('/webapp/tec-web-sbrighiamoci/source', { 'icons': true }));
  */
 
-module.exports = { app, mongoClient};
+module.exports = {app, mongoClient};
 
 require("./squeal.js");
