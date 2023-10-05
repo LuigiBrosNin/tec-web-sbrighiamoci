@@ -1090,7 +1090,8 @@ app.post("/squeals/:id/impressions", async (req, res) => {
             id: squealId
         }, {
             $set: squeal.impressions,
-            
+            $set: squeal.pos_popolarity_ratio,
+            $set: squeal.neg_popolarity_ratio 
         });
 
     } catch (error) {
