@@ -4,9 +4,11 @@ const {
     parse
 } = require("path");
 const {
-    app,
-    mongoClient
+    app
 } = require("./index.js");
+const {
+    mongoClient
+} = require("./const.js");
 const {
     typeOfProfile,
     isAuthorized

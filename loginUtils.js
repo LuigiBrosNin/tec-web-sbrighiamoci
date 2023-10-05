@@ -1,15 +1,42 @@
-const {dbName, squealCollection, profileCollection} = require("./const.js");
+const { dbName, squealCollection, profileCollection, mongoClient } = require("./const.js");
 
 const typeOfProfile = {
-    user : "user",
-    premium : "premium",
+    user: "user",
+    premium: "premium",
     smm: "smm",
     admin: "admin"
 }
 
-async function isAuthorized(user, level){
-    const userFromDB = await dbName.profileCollection.findOne({ name: user });
-    if(userFromDB !== null && userFromDB !== undefined && userFromDB.account_type === level){
+async function searchProfileInDB(username) {
+    try {
+        await mongoClient.connect();
+        const database = mongoClient.db(dbName);
+        const collection = database.collection(profileCollection);
+        const profile = await collection.findOne({ name: username });
+        return profile;
+    } catch (error) {
+        return null;
+    } finally {
+        await mongoClient.close();
+    }
+}
+
+async function updateProfileInDB(username, updateObject) {
+    try {
+        await mongoClient.connect();
+        const database = mongoClient.db(dbName);
+        const collection = database.collection(profileCollection);
+        await collection.updateOne({ id: username }, { $set: updateObject });
+    } catch (error) {
+        // do nothing
+    } finally {
+        await mongoClient.close();
+    }
+}
+
+async function isAuthorized(user, level) {
+    const userFromDB = await searchProfileInDB(user);
+    if (userFromDB !== null && userFromDB !== undefined && userFromDB.account_type === level) {
         return true;
     }
     else {
@@ -17,30 +44,30 @@ async function isAuthorized(user, level){
     }
 }
 
-async function isAuthorizedOrHigher(user, level){
-    if(level === typeOfProfile.user){
+async function isAuthorizedOrHigher(user, level) {
+    if (level === typeOfProfile.user) {
         return isAuthorized(user, typeOfProfile.user) || isAuthorized(user, typeOfProfile.premium) || isAuthorized(user, typeOfProfile.smm) || isAuthorized(user, typeOfProfile.admin);
-    } else if(level === typeOfProfile.premium){
+    } else if (level === typeOfProfile.premium) {
         return isAuthorized(user, typeOfProfile.premium) || isAuthorized(user, typeOfProfile.admin);
-    } else if(level === typeOfProfile.smm){
+    } else if (level === typeOfProfile.smm) {
         return isAuthorized(user, typeOfProfile.smm) || isAuthorized(user, typeOfProfile.admin);
     } else { // level === typeOfProfile.admin
-        return isAuthorized(user, level); 
+        return isAuthorized(user, level);
     }
 }
 
-async function canLogIn(username, password){
-    if(username === null || username === undefined){
+async function canLogIn(username, password) {
+    if (username === null || username === undefined) {
         return false;
     }
 
-    const userFromDB = await dbName.profileCollection.findOne({ name: username });
-    if(userFromDB !== null && userFromDB !== undefined && !userFromDB.is_banned){
+    const userFromDB = await searchProfileInDB(username);
+    if (userFromDB !== null && userFromDB !== undefined && !userFromDB.is_banned) {
         return isPasswordCorrect(username, password);
-    } else if(userFromDB.is_banned){
+    } else if (userFromDB.is_banned) {
         let now = new Date();
-        if(userFromDB.banned_until <= now.getTime()){
-            await collection.updateOne({id: username}, {$set: {is_banned: false, banned_until: -1}});
+        if (userFromDB.banned_until <= now.getTime()) {
+            await updateProfileInDB(username, { is_banned: false, banned_until: -1 });
             return isPasswordCorrect(username, password);
         } else {
             return false;
@@ -50,8 +77,8 @@ async function canLogIn(username, password){
     }
 }
 
-async function isPasswordCorrect(user, password){
+async function isPasswordCorrect(user, password) {
     return password === user.password;
 }
 
-module.exports = {typeOfProfile, isAuthorized, isAuthorizedOrHigher, canLogIn};
+module.exports = { typeOfProfile, isAuthorized, isAuthorizedOrHigher, canLogIn };

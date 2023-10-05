@@ -39,14 +39,6 @@ app.listen(port, function(){
 
 
 
-/* SEZIONE MONGODB ALEX */
-
-const { MongoClient } = require("mongodb");
-const mongouri = `mongodb://site222326:ui9aeG5f@mongo_site222326?writeConcern=majority`;
-const mongoClient = new MongoClient(mongouri);
-
-/* FINE SEZIONE MONGODB ALEX */
-
 
 
 //html files indexing
@@ -106,6 +98,6 @@ app.use('/source', express.static('/webapp/tec-web-sbrighiamoci/source', {
 }), serveIndex('/webapp/tec-web-sbrighiamoci/source', { 'icons': true }));
  */
 
-module.exports = {app, mongoClient};
+module.exports = {app};
 
 require("./squeal.js");
