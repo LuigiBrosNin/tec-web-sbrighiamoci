@@ -14,7 +14,7 @@ const {
     isAuthorized
 } = require("./loginUtils.js");
 const bodyParser = require('body-parser');
-const {dbName, squealCollection, profileCollection} = require("./const.js");
+const {dbName, squealCollection, profileCollection, CM} = require("./const.js");
 
 
 /* -------------------------------------------------------------------------- */
@@ -25,8 +25,7 @@ const {dbName, squealCollection, profileCollection} = require("./const.js");
 //* GET
 // ritorna una lista di squeal del database, da startindex ad endindex
 
-// Author, pos_popolarity_ratio , neg_popolarity_ratio, abs_popularity_ratio , 
-// controversals, end_date, start_date, positive_reactions, negative_reactions, impressions
+// Author, popularity , end_date, start_date, positive_reactions, negative_reactions, impressions
 // receiver (group), Keyword, Mention, is_private
 app.get("/squeals/", async (req, res) => {
     try {
@@ -66,20 +65,30 @@ app.get("/squeals/", async (req, res) => {
             return;
         }
 
+        // check if the user is authorized to access private messages
+        if (await !isAuthorized(req.session.user, typeOfProfile.admin)) {
+            if (search.is_private === "true" || search.is_private === true) {
+                res.status(403).json({
+                    message: "only admins can access private messages"
+                });
+                return;
+            }
+        }
+
         // possible query params
         const possibleParams = [
             "author",
             "receiver",
-            "pos_popolarity_ratio",
-            "neg_popolarity_ratio",
-            "abs_popularity_ratio",
-            "controversals",
-            "positive_reactions",
-            "negative_reactions",
-            "impressions",
             "keywords",
             "mentions",
             "is_private"
+        ];
+
+
+        const possibleGTEParams = [
+            "positive_reactions",
+            "negative_reactions",
+            "impressions"
         ];
 
         // initializing the search object with the date range
@@ -90,19 +99,40 @@ app.get("/squeals/", async (req, res) => {
             }
         };
 
+        const possiblePopularities = ["isControversal", "isPopular", "isUnpopular"];
+        const filedsOfPopularities = ["pos_popularity_ratio", "neg_popularity_ratio"]
+
+        // check if the popularity query param is present in the request body
+        // if it is, add threshold to the search object, add both if isControversal is requested
+        for(i=0 ; i<possiblePopularities.length ; i++){
+            if(req.query.popularity == possiblePopularities[i] && i != 2){
+                search[filedsOfPopularities[i]] = {
+                    $gte: CM
+                }
+            } else if (req.query.popularity == possiblePopularities[i] && i == 2){
+                search[filedsOfPopularities[0]] = {
+                    $gte: CM
+                }
+                search[filedsOfPopularities[1]] = {
+                    $gte: CM
+                }
+            }
+        }
+
+        // check if any of the possible query params are present in the request body
+        // that have to be assigned a $gte operator
+        for (const field of possibleGTEParams) {
+            if (req.query[field] !== undefined && req.query[field] !== NaN) {
+                search[field] = {
+                    $gte: req.query[field] 
+                }
+            }
+        }
+
         // check if any of the possible query params are present in the request body
         for (const field of possibleParams) {
             if (req.query[field] !== undefined) {
                 search[field] = req.query[field];
-            }
-        }
-
-        if (await !isAuthorized(req.session.user, typeOfProfile.admin)) {
-            if (search.is_private === "true") {
-                res.status(403).json({
-                    message: "only admins can access private messages"
-                });
-                return;
             }
         }
 
@@ -848,7 +878,7 @@ app.get("/squeals/:id/replies/", async (req, res) => {
 /*                                 GET & POST                                 */
 /* -------------------------------------------------------------------------- */
 
-//* GET
+//* GET UNTESTED
 // ritorna la lista di utenti che hanno reagito allo squeal con id = id ricevuto come parametro
 
 // TODO TEST THE FUNCTION
@@ -897,7 +927,7 @@ app.get("/squeals/:id/:reaction_list", async (req, res) => {
     }
 });
 
-//* POST
+//* POST UNTESTED
 // aggiunge un utente alla lista di reazioni positive/negative dello squeal con id = id ricevuto come parametro
 // se l'utente è già presente nella lista, lo rimuove
 
@@ -913,6 +943,16 @@ app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
                 message: "invalid reaction list"
             });
             return;
+        }
+
+        // assign the correct variables for updating the correct lists
+        if(reactions == "positive_reactions_users"){
+            const reaction_num = "positive_reactions";
+            const reaction_ratio = "pos_popolarity_ratio";
+        }
+        if(reactions == "negative_reactions_users"){
+            const reaction_num = "negative_reactions";
+            const reaction_ratio = "neg_popolarity_ratio";
         }
 
         // check if the user is logged in
@@ -944,10 +984,15 @@ app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
         // if the user is already in the list, remove it
         if (squeal[reactions].includes(req.session.user)) {
             squeal[reactions].splice(squeal[reactions].indexOf(req.session.user), 1);
+            squeal[reaction_num] -= 1;
+            squeal[reaction_ratio] = squeal[reaction_num] / squeal.impressions;
             console.log("User removed from the list");
         } else { // if the user is not in the list, add it
             squeal[reactions].push(req.session.user);
+            squeal[reaction_num] += 1;
+            squeal[reaction_ratio] = squeal[reaction_num] / squeal.impressions;
             console.log("User added to the list");
+            
         }
 
         const result = await collection.updateOne({
@@ -1009,7 +1054,7 @@ app.get("/squeals/:id/impressions", async (req, res) => {
     }
 });
 
-//* POST
+//* POST UNTESTED
 // aggiunge un' impressione allo squeal con id = id ricevuto come parametro
 
 //TODO TEST THE FUNCTION
@@ -1037,11 +1082,15 @@ app.post("/squeals/:id/impressions", async (req, res) => {
         // if the squeal is found, update its impressions
         squeal.impressions += 1;
 
+        squeal.pos_popolarity_ratio = squeal.positive_reactions / squeal.impressions;
+        squeal.neg_popolarity_ratio = squeal.negative_reactions / squeal.impressions;
+
         // update the squeal's impressions
         const result = await collection.updateOne({
             id: squealId
         }, {
-            $set: squeal.impressions
+            $set: squeal.impressions,
+            
         });
 
     } catch (error) {

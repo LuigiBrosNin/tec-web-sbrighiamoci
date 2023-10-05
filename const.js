@@ -9,4 +9,6 @@ const dbName = "SquealerDB";
 const squealCollection = "Squeals";
 const profileCollection = "Profiles";
 
-module.exports = {dbName, squealCollection, profileCollection, mongoClient};
+const CM = 0.25;
+
+module.exports = {dbName, squealCollection, profileCollection, mongoClient, CM};
