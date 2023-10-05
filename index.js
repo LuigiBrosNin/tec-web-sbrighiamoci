@@ -60,7 +60,7 @@ app.get("/login", async (req, res) => {
 app.post("/login", bodyParser.json(), async (req, res) => {
   if(await canLogIn(req.body.username, req.body.password)){
     req.session.user = req.body.username;
-    res.send("");
+    res.redirect("/");
   } else {
     res.send("wrong username or password");
     console.log("wrong username or password");

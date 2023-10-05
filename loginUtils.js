@@ -1,7 +1,7 @@
 const { dbName, squealCollection, profileCollection, mongoClient } = require("./const.js");
 
 const typeOfProfile = {
-    user: "user",
+    user: "normal",
     premium: "premium",
     smm: "smm",
     admin: "admin"
@@ -36,7 +36,6 @@ async function updateProfileInDB(username, updateObject) {
 
 async function isAuthorized(user, level) {
     const userFromDB = await searchProfileInDB(user);
-    console.log(userFromDB);
     if (userFromDB !== null && userFromDB !== undefined && userFromDB.account_type === level) {
         return true;
     }
