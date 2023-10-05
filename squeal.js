@@ -221,7 +221,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
             await mongoClient.connect();
             const database = mongoClient.db(dbName);
             const collection = database.collection(squealCollection);
-            const collection_for_profiles = database.connection(profileCollection);
+            const collection_for_profiles = database.collection(profileCollection);
 
             const profile_author = await collection.find(search.author);
 
