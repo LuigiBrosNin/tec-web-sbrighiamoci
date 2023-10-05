@@ -44,7 +44,7 @@ app.listen(port, function(){
 //html files indexing
 app.get("/", async (req, res) => {
   console.log(req.session.user);
-  if(isAuthorizedOrHigher(req.session.user, typeOfProfile.user)){
+  if(await isAuthorizedOrHigher(req.session.user, typeOfProfile.user)){
     res.status(200).sendFile(global.rootDir + '/hello.html');
   }
   else {
@@ -58,7 +58,7 @@ app.get("/login", async (req, res) => {
 })
 
 app.post("/login", bodyParser.json(), async (req, res) => {
-  if(canLogIn(req.body.username, req.body.password)){
+  if(await canLogIn(req.body.username, req.body.password)){
     req.session.user = req.body.username;
     res.send("");
   } else {
