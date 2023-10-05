@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const app = express();
 
-const {isAuthorizedOrHigher, canLogIn} = require("./loginUtils.js");
+const {isAuthorizedOrHigher, canLogIn, typeOfProfile} = require("./loginUtils.js");
  
 const BASE_SITE = 'https://site222326.tw.cs.unibo.it'
 //const BASE_SITE = 'http://localhost'
@@ -44,7 +44,7 @@ app.listen(port, function(){
 //html files indexing
 app.get("/", async (req, res) => {
   console.log(req.session.user);
-  if(isAuthorizedOrHigher(req.session.user)){
+  if(isAuthorizedOrHigher(req.session.user, typeOfProfile.user)){
     res.status(200).sendFile(global.rootDir + '/hello.html');
   }
   else {
@@ -59,7 +59,7 @@ app.get("/login", async (req, res) => {
 
 app.post("/login", bodyParser.json(), async (req, res) => {
   if(canLogIn(req.body.username, req.body.password)){
-    req.session.user = username;
+    req.session.user = req.body.username;
     res.send("");
   } else {
     res.send("wrong username or password");
