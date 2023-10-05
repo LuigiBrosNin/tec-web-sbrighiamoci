@@ -3,8 +3,9 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const session = require('express-session');
-//const serveIndex = require('serve-index')
 const app = express();
+
+const {canLogIn} = require("./loginUtils.js");
  
 const BASE_SITE = 'https://site222326.tw.cs.unibo.it'
 //const BASE_SITE = 'http://localhost'

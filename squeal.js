@@ -8,6 +8,7 @@ const {
     mongoClient
 } = require("./index.js");
 const {
+    typeOfProfile,
     isAuthorized
 } = require("./loginUtils.js");
 const bodyParser = require('body-parser');
@@ -96,7 +97,7 @@ app.get("/squeals/", async (req, res) => {
             }
         }
 
-        if (!isAuthorized(req.session.user, "admin")) {
+        if (await !isAuthorized(req.session.user, typeOfProfile.admin)) {
             if (search.is_private === "true") {
                 res.status(403).json({
                     message: "only admins can access private messages"
@@ -155,7 +156,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
         }
         // If all required fields are present, continue with the insertion
 
-        if ((isAuthorized(req.session.user, "user") && req.session.user === requiredFields.author) || (isAuthorized(req.session.user, "admin"))) {
+        if ((await isAuthorized(req.session.user, typeOfProfile.user) && req.session.user === requiredFields.author) || (await isAuthorized(req.session.user, typeOfProfile.admin))) {
             // defining the required fields as well as initializing the standard fields
             let newSqueal = {
                 id: "",
@@ -202,7 +203,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
                 return;
 
             } // check if the authos has enough credit 
-            else if ((profile_author.credit["g"] < newSqueal.text.length || profile_author.credit["s"] < newSqueal.text.length || profile_author.credit["m"] < newSqueal.text.length) && !isAuthorized(req.session.user, "admin")) {
+            else if ((profile_author.credit["g"] < newSqueal.text.length || profile_author.credit["s"] < newSqueal.text.length || profile_author.credit["m"] < newSqueal.text.length) && await !isAuthorized(req.session.user, typeOfProfile.admin)) {
                 res.status(400).json({
                     message: "author does not have enough credit\navailable\ng: " + profile_author.credit["g"] + " s: " + profile_author.credit["s"] + " m: " + profile_author.credit["m"] + ")\nrequired\n " + newSqueal.text.length
                 });
@@ -213,7 +214,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
             const squeals_list = profile_author.list_squeal_id;
 
             // if the author is an admin, don't subtract the credit
-            if (isAuthorized(req.session.user, "admin")) {
+            if (await isAuthorized(req.session.user, typeOfProfile.admin)) {
                 const g = profile_author.credit["g"];
                 const s = profile_author.credit["s"];
                 const m = profile_author.credit["m"];
@@ -384,7 +385,7 @@ app.put("/squeals/:id", bodyParser.json(), async (req, res) => {
         }
         // If all required fields are present, continue with the insertion
 
-        if (isAuthorized(req.session.user, "admin")) {
+        if (await isAuthorized(req.session.user, typeOfProfile.admin)) {
             // defining the required fields as well as initializing the standard fields
             let newSqueal = {
                 id: squealId,
@@ -494,7 +495,7 @@ app.delete("/squeals/:id", async (req, res) => {
         }
 
         // if the squeal is found, reset the fields and move it to the "DeletedSqueals" account
-        if ((isAuthorized(req.session.user, "user") && req.session.user === squeal.author) || (isAuthorized(req.session.user, "admin"))) {
+        if ((await isAuthorized(req.session.user, typeOfProfile.user) && req.session.user === squeal.author) || (await isAuthorized(req.session.user, typeOfProfile.admin))) {
 
 
             // retrieve the "DeletedSqueals" account
@@ -613,7 +614,7 @@ app.delete("/squeals/:id", async (req, res) => {
 // TODO TEST THE FUNCTION
 app.post("/squeals/:id", bodyParser.json(), async (req, res) => {
     try {
-        if (isAuthorized(req.session.user, "admin")) {
+        if (await isAuthorized(req.session.user, typeOfProfile.admin)) {
             const squealId = req.params.id;
 
             // possible body params
