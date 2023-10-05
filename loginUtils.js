@@ -64,12 +64,12 @@ async function canLogIn(username, password) {
 
     const userFromDB = await searchProfileInDB(username);
     if (userFromDB !== null && userFromDB !== undefined && !userFromDB.is_banned) {
-        return isPasswordCorrect(username, password);
+        return isPasswordCorrect(userFromDB, password);
     } else if (userFromDB.is_banned) {
         let now = new Date();
         if (userFromDB.banned_until <= now.getTime()) {
             await updateProfileInDB(username, { is_banned: false, banned_until: -1 });
-            return isPasswordCorrect(username, password);
+            return isPasswordCorrect(userFromDB, password);
         } else {
             return false;
         }
@@ -78,7 +78,7 @@ async function canLogIn(username, password) {
     }
 }
 
-async function isPasswordCorrect(user, password) {
+async function isPasswordCorrect(user, password) { // user is NOT the username, but the object returned from the database quesry
     return password === user.password;
 }
 
