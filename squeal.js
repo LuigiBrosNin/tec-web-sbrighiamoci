@@ -19,14 +19,12 @@ const {
     CM
 } = require("./const.js");
 
-async function connect() {
-    // connecting to the database and fetching the squeals
-    await mongoClient.connect();
-    return mongoClient;
-}
-connect();
+mongoClient.connect();
 const database = mongoClient.db(dbName);
 const collection = database.collection(squealCollection);
+
+//TODO TOGLI I FINALLY
+//TODO TOGLI LE APERTURE DI CONNESSIONE DA TUTTI I METODI
 
 /* -------------------------------------------------------------------------- */
 /*                                 /SQUEALS/                                  */
@@ -46,7 +44,7 @@ app.get("/squeals/", async (req, res) => {
         let startIndex = 0;
         let endIndex = 10;
         // check if the parameters are valid
-        if (req.query.startIndex !== undefined && req.query.startIndex !== NaN) {
+        if (req.query.startindex !== undefined && req.query.startindex !== NaN) {
             startIndex = parseInt(req.query.startindex);
         }
         if (req.query.endindex !== undefined && req.query.endindex !== NaN) {
@@ -167,9 +165,7 @@ app.get("/squeals/", async (req, res) => {
             message: error.message
         });
     } finally {
-        if (mongoClient) {
-            //await mongoClient.close();
-        }
+        await mongoClient.close();
     }
 })
 
