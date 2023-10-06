@@ -148,7 +148,7 @@ app.get("/squeals/", async (req, res) => {
         }});
         
         let result = [];
-
+        console.log("type? " + typeof squeals);
         console.log("closed? " + squeals.isClosed());
         console.log("exhausted? " + squeals.isExhausted());
         console.log("next? " + squeals.hasNext());
