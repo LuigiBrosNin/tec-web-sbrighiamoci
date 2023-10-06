@@ -27,7 +27,7 @@ const {dbName, squealCollection, profileCollection, mongoClient, CM} = require("
 
 //TODO TEST THE FUNCTION
 app.get("/squeals/", async (req, res) => {
-    try {
+/*    try {*/
         // initializing the start and end index in case they are not specified
         let startIndex = 0;
         let endIndex = 10;
@@ -167,14 +167,14 @@ app.get("/squeals/", async (req, res) => {
 */
             
         res.status(200).json(result); // returns the squeals
-
+/*
     } catch (error) {
         res.status(500).json({
             message: error.message
         });
     } finally {
         await mongoClient.close();
-    }
+    }*/
 })
 
 //* PUT UNTESTED
