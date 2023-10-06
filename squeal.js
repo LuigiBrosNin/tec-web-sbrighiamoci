@@ -170,7 +170,7 @@ app.get("/squeals/", async (req, res) => {
             message: error.message
         });
     } finally {
-        await mongoClient.close();
+      //  await mongoClient.close();
     }
 })
 
