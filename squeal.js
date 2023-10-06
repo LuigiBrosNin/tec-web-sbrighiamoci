@@ -65,8 +65,8 @@ app.get("/squeals/", async (req, res) => {
         }
 
         // check if the user is authorized to access private messages
-        if (!(await isAuthorized(req.session.user, typeOfProfile.admin))) {
-            if (search.is_private === "true" || search.is_private === true) {
+        if (await !isAuthorized(req.session.user, typeOfProfile.admin)) {
+            if (req.query.is_private === "true" || req.query.is_private === true) {
                 res.status(403).json({
                     message: "only admins can access private messages"
                 });
