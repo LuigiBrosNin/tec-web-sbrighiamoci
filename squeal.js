@@ -144,10 +144,7 @@ app.get("/squeals/", async (req, res) => {
         const database = mongoClient.db(dbName);
         const collection = database.collection(squealCollection);
 
-        const squeals = await collection.find({date: {
-            $gte: start_date,
-            $lte: end_date
-        }}).toArray();
+        const squeals = await collection.find({id: "EmanueleDiSante1"}).toArray();
         
         /*
         const squeals = await collection.find(search)
