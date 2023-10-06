@@ -144,9 +144,6 @@ app.get("/squeals/", async (req, res) => {
         const database = mongoClient.db(dbName);
         const collection = database.collection(squealCollection);
 
-        const squeals = await collection.find({id: "EmanueleDiSante1"});
-        
-        /*
         const squeals = await collection.find(search)
             .sort({
                 timestamp: -1
@@ -154,7 +151,6 @@ app.get("/squeals/", async (req, res) => {
             .skip(startIndex) // starting from startIndex
             .limit(endIndex) // returns endIndex squeals
             .toArray(); // returns the squeals as an array
-*/
             
         res.status(200).json(squeals); // returns the squeals
 
