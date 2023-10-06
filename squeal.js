@@ -146,9 +146,14 @@ app.get("/squeals/", async (req, res) => {
             $gte: start_date,
             $lte: end_date
         }});
+        
+        console.log("Squeals: ", squeals);
 
         const arrayOfSqueals = await squeals.toArray();
-/*
+
+        console.log("array: ", arrayOfSqueals);
+
+        /*
         const squeals = await collection.find(search)
             .sort({
                 timestamp: -1
