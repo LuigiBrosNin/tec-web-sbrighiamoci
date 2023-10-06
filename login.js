@@ -19,28 +19,26 @@ function sub(){
 //Squeals PUT request
 function addSquealTest() {
   const body = {
-    id: "test",
-    cacca: "dsjdasjdsad",
-    author: "Gigi",
-    text: "I'm.",
-    receiver: "Lana",
-    date: 745675,
-    positive_reactions: 2,
-    positive_reactions_users: [
-      "Luiso",
-      "Matilde"
-    ],
-    negative_reactions: 1,
-    negative_reactions_users: [
-      "Alex",
-    ],
-    media: "URI...",
-    reply_to: ["squeal1"],
+    id: "EmanueleDiSante1",
+    author: "EmanueleDiSante",
+    text: "Test squeal 1",
+    receiver: "MainChannel",
+    date: 82653375,
+    positive_reactions: 0,
+    positive_reactions_list: [],
+    negative_reactions: 0,
+    negative_reactions_list: [],
+    media: "",
+    reply_to: [],
     replies_num: 0,
-    replies: ["id1", "id2"],
-    keywords: ["sea", "mountain"],
-    mentions: ["user1"],
-    impressions: 34
+    replies_list: [],
+    keywords: ["papere"],
+    mentions: [],
+    impressions: 1,
+    pos_popularity_ratio: 0,
+    neg_popularity_ratio: 0,
+    abs_popularity: 0,
+    is_private: false
   };
 
   console.log("Sending body: " + JSON.stringify(body));

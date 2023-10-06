@@ -24,6 +24,8 @@ const {dbName, squealCollection, profileCollection, mongoClient, CM} = require("
 
 // Author, popularity , end_date, start_date, positive_reactions, negative_reactions, impressions
 // receiver (group), Keyword, Mention, is_private
+
+//TODO TEST THE FUNCTION
 app.get("/squeals/", async (req, res) => {
     try {
         // initializing the start and end index in case they are not specified
