@@ -11,13 +11,7 @@ const {
     isAuthorized
 } = require("./loginUtils.js");
 const bodyParser = require('body-parser');
-const {
-    dbName,
-    squealCollection,
-    profileCollection,
-    mongoClient,
-    CM
-} = require("./const.js");
+const {dbName, squealCollection, profileCollection, mongoClient, CM} = require("./const.js");
 
 
 /* -------------------------------------------------------------------------- */
@@ -33,160 +27,158 @@ const {
 
 //TODO TEST THE FUNCTION
 app.get("/squeals/", async (req, res) => {
-    async function query() {
-        try {
-            // initializing the start and end index in case they are not specified
-            let startIndex = 0;
-            let endIndex = 10;
-            // check if the parameters are valid
-            if (req.query.startIndex !== undefined && req.query.startIndex !== NaN) {
-                startIndex = parseInt(req.query.startindex);
-            }
-            if (req.query.endindex !== undefined && req.query.endindex !== NaN) {
-                endIndex = parseInt(req.query.endindex);
-            }
-            // check if the parameters are valid
-            if (startIndex > endIndex) {
-                res.status(400).json({
-                    message: "startIndex must be less than endIndex"
-                });
-                return;
-            }
-
-            // initializing the start and end date in case they are not specified
-            let start_date = 0;
-            let end_date = Date.now();
-            // check if the parameters are valid
-            if (req.query.start_date !== undefined && req.query.start_date !== NaN) {
-                start_date = parseInt(req.query.start_date);
-            }
-            if (req.query.end_date !== undefined && req.query.start_date !== NaN) {
-                end_date = parseInt(req.query.end_date);
-            }
-            // check if the parameters are valid
-            if (start_date > end_date) {
-                res.status(400).json({
-                    message: "start_date must be less than end_date"
-                });
-                return;
-            }
-
-            // check if the user is authorized to access private messages
-            if (await !isAuthorized(req.session.user, typeOfProfile.admin)) {
-                if (req.query.is_private === "true" || req.query.is_private === true) {
-                    res.status(403).json({
-                        message: "only admins can access private messages"
-                    });
-                    return;
-                }
-            }
-
-            // possible query params
-            const possibleParams = [
-                "author",
-                "receiver",
-                "keywords",
-                "mentions",
-                "is_private"
-            ];
-
-
-            const possibleGTEParams = [
-                "positive_reactions",
-                "negative_reactions",
-                "impressions"
-            ];
-
-            // initializing the search object with the date range
-            let search = {
-                date: {
-                    $gte: start_date,
-                    $lte: end_date
-                }
-            };
-
-            const possiblePopularities = ["isControversal", "isPopular", "isUnpopular"];
-            const filedsOfPopularities = ["pos_popularity_ratio", "neg_popularity_ratio"]
-
-            // check if the popularity query param is present in the request body
-            // if it is, add threshold to the search object, add both if isControversal is requested
-            for (i = 0; i < possiblePopularities.length; i++) {
-                if (req.query.popularity == possiblePopularities[i] && i != 2) {
-                    search[filedsOfPopularities[i]] = {
-                        $gte: CM
-                    }
-                } else if (req.query.popularity == possiblePopularities[i] && i == 2) {
-                    search[filedsOfPopularities[0]] = {
-                        $gte: CM
-                    }
-                    search[filedsOfPopularities[1]] = {
-                        $gte: CM
-                    }
-                }
-            }
-
-            // check if any of the possible query params are present in the request body
-            // that have to be assigned a $gte operator
-            for (const field of possibleGTEParams) {
-                if (req.query[field] !== undefined && req.query[field] !== NaN) {
-                    search[field] = {
-                        $gte: req.query[field]
-                    }
-                }
-            }
-
-            // check if any of the possible query params are present in the request body
-            for (const field of possibleParams) {
-                if (req.query[field] !== undefined) {
-                    search[field] = req.query[field];
-                }
-            }
-
-            console.log('Search:', JSON.stringify(search));
-
-            // connecting to the database and fetching the squeals
-            await mongoClient.connect();
-            const database = mongoClient.db(dbName);
-            const collection = database.collection(squealCollection);
-
-            const squeals = await collection.find({
-                date: {
-                    $gte: start_date,
-                    $lte: end_date
-                }
-            });
-
-            let result = [];
-
-            for await (const item of squeals) {
-                console.log(item);
-                result.push(item);
-            }
-
-            //console.log("Squeals: ", squeals);
-            console.log("Result: ", result);
-            /*
-            const squeals = await collection.find(search)
-                .sort({
-                    timestamp: -1
-                }) // ordered inverse chronological order
-                .skip(startIndex) // starting from startIndex
-                .limit(endIndex) // returns endIndex squeals
-                .toArray(); // returns the squeals as an array
-    */
-            return result;
-
-        } catch (error) {
-            res.status(500).json({
-                message: error.message
-            });
-        } finally {
-            await mongoClient.close();
+    try {
+        // initializing the start and end index in case they are not specified
+        let startIndex = 0;
+        let endIndex = 10;
+        // check if the parameters are valid
+        if (req.query.startIndex !== undefined && req.query.startIndex !== NaN) {
+            startIndex = parseInt(req.query.startindex);
         }
-    }
-    const result = await query();
+        if (req.query.endindex !== undefined && req.query.endindex !== NaN) {
+            endIndex = parseInt(req.query.endindex);
+        }
+        // check if the parameters are valid
+        if (startIndex > endIndex) {
+            res.status(400).json({
+                message: "startIndex must be less than endIndex"
+            });
+            return;
+        }
 
-    res.status(200).json(result); // returns the squeals
+        // initializing the start and end date in case they are not specified
+        let start_date = 0;
+        let end_date = Date.now();
+        // check if the parameters are valid
+        if (req.query.start_date !== undefined && req.query.start_date !== NaN) {
+            start_date = parseInt(req.query.start_date);
+        }
+        if (req.query.end_date !== undefined && req.query.start_date !== NaN) {
+            end_date = parseInt(req.query.end_date);
+        }
+        // check if the parameters are valid
+        if (start_date > end_date) {
+            res.status(400).json({
+                message: "start_date must be less than end_date"
+            });
+            return;
+        }
+
+        // check if the user is authorized to access private messages
+        if (await !isAuthorized(req.session.user, typeOfProfile.admin)) {
+            if (req.query.is_private === "true" || req.query.is_private === true) {
+                res.status(403).json({
+                    message: "only admins can access private messages"
+                });
+                return;
+            }
+        }
+
+        // possible query params
+        const possibleParams = [
+            "author",
+            "receiver",
+            "keywords",
+            "mentions",
+            "is_private"
+        ];
+
+
+        const possibleGTEParams = [
+            "positive_reactions",
+            "negative_reactions",
+            "impressions"
+        ];
+
+        // initializing the search object with the date range
+        let search = {
+            date: {
+                $gte: start_date,
+                $lte: end_date
+            }
+        };
+
+        const possiblePopularities = ["isControversal", "isPopular", "isUnpopular"];
+        const filedsOfPopularities = ["pos_popularity_ratio", "neg_popularity_ratio"]
+
+        // check if the popularity query param is present in the request body
+        // if it is, add threshold to the search object, add both if isControversal is requested
+        for(i=0 ; i<possiblePopularities.length ; i++){
+            if(req.query.popularity == possiblePopularities[i] && i != 2){
+                search[filedsOfPopularities[i]] = {
+                    $gte: CM
+                }
+            } else if (req.query.popularity == possiblePopularities[i] && i == 2){
+                search[filedsOfPopularities[0]] = {
+                    $gte: CM
+                }
+                search[filedsOfPopularities[1]] = {
+                    $gte: CM
+                }
+            }
+        }
+
+        // check if any of the possible query params are present in the request body
+        // that have to be assigned a $gte operator
+        for (const field of possibleGTEParams) {
+            if (req.query[field] !== undefined && req.query[field] !== NaN) {
+                search[field] = {
+                    $gte: req.query[field] 
+                }
+            }
+        }
+
+        // check if any of the possible query params are present in the request body
+        for (const field of possibleParams) {
+            if (req.query[field] !== undefined) {
+                search[field] = req.query[field];
+            }
+        }
+
+        console.log('Search:', JSON.stringify(search));
+
+        // connecting to the database and fetching the squeals
+        await mongoClient.connect();
+        const database = mongoClient.db(dbName);
+        const collection = database.collection(squealCollection);
+
+        const squeals = await collection.find({date: {
+            $gte: start_date,
+            $lte: end_date
+        }});
+        
+        let result = [];
+
+        console.log("closed? " + squeals.isClosed());
+        console.log("exhausted? " + squeals.isExhausted());
+        console.log("next? " + squeals.hasNext());
+
+        for await (const item of squeals) {
+            console.log(item);
+            result.push(item);
+        }
+
+        //console.log("Squeals: ", squeals);
+        console.log("Result: ", result);
+        /*
+        const squeals = await collection.find(search)
+            .sort({
+                timestamp: -1
+            }) // ordered inverse chronological order
+            .skip(startIndex) // starting from startIndex
+            .limit(endIndex) // returns endIndex squeals
+            .toArray(); // returns the squeals as an array
+*/
+            
+        res.status(200).json(result); // returns the squeals
+
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    } finally {
+        await mongoClient.close();
+    }
 })
 
 //* PUT UNTESTED
@@ -214,7 +206,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
         }
         // If all required fields are present, continue with the insertion
 
-        if ( /*(await isAuthorized(req.session.user, typeOfProfile.user) && req.session.user === requiredFields.author) || (await isAuthorized(req.session.user, typeOfProfile.admin))*/ true) {
+        if (/*(await isAuthorized(req.session.user, typeOfProfile.user) && req.session.user === requiredFields.author) || (await isAuthorized(req.session.user, typeOfProfile.admin))*/ true) {
             // defining the required fields as well as initializing the standard fields
             let newSqueal = {
                 id: "",
@@ -509,14 +501,25 @@ app.put("/squeals/:id", bodyParser.json(), async (req, res) => {
 // * DELETE UNFINISHED
 // elimina lo squeal con id = id ricevuto come parametro
 
+// TODO cancella dal db se non ci sono reply
+// TODO cancella tutti i contenuti, rimpiazza id con deletedXXXXXX e cambia il campo reply_to dei figli in replies
+// TODO controllare se l'utente è loggato e se è l'autore dello squeal oppure un admin
 
 /*
-//TODO cancella dal db se non ci sono reply
-//TODO cancella tutti i contenuti, rimpiazza id con deletedXXXXXX e cambia il campo reply_to dei figli in replies
-TODO controllare se l'utente è loggato e se è l'autore dello squeal oppure un admin
-TODO creare nel database il profilo DeletedSqueals con il campo speciale "deleted_squeals_num"
-// TODO se si cancella uno squeal figlio, bisogna andare nel padre e nelle replies cambiare l'id
-// TODO se non ci sono dipendenze nel reply_to e replies si cancella interamente dal database propone Luiso
+individuare lo squeal nel database tramite id
+cancellarne i campi: media, keywords, mentions, text
+cambiare il campo author in "deleted"
+accedere al profilo "deleted" e salvarsi la variabile XXX = "num_deleted_squeals"
+cambiare il campo id dello squeal cancellato in "deletedXXX"
+XXX + 1
+scorrere tutti i figli e cambiarne il campo reply_to con il valore "deletedXXX"
+
+! cosa fare con gli squeal mandati in privato?
+TODO creare il profilo DeletedSqueals con il campo speciale "num_deleted_squeals"
+
+TODO se si cancella uno squeal figlio, bisogna andare nel padre e nelle replies cambiare l'id
+
+TODO se non ci sono dipendenze nel reply_to e replies si cancella interamente dal database propone Luiso
 */
 
 app.delete("/squeals/:id", async (req, res) => {
@@ -527,7 +530,11 @@ app.delete("/squeals/:id", async (req, res) => {
         await mongoClient.connect();
         const database = mongoClient.db(dbName);
         const collection = database.collection(squealCollection);
-        const squeal = await collection.findOne({ id: squealId }); // fetching the squeal with the given id
+
+        // fetching the squeal with the given id
+        const squeal = await collection.findOne({
+            id: squealId
+        });
 
         // if the squeal is not found, return 404
         if (squeal === null) {
@@ -537,28 +544,21 @@ app.delete("/squeals/:id", async (req, res) => {
             return;
         }
 
-        // the squeal is found, reset the fields and move it to the "DeletedSqueals" account
+        // if the squeal is found, reset the fields and move it to the "DeletedSqueals" account
         if ((await isAuthorized(req.session.user, typeOfProfile.user) && req.session.user === squeal.author) || (await isAuthorized(req.session.user, typeOfProfile.admin))) {
 
-            // if the squeal does not have any reply, delete it entirely, otherwise move it to the "DeletedSqueals" account
-            collection.deleteOne({ id: squealId }, (err, res) => {
-                if (err) {
-                    console.error('Errore nella cancellazione del documento:', err);
-                } else if (res.deletedCount === 1) {
-                    console.log('Documento cancellato con successo');
-                } else {
-                    console.log('Nessun documento corrispondente trovato con id:', documentIdToDelete);
-                }
-            });
 
             // retrieve the "DeletedSqueals" account
-            const deletedSquealsProfile = await Profiles.findOne({ name: "DeletedSqueals" })
+            const deletedSquealsProfile = await Profiles.findOne({
+                name: "DeletedSqueals"
+            })
             const numDeletedSqueals = deletedSquealsProfile.num_deleted_squeals
 
             // reset fields of the squeal that is going to be deleted
             await collection.updateOne( //? forse non necessario collection.updateOne in quanto possiedo già lo squeal di cui devo fare update
-                { _id: squeal._id },
                 {
+                    _id: squeal._id
+                }, {
                     $set: {
                         id: `DeletedSqueals${numDeletedSqueals}`, //? io SPERO che funzioni così
                         author: 'DeletedSqueals',
@@ -572,17 +572,32 @@ app.delete("/squeals/:id", async (req, res) => {
 
             // modify all the squeals that were replying to the deleted one
             let squealRepliesList = squeal.replies
+            let tmp_squeal = await Profiles.findOne({
+                name: "DeletedSqueals"
+            })
 
             squealRepliesList.forEach(async (reply) => {
                 try {
-                    let tmp = await collection.find({ id: reply })  // retrieve a squeal that was a reply to the deleted squeal
-                    tmp.reply_to = `DeletedSqueals${numDeletedSqueals}`;
+                    let tmp = await collection.findOne({
+                        id: reply
+                    })
+                    const index = tmp.reply_to.indexOf(squealId);
 
-                    await collection.updateOne(
-                        { _id: tmp._id },
-                        { $set: { reply_to: tmp.reply_to }
-                    });
-                    console.log('Successfully updated the squeal.');
+                    if (index !== -1) {
+                        tmp.reply_to[index] = `DeletedSqueals${numDeletedSqueals}`;
+
+                        await collection.updateOne({
+                            _id: tmp._id
+                        }, {
+                            $set: {
+                                reply_to: tmp.reply_to
+                            }
+                        });
+
+                        console.log('Sostituzione effettuata con successo.');
+                    } else {
+                        console.log('"XXX" non trovato nella lista.');
+                    }
                 } catch {
                     res.status(500).json({
                         message: error.message
@@ -590,40 +605,26 @@ app.delete("/squeals/:id", async (req, res) => {
                 }
             });
 
-            // if the squeal was replying to another squeal modify the replies field of the "father"
-            // ottenere id dello squeal cancellato
-            // ottenere id dello squeal padre (campo reply_to)
-            // ottenere lo squeal padre tramite l'id
-            const fatherId = squeal.reply_to
-            // recuperare lo squeal padre
-            const fatherSqueal = await collection.find({ id: fatherId })
-            // andare nelle replies del padre e cambiargli l'id
-            
-            const index = fatherSqueal.replies.indexOf(squealId);
-
-            if (index !== -1) {
-                // Se l'ID è stato trovato nell'array, aggiorna l'elemento
-                fatherSqueal.replies[index] = `DeletedSqueals${numDeletedSqueals}`;
-
-                // Aggiorna il documento nel database
-                await collection.updateOne({ id: fatherId }, { $set: { arrayField: fatherSqueal.replies } });
-            }
-            
             // update the progressive number on DeletedProfiles
             numDeletedSqueals += 1
-            await Profiles.updateOne(
-                { name: "DeletedSqueals" },
-                { $set: { num_deleted_squeals: numDeletedSqueals }
+            await Profiles.updateOne({
+                name: "DeletedSqueals"
+            }, {
+                $set: {
+                    num_deleted_squeals: numDeletedSqueals
+                }
             })
+
             res.status(200).json({
-                message: "num_deleted_squeals updated successfully."
+                message: "squeal deleted successfully"
             });
-        }
-        else {
+        } else {
             res.status(403).send();
         }
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({
+            message: error.message
+        });
     } finally {
         await mongoClient.close();
     }
@@ -965,11 +966,11 @@ app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
         }
 
         // assign the correct variables for updating the correct lists
-        if (reactions == "positive_reactions_users") {
+        if(reactions == "positive_reactions_users"){
             const reaction_num = "positive_reactions";
             const reaction_ratio = "pos_popolarity_ratio";
         }
-        if (reactions == "negative_reactions_users") {
+        if(reactions == "negative_reactions_users"){
             const reaction_num = "negative_reactions";
             const reaction_ratio = "neg_popolarity_ratio";
         }
@@ -1011,7 +1012,7 @@ app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
             squeal[reaction_num] += 1;
             squeal[reaction_ratio] = squeal[reaction_num] / squeal.impressions;
             console.log("User added to the list");
-
+            
         }
 
         const result = await collection.updateOne({
@@ -1110,7 +1111,7 @@ app.post("/squeals/:id/impressions", async (req, res) => {
         }, {
             $set: squeal.impressions,
             $set: squeal.pos_popolarity_ratio,
-            $set: squeal.neg_popolarity_ratio
+            $set: squeal.neg_popolarity_ratio 
         });
 
     } catch (error) {
