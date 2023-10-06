@@ -145,18 +145,12 @@ app.get("/squeals/", async (req, res) => {
         const squeals = await collection.find({date: {
             $gte: start_date,
             $lte: end_date
-        }});
+        }}).toArray();
         
-        let result = [];
         console.log("type? " + typeof squeals);
-        console.log("closed? " + squeals.isClosed());
+        // console.log("closed? " + squeals.isClosed());
         console.log("exhausted? " + squeals.isExhausted());
         console.log("next? " + squeals.hasNext());
-
-        for await (const item of squeals) {
-            console.log(item);
-            result.push(item);
-        }
 
         //console.log("Squeals: ", squeals);
         console.log("Result: ", result);
@@ -170,7 +164,7 @@ app.get("/squeals/", async (req, res) => {
             .toArray(); // returns the squeals as an array
 */
             
-        res.status(200).json(result); // returns the squeals
+        res.status(200).json(squeals); // returns the squeals
 
     } catch (error) {
         res.status(500).json({
