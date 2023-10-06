@@ -147,15 +147,14 @@ app.get("/squeals/", async (req, res) => {
             $lte: end_date
         }});
         
-        console.log("Squeals: ", squeals);
+        let result = [];
 
-        const arrayOfSqueals = await squeals.toArray(function(err, result) {
-            console.log("result: "+result);
-            console.log("err "+err);
-      });
+        for await (const item of squeals) {
+            result.push(item);
+        }
 
-        console.log("array: ", arrayOfSqueals);
-
+        //console.log("Squeals: ", squeals);
+        console.log("Result: ", result);
         /*
         const squeals = await collection.find(search)
             .sort({
@@ -166,7 +165,7 @@ app.get("/squeals/", async (req, res) => {
             .toArray(); // returns the squeals as an array
 */
             
-        res.status(200).json(arrayOfSqueals); // returns the squeals
+        res.status(200).json(result); // returns the squeals
 
     } catch (error) {
         res.status(500).json({
