@@ -138,7 +138,9 @@ app.get("/squeals/", async (req, res) => {
         console.log('Search:', JSON.stringify(search));
 
         // connecting to the database and fetching the squeals
-        await mongoClient.connect();
+        await mongoClient.connect(
+            connectTimeoutMS = 100000
+        );
         const database = mongoClient.db(dbName);
         const collection = database.collection(squealCollection);
 
@@ -147,13 +149,6 @@ app.get("/squeals/", async (req, res) => {
             $lte: end_date
         }}).toArray();
         
-        console.log("type? " + typeof squeals);
-        // console.log("closed? " + squeals.isClosed());
-        console.log("exhausted? " + squeals.isExhausted());
-        console.log("next? " + squeals.hasNext());
-
-        //console.log("Squeals: ", squeals);
-        console.log("Result: ", result);
         /*
         const squeals = await collection.find(search)
             .sort({
