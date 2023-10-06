@@ -222,7 +222,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
             const collection = database.collection(squealCollection);
             const collection_for_profiles = database.collection(profileCollection);
 
-            const profile_author = await collection.find(search.author);
+            const profile_author = await collection.find(newSqueal.author);
 
             // if the author does not exist, invalid request
             if (profile_author === null) {
