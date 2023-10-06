@@ -159,6 +159,7 @@ app.get("/squeals/", async (req, res) => {
         res.status(200).json(squeals); // returns the squeals
 
     } catch (error) {
+        console.error('Errore durante la ricerca dei documenti: ', error);
         res.status(500).json({
             message: error.message
         });
