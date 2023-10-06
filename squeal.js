@@ -509,25 +509,14 @@ app.put("/squeals/:id", bodyParser.json(), async (req, res) => {
 // * DELETE UNFINISHED
 // elimina lo squeal con id = id ricevuto come parametro
 
-// TODO cancella dal db se non ci sono reply
-// TODO cancella tutti i contenuti, rimpiazza id con deletedXXXXXX e cambia il campo reply_to dei figli in replies
-// TODO controllare se l'utente è loggato e se è l'autore dello squeal oppure un admin
 
 /*
-individuare lo squeal nel database tramite id
-cancellarne i campi: media, keywords, mentions, text
-cambiare il campo author in "deleted"
-accedere al profilo "deleted" e salvarsi la variabile XXX = "num_deleted_squeals"
-cambiare il campo id dello squeal cancellato in "deletedXXX"
-XXX + 1
-scorrere tutti i figli e cambiarne il campo reply_to con il valore "deletedXXX"
-
-! cosa fare con gli squeal mandati in privato?
-TODO creare il profilo DeletedSqueals con il campo speciale "num_deleted_squeals"
-
-TODO se si cancella uno squeal figlio, bisogna andare nel padre e nelle replies cambiare l'id
-
-TODO se non ci sono dipendenze nel reply_to e replies si cancella interamente dal database propone Luiso
+//TODO cancella dal db se non ci sono reply
+//TODO cancella tutti i contenuti, rimpiazza id con deletedXXXXXX e cambia il campo reply_to dei figli in replies
+TODO controllare se l'utente è loggato e se è l'autore dello squeal oppure un admin
+TODO creare nel database il profilo DeletedSqueals con il campo speciale "deleted_squeals_num"
+// TODO se si cancella uno squeal figlio, bisogna andare nel padre e nelle replies cambiare l'id
+// TODO se non ci sono dipendenze nel reply_to e replies si cancella interamente dal database propone Luiso
 */
 
 app.delete("/squeals/:id", async (req, res) => {
@@ -538,11 +527,7 @@ app.delete("/squeals/:id", async (req, res) => {
         await mongoClient.connect();
         const database = mongoClient.db(dbName);
         const collection = database.collection(squealCollection);
-
-        // fetching the squeal with the given id
-        const squeal = await collection.findOne({
-            id: squealId
-        });
+        const squeal = await collection.findOne({ id: squealId }); // fetching the squeal with the given id
 
         // if the squeal is not found, return 404
         if (squeal === null) {
@@ -552,21 +537,28 @@ app.delete("/squeals/:id", async (req, res) => {
             return;
         }
 
-        // if the squeal is found, reset the fields and move it to the "DeletedSqueals" account
+        // the squeal is found, reset the fields and move it to the "DeletedSqueals" account
         if ((await isAuthorized(req.session.user, typeOfProfile.user) && req.session.user === squeal.author) || (await isAuthorized(req.session.user, typeOfProfile.admin))) {
 
+            // if the squeal does not have any reply, delete it entirely, otherwise move it to the "DeletedSqueals" account
+            collection.deleteOne({ id: squealId }, (err, res) => {
+                if (err) {
+                    console.error('Errore nella cancellazione del documento:', err);
+                } else if (res.deletedCount === 1) {
+                    console.log('Documento cancellato con successo');
+                } else {
+                    console.log('Nessun documento corrispondente trovato con id:', documentIdToDelete);
+                }
+            });
 
             // retrieve the "DeletedSqueals" account
-            const deletedSquealsProfile = await Profiles.findOne({
-                name: "DeletedSqueals"
-            })
+            const deletedSquealsProfile = await Profiles.findOne({ name: "DeletedSqueals" })
             const numDeletedSqueals = deletedSquealsProfile.num_deleted_squeals
 
             // reset fields of the squeal that is going to be deleted
             await collection.updateOne( //? forse non necessario collection.updateOne in quanto possiedo già lo squeal di cui devo fare update
+                { _id: squeal._id },
                 {
-                    _id: squeal._id
-                }, {
                     $set: {
                         id: `DeletedSqueals${numDeletedSqueals}`, //? io SPERO che funzioni così
                         author: 'DeletedSqueals',
@@ -580,32 +572,17 @@ app.delete("/squeals/:id", async (req, res) => {
 
             // modify all the squeals that were replying to the deleted one
             let squealRepliesList = squeal.replies
-            let tmp_squeal = await Profiles.findOne({
-                name: "DeletedSqueals"
-            })
 
             squealRepliesList.forEach(async (reply) => {
                 try {
-                    let tmp = await collection.findOne({
-                        id: reply
-                    })
-                    const index = tmp.reply_to.indexOf(squealId);
+                    let tmp = await collection.find({ id: reply })  // retrieve a squeal that was a reply to the deleted squeal
+                    tmp.reply_to = `DeletedSqueals${numDeletedSqueals}`;
 
-                    if (index !== -1) {
-                        tmp.reply_to[index] = `DeletedSqueals${numDeletedSqueals}`;
-
-                        await collection.updateOne({
-                            _id: tmp._id
-                        }, {
-                            $set: {
-                                reply_to: tmp.reply_to
-                            }
-                        });
-
-                        console.log('Sostituzione effettuata con successo.');
-                    } else {
-                        console.log('"XXX" non trovato nella lista.');
-                    }
+                    await collection.updateOne(
+                        { _id: tmp._id },
+                        { $set: { reply_to: tmp.reply_to }
+                    });
+                    console.log('Successfully updated the squeal.');
                 } catch {
                     res.status(500).json({
                         message: error.message
@@ -613,26 +590,40 @@ app.delete("/squeals/:id", async (req, res) => {
                 }
             });
 
+            // if the squeal was replying to another squeal modify the replies field of the "father"
+            // ottenere id dello squeal cancellato
+            // ottenere id dello squeal padre (campo reply_to)
+            // ottenere lo squeal padre tramite l'id
+            const fatherId = squeal.reply_to
+            // recuperare lo squeal padre
+            const fatherSqueal = await collection.find({ id: fatherId })
+            // andare nelle replies del padre e cambiargli l'id
+            
+            const index = fatherSqueal.replies.indexOf(squealId);
+
+            if (index !== -1) {
+                // Se l'ID è stato trovato nell'array, aggiorna l'elemento
+                fatherSqueal.replies[index] = `DeletedSqueals${numDeletedSqueals}`;
+
+                // Aggiorna il documento nel database
+                await collection.updateOne({ id: fatherId }, { $set: { arrayField: fatherSqueal.replies } });
+            }
+            
             // update the progressive number on DeletedProfiles
             numDeletedSqueals += 1
-            await Profiles.updateOne({
-                name: "DeletedSqueals"
-            }, {
-                $set: {
-                    num_deleted_squeals: numDeletedSqueals
-                }
+            await Profiles.updateOne(
+                { name: "DeletedSqueals" },
+                { $set: { num_deleted_squeals: numDeletedSqueals }
             })
-
             res.status(200).json({
-                message: "squeal deleted successfully"
+                message: "num_deleted_squeals updated successfully."
             });
-        } else {
+        }
+        else {
             res.status(403).send();
         }
     } catch (error) {
-        res.status(500).json({
-            message: error.message
-        });
+        res.status(500).json({ message: error.message });
     } finally {
         await mongoClient.close();
     }
