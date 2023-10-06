@@ -164,6 +164,7 @@ app.get("/squeals/", async (req, res) => {
         });
     } finally {
         if (mongoClient) {
+            console.log("Closing connection");
             await mongoClient.close();
         }
     }
