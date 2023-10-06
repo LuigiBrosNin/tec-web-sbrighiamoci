@@ -11,7 +11,13 @@ const {
     isAuthorized
 } = require("./loginUtils.js");
 const bodyParser = require('body-parser');
-const {dbName, squealCollection, profileCollection, mongoClient, CM} = require("./const.js");
+const {
+    dbName,
+    squealCollection,
+    profileCollection,
+    mongoClient,
+    CM
+} = require("./const.js");
 
 
 /* -------------------------------------------------------------------------- */
@@ -27,154 +33,160 @@ const {dbName, squealCollection, profileCollection, mongoClient, CM} = require("
 
 //TODO TEST THE FUNCTION
 app.get("/squeals/", async (req, res) => {
-/*    try {*/
-        // initializing the start and end index in case they are not specified
-        let startIndex = 0;
-        let endIndex = 10;
-        // check if the parameters are valid
-        if (req.query.startIndex !== undefined && req.query.startIndex !== NaN) {
-            startIndex = parseInt(req.query.startindex);
-        }
-        if (req.query.endindex !== undefined && req.query.endindex !== NaN) {
-            endIndex = parseInt(req.query.endindex);
-        }
-        // check if the parameters are valid
-        if (startIndex > endIndex) {
-            res.status(400).json({
-                message: "startIndex must be less than endIndex"
-            });
-            return;
-        }
-
-        // initializing the start and end date in case they are not specified
-        let start_date = 0;
-        let end_date = Date.now();
-        // check if the parameters are valid
-        if (req.query.start_date !== undefined && req.query.start_date !== NaN) {
-            start_date = parseInt(req.query.start_date);
-        }
-        if (req.query.end_date !== undefined && req.query.start_date !== NaN) {
-            end_date = parseInt(req.query.end_date);
-        }
-        // check if the parameters are valid
-        if (start_date > end_date) {
-            res.status(400).json({
-                message: "start_date must be less than end_date"
-            });
-            return;
-        }
-
-        // check if the user is authorized to access private messages
-        if (await !isAuthorized(req.session.user, typeOfProfile.admin)) {
-            if (req.query.is_private === "true" || req.query.is_private === true) {
-                res.status(403).json({
-                    message: "only admins can access private messages"
+    async function query() {
+        try {
+            // initializing the start and end index in case they are not specified
+            let startIndex = 0;
+            let endIndex = 10;
+            // check if the parameters are valid
+            if (req.query.startIndex !== undefined && req.query.startIndex !== NaN) {
+                startIndex = parseInt(req.query.startindex);
+            }
+            if (req.query.endindex !== undefined && req.query.endindex !== NaN) {
+                endIndex = parseInt(req.query.endindex);
+            }
+            // check if the parameters are valid
+            if (startIndex > endIndex) {
+                res.status(400).json({
+                    message: "startIndex must be less than endIndex"
                 });
                 return;
             }
-        }
 
-        // possible query params
-        const possibleParams = [
-            "author",
-            "receiver",
-            "keywords",
-            "mentions",
-            "is_private"
-        ];
-
-
-        const possibleGTEParams = [
-            "positive_reactions",
-            "negative_reactions",
-            "impressions"
-        ];
-
-        // initializing the search object with the date range
-        let search = {
-            date: {
-                $gte: start_date,
-                $lte: end_date
+            // initializing the start and end date in case they are not specified
+            let start_date = 0;
+            let end_date = Date.now();
+            // check if the parameters are valid
+            if (req.query.start_date !== undefined && req.query.start_date !== NaN) {
+                start_date = parseInt(req.query.start_date);
             }
-        };
+            if (req.query.end_date !== undefined && req.query.start_date !== NaN) {
+                end_date = parseInt(req.query.end_date);
+            }
+            // check if the parameters are valid
+            if (start_date > end_date) {
+                res.status(400).json({
+                    message: "start_date must be less than end_date"
+                });
+                return;
+            }
 
-        const possiblePopularities = ["isControversal", "isPopular", "isUnpopular"];
-        const filedsOfPopularities = ["pos_popularity_ratio", "neg_popularity_ratio"]
-
-        // check if the popularity query param is present in the request body
-        // if it is, add threshold to the search object, add both if isControversal is requested
-        for(i=0 ; i<possiblePopularities.length ; i++){
-            if(req.query.popularity == possiblePopularities[i] && i != 2){
-                search[filedsOfPopularities[i]] = {
-                    $gte: CM
-                }
-            } else if (req.query.popularity == possiblePopularities[i] && i == 2){
-                search[filedsOfPopularities[0]] = {
-                    $gte: CM
-                }
-                search[filedsOfPopularities[1]] = {
-                    $gte: CM
+            // check if the user is authorized to access private messages
+            if (await !isAuthorized(req.session.user, typeOfProfile.admin)) {
+                if (req.query.is_private === "true" || req.query.is_private === true) {
+                    res.status(403).json({
+                        message: "only admins can access private messages"
+                    });
+                    return;
                 }
             }
-        }
 
-        // check if any of the possible query params are present in the request body
-        // that have to be assigned a $gte operator
-        for (const field of possibleGTEParams) {
-            if (req.query[field] !== undefined && req.query[field] !== NaN) {
-                search[field] = {
-                    $gte: req.query[field] 
+            // possible query params
+            const possibleParams = [
+                "author",
+                "receiver",
+                "keywords",
+                "mentions",
+                "is_private"
+            ];
+
+
+            const possibleGTEParams = [
+                "positive_reactions",
+                "negative_reactions",
+                "impressions"
+            ];
+
+            // initializing the search object with the date range
+            let search = {
+                date: {
+                    $gte: start_date,
+                    $lte: end_date
+                }
+            };
+
+            const possiblePopularities = ["isControversal", "isPopular", "isUnpopular"];
+            const filedsOfPopularities = ["pos_popularity_ratio", "neg_popularity_ratio"]
+
+            // check if the popularity query param is present in the request body
+            // if it is, add threshold to the search object, add both if isControversal is requested
+            for (i = 0; i < possiblePopularities.length; i++) {
+                if (req.query.popularity == possiblePopularities[i] && i != 2) {
+                    search[filedsOfPopularities[i]] = {
+                        $gte: CM
+                    }
+                } else if (req.query.popularity == possiblePopularities[i] && i == 2) {
+                    search[filedsOfPopularities[0]] = {
+                        $gte: CM
+                    }
+                    search[filedsOfPopularities[1]] = {
+                        $gte: CM
+                    }
                 }
             }
-        }
 
-        // check if any of the possible query params are present in the request body
-        for (const field of possibleParams) {
-            if (req.query[field] !== undefined) {
-                search[field] = req.query[field];
+            // check if any of the possible query params are present in the request body
+            // that have to be assigned a $gte operator
+            for (const field of possibleGTEParams) {
+                if (req.query[field] !== undefined && req.query[field] !== NaN) {
+                    search[field] = {
+                        $gte: req.query[field]
+                    }
+                }
             }
+
+            // check if any of the possible query params are present in the request body
+            for (const field of possibleParams) {
+                if (req.query[field] !== undefined) {
+                    search[field] = req.query[field];
+                }
+            }
+
+            console.log('Search:', JSON.stringify(search));
+
+            // connecting to the database and fetching the squeals
+            await mongoClient.connect();
+            const database = mongoClient.db(dbName);
+            const collection = database.collection(squealCollection);
+
+            const squeals = await collection.find({
+                date: {
+                    $gte: start_date,
+                    $lte: end_date
+                }
+            });
+
+            let result = [];
+
+            for await (const item of squeals) {
+                console.log(item);
+                result.push(item);
+            }
+
+            //console.log("Squeals: ", squeals);
+            console.log("Result: ", result);
+            /*
+            const squeals = await collection.find(search)
+                .sort({
+                    timestamp: -1
+                }) // ordered inverse chronological order
+                .skip(startIndex) // starting from startIndex
+                .limit(endIndex) // returns endIndex squeals
+                .toArray(); // returns the squeals as an array
+    */
+            return result;
+
+        } catch (error) {
+            res.status(500).json({
+                message: error.message
+            });
+        } finally {
+            await mongoClient.close();
         }
+    }
+    const result = await query();
 
-        console.log('Search:', JSON.stringify(search));
-
-        // connecting to the database and fetching the squeals
-        await mongoClient.connect();
-        const database = mongoClient.db(dbName);
-        const collection = database.collection(squealCollection);
-
-        const squeals = await collection.find({date: {
-            $gte: start_date,
-            $lte: end_date
-        }});
-        
-        let result = [];
-
-        for await (const item of squeals) {
-            console.log(item);
-            result.push(item);
-        }
-
-        //console.log("Squeals: ", squeals);
-        console.log("Result: ", result);
-        /*
-        const squeals = await collection.find(search)
-            .sort({
-                timestamp: -1
-            }) // ordered inverse chronological order
-            .skip(startIndex) // starting from startIndex
-            .limit(endIndex) // returns endIndex squeals
-            .toArray(); // returns the squeals as an array
-*/
-            
-        res.status(200).json(result); // returns the squeals
-/*
-    } catch (error) {
-        res.status(500).json({
-            message: error.message
-        });
-    } finally {
-        await mongoClient.close();
-    }*/
+    res.status(200).json(result); // returns the squeals
 })
 
 //* PUT UNTESTED
@@ -202,7 +214,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
         }
         // If all required fields are present, continue with the insertion
 
-        if (/*(await isAuthorized(req.session.user, typeOfProfile.user) && req.session.user === requiredFields.author) || (await isAuthorized(req.session.user, typeOfProfile.admin))*/ true) {
+        if ( /*(await isAuthorized(req.session.user, typeOfProfile.user) && req.session.user === requiredFields.author) || (await isAuthorized(req.session.user, typeOfProfile.admin))*/ true) {
             // defining the required fields as well as initializing the standard fields
             let newSqueal = {
                 id: "",
@@ -962,11 +974,11 @@ app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
         }
 
         // assign the correct variables for updating the correct lists
-        if(reactions == "positive_reactions_users"){
+        if (reactions == "positive_reactions_users") {
             const reaction_num = "positive_reactions";
             const reaction_ratio = "pos_popolarity_ratio";
         }
-        if(reactions == "negative_reactions_users"){
+        if (reactions == "negative_reactions_users") {
             const reaction_num = "negative_reactions";
             const reaction_ratio = "neg_popolarity_ratio";
         }
@@ -1008,7 +1020,7 @@ app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
             squeal[reaction_num] += 1;
             squeal[reaction_ratio] = squeal[reaction_num] / squeal.impressions;
             console.log("User added to the list");
-            
+
         }
 
         const result = await collection.updateOne({
@@ -1107,7 +1119,7 @@ app.post("/squeals/:id/impressions", async (req, res) => {
         }, {
             $set: squeal.impressions,
             $set: squeal.pos_popolarity_ratio,
-            $set: squeal.neg_popolarity_ratio 
+            $set: squeal.neg_popolarity_ratio
         });
 
     } catch (error) {
