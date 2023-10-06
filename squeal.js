@@ -65,7 +65,7 @@ app.get("/squeals/", async (req, res) => {
         }
 
         // check if the user is authorized to access private messages
-        if (await !isAuthorized(req.session.user, typeOfProfile.admin)) {
+        if (!(await isAuthorized(req.session.user, typeOfProfile.admin))) {
             if (search.is_private === "true" || search.is_private === true) {
                 res.status(403).json({
                     message: "only admins can access private messages"
@@ -149,7 +149,10 @@ app.get("/squeals/", async (req, res) => {
         
         console.log("Squeals: ", squeals);
 
-        const arrayOfSqueals = await squeals.toArray();
+        const arrayOfSqueals = await squeals.toArray(function(err, result) {
+            console.log("result: "+result);
+            console.log("err "+err);
+      });
 
         console.log("array: ", arrayOfSqueals);
 
@@ -170,7 +173,7 @@ app.get("/squeals/", async (req, res) => {
             message: error.message
         });
     } finally {
-      //  await mongoClient.close();
+        await mongoClient.close();
     }
 })
 
