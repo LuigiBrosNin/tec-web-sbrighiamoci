@@ -139,7 +139,7 @@ app.get("/squeals/", async (req, res) => {
 
         // connecting to the database and fetching the squeals
         await mongoClient.connect(
-            { connectTimeoutMS: 100000}
+            { connectTimeoutMS: 10000}
         );
         const database = mongoClient.db(dbName);
         const collection = database.collection(squealCollection);
@@ -163,7 +163,9 @@ app.get("/squeals/", async (req, res) => {
             message: error.message
         });
     } finally {
-        await mongoClient.close();
+        if (mongoClient) {
+            await mongoClient.close();
+        }
     }
 })
 
