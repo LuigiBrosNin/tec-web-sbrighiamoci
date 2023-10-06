@@ -19,9 +19,12 @@ const {
     CM
 } = require("./const.js");
 
-
-// connecting to the database and fetching the squeals
-await mongoClient.connect();
+async function connect() {
+    // connecting to the database and fetching the squeals
+    await mongoClient.connect();
+    return mongoClient;
+}
+connect();
 const database = mongoClient.db(dbName);
 const collection = database.collection(squealCollection);
 
