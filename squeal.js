@@ -138,9 +138,7 @@ app.get("/squeals/", async (req, res) => {
         console.log('Search:', JSON.stringify(search));
 
         // connecting to the database and fetching the squeals
-        await mongoClient.connect(
-            { connectTimeoutMS: 10000}
-        );
+        await mongoClient.connect();
         const database = mongoClient.db(dbName);
         const collection = database.collection(squealCollection);
 
@@ -155,13 +153,11 @@ app.get("/squeals/", async (req, res) => {
         res.status(200).json(squeals); // returns the squeals
 
     } catch (error) {
-        console.error('Errore durante la ricerca dei documenti: ', error);
         res.status(500).json({
             message: error.message
         });
     } finally {
         if (mongoClient) {
-            console.log("Closing connection");
             await mongoClient.close();
         }
     }
