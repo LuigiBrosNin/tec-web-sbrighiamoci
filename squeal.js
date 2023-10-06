@@ -150,6 +150,7 @@ app.get("/squeals/", async (req, res) => {
         let result = [];
 
         for await (const item of squeals) {
+            console.log(item);
             result.push(item);
         }
 
