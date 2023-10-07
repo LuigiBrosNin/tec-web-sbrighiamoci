@@ -235,6 +235,8 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
 
             console.log("newSqueal.author: " + newSqueal.author);
 
+            await mongoClient.connect();
+
             const profile_author = await collection_for_profiles.findOne({name: newSqueal.author});
 
             // CREDITS
