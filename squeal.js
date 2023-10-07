@@ -89,13 +89,17 @@ app.get("/squeals/", async (req, res) => {
             }
         }
 
+        //check boolean value, as it cannot be parsed by the possibleParams loop, it would be parsed as a string
+        if (req.query.is_private === "true" || req.query.is_private === true) {
+            search["is_private"] = true;
+        }
+
         // possible query params
         const possibleParams = [
             "author",
             "receiver",
             "keywords",
-            "mentions",
-            "is_private"
+            "mentions"
         ];
 
 
