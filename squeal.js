@@ -19,12 +19,13 @@ const {
     CM
 } = require("./const.js");
 
+// connecting to the database
 mongoClient.connect();
 const database = mongoClient.db(dbName);
 const collection = database.collection(squealCollection);
+const collection_for_profiles = database.collection(profileCollection);
 
-//TODO TOGLI I FINALLY
-//TODO TOGLI LE APERTURE DI CONNESSIONE DA TUTTI I METODI
+
 
 /* -------------------------------------------------------------------------- */
 /*                                 /SQUEALS/                                  */
@@ -164,8 +165,7 @@ app.get("/squeals/", async (req, res) => {
         res.status(500).json({
             message: error.message
         });
-    } finally {
-        await mongoClient.close();
+ 
     }
 })
 
@@ -226,10 +226,6 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
                 }
             }
 
-            await mongoClient.connect();
-            const database = mongoClient.db(dbName);
-            const collection = database.collection(squealCollection);
-            const collection_for_profiles = database.collection(profileCollection);
 
             const profile_author = await collection.find(newSqueal.author);
 
@@ -332,8 +328,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
         res.status(500).send(JSON.stringify({
             message: error.message
         }));
-    } finally {
-        await mongoClient.close(); // Chiudi la connessione al database quando hai finito
+  // Chiudi la connessione al database quando hai finito
     }
 })
 
@@ -363,10 +358,6 @@ app.get("/squeals/:id", async (req, res) => {
     try {
         const squealId = req.params.id;
 
-        // connecting to the database
-        await mongoClient.connect();
-        const database = mongoClient.db(dbName);
-        const collection = database.collection(squealCollection);
         // fetching the squeal with the given id
         const squeal = await collection.findOne({
             id: squealId
@@ -386,8 +377,7 @@ app.get("/squeals/:id", async (req, res) => {
         res.status(500).json({
             message: error.message
         });
-    } finally {
-        await mongoClient.close();
+ 
     }
 });
 
@@ -397,10 +387,6 @@ app.put("/squeals/:id", bodyParser.json(), async (req, res) => {
     try {
         const squealId = req.params.id;
 
-        // connecting to the database
-        await mongoClient.connect();
-        const database = mongoClient.db(dbName);
-        const collection = database.collection(squealCollection);
         // fetching the squeal with the given id
         const squeal = await collection.findOne({
             id: squealId
@@ -481,8 +467,7 @@ app.put("/squeals/:id", bodyParser.json(), async (req, res) => {
         res.status(500).json({
             message: error.message
         });
-    } finally {
-        await mongoClient.close();
+ 
     }
 });
 
@@ -513,11 +498,6 @@ TODO se non ci sono dipendenze nel reply_to e replies si cancella interamente da
 app.delete("/squeals/:id", async (req, res) => {
     try {
         const squealId = req.params.id; // squeal to delete
-
-        // connecting to the database
-        await mongoClient.connect();
-        const database = mongoClient.db(dbName);
-        const collection = database.collection(squealCollection);
 
         // fetching the squeal with the given id
         const squeal = await collection.findOne({
@@ -613,8 +593,7 @@ app.delete("/squeals/:id", async (req, res) => {
         res.status(500).json({
             message: error.message
         });
-    } finally {
-        await mongoClient.close();
+ 
     }
 });
 
@@ -622,10 +601,6 @@ app.delete("/squeals/:id", async (req, res) => {
     try {
         const squealId = req.params.id;
 
-        // connecting to the database
-        await mongoClient.connect();
-        const database = mongoClient.db(dbName);
-        const collection = database.collection(squealCollection);
         // fetching the squeal with the given id
         const squeal = await collection.findOne({ id: squealId });
 
@@ -640,8 +615,7 @@ app.delete("/squeals/:id", async (req, res) => {
         res.status(200).json({ message: "squeal deleted successfully" });
     } catch (error) {
         res.status(500).json({ message: error.message });
-    } finally {
-        await mongoClient.close();
+ 
     }
 });*/
 
@@ -679,10 +653,6 @@ app.post("/squeals/:id", bodyParser.json(), async (req, res) => {
                 }
             }
 
-            // connecting to the database
-            await mongoClient.connect();
-            const database = mongoClient.db(dbName);
-            const collection = database.collection(squealCollection);
             // fetching the squeal with the given id
             const squeal = await collection.findOne({
                 id: squealId
@@ -712,8 +682,7 @@ app.post("/squeals/:id", bodyParser.json(), async (req, res) => {
         res.status(500).json({
             message: error.message
         });
-    } finally {
-        await mongoClient.close();
+ 
     }
 });
 
@@ -728,10 +697,6 @@ app.get("/squeals/:id/media", async (req, res) => {
     try {
         const squealId = req.params.id;
 
-        // connecting to the database
-        await mongoClient.connect();
-        const database = mongoClient.db(dbName);
-        const collection = database.collection(squealCollection);
         // fetching the squeal with the given id
         const squeal = await collection.findOne({
             id: squealId
@@ -751,8 +716,7 @@ app.get("/squeals/:id/media", async (req, res) => {
         res.status(500).json({
             message: error.message
         });
-    } finally {
-        await mongoClient.close();
+ 
     }
 });
 
@@ -768,10 +732,6 @@ app.get("/squeals/:id/repliesnumber", async (req, res) => {
     try {
         const squealId = req.params.id;
 
-        // connecting to the database
-        await mongoClient.connect();
-        const database = mongoClient.db(dbName);
-        const collection = database.collection(squealCollection);
         // fetching the squeal with the given id
         const squeal = await collection.findOne({
             id: squealId
@@ -793,8 +753,7 @@ app.get("/squeals/:id/repliesnumber", async (req, res) => {
         res.status(500).json({
             message: error.message
         });
-    } finally {
-        await mongoClient.close();
+ 
     }
 });
 
@@ -829,10 +788,6 @@ app.get("/squeals/:id/replies/", async (req, res) => {
             return;
         }
 
-        // connecting to the database
-        await mongoClient.connect();
-        const database = mongoClient.db(dbName);
-        const collection = database.collection(squealCollection);
         // fetching the squeal with the given id
         const main_squeal = await collection.findOne({
             id: squealId
@@ -875,8 +830,7 @@ app.get("/squeals/:id/replies/", async (req, res) => {
         res.status(500).json({
             message: error.message
         });
-    } finally {
-        await mongoClient.close();
+ 
     }
 });
 
@@ -907,10 +861,6 @@ app.get("/squeals/:id/:reaction_list", async (req, res) => {
 
         const reaction_list = req.params.reaction_list;
 
-        // connecting to the database
-        await mongoClient.connect();
-        const database = mongoClient.db(dbName);
-        const collection = database.collection(squealCollection);
         // fetching the squeal with the given id
         const squeal = await collection.findOne({
             id: squealId
@@ -930,8 +880,7 @@ app.get("/squeals/:id/:reaction_list", async (req, res) => {
         res.status(500).json({
             message: error.message
         });
-    } finally {
-        await mongoClient.close();
+ 
     }
 });
 
@@ -971,10 +920,6 @@ app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
             return;
         }
 
-        // connecting to the database
-        await mongoClient.connect();
-        const database = mongoClient.db(dbName);
-        const collection = database.collection(squealCollection);
         // fetching the squeal with the given id
         const squeal = await collection.findOne({
             id: squealId
@@ -1016,8 +961,6 @@ app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
         res.status(500).json({
             message: error.message
         });
-    } finally {
-        await mongoClient.close();
     }
 });
 
@@ -1034,10 +977,6 @@ app.get("/squeals/:id/impressions", async (req, res) => {
     try {
         const squealId = req.params.id;
 
-        // connecting to the database
-        await mongoClient.connect();
-        const database = mongoClient.db(dbName);
-        const collection = database.collection(squealCollection);
         // fetching the squeal with the given id
         const squeal = await collection.findOne({
             id: squealId
@@ -1070,10 +1009,6 @@ app.post("/squeals/:id/impressions", async (req, res) => {
     try {
         const squealId = req.params.id;
 
-        // connecting to the database
-        await mongoClient.connect();
-        const database = mongoClient.db(dbName);
-        const collection = database.collection(squealCollection);
         // fetching the squeal with the given id
         const squeal = await collection.findOne({
             id: squealId
