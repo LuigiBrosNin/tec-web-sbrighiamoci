@@ -234,11 +234,11 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
             }
 
 
-            const profile_author = await collection.find(newSqueal.author);
+            const profile_author = await collection.findOne({name: newSqueal.author});
 
             // CREDITS
             // 0 = giorno, 1 = settimana, 2 = mese
-            console.log("profile_author: " + profile_author);
+            console.log("profile_author: " + JSON.stringify(profile_author));
             // if the author does not exist, invalid request
             if (profile_author === null) {
                 res.status(400).json({
