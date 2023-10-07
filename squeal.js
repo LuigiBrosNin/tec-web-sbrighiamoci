@@ -243,11 +243,8 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
 
             const profile_author = await collection_for_profiles.findOne({name: newSqueal.author});
 
-            console.log("profile_author: " + JSON.stringify(profile_author));
-
             // CREDITS
             // 0 = giorno, 1 = settimana, 2 = mese
-            console.log("profile_author: " + JSON.stringify(profile_author));
             // if the author does not exist, invalid request
             if (profile_author === null) {
                 res.status(400).json({
@@ -263,10 +260,9 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
                 return;
             }
             // if the author exists, update the number of squeals, the list of squeals and it's credit
-            console.log("profile_author.squeals_num: " + profile_author.squeals_num);
             const squeals_num = parseInt(profile_author.squeals_num) + 1;
             const squeals_list = profile_author.squeals_list;
-            console.log("squeals_num: " + squeals_num);
+
             let g, s, m;
 
             // if the author is an admin, don't subtract the credit
@@ -277,9 +273,9 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
                 m = profile_author.credit[2];
             } else {
                 console.log("not admin");
-                g = profile_author.credit[0]// - newSqueal.text.length;
-                s = profile_author.credit[1]// - newSqueal.text.length;
-                m = profile_author.credit[2]// - newSqueal.text.length;
+                g = profile_author.credit[0] - newSqueal.text.length;
+                s = profile_author.credit[1] - newSqueal.text.length;
+                m = profile_author.credit[2] - newSqueal.text.length;
             }
 
             console.log("g: " + g + " s: " + s + " m: " + m);
@@ -505,6 +501,7 @@ app.put("/squeals/:id", bodyParser.json(), async (req, res) => {
 // TODO cancella dal db se non ci sono reply
 // TODO cancella tutti i contenuti, rimpiazza id con deletedXXXXXX e cambia il campo reply_to dei figli in replies
 // TODO controllare se l'utente è loggato e se è l'autore dello squeal oppure un admin
+// TODO cancella l'id dalla lista nel profilo dell'autore che contiene gli id degli squeal
 
 /*
 individuare lo squeal nel database tramite id
