@@ -234,7 +234,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
             }
 
 
-            const profile_author = await collection.findOne(newSqueal.author);
+            const profile_author = await collection.find(newSqueal.author);
 
             // CREDITS
             // 0 = giorno, 1 = settimana, 2 = mese
