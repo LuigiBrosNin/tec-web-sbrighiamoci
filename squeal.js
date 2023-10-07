@@ -271,6 +271,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
                 const m = profile_author.credit[2] - newSqueal.text.length;
             }
 
+            console.log("g: " + g + " s: " + s + " m: " + m);
 
             // update the author's squeals_num and squeals_list
             newSqueal.id = `${profile_author.name}${squeals_num}`;
