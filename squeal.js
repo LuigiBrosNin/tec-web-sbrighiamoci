@@ -38,9 +38,7 @@ https://site222326.tw.cs.unibo.it/squeals/?popularity=isPopular
 // ritorna una lista di squeal del database, da startindex ad endindex
 
 // Author, popularity , end_date, start_date, positive_reactions, negative_reactions, impressions
-// receiver (group), Keyword, Mention, is_private
-
-//TODO TEST THE FUNCTION
+// receiver (group), Keyword, Mentions, is_private
 app.get("/squeals/", async (req, res) => {
     try {
         // initializing the start and end index in case they are not specified
@@ -238,6 +236,9 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
 
             const profile_author = await collection.find(newSqueal.author);
 
+            // CREDITS
+            // 0 = giorno, 1 = settimana, 2 = mese
+
             // if the author does not exist, invalid request
             if (profile_author === null) {
                 res.status(400).json({
@@ -246,9 +247,9 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
                 return;
 
             } // check if the authos has enough credit 
-            else if ((profile_author.credit["g"] < newSqueal.text.length || profile_author.credit["s"] < newSqueal.text.length || profile_author.credit["m"] < newSqueal.text.length) && await !isAuthorized(req.session.user, typeOfProfile.admin)) {
+            else if ((profile_author.credit[0] < newSqueal.text.length || profile_author.credit[1] < newSqueal.text.length || profile_author.credit[2] < newSqueal.text.length) && await !isAuthorized(req.session.user, typeOfProfile.admin)) {
                 res.status(400).json({
-                    message: "author does not have enough credit\navailable\ng: " + profile_author.credit["g"] + " s: " + profile_author.credit["s"] + " m: " + profile_author.credit["m"] + ")\nrequired\n " + newSqueal.text.length
+                    message: "author does not have enough credit\navailable\ng: " + profile_author.credit[0] + " s: " + profile_author.credit[1] + " m: " + profile_author.credit[2] + ")\nrequired\n " + newSqueal.text.length
                 });
                 return;
             }
@@ -258,13 +259,13 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
 
             // if the author is an admin, don't subtract the credit
             if (await isAuthorized(req.session.user, typeOfProfile.admin)) {
-                const g = profile_author.credit["g"];
-                const s = profile_author.credit["s"];
-                const m = profile_author.credit["m"];
+                const g = profile_author.credit[0];
+                const s = profile_author.credit[1];
+                const m = profile_author.credit[2];
             } else {
-                const g = profile_author.credit["g"] - newSqueal.text.length;
-                const s = profile_author.credit["s"] - newSqueal.text.length;
-                const m = profile_author.credit["m"] - newSqueal.text.length;
+                const g = profile_author.credit[0] - newSqueal.text.length;
+                const s = profile_author.credit[1] - newSqueal.text.length;
+                const m = profile_author.credit[2] - newSqueal.text.length;
             }
 
 
@@ -282,9 +283,9 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
                     num_squeals: squeals_num,
                     list_squeal_id: squeals_list,
                     credit: {
-                        "g": g,
-                        "s": s,
-                        "m": m
+                        0: g,
+                        1: s,
+                        2: m
                     }
                 }
             })
