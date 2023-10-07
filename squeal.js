@@ -114,11 +114,11 @@ app.get("/squeals/", async (req, res) => {
             }
         };
 
-        const possiblePopularities = ["isPopular", "isUnpopular", "isControversal"];
+        const possiblePopularities = ["isPopular", "isUnpopular", "isControversial"];
         const filedsOfPopularities = ["pos_popularity_ratio", "neg_popularity_ratio"]
 
         // check if the popularity query param is present in the request body
-        // if it is, add threshold to the search object, add both if isControversal is requested
+        // if it is, add threshold to the search object, add both if isControversial is requested
         for (i = 0; i < possiblePopularities.length; i++) {
             if (req.query.popularity == possiblePopularities[i] && i != 2) {
                 search[filedsOfPopularities[i]] = {
