@@ -263,8 +263,8 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
                 return;
             }
             // if the author exists, update the number of squeals, the list of squeals and it's credit
-            console.log("profile_author.num_squeals: " + profile_author.num_squeals);
-            const squeals_num = parseInt(profile_author.num_squeals) + 1;
+            console.log("profile_author.squeals_num: " + profile_author.squeals_num);
+            const squeals_num = parseInt(profile_author.squeals_num) + 1;
             const squeals_list = profile_author.squeals_list;
             console.log("squeals_num: " + squeals_num);
             let g, s, m;
@@ -298,7 +298,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
                 name: profile_author.name
             }, {
                 $set: {
-                    num_squeals: squeals_num,
+                    squeals_num: squeals_num,
                     list_squeal_id: squeals_list,
                     credit: {
                         0: g,
