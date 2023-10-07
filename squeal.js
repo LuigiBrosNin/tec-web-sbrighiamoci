@@ -258,17 +258,19 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
             const squeals_num = profile_author.num_squeals + 1;
             const squeals_list = profile_author.squeals_list;
 
+            let g, s, m;
+
             // if the author is an admin, don't subtract the credit
             if (await isAuthorized(req.session.user, typeOfProfile.admin)) {
                 console.log("admin");
-                const g = profile_author.credit[0];
-                const s = profile_author.credit[1];
-                const m = profile_author.credit[2];
+                g = profile_author.credit[0];
+                s = profile_author.credit[1];
+                m = profile_author.credit[2];
             } else {
                 console.log("not admin");
-                const g = profile_author.credit[0] - newSqueal.text.length;
-                const s = profile_author.credit[1] - newSqueal.text.length;
-                const m = profile_author.credit[2] - newSqueal.text.length;
+                g = profile_author.credit[0] - newSqueal.text.length;
+                s = profile_author.credit[1] - newSqueal.text.length;
+                m = profile_author.credit[2] - newSqueal.text.length;
             }
 
             console.log("g: " + g + " s: " + s + " m: " + m);
