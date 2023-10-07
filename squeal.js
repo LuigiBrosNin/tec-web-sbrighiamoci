@@ -256,7 +256,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
             }
             // if the author exists, update the number of squeals, the list of squeals and it's credit
             const squeals_num = profile_author.num_squeals + 1;
-            const squeals_list = profile_author.list_squeal_id;
+            const squeals_list = profile_author.squeals_list;
 
             // if the author is an admin, don't subtract the credit
             if (await isAuthorized(req.session.user, typeOfProfile.admin)) {
