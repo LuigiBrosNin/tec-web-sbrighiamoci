@@ -24,12 +24,11 @@ mongoClient.connect();
 const database = mongoClient.db(dbName);
 const collection = database.collection(squealCollection);
 const collection_for_profiles = database.collection(profileCollection);
-
-https://site222326.tw.cs.unibo.it/squeals/?author=EmanueleDiSante&startindex=0&endindex=100
+/*
+https://site222326.tw.cs.unibo.it/squeals/?popularity=isPopular
 
 https://site222326.tw.cs.unibo.it/squeals/?author=EmanueleDiSante&startindex=0&endindex=100&start_date=0&end_date=10000000000
-
-https://site222326.tw.cs.unibo.it/squeals/?author=EmanueleDiSante&startindex=0&endindex=100&start_date=0&end_date=10000000000&popularity=isPopular
+*/
 
 /* -------------------------------------------------------------------------- */
 /*                                 /SQUEALS/                                  */
