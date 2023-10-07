@@ -239,11 +239,11 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
                 }
             }
 
-            console.log("newSqueal.author: " + newSqueal.author);
-
             await mongoClient.connect();
 
             const profile_author = await collection_for_profiles.findOne({name: newSqueal.author});
+
+            console.log("profile_author: " + JSON.stringify(profile_author));
 
             // CREDITS
             // 0 = giorno, 1 = settimana, 2 = mese
@@ -334,7 +334,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
                     id: squeal_replied_to.id
                 }, {
                     $set: {
-                        replies_num: 2,
+                        replies_num: replies_num,
                         replies: replies_list
                     }
                 });
