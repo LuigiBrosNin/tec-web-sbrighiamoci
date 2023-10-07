@@ -25,7 +25,11 @@ const database = mongoClient.db(dbName);
 const collection = database.collection(squealCollection);
 const collection_for_profiles = database.collection(profileCollection);
 
+https://site222326.tw.cs.unibo.it/squeals/?author=EmanueleDiSante&startindex=0&endindex=100
 
+https://site222326.tw.cs.unibo.it/squeals/?author=EmanueleDiSante&startindex=0&endindex=100&start_date=0&end_date=10000000000
+
+https://site222326.tw.cs.unibo.it/squeals/?author=EmanueleDiSante&startindex=0&endindex=100&start_date=0&end_date=10000000000&popularity=isPopular
 
 /* -------------------------------------------------------------------------- */
 /*                                 /SQUEALS/                                  */
@@ -111,7 +115,7 @@ app.get("/squeals/", async (req, res) => {
             }
         };
 
-        const possiblePopularities = ["isControversal", "isPopular", "isUnpopular"];
+        const possiblePopularities = ["isPopular", "isUnpopular", "isControversal"];
         const filedsOfPopularities = ["pos_popularity_ratio", "neg_popularity_ratio"]
 
         // check if the popularity query param is present in the request body
@@ -165,7 +169,7 @@ app.get("/squeals/", async (req, res) => {
         res.status(500).json({
             message: error.message
         });
- 
+
     }
 })
 
@@ -328,7 +332,6 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
         res.status(500).send(JSON.stringify({
             message: error.message
         }));
-  // Chiudi la connessione al database quando hai finito
     }
 })
 
@@ -377,7 +380,7 @@ app.get("/squeals/:id", async (req, res) => {
         res.status(500).json({
             message: error.message
         });
- 
+
     }
 });
 
@@ -467,7 +470,7 @@ app.put("/squeals/:id", bodyParser.json(), async (req, res) => {
         res.status(500).json({
             message: error.message
         });
- 
+
     }
 });
 
@@ -593,7 +596,7 @@ app.delete("/squeals/:id", async (req, res) => {
         res.status(500).json({
             message: error.message
         });
- 
+
     }
 });
 
@@ -682,7 +685,7 @@ app.post("/squeals/:id", bodyParser.json(), async (req, res) => {
         res.status(500).json({
             message: error.message
         });
- 
+
     }
 });
 
@@ -716,7 +719,7 @@ app.get("/squeals/:id/media", async (req, res) => {
         res.status(500).json({
             message: error.message
         });
- 
+
     }
 });
 
@@ -753,7 +756,7 @@ app.get("/squeals/:id/repliesnumber", async (req, res) => {
         res.status(500).json({
             message: error.message
         });
- 
+
     }
 });
 
@@ -830,7 +833,7 @@ app.get("/squeals/:id/replies/", async (req, res) => {
         res.status(500).json({
             message: error.message
         });
- 
+
     }
 });
 
@@ -880,7 +883,7 @@ app.get("/squeals/:id/:reaction_list", async (req, res) => {
         res.status(500).json({
             message: error.message
         });
- 
+
     }
 });
 
