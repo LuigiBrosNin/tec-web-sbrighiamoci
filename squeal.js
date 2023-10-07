@@ -80,11 +80,13 @@ app.get("/squeals/", async (req, res) => {
         }
 
         // initializing the search object with the date range
+        // automatically set to false the is_private field
         let search = {
             date: {
                 $gte: start_date,
                 $lte: end_date
-            }
+            },
+            is_private: false
         };
 
         // check if the user is authorized to access private messages
@@ -101,14 +103,6 @@ app.get("/squeals/", async (req, res) => {
                 search["is_private"] = true;
             }
         }
-        
-        //check boolean value, as it cannot be parsed by the possibleParams loop, it would be parsed as a string
-        if (req.query.is_private === "false" || req.query.is_private === false) {
-            search["is_private"] = false;
-        }
-
-
-
 
         // possible query params
         const possibleParams = [
