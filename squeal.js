@@ -256,7 +256,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
                 return;
             }
             // if the author exists, update the number of squeals, the list of squeals and it's credit
-            const squeals_num = profile_author.num_squeals + 1;
+            const squeals_num = parseInt(profile_author.num_squeals) + 1;
             const squeals_list = profile_author.squeals_list;
 
             let g, s, m;
@@ -269,9 +269,9 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
                 m = profile_author.credit[2];
             } else {
                 console.log("not admin");
-                g = profile_author.credit[0] - newSqueal.text.length;
-                s = profile_author.credit[1] - newSqueal.text.length;
-                m = profile_author.credit[2] - newSqueal.text.length;
+                g = profile_author.credit[0]// - newSqueal.text.length;
+                s = profile_author.credit[1]// - newSqueal.text.length;
+                m = profile_author.credit[2]// - newSqueal.text.length;
             }
 
             console.log("g: " + g + " s: " + s + " m: " + m);
