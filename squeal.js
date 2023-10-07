@@ -214,7 +214,13 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
                 negative_reactions: 0,
                 negative_reactions_users: [],
                 replies_num: 0,
-                impressions: 0
+                impressions: 0,
+                is_private: false
+            }
+
+            // checking boolean separately because in optionalFields it would be seen as string
+            if (req.body.is_private === "true" || req.body.is_private === true) {
+                newSqueal.is_private = true;
             }
 
             const optionalFields = [
