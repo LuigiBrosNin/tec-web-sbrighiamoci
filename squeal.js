@@ -283,6 +283,9 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
             // adds the new squeal to the list of squeals
             squeals_list.push(newSqueal.id);
 
+
+            await mongoClient.connect();
+
             // update the author's squeals_num and squeals_list
             await collection_for_profiles.updateOne({
                 name: profile_author.name
