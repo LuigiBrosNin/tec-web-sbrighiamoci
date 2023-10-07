@@ -158,7 +158,7 @@ app.get("/squeals/", async (req, res) => {
         console.log('Search:', JSON.stringify(search));
 
 
-        await mongoClient.connect();
+        // await mongoClient.connect();
         const squeals = await collection.find(search)
             .sort({
                 timestamp: -1
