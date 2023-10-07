@@ -176,9 +176,8 @@ app.get("/squeals/", async (req, res) => {
     }
 })
 
-//* PUT UNTESTED
-// aggiunge/sovrascrive uno squeal al database
-//TODO TEST THE FUNCTION
+//* PUT
+// aggiunge/sovrascrive uno squeal al database (è impossibile sovrascrivere in quanto l'id è generato progressivamente)
 // nome utente + numero squeals = ID
 app.put("/squeals/", bodyParser.json(), async (req, res) => {
     try {
@@ -336,7 +335,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
             // Insert the new squeal in the database without converting it to a JSON string
             const result = await collection.insertOne(newSqueal);
 
-            console.log('Documento inserito con successo:', result.insertedId);
+            console.log('Documento inserito con successo: ', result.insertedId + '\n' + JSON.stringify(newSqueal));
             res.status(200).send(JSON.stringify({
                 message: "squeal added successfully with db id:" + result.insertedId
             }));
