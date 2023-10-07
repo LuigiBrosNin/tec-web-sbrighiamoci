@@ -334,7 +334,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
                     id: squeal_replied_to.id
                 }, {
                     $set: {
-                        replies_num: replies_num,
+                        replies_num: 2,
                         replies: replies_list
                     }
                 });
