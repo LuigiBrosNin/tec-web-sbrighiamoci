@@ -79,16 +79,6 @@ app.get("/squeals/", async (req, res) => {
             return;
         }
 
-        // check if the user is authorized to access private messages
-        if (await !isAuthorized(req.session.user, typeOfProfile.admin)) {
-            if (req.query.is_private === "true" || req.query.is_private === true) {
-                res.status(403).json({
-                    message: "only admins can access private messages"
-                });
-                return;
-            }
-        }
-
         // initializing the search object with the date range
         let search = {
             date: {
@@ -97,12 +87,28 @@ app.get("/squeals/", async (req, res) => {
             }
         };
 
+        // check if the user is authorized to access private messages
+        if (await !isAuthorized(req.session.user, typeOfProfile.admin)) {
+            if (req.query.is_private === "true" || req.query.is_private === true) {
+                res.status(403).json({
+                    message: "only admins can access private messages"
+                });
+                return;
+            }
+        } else {
+            // if the user is authorized, add the is_private field to the search object if requested
+            if (req.query.is_private === "true" || req.query.is_private === true) {
+                search["is_private"] = true;
+            }
+        }
+        
         //check boolean value, as it cannot be parsed by the possibleParams loop, it would be parsed as a string
-        if (req.query.is_private === "true" || req.query.is_private === true) {
-            search["is_private"] = true;
-        } else if (req.query.is_private === "false" || req.query.is_private === false) {
+        if (req.query.is_private === "false" || req.query.is_private === false) {
             search["is_private"] = false;
         }
+
+
+
 
         // possible query params
         const possibleParams = [
