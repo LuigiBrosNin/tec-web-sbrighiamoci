@@ -233,6 +233,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
                 }
             }
 
+            console.log("newSqueal.author: " + newSqueal.author);
 
             const profile_author = await collection.findOne({name: newSqueal.author});
 
