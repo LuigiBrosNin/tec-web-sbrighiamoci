@@ -146,7 +146,8 @@ app.get("/squeals/", async (req, res) => {
         // check if any of the possible query params are present in the request body
         for (const field of possibleParams) {
             if (req.query[field] !== undefined) {
-                search[field] = req.query[field];
+                let tmp = req.query[field];
+                search[field] = tmp;
             }
         }
 
