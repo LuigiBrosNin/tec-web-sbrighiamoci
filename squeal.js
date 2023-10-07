@@ -158,6 +158,7 @@ app.get("/squeals/", async (req, res) => {
         console.log('Search:', JSON.stringify(search));
 
 
+        await mongoClient.connect();
         const squeals = await collection.find(search)
             .sort({
                 timestamp: -1
@@ -377,6 +378,7 @@ app.get("/squeals/:id", async (req, res) => {
     try {
         const squealId = req.params.id;
 
+        await mongoClient.connect();
         // fetching the squeal with the given id
         const squeal = await collection.findOne({
             id: squealId
