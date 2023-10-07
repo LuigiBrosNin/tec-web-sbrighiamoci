@@ -649,6 +649,7 @@ app.delete("/squeals/:id", async (req, res) => {
 // the admin has the power to break some logics, use carefully
 
 // TODO TEST THE FUNCTION
+// TODO assign proper values, numbers -> numbers assignment and booleans -> booleans assignment etc
 app.post("/squeals/:id", bodyParser.json(), async (req, res) => {
     try {
         if (await isAuthorized(req.session.user, typeOfProfile.admin)) {
