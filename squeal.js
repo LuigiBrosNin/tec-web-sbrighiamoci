@@ -210,9 +210,9 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
                 receiver: req.body.receiver,
                 date: Date.now(),
                 positive_reactions: 0,
-                positive_reactions_users: [],
+                positive_reactions_list: [],
                 negative_reactions: 0,
-                negative_reactions_users: [],
+                negative_reactions_list: [],
                 replies_num: 0,
                 impressions: 0,
                 is_private: false
@@ -442,9 +442,9 @@ app.put("/squeals/:id", bodyParser.json(), async (req, res) => {
                 receiver: req.body.receiver,
                 date: Date.now(),
                 positive_reactions: 0,
-                positive_reactions_users: [],
+                positive_reactions_list: [],
                 negative_reactions: 0,
-                negative_reactions_users: [],
+                negative_reactions_list: [],
                 replies_num: 0,
                 impressions: 0
             }
@@ -943,7 +943,7 @@ app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
         const reactions = req.params.reaction_list;
 
         // check if the reaction list is valid
-        if (reactions != "positive_reactions_users" && reactions != "negative_reactions_users") {
+        if (reactions != "positive_reactions_list" && reactions != "negative_reactions_list") {
             res.status(400).json({
                 message: "invalid reaction list"
             });
@@ -951,17 +951,17 @@ app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
         }
 
         // assign the correct variables for updating the correct lists
-        if (reactions == "positive_reactions_users") {
+        if (reactions == "positive_reactions_list") {
             const reaction_num = "positive_reactions";
             const reaction_ratio = "pos_popolarity_ratio";
         }
-        if (reactions == "negative_reactions_users") {
+        if (reactions == "negative_reactions_list") {
             const reaction_num = "negative_reactions";
             const reaction_ratio = "neg_popolarity_ratio";
         }
 
         // check if the user is logged in
-        if (req.session.user === undefined) {
+        if (/*req.session.user === undefined*/ false) {
             res.status(403).json({
                 message: "you must be logged in to react to a squeal"
             });
@@ -983,13 +983,13 @@ app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
 
         // if the squeal is found, update its reaction list
         // if the user is already in the list, remove it
-        if (squeal[reactions].includes(req.session.user)) {
-            squeal[reactions].splice(squeal[reactions].indexOf(req.session.user), 1);
+        if (squeal[reactions].includes(/*req.session.user*/ "AlexLorenzato")) {
+            squeal[reactions].splice(squeal[reactions].indexOf(/*req.session.user*/"AlexLorenzato"), 1);
             squeal[reaction_num] -= 1;
             squeal[reaction_ratio] = squeal[reaction_num] / squeal.impressions;
             console.log("User removed from the list");
         } else { // if the user is not in the list, add it
-            squeal[reactions].push(req.session.user);
+            squeal[reactions].push(/*req.session.user*/"AlexLorenzato");
             squeal[reaction_num] += 1;
             squeal[reaction_ratio] = squeal[reaction_num] / squeal.impressions;
             console.log("User added to the list");
