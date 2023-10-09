@@ -645,10 +645,8 @@ app.delete("/squeals/:id", async (req, res) => {
 });*/
 
 //* POST
-// solo per admin -> modifica quello che vuole (tranne id)
+// solo per admin -> modifica quello che vuole (tranne id e autore)
 // the admin has the power to break all logics, use carefully
-
-// TODO TEST THE FUNCTION
 app.post("/squeals/:id", bodyParser.json(), async (req, res) => {
     try {
         if (/*await isAuthorized(req.session.user, typeOfProfile.admin)*/ true) {
@@ -900,7 +898,7 @@ app.get("/squeals/:id/:reaction_list", async (req, res) => {
         const reactions = req.params.reaction_list;
 
         // check if the reaction list is valid
-        if (reactions != "positive_reactions_users" && reactions != "negative_reactions_users") {
+        if (reactions != "positive_reactions_list" && reactions != "negative_reactions_list") {
             res.status(400).json({
                 message: "invalid reaction list"
             });
