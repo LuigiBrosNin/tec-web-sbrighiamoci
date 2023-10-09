@@ -34,6 +34,8 @@ const collection = database.collection(profileCollection);
 
 //? get query details from Matilde
 //TODO ADD QUERY PARAMETERS AND FUNCTIONALITY
+//TODO ADD AUTHORIZATION TO SENSITIVE DATA
+//TODO FILTER SENSITIVE DATA OUT IF NOT AUTHORIZED
 app.get("/profiles/", async (req, res) => {
     try {
         // initializing the start and end index in case they are not specified
