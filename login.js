@@ -103,7 +103,7 @@ function updateSquealTest(){
   .catch(error => console.error(error));
 }
 
-// Squeals ID reaction list PUT request
+// Squeals ID reaction list/impressions PUT request
 function addReactionListTest(){
   const body = {
     author: "EmanueleDiSante"

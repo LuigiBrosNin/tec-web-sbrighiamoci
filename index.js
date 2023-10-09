@@ -101,3 +101,4 @@ app.use('/source', express.static('/webapp/tec-web-sbrighiamoci/source', {
 module.exports = {app};
 
 require("./squeal.js");
+require("profiles.js");
