@@ -241,7 +241,9 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
 
             await mongoClient.connect();
 
-            const profile_author = await collection_for_profiles.findOne({name: newSqueal.author});
+            const profile_author = await collection_for_profiles.findOne({
+                name: newSqueal.author
+            });
 
             // CREDITS
             // 0 = giorno, 1 = settimana, 2 = mese
@@ -649,7 +651,7 @@ app.delete("/squeals/:id", async (req, res) => {
 // the admin has the power to break all logics, use carefully
 app.post("/squeals/:id", bodyParser.json(), async (req, res) => {
     try {
-        if (/*await isAuthorized(req.session.user, typeOfProfile.admin)*/ true) {
+        if ( /*await isAuthorized(req.session.user, typeOfProfile.admin)*/ true) {
             const squealId = req.params.id;
 
             // possible body params
@@ -693,7 +695,7 @@ app.post("/squeals/:id", bodyParser.json(), async (req, res) => {
             }
 
             // calculating the polarity ratio
-            if(update.positive_reactions !== undefined && update.negative_reactions !== undefined && update.impressions !== undefined && update.impressions !== 0 && update.positive_reactions !== NaN && update.negative_reactions !== NaN && update.impressions !== NaN) {
+            if (update.positive_reactions !== undefined && update.negative_reactions !== undefined && update.impressions !== undefined && update.impressions !== 0 && update.positive_reactions !== NaN && update.negative_reactions !== NaN && update.impressions !== NaN) {
                 update.pos_popolarity_ratio = update.positive_reactions / update.impressions;
                 update.neg_popolarity_ratio = update.negative_reactions / update.impressions;
             }
@@ -890,12 +892,30 @@ app.get("/squeals/:id/replies/", async (req, res) => {
 
 //* GET UNTESTED
 // ritorna la lista di utenti che hanno reagito allo squeal con id = id ricevuto come parametro
-
+// oppure ritorna il numero di impressioni di uno squeal
 // TODO TEST THE FUNCTION
 app.get("/squeals/:id/:reaction_list", async (req, res) => {
     try {
         const squealId = req.params.id;
         const reactions = req.params.reaction_list;
+
+        if (reactions == "impressions") {
+            // fetching the squeal with the given id
+            mongoClient.connect();
+            const squeal = await collection.findOne({
+                id: squealId
+            });
+
+            // if the squeal is not found, return 404
+            if (squeal === null) {
+                res.status(404).json({
+                    message: "squeal not found"
+                });
+                return;
+            }
+            // if the squeal is found, return its impressions
+            res.status(200).json(squeal.impressions);
+        }
 
         // check if the reaction list is valid
         if (reactions != "positive_reactions_list" && reactions != "negative_reactions_list") {
@@ -904,8 +924,6 @@ app.get("/squeals/:id/:reaction_list", async (req, res) => {
             });
             return;
         }
-
-
 
         const reaction_list = req.params.reaction_list;
 
@@ -932,15 +950,49 @@ app.get("/squeals/:id/:reaction_list", async (req, res) => {
     }
 });
 
-//* POST UNTESTED
+//* POST
 // aggiunge un utente alla lista di reazioni positive/negative dello squeal con id = id ricevuto come parametro
 // se l'utente è già presente nella lista, lo rimuove
+// aggiunge un' impressione allo squeal con id = id ricevuto come parametro se la lista ricevuta è "impressions"
 
-// TODO TEST THE FUNCTION
+// ! the Function is tested, but the session.user is not, if this gives problems is because of the session.user param
 app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
     try {
         const squealId = req.params.id;
         const reactions = req.params.reaction_list;
+
+        if(reactions == "impressions"){
+            // fetching the squeal with the given id
+            mongoClient.connect();
+            const squeal = await collection.findOne({
+                id: squealId
+            });
+
+            // if the squeal is not found, return 404
+            if (squeal === null) {
+                res.status(404).json({
+                    message: "squeal not found"
+                });
+                return;
+            }
+            // if the squeal is found, update its impressions
+            squeal.impressions += 1;
+
+            squeal.pos_popolarity_ratio = squeal.positive_reactions / squeal.impressions;
+            squeal.neg_popolarity_ratio = squeal.negative_reactions / squeal.impressions;
+    
+            // update the squeal's impressions
+            const result = await collection.updateOne({
+                id: squealId
+            }, {
+                $set: squeal.impressions,
+                $set: squeal.pos_popolarity_ratio,
+                $set: squeal.neg_popolarity_ratio
+            });
+
+            res.status(200).json({ message: "impression updated successfully" });
+            return;
+        }
 
         // check if the reaction list is valid
         if (reactions != "positive_reactions_list" && reactions != "negative_reactions_list") {
@@ -964,13 +1016,14 @@ app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
         }
 
         // check if the user is logged in
-        if (/*req.session.user === undefined*/ false) {
+        if (req.session.user === undefined) {
             res.status(403).json({
                 message: "you must be logged in to react to a squeal"
             });
             return;
         }
 
+        mongoClient.connect();
         // fetching the squeal with the given id
         const squeal = await collection.findOne({
             id: squealId
@@ -986,19 +1039,20 @@ app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
 
         // if the squeal is found, update its reaction list
         // if the user is already in the list, remove it
-        if (squeal[reactions].includes(/*req.session.user*/ "AlexLorenzato")) {
-            squeal[reactions].splice(squeal[reactions].indexOf(/*req.session.user*/"AlexLorenzato"), 1);
+        if (squeal[reactions].includes(req.session.user)) {
+            squeal[reactions].splice(squeal[reactions].indexOf(req.session.user), 1);
             squeal[reaction_num] -= 1;
             squeal[reaction_ratio] = squeal[reaction_num] / squeal.impressions;
             console.log("User removed from the list");
         } else { // if the user is not in the list, add it
-            squeal[reactions].push(/*req.session.user*/"AlexLorenzato");
+            squeal[reactions].push(req.session.user);
             squeal[reaction_num] += 1;
             squeal[reaction_ratio] = squeal[reaction_num] / squeal.impressions;
             console.log("User added to the list");
 
         }
 
+        mongoClient.connect();
         const result = await collection.updateOne({
             id: squealId
         }, {
@@ -1012,87 +1066,5 @@ app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
         res.status(500).json({
             message: error.message
         });
-    }
-});
-
-/* -------------------------------------------------------------------------- */
-/*                          /SQUEALS/:ID/IMPRESSIONS                          */
-/*                                 GET & POST                                 */
-/* -------------------------------------------------------------------------- */
-
-//* GET UNTESTED
-// ritorna il numero di impressioni dello squeal con id = id ricevuto come parametro
-
-//TODO TEST THE FUNCTION
-app.get("/squeals/:id/impressions", async (req, res) => {
-    try {
-        const squealId = req.params.id;
-
-        // fetching the squeal with the given id
-        const squeal = await collection.findOne({
-            id: squealId
-        });
-
-        // if the squeal is not found, return 404
-        if (squeal === null) {
-            res.status(404).json({
-                message: "squeal not found"
-            });
-            return;
-        }
-
-        // if the squeal is found, return its impressions
-        res.status(200).json(squeal.impressions);
-    } catch (error) {
-        res.status(500).json({
-            message: error.message
-        });
-    } finally {
-        await mongoClient.close()
-    }
-});
-
-//* POST UNTESTED
-// aggiunge un' impressione allo squeal con id = id ricevuto come parametro
-
-//TODO TEST THE FUNCTION
-app.post("/squeals/:id/impressions", async (req, res) => {
-    try {
-        const squealId = req.params.id;
-
-        // fetching the squeal with the given id
-        const squeal = await collection.findOne({
-            id: squealId
-        });
-
-        // if the squeal is not found, return 404
-        if (squeal === null) {
-            res.status(404).json({
-                message: "squeal not found"
-            });
-            return;
-        }
-
-        // if the squeal is found, update its impressions
-        squeal.impressions += 1;
-
-        squeal.pos_popolarity_ratio = squeal.positive_reactions / squeal.impressions;
-        squeal.neg_popolarity_ratio = squeal.negative_reactions / squeal.impressions;
-
-        // update the squeal's impressions
-        const result = await collection.updateOne({
-            id: squealId
-        }, {
-            $set: squeal.impressions,
-            $set: squeal.pos_popolarity_ratio,
-            $set: squeal.neg_popolarity_ratio
-        });
-
-    } catch (error) {
-        res.status(500).json({
-            message: error.message
-        });
-    } finally {
-        await mongoClient.close()
     }
 });
