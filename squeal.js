@@ -695,8 +695,11 @@ app.post("/squeals/:id", bodyParser.json(), async (req, res) => {
             }
 
             // calculating the polarity ratio
-            update.pos_popolarity_ratio = squeal.positive_reactions / squeal.impressions;
-            update.neg_popolarity_ratio = squeal.negative_reactions / squeal.impressions;
+            if(update.positive_reactions !== undefined && update.negative_reactions !== undefined && update.impressions !== undefined && update.impressions !== 0 && update.positive_reactions !== NaN && update.negative_reactions !== NaN && update.impressions !== NaN) {
+                update.pos_popolarity_ratio = update.positive_reactions / update.impressions;
+                update.neg_popolarity_ratio = update.negative_reactions / update.impressions;
+            }
+
 
             mongoClient.connect();
             // fetching the squeal with the given id
