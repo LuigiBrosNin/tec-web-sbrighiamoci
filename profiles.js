@@ -21,8 +21,8 @@ const {
 // connecting to the database
 mongoClient.connect();
 const database = mongoClient.db(dbName);
-const collection = database.collection(squealCollection);
-const collection_for_profiles = database.collection(profileCollection);
+const collection_for_squeals = database.collection(squealCollection);
+const collection = database.collection(profileCollection);
 
 /* -------------------------------------------------------------------------- */
 /*                                 /PROFILES/                                 */
@@ -31,6 +31,8 @@ const collection_for_profiles = database.collection(profileCollection);
 
 //* GET
 // ritorna una lista di profili paginati
+
+//? get query details from Matilde
 app.get("/profiles/", async (req, res) => {
     try {
         // initializing the start and end index in case they are not specified
@@ -51,9 +53,10 @@ app.get("/profiles/", async (req, res) => {
             return;
         }
 
+        let search = {};
 
         await mongoClient.connect();
-        const profiles = await profileCollection.find()
+        const profiles = await collection.find(search)
             .sort({
                 timestamp: -1
             }) // ordered inverse chronological order
