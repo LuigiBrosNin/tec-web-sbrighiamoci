@@ -110,7 +110,7 @@ function addReactionListTest(){
     headers: {
       "Content-type": "application/json; charset=UTF-8"
     },
-    body: JSON.stringify(body)
+    body: JSON.stringify("")
   })
   .then(response => response.json())
   .then(data => console.log(data))
