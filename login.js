@@ -88,11 +88,11 @@ function updateSquealTest(){
     neg_popularity_ratio: 0,
     is_private: false
   };
-  
+
   console.log("Sending body: " + JSON.stringify(body));
 
   fetch("https://site222326.tw.cs.unibo.it/squeals/EmanueleDiSante1", {
-    method: "PUT",
+    method: "POST",
     headers: {
       "Content-type": "application/json; charset=UTF-8"
     },
