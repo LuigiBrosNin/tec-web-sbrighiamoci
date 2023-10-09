@@ -646,10 +646,9 @@ app.delete("/squeals/:id", async (req, res) => {
 
 //* POST
 // solo per admin -> modifica quello che vuole (tranne id)
-// the admin has the power to break some logics, use carefully
+// the admin has the power to break all logics, use carefully
 
 // TODO TEST THE FUNCTION
-// TODO assign proper values, numbers -> numbers assignment and booleans -> booleans assignment etc
 app.post("/squeals/:id", bodyParser.json(), async (req, res) => {
     try {
         if (await isAuthorized(req.session.user, typeOfProfile.admin)) {
@@ -657,18 +656,24 @@ app.post("/squeals/:id", bodyParser.json(), async (req, res) => {
 
             // possible body params
             const possibleParams = [
-                "author",
                 "receiver",
-                "pos_popolarity_ratio",
-                "neg_popolarity_ratio",
-                "abs_popularity_ratio",
-                "controversals",
+                "text",
                 "positive_reactions",
                 "negative_reactions",
+                "positive_reactions_list",
+                "negative_reactions_list",
+                "media",
+                "reply_to",
                 "impressions",
                 "keywords",
                 "mentions",
-                "is_private"
+            ];
+
+            const possibleIntParams = [
+                "positive_reactions",
+                "negative_reactions",
+                "impressions",
+                "date"
             ];
 
             let update = {};
@@ -678,6 +683,20 @@ app.post("/squeals/:id", bodyParser.json(), async (req, res) => {
                     update[field] = req.body[field];
                 }
             }
+
+            for (const field of possibleIntParams) {
+                if (req.body[field] !== undefined) {
+                    update[field] = parseInt(req.body[field]);
+                }
+            }
+
+            if (req.body.is_private !== undefined) {
+                update["is_private"] = req.body.is_private;
+            }
+
+            // calculating the polarity ratio
+            update.pos_popolarity_ratio = squeal.positive_reactions / squeal.impressions;
+            update.neg_popolarity_ratio = squeal.negative_reactions / squeal.impressions;
 
             // fetching the squeal with the given id
             const squeal = await collection.findOne({

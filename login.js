@@ -64,3 +64,40 @@ function deleteSquealTest() {
   .then(data => console.log(data))
   .catch(error => console.error(error));
 }
+
+// Squeals ID POST request
+function updateSquealTest(){
+  const body = {
+    id: "EmanueleDiSante99",
+    author: "EmanueleDiSante",
+    text: "HO CAMBIATO IL TESTO AAAAAAA",
+    receiver: "MainChannel",
+    date: 8375,
+    positive_reactions: 4,
+    positive_reactions_list: [],
+    negative_reactions: 1,
+    negative_reactions_list: [],
+    media: "",
+    reply_to: [],
+    replies_num: 0,
+    replies_list: [],
+    keywords: ["squali"],
+    mentions: ["MatildeMariano"],
+    impressions: 10,
+    pos_popularity_ratio: 0,
+    neg_popularity_ratio: 0,
+    is_private: false
+  };
+  console.log("Sending body: " + JSON.stringify(body));
+
+  fetch("https://site222326.tw.cs.unibo.it/squeals/EmanueleDiSante1", {
+    method: "PUT",
+    headers: {
+      "Content-type": "application/json; charset=UTF-8"
+    },
+    body: JSON.stringify(body)
+  })
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error(error));
+}
