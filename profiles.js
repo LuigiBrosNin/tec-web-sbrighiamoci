@@ -33,6 +33,7 @@ const collection = database.collection(profileCollection);
 // ritorna una lista di profili paginati
 
 //? get query details from Matilde
+//TODO ADD QUERY PARAMETERS AND FUNCTIONALITY
 app.get("/profiles/", async (req, res) => {
     try {
         // initializing the start and end index in case they are not specified
