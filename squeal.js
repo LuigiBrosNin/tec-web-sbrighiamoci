@@ -915,6 +915,7 @@ app.get("/squeals/:id/:reaction_list", async (req, res) => {
             }
             // if the squeal is found, return its impressions
             res.status(200).json(squeal.impressions);
+            return;
         }
 
         // check if the reaction list is valid
@@ -991,6 +992,12 @@ app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
                     neg_popolarity_ratio: squeal.neg_popolarity_ratio
                 }
             });
+
+            if (result.modifiedCount === 1) {
+                res.status(200).json({ message: "impression updated successfully" });
+            } else {
+                res.status(500).json({ message: "failed to update impression" });
+            }
             return;
         }
 
