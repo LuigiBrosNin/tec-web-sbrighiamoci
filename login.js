@@ -108,7 +108,7 @@ function addReactionListTest(){
   const body = {
     author: "EmanueleDiSante"
   };
-  fetch("https://site222326.tw.cs.unibo.it/squeals/AlexLorenzato0/positive_reactions_list", {
+  fetch("https://site222326.tw.cs.unibo.it/squeals/EmanueleDiSante0/impressions", {
     method: "POST",
     headers: {
       "Content-type": "application/json; charset=UTF-8"
