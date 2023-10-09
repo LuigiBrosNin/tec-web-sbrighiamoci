@@ -950,14 +950,17 @@ app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
             return;
         }
 
+        let reaction_num;
+        let reaction_ratio;
+
         // assign the correct variables for updating the correct lists
         if (reactions == "positive_reactions_list") {
-            const reaction_num = "positive_reactions";
-            const reaction_ratio = "pos_popolarity_ratio";
+            reaction_num = "positive_reactions";
+            reaction_ratio = "pos_popolarity_ratio";
         }
         if (reactions == "negative_reactions_list") {
-            const reaction_num = "negative_reactions";
-            const reaction_ratio = "neg_popolarity_ratio";
+            reaction_num = "negative_reactions";
+            reaction_ratio = "neg_popolarity_ratio";
         }
 
         // check if the user is logged in
