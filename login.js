@@ -105,12 +105,15 @@ function updateSquealTest(){
 
 // Squeals ID reaction list PUT request
 function addReactionListTest(){
+  const body = {
+    author: "EmanueleDiSante"
+  };
   fetch("https://site222326.tw.cs.unibo.it/squeals/AlexLorenzato0/positive_reactions_list", {
     method: "POST",
     headers: {
       "Content-type": "application/json; charset=UTF-8"
     },
-    body: JSON.stringify("")
+    body: JSON.stringify(body)
   })
   .then(response => response.json())
   .then(data => console.log(data))
