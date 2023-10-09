@@ -991,12 +991,6 @@ app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
                     neg_popolarity_ratio: squeal.neg_popolarity_ratio
                 }
             });
-
-            if (result.modifiedCount === 1) {
-                res.status(200).json({ message: "impression updated successfully" });
-            } else {
-                res.status(500).json({ message: "failed to update impression" });
-            }
             return;
         }
 
