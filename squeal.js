@@ -651,7 +651,7 @@ app.delete("/squeals/:id", async (req, res) => {
 // the admin has the power to break all logics, use carefully
 app.post("/squeals/:id", bodyParser.json(), async (req, res) => {
     try {
-        if ( /*await isAuthorized(req.session.user, typeOfProfile.admin)*/ true) {
+        if (await isAuthorized(req.session.user, typeOfProfile.admin)) {
             const squealId = req.params.id;
 
             // possible body params
@@ -980,17 +980,23 @@ app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
 
             squeal.pos_popolarity_ratio = squeal.positive_reactions / squeal.impressions;
             squeal.neg_popolarity_ratio = squeal.negative_reactions / squeal.impressions;
-    
+
             // update the squeal's impressions
             const result = await collection.updateOne({
                 id: squealId
             }, {
-                $set: squeal.impressions,
-                $set: squeal.pos_popolarity_ratio,
-                $set: squeal.neg_popolarity_ratio
+                $set: {
+                    impressions: squeal.impressions,
+                    pos_popolarity_ratio: squeal.pos_popolarity_ratio,
+                    neg_popolarity_ratio: squeal.neg_popolarity_ratio
+                }
             });
 
-            res.status(200).json({ message: "impression updated successfully" });
+            if (result.modifiedCount === 1) {
+                res.status(200).json({ message: "impression updated successfully" });
+            } else {
+                res.status(500).json({ message: "failed to update impression" });
+            }
             return;
         }
 
