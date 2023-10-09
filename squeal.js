@@ -698,6 +698,7 @@ app.post("/squeals/:id", bodyParser.json(), async (req, res) => {
             update.pos_popolarity_ratio = squeal.positive_reactions / squeal.impressions;
             update.neg_popolarity_ratio = squeal.negative_reactions / squeal.impressions;
 
+            mongoClient.connect();
             // fetching the squeal with the given id
             const squeal = await collection.findOne({
                 id: squealId
@@ -711,6 +712,7 @@ app.post("/squeals/:id", bodyParser.json(), async (req, res) => {
                 return;
             }
 
+            mongoClient.connect();
             // if the squeal is found, update it
             const result = await collection.updateOne({
                 id: squealId
