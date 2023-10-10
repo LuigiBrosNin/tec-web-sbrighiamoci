@@ -90,6 +90,9 @@ app.get("/profiles/", async (req, res) => {
             credit_limits_type = parseInt(req.query.credit_limits_type);
         }
 
+        console.log("credit_type: "+ credit_type);
+        console.log("credit_limits_type: "+ credit_limits_type);
+
         // check string params
         for (const param of possibleParams) {
             if (req.query[param] !== undefined) {
@@ -112,6 +115,7 @@ app.get("/profiles/", async (req, res) => {
                 };
             } // handling credit
             else if (req.query[param] === "credit") {
+                console.log("right");
                 search[param] = [{
                     credit_type: {
                         $gte: parseInt(req.query[param])
