@@ -53,10 +53,10 @@ app.get("/profiles/", async (req, res) => {
         let startIndex = 0;
         let endIndex = 10;
         // check if the parameters are valid
-        if (req.query.startindex !== undefined || req.query.startindex !== NaN) {
+        if (req.query.startindex !== undefined && req.query.startindex !== NaN) {
             startIndex = parseInt(req.query.startindex);
         }
-        if (req.query.endindex !== undefined || req.query.endindex !== NaN) {
+        if (req.query.endindex !== undefined && req.query.endindex !== NaN) {
             endIndex = parseInt(req.query.endindex);
         }
         // check if the parameters are valid
@@ -77,17 +77,18 @@ app.get("/profiles/", async (req, res) => {
         let credit_limits_type = 0;
 
         // check credit type search
-        if (req.query.credit_type !== undefined || req.query.credit_type !== NaN || req.query.credit_type !== "0" || req.query.credit_type !== "1" || req.query.credit_type !== "2") {
-            credit_type = 0;
-        } else {
+        if (req.query.credit_type !== undefined && req.query.credit_type !== NaN && req.query.credit_type !== "0" && req.query.credit_type !== "1" && req.query.credit_type !== "2") {
             credit_type = parseInt(req.query.credit_type);
+        } else {
+            credit_type = 0;
         }
 
         // check credit limits type search
-        if (req.query.credit_limits_type !== undefined || req.query.credit_limits_type !== NaN || req.query.credit_limits_type !== "0" || req.query.credit_limits_type !== "1" || req.query.credit_limits_type !== "2") {
-            credit_limits_type = 0;
-        } else {
+        if (req.query.credit_limits_type !== undefined && req.query.credit_limits_type !== NaN && req.query.credit_limits_type !== "0" && req.query.credit_limits_type !== "1" && req.query.credit_limits_type !== "2") {
             credit_limits_type = parseInt(req.query.credit_limits_type);
+        } else {
+
+            credit_limits_type = 0;
         }
 
         console.log("credit_type: "+ credit_type);
@@ -102,7 +103,7 @@ app.get("/profiles/", async (req, res) => {
 
         // check int params
         for (const param of possibleGTEParams) {
-            if (req.query[param] !== undefined || req.query[param] !== NaN || req.query[param] !== "followers_num" || req.query[param] !== "credit" || req.query[param] !== "credit_limits") {
+            if (req.query[param] !== undefined && req.query[param] !== NaN && req.query[param] !== "followers_num" && req.query[param] !== "credit" && req.query[param] !== "credit_limits") {
                 search[param] = {
                     $gte: parseInt(req.query[param])
                 };
@@ -188,7 +189,7 @@ app.delete("/profiles/", async (req, res) => {
 
         // check int params
         for (const param of possibleGTEParams) {
-            if (req.query[param] !== undefined || req.query[param] !== NaN || req.query[param] !== "followers_num") {
+            if (req.query[param] !== undefined && req.query[param] !== NaN && req.query[param] !== "followers_num") {
                 search[param] = {
                     $gte: parseInt(req.query[param])
                 };
