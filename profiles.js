@@ -47,6 +47,7 @@ const collection = database.collection(profileCollection);
 // - is_banned: utente bannato (boolean)
 
 //TODO TEST THE FUCTION
+//TODO FIX CREDIT_LIMITS
 app.get("/profiles/", async (req, res) => {
     try {
         // initializing the start and end index in case they are not specified
@@ -114,6 +115,13 @@ app.get("/profiles/", async (req, res) => {
                         $gte: req.query[param]
                     }
                 };
+            } // handling credit_limits
+            else if (param === "credit_limits") {
+                search[param] = [{
+                    credit_limits_type: {
+                        $gte: parseInt(req.query[param])
+                    }
+                }];
             } // handling credit
             else if (param === "credit") {
                 console.log("right");
@@ -122,14 +130,8 @@ app.get("/profiles/", async (req, res) => {
                         $gte: parseInt(req.query[param])
                     }
                 }];
-            } // handling credit_limits
-            else if (param === "credit_limits") {
-                search[param] = [{
-                    credit_limits_type: {
-                        $gte: parseInt(req.query[param])
-                    }
-                }];
             }
+
         }
 
         // check boolean param
