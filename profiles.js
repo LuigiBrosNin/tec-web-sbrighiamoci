@@ -112,14 +112,18 @@ app.get("/profiles/", async (req, res) => {
                 };
             } // handling credit
             else if (req.query[param] === "credit") {
-                search[param][credit_type] = {
-                    $gte: parseInt(req.query[param]),
-                };
+                search[param] = [{
+                    credit_type: {
+                        $gte: parseInt(req.query[param])
+                    }
+                }];
             } // handling credit_limits
             else if (req.query[param] === "credit_limits") {
-                search[param][credit_limits_type] = {
-                    $gte: parseInt(req.query[param]),
-                };
+                search[param] = [{
+                    credit_limits_type: {
+                        $gte: parseInt(req.query[param])
+                    }
+                }];
             }
         }
 
