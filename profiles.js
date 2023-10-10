@@ -104,6 +104,7 @@ app.get("/profiles/", async (req, res) => {
         // check int params
         for (const param of possibleGTEParams) {
             if (req.query[param] !== undefined && req.query[param] !== NaN && req.query[param] != "followers_num" && req.query[param] != "credit" && req.query[param] != "credit_limits") {
+                console.log("param: "+param+" value: "+req.query[param]);
                 search[param] = {
                     $gte: parseInt(req.query[param])
                 };
