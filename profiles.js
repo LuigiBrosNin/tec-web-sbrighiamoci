@@ -92,8 +92,8 @@ app.get("/profiles/", async (req, res) => {
             credit_limits_type = 0;
         }
 
-        console.log("credit_type: "+ credit_type);
-        console.log("credit_limits_type: "+ credit_limits_type);
+        console.log("credit_type: " + credit_type);
+        console.log("credit_limits_type: " + credit_limits_type);
 
         // check string params
         for (const param of possibleParams) {
@@ -111,8 +111,8 @@ app.get("/profiles/", async (req, res) => {
             } // handling followers_num 
             else if (req.query[param] !== undefined && req.query[param] !== NaN && param === "followers_num") {
                 search["followers_list"] = {
-                    $size: {
-                        $gte: parseInt(req.query[param])
+                    $gte: {
+                        $size: parseInt(req.query[param])
                     }
                 };
             } // handling credit_limits
