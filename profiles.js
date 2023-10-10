@@ -103,20 +103,19 @@ app.get("/profiles/", async (req, res) => {
 
         // check int params
         for (const param of possibleGTEParams) {
-            if (req.query[param] !== undefined && req.query[param] !== NaN && req.query[param] != "followers_num" && req.query[param] != "credit" && req.query[param] != "credit_limits") {
-                console.log("param: "+param+" value: "+req.query[param]);
+            if (req.query[param] !== undefined && req.query[param] !== NaN && param != "followers_num" && param != "credit" && param != "credit_limits") {
                 search[param] = {
                     $gte: parseInt(req.query[param])
                 };
             } // handling followers_num 
-            else if (req.query[param] === "followers_num") {
+            else if (param === "followers_num") {
                 search["followers_list"] = {
                     $size: {
                         $gte: req.query[param]
                     }
                 };
             } // handling credit
-            else if (req.query[param] === "credit") {
+            else if (param === "credit") {
                 console.log("right");
                 search[param] = [{
                     credit_type: {
@@ -124,7 +123,7 @@ app.get("/profiles/", async (req, res) => {
                     }
                 }];
             } // handling credit_limits
-            else if (req.query[param] === "credit_limits") {
+            else if (param === "credit_limits") {
                 search[param] = [{
                     credit_limits_type: {
                         $gte: parseInt(req.query[param])
