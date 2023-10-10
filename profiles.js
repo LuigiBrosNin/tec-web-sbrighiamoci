@@ -32,13 +32,15 @@ const collection = database.collection(profileCollection);
 //* GET
 // ritorna una lista di profili paginati, supporta query
 // campi supportati:
-// - startindex: indice di partenza per la paginazione
-// - endindex: indice di fine per la paginazione
+// - startindex: indice di partenza per la paginazione (DEFAULT 0)
+// - endindex: indice di fine per la paginazione (DEFAULT 10)
 // - account_type: tipo di profilo
 // - name: nome utente
 // - bio: bio utente
 // - credit: crediti utente (GTE)
+// - credit_type: tipo di crediti (0,1,2) (g,s,m) (DEFAULT 0)
 // - credit_limits: limiti di crediti utente (GTE)
+// - credit_limits_type: tipo di crediti (0,1,2) (g,s,m) (DEFAULT 0)
 // - squeals_num: numero di squeal profilo (inclusi deleted ones nel conteggio) (GTE)
 // - followers_num: numero di followers profilo (GTE)
 // - banned_until: data di fine ban (GTE)
@@ -65,11 +67,25 @@ app.get("/profiles/", async (req, res) => {
             return;
         }
 
-        const possibleParams =[ "name", "bio", "account_type"];
+        const possibleParams = ["name", "bio", "account_type"];
 
         const possibleGTEParams = ["credit", "credit_limits", "squeals_num", "followers_num", "banned_until"];
 
         let search = {};
+
+        // check credit type search
+        if (req.query.credit_type !== undefined && req.query.credit_type !== NaN && req.query.credit_type !== "0" && req.query.credit_type !== "1" && req.query.credit_type !== "2") {
+            search.credit_type = 0;
+        } else {
+            search.credit_type = parseInt(req.query.credit_type);
+        }
+
+        // check credit limits type search
+        if (req.query.credit_limits_type !== undefined && req.query.credit_limits_type !== NaN && req.query.credit_limits_type !== "0" && req.query.credit_limits_type !== "1" && req.query.credit_limits_type !== "2") {
+            search.credit_limits_type = 0;
+        } else {
+            search.credit_limits_type = parseInt(req.query.credit_limits_type);
+        }
 
         // check string params
         for (const param of possibleParams) {
@@ -86,7 +102,9 @@ app.get("/profiles/", async (req, res) => {
                 };
             } else if (req.query[param] === "followers_num") {
                 search["followers_list"] = {
-                    $size: {$gte: req.query[param]}
+                    $size: {
+                        $gte: req.query[param]
+                    }
                 };
             }
         }
@@ -95,6 +113,8 @@ app.get("/profiles/", async (req, res) => {
         if (req.query["is_banned"] !== undefined) {
             search["is_banned"] = req.query["is_banned"] === "true";
         }
+
+        console.log(JSON.stringify(search));
 
         await mongoClient.connect();
         let profiles = await collection.find(search)
@@ -105,11 +125,11 @@ app.get("/profiles/", async (req, res) => {
             .limit(endIndex) // returns endIndex squeals
             .toArray(); // returns the squeals as an array
 
-            // removing sensitive data
-            profiles.forEach(profile => {
-                delete profile.password;
-                delete profile.email;
-            });
+        // removing sensitive data
+        profiles.forEach(profile => {
+            delete profile.password;
+            delete profile.email;
+        });
 
         res.status(200).json(profiles); // returns the squeals
     } catch (error) {
@@ -128,7 +148,7 @@ app.get("/profiles/", async (req, res) => {
 //TODO TEST THE FUCTION
 app.delete("/profiles/", async (req, res) => {
     try {
-        const possibleParams =[ "name", "bio", "account_type"];
+        const possibleParams = ["name", "bio", "account_type"];
 
         const possibleGTEParams = ["credit", "credit_limits", "squeals_num", "followers_num", "banned_until"];
 
@@ -152,7 +172,9 @@ app.delete("/profiles/", async (req, res) => {
                 };
             } else if (req.query[param] === "followers_num") {
                 search["followers_list"] = {
-                    $size: {$gte: req.query[param]}
+                    $size: {
+                        $gte: req.query[param]
+                    }
                 };
             }
         }
@@ -212,7 +234,7 @@ app.get("/profiles/:name", async (req, res) => {
         const profile = await collection.findOne({
             name: profileName
         });
-        
+
         if (profile !== null) {
             delete profile.password;
             delete profile.email;
