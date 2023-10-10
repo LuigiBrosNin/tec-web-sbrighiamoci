@@ -42,12 +42,9 @@ const collection = database.collection(profileCollection);
 // - credit_limits: limiti di crediti utente (GTE)
 // - credit_limits_type: tipo di crediti (0,1,2) (g,s,m) (DEFAULT 0)
 // - squeals_num: numero di squeal profilo (inclusi deleted ones nel conteggio) (GTE)
-// - followers_num: numero di followers profilo (GTE)
+// - followers_num: numero di followers profilo (GTE) (NOT IMPLEMENTED DUE TO MONGODB SEARCH LIMITATIONS)
 // - banned_until: data di fine ban (GTE)
 // - is_banned: utente bannato (boolean)
-
-//TODO TEST THE FUCTION
-//TODO FIX CREDIT_LIMITS
 app.get("/profiles/", async (req, res) => {
     try {
         // initializing the start and end index in case they are not specified
@@ -70,7 +67,7 @@ app.get("/profiles/", async (req, res) => {
 
         const possibleParams = ["name", "bio", "account_type"];
 
-        const possibleGTEParams = ["credit", "credit_limits", "squeals_num", "followers_num", "banned_until"];
+        const possibleGTEParams = ["credit", "credit_limits", "squeals_num",/* "followers_num",*/ "banned_until"];
 
         let search = {};
 
@@ -109,13 +106,13 @@ app.get("/profiles/", async (req, res) => {
                     $gte: parseInt(req.query[param])
                 };
             } // handling followers_num 
-            else if (req.query[param] !== undefined && req.query[param] !== NaN && param === "followers_num") {
+/*            else if (req.query[param] !== undefined && req.query[param] !== NaN && param === "followers_num") {
                 search["followers_list"] = {
                     $gte: {
                         $size: parseInt(req.query[param])
                     }
                 };
-            } // handling credit_limits
+            }*/ // handling credit_limits
             else if (req.query[param] !== undefined && req.query[param] !== NaN && param === "credit_limits") {
                 search["credit_limits"] = {
                     $gte: parseInt(req.query[param])
@@ -169,14 +166,33 @@ app.get("/profiles/", async (req, res) => {
 //TODO TEST THE FUCTION
 app.delete("/profiles/", async (req, res) => {
     try {
+
         const possibleParams = ["name", "bio", "account_type"];
 
-        const possibleGTEParams = ["credit", "credit_limits", "squeals_num", "followers_num", "banned_until"];
+        const possibleGTEParams = ["credit", "credit_limits", "squeals_num",/* "followers_num",*/ "banned_until"];
 
         let search = {};
 
-        //TODO ADD AUTHORIZATION
-        let authorized = true;
+        let credit_type = 0;
+        let credit_limits_type = 0;
+
+        // check credit type search
+        if (req.query.credit_type !== undefined && req.query.credit_type !== NaN && req.query.credit_type !== "0" && req.query.credit_type !== "1" && req.query.credit_type !== "2") {
+            credit_type = parseInt(req.query.credit_type);
+        } else {
+            credit_type = 0;
+        }
+
+        // check credit limits type search
+        if (req.query.credit_limits_type !== undefined && req.query.credit_limits_type !== NaN && req.query.credit_limits_type !== "0" && req.query.credit_limits_type !== "1" && req.query.credit_limits_type !== "2") {
+            credit_limits_type = parseInt(req.query.credit_limits_type);
+        } else {
+
+            credit_limits_type = 0;
+        }
+
+        console.log("credit_type: " + credit_type);
+        console.log("credit_limits_type: " + credit_limits_type);
 
         // check string params
         for (const param of possibleParams) {
@@ -187,17 +203,30 @@ app.delete("/profiles/", async (req, res) => {
 
         // check int params
         for (const param of possibleGTEParams) {
-            if (req.query[param] !== undefined && req.query[param] !== NaN && req.query[param] !== "followers_num") {
+            if (req.query[param] !== undefined && req.query[param] !== NaN && param != "followers_num" && param != "credit" && param != "credit_limits") {
                 search[param] = {
                     $gte: parseInt(req.query[param])
                 };
-            } else if (req.query[param] === "followers_num") {
+            } // handling followers_num 
+/*            else if (req.query[param] !== undefined && req.query[param] !== NaN && param === "followers_num") {
                 search["followers_list"] = {
-                    $size: {
-                        $gte: req.query[param]
+                    $gte: {
+                        $size: parseInt(req.query[param])
                     }
                 };
+            }*/ // handling credit_limits
+            else if (req.query[param] !== undefined && req.query[param] !== NaN && param === "credit_limits") {
+                search["credit_limits"] = {
+                    $gte: parseInt(req.query[param])
+                };
+            } // handling credit
+            else if (req.query[param] !== undefined && req.query[param] !== NaN && param === "credit") {
+                console.log("right");
+                search["credit." + credit_type] = {
+                    $gte: parseInt(req.query[param])
+                };
             }
+
         }
 
         // check boolean param
@@ -205,6 +234,7 @@ app.delete("/profiles/", async (req, res) => {
             search["is_banned"] = req.query["is_banned"] === "true";
         }
 
+        console.log(JSON.stringify(search));
         if (Object.keys(search).length === 0) {
             res.status(400).json({
                 message: "No query specified"
@@ -245,8 +275,6 @@ app.delete("/profiles/", async (req, res) => {
 //* GET
 // ritorna il profilo con nome name
 // ritorna 404 se non esiste
-
-// TODO TEST THE FUCTION
 app.get("/profiles/:name", async (req, res) => {
     try {
         const profileName = req.params.name;
