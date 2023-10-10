@@ -73,18 +73,21 @@ app.get("/profiles/", async (req, res) => {
 
         let search = {};
 
+        let credit_type = 0;
+        let credit_limits_type = 0;
+
         // check credit type search
         if (req.query.credit_type !== undefined && req.query.credit_type !== NaN && req.query.credit_type !== "0" && req.query.credit_type !== "1" && req.query.credit_type !== "2") {
-            search.credit_type = 0;
+            credit_type = 0;
         } else {
-            search.credit_type = parseInt(req.query.credit_type);
+            credit_type = parseInt(req.query.credit_type);
         }
 
         // check credit limits type search
         if (req.query.credit_limits_type !== undefined && req.query.credit_limits_type !== NaN && req.query.credit_limits_type !== "0" && req.query.credit_limits_type !== "1" && req.query.credit_limits_type !== "2") {
-            search.credit_limits_type = 0;
+            credit_limits_type = 0;
         } else {
-            search.credit_limits_type = parseInt(req.query.credit_limits_type);
+            credit_limits_type = parseInt(req.query.credit_limits_type);
         }
 
         // check string params
@@ -96,15 +99,26 @@ app.get("/profiles/", async (req, res) => {
 
         // check int params
         for (const param of possibleGTEParams) {
-            if (req.query[param] !== undefined && req.query[param] !== NaN && req.query[param] !== "followers_num") {
+            if (req.query[param] !== undefined && req.query[param] !== NaN && req.query[param] !== "followers_num" && req.query[param] !== "credit" && req.query[param] !== "credit_limits") {
                 search[param] = {
                     $gte: parseInt(req.query[param])
                 };
-            } else if (req.query[param] === "followers_num") {
+            } // handling followers_num 
+            else if (req.query[param] === "followers_num") {
                 search["followers_list"] = {
                     $size: {
                         $gte: req.query[param]
                     }
+                };
+            } // handling credit
+            else if (req.query[param] === "credit") {
+                search[param][credit_type] = {
+                    $gte: parseInt(req.query[param]),
+                };
+            } // handling credit_limits
+            else if (req.query[param] === "credit_limits") {
+                search[param][credit_limits_type] = {
+                    $gte: parseInt(req.query[param]),
                 };
             }
         }
