@@ -109,21 +109,21 @@ app.get("/profiles/", async (req, res) => {
                     $gte: parseInt(req.query[param])
                 };
             } // handling followers_num 
-            else if (param === "followers_num") {
+            else if (req.query[param] !== undefined && req.query[param] !== NaN && param === "followers_num") {
                 search["followers_list"] = {
                     $size: {
                         $gte: req.query[param]
                     }
                 };
             } // handling credit_limits
-            else if (param === "credit_limits") {
+            else if (req.query[param] !== undefined && req.query[param] !== NaN && param === "credit_limits") {
                 search[param] = [{
                     credit_limits_type: {
                         $gte: parseInt(req.query[param])
                     }
                 }];
             } // handling credit
-            else if (param === "credit") {
+            else if (req.query[param] !== undefined && req.query[param] !== NaN && param === "credit") {
                 console.log("right");
                 search[param] = [{
                     credit_type: {
