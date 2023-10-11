@@ -549,8 +549,8 @@ console.log("Sto cancellando lo squeal [1]")
                         console.log('No squeal found with the id:', squealId);
                     }
                 });
+                console.log("Sono DOPO della deleteOne")
             }
-console.log("Sono DOPO della deleteOne")
             // the squeal has replies: move it to the deletedAccount and modify father/children accordingly
             else {
 console.log("Lo squeal da cancellare ha figli")
@@ -614,9 +614,6 @@ console.log("Lo squeal da cancellare ha figli")
     }
     catch (error) {
         console.error('Error connecting to the database:', error);
-    }
-    finally {
-        await mongoClient.close();
     }
 });
 
