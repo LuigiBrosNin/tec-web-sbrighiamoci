@@ -500,8 +500,8 @@ app.put("/squeals/:id", bodyParser.json(), async (req, res) => {
 app.delete("/squeals/:id", async (req, res) => {
     try {
         // check if the user has logged in
-        if ((await isAuthorized(req.session.user, typeOfProfile.user) && req.session.user === squeal.author) || (await isAuthorized(req.session.user, typeOfProfile.admin))) {
-            
+        if(true){   //if ((await isAuthorized(req.session.user, typeOfProfile.user) && req.session.user === squeal.author) || (await isAuthorized(req.session.user, typeOfProfile.admin))) {
+console.log("Sei dentro alla delete")
             const squealId = req.params.id; // squeal to delete
 
             // connect to the database
@@ -509,7 +509,7 @@ app.delete("/squeals/:id", async (req, res) => {
             const database = mongoClient.db(dbName);
             const collection = database.collection(squealCollection);
             const squeal = await collection.findOne({ id: squealId }); // fetching the squeal to delete
-
+console.log("Sei connesso al db")
             // if the squeal is not found, return 404
             if (squeal === null) {
                 res.status(404).json({ message: "Error: ID not found in database." });
@@ -519,14 +519,14 @@ app.delete("/squeals/:id", async (req, res) => {
             // if the squeal does not have replies:
             // - if it was replying to another one, modify the father deleting the id from the field "replies"
             // - remove it from DB(if it was replying, modify the father)
-            if (squeal.replies.length === 0) {
+            if (squeal.replies_list.length === 0) {
+console.log("Lo squeal da cancellare NON ha figli")
                 if (squeal.reply_to) {               // the squeal was replying to another one
                     let fatherId = squeal.reply_to
-
                     // remove from father's "replies" field the squeal that is going to be deleted
                     await collection.updateOne(
                         { id: fatherId },
-                        { $pull: { replies: squealId }, $inc: { replies_num: -1 } },
+                        { $pull: { replies_list: squealId }, $inc: { replies_num: -1 } },
                         (err, res) => {
                             if (err) {
                                 console.error('Error during the update of the father: ', err);
@@ -549,6 +549,7 @@ app.delete("/squeals/:id", async (req, res) => {
             }
             // the squeal has replies: move it to the deletedAccount and modify father/children accordingly
             else {
+console.log("Lo squeal da cancellare ha figli")
                 // retrieve the "DeletedSqueals" account
                 const deletedSquealsProfile = await Profiles.findOne({ name: "DeletedSqueals" })
                 const deletedSquealsNum = deletedSquealsProfile.deleted_squeals_num
@@ -576,7 +577,7 @@ app.delete("/squeals/:id", async (req, res) => {
                     // replace father's "replies" occurrence of the deleted squeal with DeletedSqueals id
                     await collection.updateOne(
                         { id: fatherId },
-                        { $set: { 'replies[$[elementIndex]]': `DeletedSqueals${deletedSquealsNum}` } },
+                        { $set: { 'replies_list[$[elementIndex]]': `DeletedSqueals${deletedSquealsNum}` } },
                         { arrayFilters: arrayFilters },
                         (err, res) => {
                             if (err) {
