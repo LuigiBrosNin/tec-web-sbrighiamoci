@@ -505,7 +505,7 @@ console.log("Sei dentro alla delete")
             const squealId = req.params.id; // squeal to delete
 
             // connect to the database
-            await mongoClient.connect();
+            await mongoClient.connect();  // TODO fare await ogni volta che ci si connette al database
             const database = mongoClient.db(dbName);
             const collection = database.collection(squealCollection);
             const squeal = await collection.findOne({ id: squealId }); // fetching the squeal to delete
