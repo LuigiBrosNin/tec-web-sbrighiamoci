@@ -539,6 +539,8 @@ console.log("Lo squeal da cancellare NON ha figli ma HA un padre")
                 }
                 // delete squeal from database
 console.log("Sono PRIMA della deleteOne")
+                await mongoClient.connect();
+                /*
                 await collection.deleteOne({ id: squealId }, (err, res) => {
 console.log("Sto cancellando lo squeal [1]")
                     if (err) {
@@ -548,8 +550,20 @@ console.log("Sto cancellando lo squeal [1]")
                     } else {
                         console.log('No squeal found with the id:', squealId);
                     }
-                });
-                console.log("Sono DOPO della deleteOne")
+                });*/
+                try {
+                    const result = await collection.deleteOne({ id: squealId });
+console.log("Sto cancellando lo squeal [1]")
+                    if (result.deletedCount === 1) {
+                        console.log('Squeal successfully erased.');
+                    } else {
+                        console.log('No squeal found with the id:', squealId);
+                    }
+                } catch (error) {
+                    console.error('Error deleting the squeal:', error);
+                }
+
+console.log("Sono DOPO della deleteOne")
             }
             // the squeal has replies: move it to the deletedAccount and modify father/children accordingly
             else {
