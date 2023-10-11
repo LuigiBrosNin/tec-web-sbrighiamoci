@@ -522,6 +522,7 @@ console.log("Sei connesso al db")
             if (squeal.replies_num === 0) {
 console.log("Lo squeal da cancellare NON ha figli")
                 if (squeal.reply_to) {               // the squeal was replying to another one
+console.log("Lo squeal da cancellare NON ha figli ma HA un padre")
                     let fatherId = squeal.reply_to
                     // remove from father's "replies" field the squeal that is going to be deleted
                     await collection.updateOne(
@@ -538,6 +539,7 @@ console.log("Lo squeal da cancellare NON ha figli")
                 }
                 // delete squeal from database
                 await collection.deleteOne({ id: squealId }, (err, res) => {
+console.log("Sto cancellando lo squeal [1]")
                     if (err) {
                         console.error('Error deleting the squeal:', err);
                     } else if (res.deletedCount === 1) {
