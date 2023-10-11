@@ -519,7 +519,7 @@ console.log("Sei connesso al db")
             // if the squeal does not have replies:
             // - if it was replying to another one, modify the father deleting the id from the field "replies"
             // - remove it from DB(if it was replying, modify the father)
-            if (squeal.replies_list.length === 0) {
+            if (squeal.replies_num === 0) {
 console.log("Lo squeal da cancellare NON ha figli")
                 if (squeal.reply_to) {               // the squeal was replying to another one
                     let fatherId = squeal.reply_to
