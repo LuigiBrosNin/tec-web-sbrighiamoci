@@ -515,7 +515,7 @@ console.log("Sei connesso al db")
                 res.status(404).json({ message: "Error: ID not found in database." });
                 return;
             }
-
+console.log("Devo cancellare lo squeal con id: " + squealId)
             // if the squeal does not have replies:
             // - if it was replying to another one, modify the father deleting the id from the field "replies"
             // - remove it from DB(if it was replying, modify the father)
