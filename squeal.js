@@ -538,6 +538,7 @@ console.log("Lo squeal da cancellare NON ha figli ma HA un padre")
                     );
                 }
                 // delete squeal from database
+console.log("Sono PRIMA della deleteOne")
                 await collection.deleteOne({ id: squealId }, (err, res) => {
 console.log("Sto cancellando lo squeal [1]")
                     if (err) {
@@ -549,6 +550,7 @@ console.log("Sto cancellando lo squeal [1]")
                     }
                 });
             }
+console.log("Sono DOPO della deleteOne")
             // the squeal has replies: move it to the deletedAccount and modify father/children accordingly
             else {
 console.log("Lo squeal da cancellare ha figli")
