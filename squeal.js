@@ -506,8 +506,8 @@ console.log("Sei dentro alla delete")
 
             // connect to the database
             await mongoClient.connect();  // TODO fare await ogni volta che ci si connette al database
-            const database = mongoClient.db(dbName);
-            const collection = database.collection(squealCollection);
+        //    const database = mongoClient.db(dbName);
+        //    const collection = database.collection(squealCollection);
             const squeal = await collection.findOne({ id: squealId }); // fetching the squeal to delete
 console.log("Sei connesso al db")
             // if the squeal is not found, return 404
@@ -540,17 +540,6 @@ console.log("Lo squeal da cancellare NON ha figli ma HA un padre")
                 // delete squeal from database
 console.log("Sono PRIMA della deleteOne")
                 await mongoClient.connect();
-                /*
-                await collection.deleteOne({ id: squealId }, (err, res) => {
-console.log("Sto cancellando lo squeal [1]")
-                    if (err) {
-                        console.error('Error deleting the squeal:', err);
-                    } else if (res.deletedCount === 1) {
-                        console.log('Squeal successfuly erased.');
-                    } else {
-                        console.log('No squeal found with the id:', squealId);
-                    }
-                });*/
                 try {
                     const result = await collection.deleteOne({ id: squealId });
 console.log("Sto cancellando lo squeal [1]")
