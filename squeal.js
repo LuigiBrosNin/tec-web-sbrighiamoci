@@ -353,20 +353,6 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
     }
 })
 
-/*
-    try {
-        await mongo.connect();
-        const database = mongo.db(dbName);
-        const collection = database.collection(squealCollection);
-        const squeals = await collection.find().toArray();
-        res.status(200).json(squeals);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    } finally {
-        await mongo.close();
-    }
-*/
-
 
 /* -------------------------------------------------------------------------- */
 /*                                /SQUEALS/:ID                                */
@@ -496,7 +482,7 @@ app.put("/squeals/:id", bodyParser.json(), async (req, res) => {
 // * DELETE UNFINISHED
 // elimina lo squeal con id = id ricevuto come parametro
 
-//todo rimpiazzare replies con replies_list, e forse modificare replies_num qui in giro dove hai usato replies
+
 app.delete("/squeals/:id", async (req, res) => {
     try {
         // check if the user has logged in
@@ -538,7 +524,7 @@ console.log("Lo squeal da cancellare NON ha figli ma HA un padre")
                     );
                 }
                 // delete squeal from database
-console.log("Sono PRIMA della deleteOne")
+console.log("Sono PRIMA della deleteOne [1]")
                 await mongoClient.connect();
                 try {
                     const result = await collection.deleteOne({ id: squealId });
@@ -552,16 +538,17 @@ console.log("Sto cancellando lo squeal [1]")
                     console.error('Error deleting the squeal:', error);
                 }
 
-console.log("Sono DOPO della deleteOne")
+console.log("Sono DOPO della deleteOne [1]")
             }
             // the squeal has replies: move it to the deletedAccount and modify father/children accordingly
             else {
-console.log("Lo squeal da cancellare ha figli")
+console.log("Lo squeal da cancellare HA FIGLI")
                 // retrieve the "DeletedSqueals" account
                 const deletedSquealsProfile = await Profiles.findOne({ name: "DeletedSqueals" })
                 const deletedSquealsNum = deletedSquealsProfile.deleted_squeals_num
 
                 // reset fields of the squeal to be deleted, and move it to the DeletedSqueals profile
+                await mongoClient.connect();
                 await collection.updateOne(
                     { _id: squeal._id },
                     {
@@ -582,6 +569,7 @@ console.log("Lo squeal da cancellare ha figli")
                     const arrayFilters = [{ elementIndex: fatherId }];
 
                     // replace father's "replies" occurrence of the deleted squeal with DeletedSqueals id
+                    await mongoClient.connect();
                     await collection.updateOne(
                         { id: fatherId },
                         { $set: { 'replies_list[$[elementIndex]]': `DeletedSqueals${deletedSquealsNum}` } },
@@ -597,6 +585,7 @@ console.log("Lo squeal da cancellare ha figli")
                 }
 
                 // update the replies of the deleted squeal
+                await mongoClient.connect();
                 let squealRepliesList = squeal.replies_list
 
                 squealRepliesList.forEach(async (reply) => {
