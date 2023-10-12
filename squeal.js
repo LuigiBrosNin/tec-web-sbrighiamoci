@@ -569,7 +569,7 @@ console.log("Lo squeal da cancellare HA un padre")
                     let fatherId = squeal.reply_to
                     const arrayFilters = [{ elementIndex: fatherId }];
                     const elementIndex = squeal.replies_list.indexOf(squealId);
-
+/*
                     // replace father's "replies" occurrence of the deleted squeal with DeletedSqueals id
                     await mongoClient.connect();
                     await collection.updateOne(
@@ -584,10 +584,11 @@ console.log("Lo squeal da cancellare HA un padre")
                             }
                         }
                     );
+                    */
                 }
-
                 // update the replies of the deleted squeal
                 await mongoClient.connect();
+console.log("Ora modifico il campo reply_to del padre")
                 let squealRepliesList = squeal.replies_list
 
                 squealRepliesList.forEach(async (reply) => {
@@ -606,6 +607,7 @@ console.log("Lo squeal da cancellare HA un padre")
 
                 // TODO è corretta la posizione dell'incremento di DeletedSqueals?
                 await mongoClient.connect();
+console.log("Incremento il contatore del profilo DeletedSqueals")
                 await collection.updateOne(
                     { _id: deletedSquealsProfile._id },
                     { $inc: { [squeals_num]: 1 } }
