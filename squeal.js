@@ -562,17 +562,19 @@ console.log("Lo squeal da cancellare HA FIGLI")
                         }
                     }
                 );
-
+            
                 // if the squeal has a father, replace the squeal occurrence in the "replies_list"
                 if (squeal.reply_to) {
+console.log("Lo squeal da cancellare HA un padre")
                     let fatherId = squeal.reply_to
                     const arrayFilters = [{ elementIndex: fatherId }];
+                    const elementIndex = squeal.replies_list.indexOf(squealId);
 
                     // replace father's "replies" occurrence of the deleted squeal with DeletedSqueals id
                     await mongoClient.connect();
                     await collection.updateOne(
                         { id: fatherId },
-                        { $set: { 'replies_list[$[elementIndex]]': `DeletedSqueals${deletedSquealsNum}` } },
+                        { $set: { "replies_list.$[elementIndex]" : `DeletedSqueals${deletedSquealsNum}` } },
                         { arrayFilters: arrayFilters },
                         (err, res) => {
                             if (err) {
@@ -594,7 +596,7 @@ console.log("Lo squeal da cancellare HA FIGLI")
 
                         await collection.updateOne(
                             { _id: tmp_reply._id },
-                            { $set: { reply_to: `DeletedSqueals${numDeletedSqueals}` } }
+                            { $set: { reply_to: `DeletedSqueals${deletedSquealsNum}` } }
                         );
                     }
                     catch {
