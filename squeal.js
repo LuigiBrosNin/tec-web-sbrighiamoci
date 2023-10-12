@@ -545,7 +545,7 @@ console.log("Sono DOPO della deleteOne [1]")
 console.log("Lo squeal da cancellare HA FIGLI")
                 // retrieve the "DeletedSqueals" account
                 const deletedSquealsProfile = await Profiles.findOne({ name: "DeletedSqueals" })
-                const deletedSquealsNum = deletedSquealsProfile.deleted_squeals_num
+                const deletedSquealsNum = deletedSquealsProfile.squeals_num
 
                 // reset fields of the squeal to be deleted, and move it to the DeletedSqueals profile
                 await mongoClient.connect();
@@ -601,6 +601,13 @@ console.log("Lo squeal da cancellare HA FIGLI")
                         res.status(500).json({ message: error.message });
                     }
                 });
+
+                // TODO è corretta la posizione dell'incremento di DeletedSqueals?
+                await mongoClient.connect();
+                await collection.updateOne(
+                    { _id: deletedSquealsProfile._id },
+                    { $inc: { [squeals_num]: 1 } }
+                );
             }
         }
     }
