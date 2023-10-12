@@ -574,7 +574,7 @@ console.log("Lo squeal da cancellare HA un padre")
                     await mongoClient.connect();
                     await collection.updateOne(
                         { id: fatherId },
-                        { $set: { "replies_list.$[elementIndex]" : `DeletedSqueals${deletedSquealsNum}` } },
+                        { $set: { [`replies_list.$[elementIndex]`] : `DeletedSqueals${deletedSquealsNum}` } },
                         { arrayFilters: arrayFilters },
                         (err, res) => {
                             if (err) {
