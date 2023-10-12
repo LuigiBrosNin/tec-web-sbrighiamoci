@@ -544,7 +544,7 @@ console.log("Sono DOPO della deleteOne [1]")
             else {
 console.log("Lo squeal da cancellare HA FIGLI")
                 // retrieve the "DeletedSqueals" account
-                const deletedSquealsProfile = await Profiles.findOne({ name: "DeletedSqueals" })
+                const deletedSquealsProfile = await collection_for_profiles.findOne({ name: "DeletedSqueals" })
                 const deletedSquealsNum = deletedSquealsProfile.squeals_num
 
                 // reset fields of the squeal to be deleted, and move it to the DeletedSqueals profile
