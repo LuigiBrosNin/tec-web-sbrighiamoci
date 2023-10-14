@@ -564,7 +564,7 @@ console.log("Lo squeal da cancellare HA FIGLI")
                 );
             
                 // if the squeal has a father, replace the squeal occurrence in the "replies_list"
-                if (squeal.reply_to) {
+                if (squeal.reply_to.length !== 0) {
 console.log("Lo squeal da cancellare HA un padre")
                     let fatherId = squeal.reply_to
                     const arrayFilters = [{ elementIndex: fatherId }];
@@ -588,10 +588,12 @@ console.log("Lo squeal da cancellare HA un padre")
                 }
                 // update the replies of the deleted squeal
                 await mongoClient.connect();
-console.log("Ora modifico il campo reply_to del padre")
-                let squealRepliesList = squeal.replies_list
+console.log("Ora modifico il campo reply_to del figlio")
+let squealRepliesList = squeal.replies_list
 
-                squealRepliesList.forEach(async (reply) => {
+                squealRepliesList.forEach(async (reply) => {            
+console.log("Devo modificare il reply_to, uso il campo:" + squealRepliesList)
+                    
                     try {
                         let tmp_reply = await collection.find({ id: reply })  // retrieve a squeal that was a reply to the deleted squeal
 
@@ -610,7 +612,7 @@ console.log("Ora modifico il campo reply_to del padre")
 console.log("Incremento il contatore del profilo DeletedSqueals")
                 await collection.updateOne(
                     { _id: deletedSquealsProfile._id },
-                    { $inc: { [squeals_num]: 1 } }
+                    { $inc: { squeals_num: 1 } }
                 );
             }
         }
