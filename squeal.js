@@ -596,7 +596,7 @@ console.log("Devo modificare il reply_to, uso il campo:" + squealRepliesList)
                     
                     try {
                         let tmp_reply = await collection.find({ id: reply })  // retrieve a squeal that was a reply to the deleted squeal
-
+console.log("Ho trovato una reply_to, ora faccio update, l'id è: " + tmp_reply.id)
                         await collection.updateOne(
                             { _id: tmp_reply._id },
                             { $set: { reply_to: `DeletedSqueals${deletedSquealsNum}` } }
