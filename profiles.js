@@ -452,8 +452,10 @@ app.post("/profiles/:name", async (req, res) => {
             delete profile.account_type;
         }
 
+        console.log(JSON.stringify(profile));
+
         await mongoClient.connect();
-        const result = await collection.updateOne(profile);
+        const result = await collection.updateOne(JSON.stringify(profile));
 
         if (result.upsertedCount > 0) {
             res.status(201).json({
