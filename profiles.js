@@ -454,8 +454,10 @@ app.post("/profiles/:name", async (req, res) => {
 
         console.log(JSON.stringify(profile));
 
-        await mongoClient.connect();
-        const result = await collection.updateOne(JSON.stringify(profile));
+        const result = await collection.updateOne(
+            { name: profileName },
+            { $set: profile }
+        );
 
         if (result.upsertedCount > 0) {
             res.status(201).json({
