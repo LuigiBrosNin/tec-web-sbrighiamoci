@@ -16,6 +16,27 @@ function sub(){
 /*                         Luizo's temp test fucntions                        */
 /* -------------------------------------------------------------------------- */
 
+// Profile PUT request
+function addProfileTest() {
+  const body = {
+    email: "sussy",
+    password: "baka",
+    bio: "I'm a sussy baka",
+    account_type: "admin",
+  };
+
+  console.log("Sending body: " + JSON.stringify(body));
+
+  fetch("https://site222326.tw.cs.unibo.it/profiles/Luizo", {
+    method: "PUT",
+    headers: {
+      "Content-type": "application/json; charset=UTF-8"
+    },
+    body: JSON.stringify(body)
+  });
+}
+
+
 //Squeals PUT request
 function addSquealTest() {
   const body = {

@@ -471,8 +471,6 @@ app.post("/profiles/:name", async (req, res) => {
 //* GET
 // ritorna il numero di followers del profilo con nome name
 // ritorna 404 se non esiste
-
-//TODO TEST THE FUNCTION
 app.get("/profiles/:name/followersnumber", async (req, res) => {
     try {
         const profileName = req.params.name;
