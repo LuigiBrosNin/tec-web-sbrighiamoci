@@ -330,7 +330,7 @@ app.put("/profiles/:name", async (req, res) => {
             profile.propic === "SOME URI";
         }
         if (profile.bio === undefined) {
-            profile.bio === "";
+            profile.bio = "";
         }
 
         // checking if there's missing info
@@ -341,13 +341,25 @@ app.put("/profiles/:name", async (req, res) => {
             return;
         }
 
-        await mongoClient.connect();
-        const result = await collection.insertOne(profile);
+        console.log(JSON.stringify(profile));
 
-        if (result.insertedCount > 0) {
-            res.status(201).json({
-                message: "Profile created"
-            });
+        await mongoClient.connect();
+        const existingProfile = await collection.findOne({
+            name: profile.name
+        });
+
+        if (existingProfile == null) {
+            const result = await collection.insertOne(profile);
+
+            if (result.insertedCount > 0) {
+                res.status(201).json({
+                    message: "Profile created"
+                });
+            } else {
+                res.status(500).json({
+                    message: "Failed to create profile"
+                });
+            }
         } else {
             res.status(409).json({
                 message: "Profile already exists"
