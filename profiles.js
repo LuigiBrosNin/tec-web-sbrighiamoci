@@ -16,6 +16,7 @@ const {
     squealCollection,
     profileCollection,
     mongoClient,
+    CREDIT_LIMITS
 } = require("./const.js");
 
 // connecting to the database
@@ -288,6 +289,203 @@ app.get("/profiles/:name", async (req, res) => {
             delete profile.password;
             delete profile.email;
             res.status(200).json(profile);
+        } else {
+            res.status(404).json({
+                message: "Profile not found"
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+});
+
+//* PUT
+// crea il profilo con nome name
+// ritorna 409 se esiste già
+// ritorna 400 se mancano informazioni
+
+// TODO TEST THE FUNCTION
+app.put("/profiles/:name", async (req, res) => {
+    try {
+        // setting up info for the new profile
+        const profileName = req.params.name;
+        const profile = req.body;
+        profile.name = profileName;
+        profile.followers_list = [];
+        profile.following_list = [];
+        profile.squeals_list = [];
+        profile.squeals_num = 0;
+        profile.credit = CREDIT_LIMITS;
+        profile.credit_limits = CREDIT_LIMITS;
+        profile.is_banned = false;
+        profile.banned_until = null;
+        const allowedAccountTypes = ["normal", "admin", "premium", "smm"];
+        if (!allowedAccountTypes.includes(profile.account_type)) {
+            profile.account_type = "normal";
+        }
+        if (profile.propic === undefined) {
+            // STOCK PROFILE PIC
+            profile.propic === "SOME URI";
+        }
+        if (profile.bio === undefined) {
+            profile.bio === "";
+        }
+
+        // checking if there's missing info
+        if (profile.password === undefined || profile.email === undefined) {
+            res.status(400).json({
+                message: "Missing password or email"
+            });
+            return;
+        }
+
+        await mongoClient.connect();
+        const result = await collection.insertOne(profile);
+
+        if (result.insertedCount > 0) {
+            res.status(201).json({
+                message: "Profile created"
+            });
+        } else {
+            res.status(409).json({
+                message: "Profile already exists"
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+});
+
+//* DELETE
+// cancella il profilo con nome name
+// ritorna 404 se non esiste
+// ritorna 401 se non sei autorizzato
+
+// ? how do we handle dependencies? there are many (squeals, followers, following)
+// TODO ADD AUTHORIZATION
+// TODO TEST THE FUNCTION
+app.delete("/profiles/:name", async (req, res) => {
+    try {
+        const profileName = req.params.name;
+        const authorized = true; /*isAuthorized(req, "admin");*/
+
+        if (authorized) {
+            await mongoClient.connect();
+            const result = await collection.deleteOne({
+                name: profileName
+            });
+            if (result.deletedCount > 0) {
+                res.status(200).json({
+                    message: "Profile deleted"
+                });
+            } else {
+                res.status(404).json({
+                    message: "Profile not found"
+                });
+            }
+        } else {
+            res.status(401).json({
+                message: "Unauthorized"
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+});
+
+//* POST
+// modifica il profilo con nome name
+// ritorna 404 se non esiste
+// ritorna 401 se non sei autorizzato
+// ritorna 400 se mancano informazioni necessarie
+// SOLO ADMIN
+
+// TODO ADD AUTHORIZATION
+// TODO TEST THE FUNCTION
+app.post("/profiles/:name", async (req, res) => {
+    try {
+        // setting up info for the updated profile
+        const profileName = req.params.name;
+        const authorized = true; /*isAuthorized(req, "admin");*/
+
+        if (!authorized) {
+            res.status(401).json({
+                message: "Unauthorized"
+            });
+            return;
+        }
+
+        await mongoClient.connect();
+        const exists = await collection.findOne({ name: profileName });
+        // checking if the profile exists
+        if (!exists) {
+            res.status(404).json({
+                message: "Profile does not exist"
+            });
+            return;
+        }
+
+        // changing name messes up with dependencies, i don't wanna tackle that
+        const possibleParams = ["bio", "account_type", "propic", "credit", "credit_limits", "is_banned", "banned_until"];
+        let profile = {};
+        for (const param of possibleParams) {
+            if (req.body[param] !== undefined) {
+                profile[param] = req.body[param];
+            }
+        }
+        const allowedAccountTypes = ["normal", "admin", "premium", "smm"];
+        if (!allowedAccountTypes.includes(profile.account_type)) {
+            delete profile.account_type;
+        }
+
+        await mongoClient.connect();
+        const result = await collection.updateOne(profile);
+
+        if (result.upsertedCount > 0) {
+            res.status(201).json({
+                message: "Profile updated"
+            });
+        } else {
+            res.status(409).json({
+                message: "error updating profile"
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+});
+
+/* -------------------------------------------------------------------------- */
+/*                        /PROFILES/:NAME/FOLLOWERSNUMBER                     */
+/*                                     GET                                    */
+/* -------------------------------------------------------------------------- */
+
+//* GET
+// ritorna il numero di followers del profilo con nome name
+// ritorna 404 se non esiste
+
+//TODO TEST THE FUNCTION
+app.get("/profiles/:name/followersnumber", async (req, res) => {
+    try {
+        const profileName = req.params.name;
+
+        await mongoClient.connect();
+        const profile = await collection.findOne({
+            name: profileName
+        });
+
+        if (profile !== null) {
+            res.status(200).json({
+                followers_number: profile.followers_list.length
+            });
         } else {
             res.status(404).json({
                 message: "Profile not found"

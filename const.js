@@ -9,6 +9,8 @@ const dbName = "SquealerDB";
 const squealCollection = "Squeals";
 const profileCollection = "Profiles";
 
+const CREDIT_LIMITS = [150, 500, 1000];
+
 const CM = 0.25;
 
-module.exports = {dbName, squealCollection, profileCollection, mongoClient, CM};
+module.exports = {dbName, squealCollection, profileCollection, mongoClient, CREDIT_LIMITS, CM};
