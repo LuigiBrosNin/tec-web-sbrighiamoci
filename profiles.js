@@ -351,7 +351,7 @@ app.put("/profiles/:name", async (req, res) => {
         if (existingProfile == null) {
             const result = await collection.insertOne(profile);
 
-            if (result.insertedCount > 0) {
+            if (result.acknowledged) {
                 res.status(201).json({
                     message: "Profile created"
                 });

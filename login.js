@@ -17,7 +17,7 @@ function sub(){
 /* -------------------------------------------------------------------------- */
 
 // Profile PUT request
-function addProfileTest() {
+function addProfileTest(param_id) {
   const body = {
     email: "sussy",
     password: "baka",
@@ -27,7 +27,7 @@ function addProfileTest() {
 
   console.log("Sending body: " + JSON.stringify(body));
 
-  fetch("https://site222326.tw.cs.unibo.it/profiles/Rukia", {
+  fetch(`https://site222326.tw.cs.unibo.it/profiles/${param_id}`, {
     method: "PUT",
     headers: {
       "Content-type": "application/json; charset=UTF-8"
