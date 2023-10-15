@@ -36,6 +36,30 @@ function addProfileTest(param_id) {
   });
 }
 
+// Profile POST request
+function updateProfileTest(param_id) {
+  const body = {
+    email: "sussy",
+    password: "baka",
+    bio: "I'm a sussy baka",
+    account_type: "normal",
+    propic: "some other uri",
+    credit: [0, 0, 0],
+    credit_limit: [999, 999, 999],
+    is_banned: false,
+    banned_until: null
+  };
+
+  console.log("Sending body: " + JSON.stringify(body));
+
+  fetch(`https://site222326.tw.cs.unibo.it/profiles/${param_id}`, {
+    method: "POST",
+    headers: {
+      "Content-type": "application/json; charset=UTF-8"
+    },
+    body: JSON.stringify(body)
+  });
+}
 
 //Squeals PUT request
 function addSquealTest() {

@@ -374,7 +374,6 @@ app.put("/profiles/:name", async (req, res) => {
 
 // ? how do we handle dependencies? there are many (squeals, followers, following)
 // TODO ADD AUTHORIZATION
-// TODO TEST THE FUNCTION
 app.delete("/profiles/:name", async (req, res) => {
     try {
         const profileName = req.params.name;
@@ -412,7 +411,7 @@ app.delete("/profiles/:name", async (req, res) => {
 // ritorna 401 se non sei autorizzato
 // ritorna 400 se mancano informazioni necessarie
 // SOLO ADMIN
-
+// Parametri supportati: bio, account_type, propic, credit, credit_limits, is_banned, banned_until
 // TODO ADD AUTHORIZATION
 // TODO TEST THE FUNCTION
 app.post("/profiles/:name", async (req, res) => {
