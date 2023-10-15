@@ -305,8 +305,6 @@ app.get("/profiles/:name", async (req, res) => {
 // crea il profilo con nome name
 // ritorna 409 se esiste già
 // ritorna 400 se mancano informazioni
-
-// TODO TEST THE FUNCTION
 app.put("/profiles/:name", async (req, res) => {
     try {
         // setting up info for the new profile
@@ -353,16 +351,9 @@ app.put("/profiles/:name", async (req, res) => {
 
         if (existingProfile == null) {
             const result = await collection.insertOne(profile);
-
-            if (result.insertedCount === 1) {
                 res.status(201).json({
                     message: "Profile created"
                 });
-            } else {
-                res.status(500).json({
-                    message: "Failed to create profile"
-                });
-            }
         } else {
             res.status(409).json({
                 message: "Profile already exists"

@@ -76,6 +76,16 @@ function addSquealTest() {
   .catch(error => console.error(error));
 }
 
+// Profile DELETE request
+function deleteProfileTest(param_id) {
+  fetch(`https://site222326.tw.cs.unibo.it/profiles/${param_id}`, {
+    method: "DELETE"
+  })
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error(error));
+}
+
 // Squeals ID DELETE request
 function deleteSquealTest(param_id) {
   fetch(`https://site222326.tw.cs.unibo.it/squeals/${param_id}`, {
