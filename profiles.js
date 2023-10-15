@@ -68,7 +68,7 @@ app.get("/profiles/", async (req, res) => {
 
         const possibleParams = ["name", "bio", "account_type"];
 
-        const possibleGTEParams = ["credit", "credit_limits", "squeals_num",/* "followers_num",*/ "banned_until"];
+        const possibleGTEParams = ["credit", "credit_limits", "squeals_num", /* "followers_num",*/ "banned_until"];
 
         let search = {};
 
@@ -107,13 +107,13 @@ app.get("/profiles/", async (req, res) => {
                     $gte: parseInt(req.query[param])
                 };
             } // handling followers_num 
-/*            else if (req.query[param] !== undefined && req.query[param] !== NaN && param === "followers_num") {
-                search["followers_list"] = {
-                    $gte: {
-                        $size: parseInt(req.query[param])
-                    }
-                };
-            }*/ // handling credit_limits
+            /*            else if (req.query[param] !== undefined && req.query[param] !== NaN && param === "followers_num") {
+                            search["followers_list"] = {
+                                $gte: {
+                                    $size: parseInt(req.query[param])
+                                }
+                            };
+                        }*/ // handling credit_limits
             else if (req.query[param] !== undefined && req.query[param] !== NaN && param === "credit_limits") {
                 search["credit_limits"] = {
                     $gte: parseInt(req.query[param])
@@ -170,7 +170,7 @@ app.delete("/profiles/", async (req, res) => {
 
         const possibleParams = ["name", "bio", "account_type"];
 
-        const possibleGTEParams = ["credit", "credit_limits", "squeals_num",/* "followers_num",*/ "banned_until"];
+        const possibleGTEParams = ["credit", "credit_limits", "squeals_num", /* "followers_num",*/ "banned_until"];
 
         let search = {};
 
@@ -209,13 +209,13 @@ app.delete("/profiles/", async (req, res) => {
                     $gte: parseInt(req.query[param])
                 };
             } // handling followers_num 
-/*            else if (req.query[param] !== undefined && req.query[param] !== NaN && param === "followers_num") {
-                search["followers_list"] = {
-                    $gte: {
-                        $size: parseInt(req.query[param])
-                    }
-                };
-            }*/ // handling credit_limits
+            /*            else if (req.query[param] !== undefined && req.query[param] !== NaN && param === "followers_num") {
+                            search["followers_list"] = {
+                                $gte: {
+                                    $size: parseInt(req.query[param])
+                                }
+                            };
+                        }*/ // handling credit_limits
             else if (req.query[param] !== undefined && req.query[param] !== NaN && param === "credit_limits") {
                 search["credit_limits"] = {
                     $gte: parseInt(req.query[param])
@@ -351,9 +351,10 @@ app.put("/profiles/:name", async (req, res) => {
 
         if (existingProfile == null) {
             const result = await collection.insertOne(profile);
-                res.status(201).json({
-                    message: "Profile created"
-                });
+            
+            res.status(200).json({
+                message: "Profile created"
+            });
         } else {
             res.status(409).json({
                 message: "Profile already exists"
@@ -428,7 +429,9 @@ app.post("/profiles/:name", async (req, res) => {
         }
 
         await mongoClient.connect();
-        const exists = await collection.findOne({ name: profileName });
+        const exists = await collection.findOne({
+            name: profileName
+        });
         // checking if the profile exists
         if (!exists) {
             res.status(404).json({
