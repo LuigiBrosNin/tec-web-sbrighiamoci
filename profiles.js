@@ -311,8 +311,9 @@ app.put("/profiles/:name", async (req, res) => {
     try {
         // setting up info for the new profile
         const profileName = req.params.name;
-        const profile = req.body;
         profile.name = profileName;
+        const profile = req.body;
+
         profile.followers_list = [];
         profile.following_list = [];
         profile.squeals_list = [];
@@ -351,7 +352,7 @@ app.put("/profiles/:name", async (req, res) => {
         if (existingProfile == null) {
             const result = await collection.insertOne(profile);
 
-            if (result.acknowledged) {
+            if (result != null) {
                 res.status(201).json({
                     message: "Profile created"
                 });
