@@ -351,7 +351,7 @@ app.put("/profiles/:name", async (req, res) => {
 
         if (existingProfile == null) {
             const result = await collection.insertOne(profile);
-            
+
             res.status(200).json({
                 message: "Profile created"
             });
@@ -413,7 +413,6 @@ app.delete("/profiles/:name", async (req, res) => {
 // SOLO ADMIN
 // Parametri supportati: bio, account_type, propic, credit, credit_limits, is_banned, banned_until
 // TODO ADD AUTHORIZATION
-// TODO TEST THE FUNCTION
 app.post("/profiles/:name", async (req, res) => {
     try {
         // setting up info for the updated profile
@@ -454,20 +453,16 @@ app.post("/profiles/:name", async (req, res) => {
 
         console.log(JSON.stringify(profile));
 
-        const result = await collection.updateOne(
-            { name: profileName },
-            { $set: profile }
-        );
+        const result = await collection.updateOne({
+            name: profileName
+        }, {
+            $set: profile
+        });
 
-        if (result.upsertedCount > 0) {
-            res.status(201).json({
-                message: "Profile updated"
-            });
-        } else {
-            res.status(409).json({
-                message: "error updating profile"
-            });
-        }
+        res.status(201).json({
+            message: "Profile updated"
+        });
+
     } catch (error) {
         res.status(500).json({
             message: error.message
