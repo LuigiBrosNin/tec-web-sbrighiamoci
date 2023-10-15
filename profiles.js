@@ -310,18 +310,20 @@ app.get("/profiles/:name", async (req, res) => {
 app.put("/profiles/:name", async (req, res) => {
     try {
         // setting up info for the new profile
-        const profileName = req.params.name;
-        profile.name = profileName;
-        const profile = req.body;
+        const name = req.params.name;
+        const profile = {
+            name: name,
+            ...req.body,
+            followers_list: [],
+            following_list: [],
+            squeals_list: [],
+            squeals_num: 0,
+            credit: CREDIT_LIMITS,
+            credit_limits: CREDIT_LIMITS,
+            is_banned: false,
+            banned_until: null,
+        };
 
-        profile.followers_list = [];
-        profile.following_list = [];
-        profile.squeals_list = [];
-        profile.squeals_num = 0;
-        profile.credit = CREDIT_LIMITS;
-        profile.credit_limits = CREDIT_LIMITS;
-        profile.is_banned = false;
-        profile.banned_until = null;
         const allowedAccountTypes = ["normal", "admin", "premium", "smm"];
         if (!allowedAccountTypes.includes(profile.account_type)) {
             profile.account_type = "normal";
@@ -352,7 +354,7 @@ app.put("/profiles/:name", async (req, res) => {
         if (existingProfile == null) {
             const result = await collection.insertOne(profile);
 
-            if (result != null) {
+            if (result.insertedCount === 1) {
                 res.status(201).json({
                     message: "Profile created"
                 });
