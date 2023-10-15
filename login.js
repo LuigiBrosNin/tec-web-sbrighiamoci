@@ -27,7 +27,7 @@ function addProfileTest() {
 
   console.log("Sending body: " + JSON.stringify(body));
 
-  fetch("https://site222326.tw.cs.unibo.it/profiles/Arturo", {
+  fetch("https://site222326.tw.cs.unibo.it/profiles/Rukia", {
     method: "PUT",
     headers: {
       "Content-type": "application/json; charset=UTF-8"
