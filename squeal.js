@@ -568,14 +568,15 @@ console.log("ho il profilo: " + deletedSquealsProfile.name + " con num: " + dele
 console.log("Lo squeal da cancellare HA un padre")
                     let fatherId = squeal.reply_to
                     const squealFather = await collection.findOne({ name: fatherId })
-                    const elementIndex = squealFather.replies_list.indexOf(squealId); // indice a cui si trova 
+                    //*const elementIndex = squealFather.replies_list.indexOf(squealId); // indice nella replies_list a cui si trova squealId
                     //const arrayFilters = [{ elementIndex: fatherId }];
 console.log("fatherId: " + fatherId + " elementIndex: " + elementIndex)
                     // replace father's "replies" occurrence of the deleted squeal with DeletedSqueals id
                     await mongoClient.connect();
                     await collection.updateOne(
                         { id: fatherId },
-                        { $set: { [`replies_list.$[elementIndex]`] : `DeletedSqueals${deletedSquealsNum}` } },
+                        //{ $set: { [`replies_list.$[elementIndex]`] : `DeletedSqueals${deletedSquealsNum}` } },
+                        { $set: { [replies_list[0]] : `DeletedSqueals${deletedSquealsNum}` } },
                         //{ arrayFilters: arrayFilters },
                         (err, res) => {
                             if (err) {
