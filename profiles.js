@@ -502,3 +502,182 @@ app.get("/profiles/:name/followersnumber", async (req, res) => {
         });
     }
 });
+
+/* -------------------------------------------------------------------------- */
+/*                           /PROFILES/:NAME/FOLLOWER                         */
+/*                                   GET, PUT                                 */
+/* -------------------------------------------------------------------------- */
+
+//* GET
+// ritorna la lista dei followers del profilo con nome name
+// ritorna 404 se il profilo non esiste
+
+//TODO TEST
+app.get("/profiles/:name/followers", async (req, res) => {
+    try {
+        const profileName = req.params.name;
+
+        await mongoClient.connect();
+        const profile = await collection.findOne({
+            name: profileName
+        });
+
+        if (profile !== null) {
+            res.status(200).json(profile.followers_list);
+        } else {
+            res.status(404).json({
+                message: "Profile not found"
+            });
+        }
+
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+});
+
+//* PUT
+// aggiunge il follower followerName al profilo con nome name
+// rimuove il follower followerName dal profilo con nome name se presente
+// ritorna 404 se il profilo non esiste
+// ritorna 403 se non autorizzato (login non effettuato)
+
+// TODO ADD AUTHORIZATION
+//TODO TEST
+app.put("/profiles/:name/followers/", async (req, res) => {
+    try {
+        const profileName = req.params.name;
+        const followerName = req.body.follower_name; //! TEMP, REPLACE WITH SESSION USERNAME
+        const authorized = true; /*isAuthorized(req, "normal");*/
+
+        if (!authorized) {
+            res.status(403).json({
+                message: "Unauthorized"
+            });
+            return;
+        }
+
+        await mongoClient.connect();
+        const profile = await collection.findOne({
+            name: profileName
+        });
+
+        console.log(profile.followers_list);
+
+        if (profile !== null) {
+            if (profile.followers_list.includes(followerName)) {
+                //remove the follower from the list
+                delete profile.followers_list[profile.followers_list.indexOf(followerName)];
+
+                res.status(200).json({
+                    message: "Follower removed"
+                });
+            } else {
+                const result = await collection.updateOne({
+                    name: profileName
+                }, {
+                    $push: {
+                        followers_list: followerName
+                    }
+                });
+                res.status(200).json({
+                    message: "Follower added"
+                });
+            }
+        } else {
+            res.status(404).json({
+                message: "Profile not found"
+            });
+        }
+
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+});
+
+/* -------------------------------------------------------------------------- */
+/*                           /PROFILES/:NAME/PROPIC                           */
+/*                                GET, DELETE                                 */
+/* -------------------------------------------------------------------------- */
+
+//* GET
+// ritorna la propic del profilo con nome name
+// ritorna 404 se non esiste
+
+//TODO TEST
+app.get("/profiles/:name/propic", async (req, res) => {
+    try {
+        const profileName = req.params.name;
+
+        await mongoClient.connect();
+        const profile = await collection.findOne({
+            name: profileName
+        });
+
+        if (profile !== null) {
+            res.status(200).json({
+                propic: profile.propic
+            });
+        } else {
+            res.status(404).json({
+                message: "Profile not found"
+            });
+        }
+
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+});
+
+//* DELETE
+// rimuove la propic del profilo con nome name
+// ritorna 404 se non esiste
+// ritorna 401 se non sei autorizzato
+
+//TODO TEST
+//TODO ADD AUTHORIZATION
+app.delete("/profiles/:name/propic", async (req, res) => {
+    try {
+        const profileName = req.params.name;
+        const authorized = true; /*isAuthorized(req, "normal");*/
+
+        if (!authorized) {
+            res.status(401).json({
+                message: "Unauthorized"
+            });
+            return;
+        }
+
+        await mongoClient.connect();
+        const profile = await collection.findOne({
+            name: profileName
+        });
+
+        if (profile !== null) {
+            const result = await collection.updateOne({
+                name: profileName
+            }, {
+                $set: {
+                    propic: "stock uri lmao" //! ADD STOCK URI
+                }
+            });
+            res.status(200).json({
+                message: "Propic removed"
+            });
+        } else {
+            res.status(404).json({
+                message: "Profile not found"
+            });
+        }
+
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+});
