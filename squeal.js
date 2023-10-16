@@ -484,6 +484,7 @@ app.put("/squeals/:id", bodyParser.json(), async (req, res) => {
 
 // TODO controllare funzioni che usano il campo reply_to perché non dev'essere un array
 app.delete("/squeals/:id", async (req, res) => {
+console.log("------")
     try {
         // check if the user has logged in
         if(true){   //if ((await isAuthorized(req.session.user, typeOfProfile.user) && req.session.user === squeal.author) || (await isAuthorized(req.session.user, typeOfProfile.admin))) {
@@ -563,7 +564,7 @@ console.log("ho il profilo: " + deletedSquealsProfile.name + " con num: " + dele
                 );
             
                 // if the squeal has a father, replace the squeal occurrence in the "replies_list"
-                if (squeal.reply_to.length !== 0) {
+                if (squeal.reply_to !== undefined) {
 console.log("Lo squeal da cancellare HA un padre")
                     let fatherId = squeal.reply_to
                     const arrayFilters = [{ elementIndex: fatherId }];
@@ -594,7 +595,7 @@ console.log("Ora modifico il campo reply_to del figlio")
 console.log("Devo modificare il reply_to, uso il campo: " + squealRepliesList + " con reply: " + reply)
                     
                     try {
-                        let tmp_reply = await collection.find({ id: reply })  // retrieve a squeal that was a reply to the deleted squeal
+                        let tmp_reply = await collection.findOne({ id: reply })  // retrieve a squeal that was a reply to the deleted squeal
 console.log("Ho trovato una reply_to, ora faccio update, l'id è: " + tmp_reply.id)
                         await collection.updateOne(
                             { _id: tmp_reply._id },
