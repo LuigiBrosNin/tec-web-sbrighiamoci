@@ -566,7 +566,7 @@ console.log("ho il profilo: " + deletedSquealsProfile.name + " con num: " + dele
                 // if the squeal has a father, replace the squeal occurrence in the "replies_list"
                 if (squeal.reply_to !== undefined && squeal.reply_to !== "") {
                     let fatherId = squeal.reply_to
-                    const squealFather = await collection.findOne({ name: fatherId })
+                    const squealFather = await collection.findOne({ id: fatherId })
                     console.log("Lo squeal da cancellare HA un padre con id: " + fatherId)
                     console.log(squealFather)
 
