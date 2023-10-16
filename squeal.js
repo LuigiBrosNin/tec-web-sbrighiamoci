@@ -482,12 +482,11 @@ app.put("/squeals/:id", bodyParser.json(), async (req, res) => {
 // * DELETE UNFINISHED
 // elimina lo squeal con id = id ricevuto come parametro
 
-
+// TODO controllare funzioni che usano il campo reply_to perché non dev'essere un array
 app.delete("/squeals/:id", async (req, res) => {
     try {
         // check if the user has logged in
         if(true){   //if ((await isAuthorized(req.session.user, typeOfProfile.user) && req.session.user === squeal.author) || (await isAuthorized(req.session.user, typeOfProfile.admin))) {
-console.log("Sei dentro alla delete")
             const squealId = req.params.id; // squeal to delete
 
             // connect to the database
@@ -495,7 +494,6 @@ console.log("Sei dentro alla delete")
         //    const database = mongoClient.db(dbName);
         //    const collection = database.collection(squealCollection);
             const squeal = await collection.findOne({ id: squealId }); // fetching the squeal to delete
-console.log("Sei connesso al db")
             // if the squeal is not found, return 404
             if (squeal === null) {
                 res.status(404).json({ message: "Error: ID not found in database." });
@@ -507,9 +505,9 @@ console.log("Devo cancellare lo squeal con id: " + squealId)
             // - remove it from DB(if it was replying, modify the father)
             if (squeal.replies_num === 0) {
 console.log("Lo squeal da cancellare NON ha figli")
-                if (squeal.reply_to) {               // the squeal was replying to another one
-console.log("Lo squeal da cancellare NON ha figli ma HA un padre")
+                if (squeal.reply_to !== undefined) {               // the squeal was replying to another one
                     let fatherId = squeal.reply_to
+    console.log("Lo squeal da cancellare NON ha figli ma HA un padre con id: " + fatherId)
                     // remove from father's "replies" field the squeal that is going to be deleted
                     await collection.updateOne(
                         { id: fatherId },
