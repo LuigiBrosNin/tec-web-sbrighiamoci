@@ -541,13 +541,14 @@ console.log("Sono DOPO della deleteOne [1]")
             // the squeal has replies: move it to the deletedAccount and modify father/children accordingly
             else {
 console.log("Lo squeal da cancellare HA FIGLI")
-                // retrieve the "DeletedSqueals" account
+// retrieve the "DeletedSqueals" account
                 const deletedSquealsProfile = await collection_for_profiles.findOne({ name: "DeletedSqueals" })
                 const deletedSquealsNum = deletedSquealsProfile.squeals_num
+console.log("ho il profilo: " + deletedSquealsProfile.name + " con num: " + deletedSquealsNum)
 
                 // reset fields of the squeal to be deleted, and move it to the DeletedSqueals profile
                 await mongoClient.connect();
-                await collection.updateOne(
+                await collection.updateOne( 
                     { _id: squeal._id },
                     {
                         $set: {
@@ -587,10 +588,10 @@ console.log("Lo squeal da cancellare HA un padre")
                 // update the replies of the deleted squeal
                 await mongoClient.connect();
 console.log("Ora modifico il campo reply_to del figlio")
-let squealRepliesList = squeal.replies_list
+                let squealRepliesList = squeal.replies_list
 
                 squealRepliesList.forEach(async (reply) => {            
-console.log("Devo modificare il reply_to, uso il campo:" + squealRepliesList)
+console.log("Devo modificare il reply_to, uso il campo: " + squealRepliesList + " con reply: " + reply)
                     
                     try {
                         let tmp_reply = await collection.find({ id: reply })  // retrieve a squeal that was a reply to the deleted squeal
@@ -608,7 +609,7 @@ console.log("Ho trovato una reply_to, ora faccio update, l'id è: " + tmp_reply.
                 // TODO è corretta la posizione dell'incremento di DeletedSqueals?
                 await mongoClient.connect();
 console.log("Incremento il contatore del profilo DeletedSqueals")
-                await collection.updateOne(
+                await collection_for_profiles.updateOne(
                     { _id: deletedSquealsProfile._id },
                     { $inc: { squeals_num: 1 } }
                 );
