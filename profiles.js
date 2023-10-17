@@ -478,7 +478,7 @@ app.put("/profiles/:name/followers/", async (req, res) => {
             name: followerName
         });
 
-        if (followedProfile !== null || followingProfile !== null) {
+        if (followedProfile === null || followingProfile === null) {
             res.status(404).json({
                 message: "one or both profiles not found"
             });
