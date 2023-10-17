@@ -578,7 +578,6 @@ app.get("/profiles/:name/propic", async (req, res) => {
 // ritorna 404 se non esiste
 // ritorna 401 se non sei autorizzato
 
-//TODO TEST
 //TODO ADD AUTHORIZATION
 app.delete("/profiles/:name/propic", async (req, res) => {
     try {
