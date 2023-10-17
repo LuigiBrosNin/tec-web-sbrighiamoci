@@ -60,10 +60,12 @@ async function canLogIn(username, password) {
     const userFromDB = await searchProfileInDB(username);
     if (userFromDB !== null && userFromDB !== undefined && !userFromDB.is_banned) {
         return isPasswordCorrect(userFromDB, password);
+    } else if(userFromDB === null){
+        return false;
     } else if (userFromDB.is_banned) {
         let now = new Date();
         if (userFromDB.banned_until <= now.getTime()) {
-            await updateProfileInDB(username, { is_banned: false, banned_until: -1 });
+            await updateProfileInDB(username, { is_banned: false, banned_until: null });
             return isPasswordCorrect(userFromDB, password);
         } else {
             return false;
