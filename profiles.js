@@ -485,51 +485,54 @@ app.put("/profiles/:name/followers/", async (req, res) => {
             return;
         }
 
+        console.log(profileName + " followed profile list:" + followedProfile.followers_list);
+        console.log(followerName + " following profile list:" + followingProfile.following_list);
+
         if (followedProfile.followers_list.includes(followerName)) {
             //remove the follower from the list
-            delete followedProfile.followers_list[followedProfile.followers_list.indexOf(followerName)];
-            delete followingProfile.following_list[followingProfile.following_list.indexOf(profileName)];
+            followedProfile.followers_list.splice(followedProfile.followers_list.indexOf(followerName), 1);
+            followingProfile.following_list.splice(followingProfile.following_list.indexOf(profileName), 1);
 
-            console.log(profileName + " followed profile list:" + followedProfile.followers_list);
-            console.log(followerName + " following profile list:" + followingProfile.following_list);
-
-            const result = await collection.updateOne({
+            await collection.updateOne({
                 name: profileName
             }, {
-                followers_list: followedProfile.followers_list
+                $set: {
+                    followers_list: followedProfile.followers_list
+                }
             });
-            const result2 = await collection.updateOne({
+
+            await collection.updateOne({
                 name: followerName
             }, {
-                following_list: followingProfile.following_list
-            });
-            res.status(200).json({
-                message: "Follower added"
+                $set: {
+                    following_list: followingProfile.following_list
+                }
             });
 
             res.status(200).json({
                 message: "Follower removed"
             });
-        } else {
-            const result = await collection.updateOne({
+        } else { // add the follower to the list
+            await collection.updateOne({
                 name: profileName
             }, {
                 $push: {
                     followers_list: followerName
                 }
             });
-            const result2 = await collection.updateOne({
+
+            await collection.updateOne({
                 name: followerName
             }, {
                 $push: {
                     following_list: profileName
                 }
             });
+
             res.status(200).json({
                 message: "Follower added"
             });
         }
-
     } catch (error) {
         res.status(500).json({
             message: error.message
