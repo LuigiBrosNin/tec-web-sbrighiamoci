@@ -16,6 +16,23 @@ function sub(){
 /*                         Luizo's temp test fucntions                        */
 /* -------------------------------------------------------------------------- */
 
+// Profile follower PUT request
+function addFollowerTest(param_id) {
+  const body = {
+    follower_name: "EmanueleDiSante"
+  };
+
+  console.log("Sending body: " + JSON.stringify(body));
+
+  fetch(`https://site222326.tw.cs.unibo.it/profiles/${param_id}/followers`, {
+    method: "PUT",
+    headers: {
+      "Content-type": "application/json; charset=UTF-8"
+    },
+    body: JSON.stringify(body)
+  });
+}
+
 // Profile PUT request
 function addProfileTest(param_id) {
   const body = {

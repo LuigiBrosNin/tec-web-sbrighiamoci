@@ -27,7 +27,7 @@ const collection = database.collection(profileCollection);
 
 /* -------------------------------------------------------------------------- */
 /*                                 /PROFILES/                                 */
-/*                                GET & DELETE                                */
+/*                                    GET                                     */
 /* -------------------------------------------------------------------------- */
 
 //* GET
@@ -159,115 +159,6 @@ app.get("/profiles/", async (req, res) => {
     }
 });
 
-//* DELETE
-// cancella tutti i profili che soddisfano la query (necessaria autenticazione, solo admin)
-// query supportate: vedi GET, stesso codice, senza startIndex e endIndex
-
-//TODO ADD AUTHORIZATION
-//TODO TEST THE FUCTION
-app.delete("/profiles/", async (req, res) => {
-    try {
-
-        const possibleParams = ["name", "bio", "account_type"];
-
-        const possibleGTEParams = ["credit", "credit_limits", "squeals_num", /* "followers_num",*/ "banned_until"];
-
-        let search = {};
-
-        let credit_type = 0;
-        let credit_limits_type = 0;
-
-        // check credit type search
-        if (req.query.credit_type !== undefined && req.query.credit_type !== NaN && req.query.credit_type !== "0" && req.query.credit_type !== "1" && req.query.credit_type !== "2") {
-            credit_type = parseInt(req.query.credit_type);
-        } else {
-            credit_type = 0;
-        }
-
-        // check credit limits type search
-        if (req.query.credit_limits_type !== undefined && req.query.credit_limits_type !== NaN && req.query.credit_limits_type !== "0" && req.query.credit_limits_type !== "1" && req.query.credit_limits_type !== "2") {
-            credit_limits_type = parseInt(req.query.credit_limits_type);
-        } else {
-
-            credit_limits_type = 0;
-        }
-
-        console.log("credit_type: " + credit_type);
-        console.log("credit_limits_type: " + credit_limits_type);
-
-        // check string params
-        for (const param of possibleParams) {
-            if (req.query[param] !== undefined) {
-                search[param] = req.query[param];
-            }
-        }
-
-        // check int params
-        for (const param of possibleGTEParams) {
-            if (req.query[param] !== undefined && req.query[param] !== NaN && param != "followers_num" && param != "credit" && param != "credit_limits") {
-                search[param] = {
-                    $gte: parseInt(req.query[param])
-                };
-            } // handling followers_num 
-            /*            else if (req.query[param] !== undefined && req.query[param] !== NaN && param === "followers_num") {
-                            search["followers_list"] = {
-                                $gte: {
-                                    $size: parseInt(req.query[param])
-                                }
-                            };
-                        }*/ // handling credit_limits
-            else if (req.query[param] !== undefined && req.query[param] !== NaN && param === "credit_limits") {
-                search["credit_limits"] = {
-                    $gte: parseInt(req.query[param])
-                };
-            } // handling credit
-            else if (req.query[param] !== undefined && req.query[param] !== NaN && param === "credit") {
-                console.log("right");
-                search["credit." + credit_type] = {
-                    $gte: parseInt(req.query[param])
-                };
-            }
-
-        }
-
-        // check boolean param
-        if (req.query["is_banned"] !== undefined) {
-            search["is_banned"] = req.query["is_banned"] === "true";
-        }
-
-        console.log(JSON.stringify(search));
-        if (Object.keys(search).length === 0) {
-            res.status(400).json({
-                message: "No query specified"
-            });
-            return;
-        }
-
-        if (authorized) {
-            mongoClient.connect();
-            const result = await collection.deleteMany(search);
-            if (result.deletedCount > 0) {
-                res.status(200).json({
-                    message: "Profiles deleted: " + result.deletedCount
-                });
-            } else {
-                res.status(404).json({
-                    message: "No profiles found"
-                });
-            }
-        } else {
-            res.status(401).json({
-                message: "Unauthorized"
-            });
-        }
-    } catch (error) {
-        res.status(500).json({
-            message: error.message
-        });
-    }
-});
-
-
 /* -------------------------------------------------------------------------- */
 /*                               /PROFILES/:NAME                              */
 /*                            GET, PUT, DELETE, POST                          */
@@ -372,7 +263,8 @@ app.put("/profiles/:name", async (req, res) => {
 // ritorna 404 se non esiste
 // ritorna 401 se non sei autorizzato
 
-// ? how do we handle dependencies? there are many (squeals, followers, following)
+// ? handle dependencies (squeals, followers, following, channels mod list)
+//TODO FUTURE LUIZO: ADD DIPENDENCIES
 // TODO ADD AUTHORIZATION
 app.delete("/profiles/:name", async (req, res) => {
     try {
@@ -410,14 +302,16 @@ app.delete("/profiles/:name", async (req, res) => {
 // ritorna 404 se non esiste
 // ritorna 401 se non sei autorizzato
 // ritorna 400 se mancano informazioni necessarie
-// SOLO ADMIN
-// Parametri supportati: bio, account_type, propic, credit, credit_limits, is_banned, banned_until
+// Parametri supportati: bio, account_type, propic, credit, credit_limits, is_banned, banned_until, password, email
+// Parametri modificabili da utenti: bio, propic, password, email
 // TODO ADD AUTHORIZATION
 app.post("/profiles/:name", async (req, res) => {
     try {
         // setting up info for the updated profile
         const profileName = req.params.name;
-        const authorized = true; /*isAuthorized(req, "admin");*/
+        const adminAuthorized = true; /*isAuthorized(req, "admin");*/
+        const authorized = true; /*isAuthorized(req, "normal");*/
+
 
         if (!authorized) {
             res.status(401).json({
@@ -438,14 +332,30 @@ app.post("/profiles/:name", async (req, res) => {
             return;
         }
 
-        // changing name messes up with dependencies, i don't wanna tackle that
-        const possibleParams = ["bio", "account_type", "propic", "credit", "credit_limits", "is_banned", "banned_until"];
+        let possibleParams = ["bio", "propic", "password", "email"];
+
+        // checking if the user is authorized to modify the profile
+        if (adminAuthorized) {
+            possibleParams = ["bio", "account_type", "propic", "credit", "credit_limits", "banned_until", "password", "email"];
+        }
         let profile = {};
         for (const param of possibleParams) {
-            if (req.body[param] !== undefined) {
+            if (param === "banned_until" && req.body[param] !== undefined) {
+                profile[param] = parseInt(req.body[param]);
+            } else if (req.body[param] !== undefined) {
                 profile[param] = req.body[param];
             }
         }
+
+        // boolean check for admins
+        if (adminAuthorized) {
+            if (req.body.is_banned === "true" || req.body.is_banned === true) {
+                profile.is_banned = true;
+            } else if (req.body.is_banned === "false"|| req.body.is_banned === false) {
+                profile.is_banned = false;
+            }
+        }
+
         const allowedAccountTypes = ["normal", "admin", "premium", "smm"];
         if (!allowedAccountTypes.includes(profile.account_type)) {
             delete profile.account_type;
@@ -511,8 +421,6 @@ app.get("/profiles/:name/followersnumber", async (req, res) => {
 //* GET
 // ritorna la lista dei followers del profilo con nome name
 // ritorna 404 se il profilo non esiste
-
-//TODO TEST
 app.get("/profiles/:name/followers", async (req, res) => {
     try {
         const profileName = req.params.name;
@@ -521,6 +429,9 @@ app.get("/profiles/:name/followers", async (req, res) => {
         const profile = await collection.findOne({
             name: profileName
         });
+
+
+        console.log(profile.followers_list);
 
         if (profile !== null) {
             res.status(200).json(profile.followers_list);
