@@ -16,8 +16,6 @@ async function searchProfileInDB(username) {
         return profile;
     } catch (error) {
         return null;
-    } finally {
-        await mongoClient.close();
     }
 }
 
@@ -29,8 +27,6 @@ async function updateProfileInDB(username, updateObject) {
         await collection.updateOne({ id: username }, { $set: updateObject });
     } catch (error) {
         // do nothing
-    } finally {
-        await mongoClient.close();
     }
 }
 
