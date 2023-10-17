@@ -8,7 +8,7 @@ const {
 } = require("./index.js");
 const {
     typeOfProfile,
-    isAuthorized
+    isAuthorizedOrHigher
 } = require("./loginUtils.js");
 const bodyParser = require('body-parser');
 const {
@@ -84,7 +84,7 @@ app.get("/squeals/", async (req, res) => {
         };
 
         // check if the user is authorized to access private messages
-        if (await !isAuthorized(req.session.user, typeOfProfile.admin)) {
+        if (await !isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)) {
             if (req.query.is_private === "true" || req.query.is_private === true) {
                 res.status(403).json({
                     message: "only admins can access private messages"
@@ -197,7 +197,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
         }
         // If all required fields are present, continue with the insertion
 
-        if ( /*(await isAuthorized(req.session.user, typeOfProfile.user) && req.session.user === requiredFields.author) || (await isAuthorized(req.session.user, typeOfProfile.admin))*/ true) {
+        if ((await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === req.body.author) || (await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin))) {
             // defining the required fields as well as initializing the standard fields
             let newSqueal = {
                 id: "",
@@ -251,7 +251,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
                 return;
 
             } // check if the authos has enough credit 
-            else if ((profile_author.credit[0] < newSqueal.text.length || profile_author.credit[1] < newSqueal.text.length || profile_author.credit[2] < newSqueal.text.length) && await !isAuthorized(req.session.user, typeOfProfile.admin)) {
+            else if ((profile_author.credit[0] < newSqueal.text.length || profile_author.credit[1] < newSqueal.text.length || profile_author.credit[2] < newSqueal.text.length) && await !isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)) {
                 res.status(400).json({
                     message: "author does not have enough credit\navailable\ng: " + profile_author.credit[0] + " s: " + profile_author.credit[1] + " m: " + profile_author.credit[2] + ")\nrequired\n " + newSqueal.text.length
                 });
@@ -264,7 +264,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
             let g, s, m;
 
             // if the author is an admin, don't subtract the credit
-            if (await isAuthorized(req.session.user, typeOfProfile.admin)) {
+            if (await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)) {
                 console.log("admin");
                 g = profile_author.credit[0];
                 s = profile_author.credit[1];
@@ -417,7 +417,7 @@ app.put("/squeals/:id", bodyParser.json(), async (req, res) => {
         }
         // If all required fields are present, continue with the insertion
 
-        if (await isAuthorized(req.session.user, typeOfProfile.admin)) {
+        if (await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)) {
             // defining the required fields as well as initializing the standard fields
             let newSqueal = {
                 id: squealId,
@@ -487,7 +487,7 @@ app.delete("/squeals/:id", async (req, res) => {
 console.log("------")
     try {
         // check if the user has logged in
-        if(true){   //if ((await isAuthorized(req.session.user, typeOfProfile.user) && req.session.user === squeal.author) || (await isAuthorized(req.session.user, typeOfProfile.admin))) {
+        if ((await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === squeal.author) || (await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin))) {
             const squealId = req.params.id; // squeal to delete
 
             // connect to the database
@@ -636,7 +636,7 @@ console.log("Incremento il contatore del profilo DeletedSqueals")
 // the admin has the power to break all logics, use carefully
 app.post("/squeals/:id", bodyParser.json(), async (req, res) => {
     try {
-        if (await isAuthorized(req.session.user, typeOfProfile.admin)) {
+        if (await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)) {
             const squealId = req.params.id;
 
             // possible body params
@@ -1007,7 +1007,7 @@ app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
         }
 
         // check if the user is logged in
-        if (req.session.user === undefined) {
+        if (await isAuthorizedOrHigher(req.session.user, typeOfProfile.user)) {
             res.status(403).json({
                 message: "you must be logged in to react to a squeal"
             });
