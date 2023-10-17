@@ -351,7 +351,7 @@ app.post("/profiles/:name", async (req, res) => {
         if (adminAuthorized) {
             if (req.body.is_banned === "true" || req.body.is_banned === true) {
                 profile.is_banned = true;
-            } else if (req.body.is_banned === "false"|| req.body.is_banned === false) {
+            } else if (req.body.is_banned === "false" || req.body.is_banned === false) {
                 profile.is_banned = false;
             }
         }
@@ -450,6 +450,7 @@ app.get("/profiles/:name/followers", async (req, res) => {
 
 //* PUT
 // aggiunge il follower followerName al profilo con nome name
+// utente della sessione si aggiunge alla lista di un utente (altro)
 // rimuove il follower followerName dal profilo con nome name se presente
 // ritorna 404 se il profilo non esiste
 // ritorna 403 se non autorizzato (login non effettuato)
@@ -470,38 +471,68 @@ app.put("/profiles/:name/followers/", async (req, res) => {
         }
 
         await mongoClient.connect();
-        const profile = await collection.findOne({
+        const followedProfile = await collection.findOne({
             name: profileName
         });
+        const followingProfile = await collection.findOne({
+            name: followerName
+        });
 
-        console.log(profile.followers_list);
-
-        if (profile !== null) {
-            if (profile.followers_list.includes(followerName)) {
-                //remove the follower from the list
-                delete profile.followers_list[profile.followers_list.indexOf(followerName)];
-
-                res.status(200).json({
-                    message: "Follower removed"
-                });
-            } else {
-                const result = await collection.updateOne({
-                    name: profileName
-                }, {
-                    $push: {
-                        followers_list: followerName
-                    }
-                });
-                res.status(200).json({
-                    message: "Follower added"
-                });
-            }
-        } else {
+        if (followedProfile === null || followingProfile === null) {
             res.status(404).json({
-                message: "Profile not found"
+                message: "one or both profiles not found"
             });
+            return;
         }
 
+        console.log(profileName + " followed profile list:" + followedProfile.followers_list);
+        console.log(followerName + " following profile list:" + followingProfile.following_list);
+
+        if (followedProfile.followers_list.includes(followerName)) {
+            //remove the follower from the list
+            followedProfile.followers_list.splice(followedProfile.followers_list.indexOf(followerName), 1);
+            followingProfile.following_list.splice(followingProfile.following_list.indexOf(profileName), 1);
+
+            await collection.updateOne({
+                name: profileName
+            }, {
+                $set: {
+                    followers_list: followedProfile.followers_list
+                }
+            });
+
+            await collection.updateOne({
+                name: followerName
+            }, {
+                $set: {
+                    following_list: followingProfile.following_list
+                }
+            });
+
+            res.status(200).json({
+                message: "Follower removed"
+            });
+        } else { // add the follower to the list
+            await collection.updateOne({
+                name: profileName
+            }, {
+                $push: {
+                    followers_list: followerName
+                }
+            });
+
+            await collection.updateOne({
+                name: followerName
+            }, {
+                $push: {
+                    following_list: profileName
+                }
+            });
+
+            res.status(200).json({
+                message: "Follower added"
+            });
+        }
     } catch (error) {
         res.status(500).json({
             message: error.message
