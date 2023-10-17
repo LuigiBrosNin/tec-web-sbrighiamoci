@@ -455,8 +455,7 @@ app.get("/profiles/:name/followers", async (req, res) => {
 // ritorna 404 se il profilo non esiste
 // ritorna 403 se non autorizzato (login non effettuato)
 
-// TODO ADD AUTHORIZATION
-//TODO TEST
+//TODO ADD AUTHORIZATION
 app.put("/profiles/:name/followers/", async (req, res) => {
     try {
         const profileName = req.params.name;
@@ -548,8 +547,6 @@ app.put("/profiles/:name/followers/", async (req, res) => {
 //* GET
 // ritorna la propic del profilo con nome name
 // ritorna 404 se non esiste
-
-//TODO TEST
 app.get("/profiles/:name/propic", async (req, res) => {
     try {
         const profileName = req.params.name;

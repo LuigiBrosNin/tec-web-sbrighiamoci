@@ -16,6 +16,16 @@ function sub(){
 /*                         Luizo's temp test fucntions                        */
 /* -------------------------------------------------------------------------- */
 
+// profile propic DELETE request
+function deletePropicTest(param_id) {
+  fetch(`https://site222326.tw.cs.unibo.it/profiles/${param_id}/propic`, {
+    method: "DELETE"
+  })
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error(error));
+}
+
 // Profile follower PUT request
 function addFollowerTest(param_id) {
   const body = {
