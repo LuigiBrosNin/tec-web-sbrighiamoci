@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const app = express();
 
-const {isAuthorizedOrHigher, canLogIn, typeOfProfile} = require("./loginUtils.js");
+const {isAuthorizedOrHigher, canLogIn, typeOfProfile, registerNewUser} = require("./loginUtils.js");
  
 const BASE_SITE = 'https://site222326.tw.cs.unibo.it'
 //const BASE_SITE = 'http://localhost'
@@ -72,6 +72,14 @@ app.get("/logout", async (req, res) => {
   res.redirect("/");
 })
 
+app.put("/signin", async (req, res) => {
+  if(req.body.username != null && req.body.email != null && req.body.password != null){ // the check var == null is equivalent to var === null && var === undefined
+    let status = await registerNewUser(req.body.username, req.body.email,req.body.password);
+    res.status(status).send();
+  } else {
+    res.status(422).send("you need to specify username, email and password to sing in");
+  }
+})
 
 
 app.use('/app', express.static(path.join(global.rootDir, 'app/dist/')));

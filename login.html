@@ -2,11 +2,19 @@
 <head></head>
 <body>
     <h1>very happy and colourful login page :></h1>
+    <p>log in</p>
     <form>
         <input type="text" name="username" id="usernameInput">
         <input type="password" name="password" id="passwordInput">
         <input type="submit" onclick="{event.preventDefault(); sub()}">
     </form>
     <button id="logoutButton" onclick="window.location.replace('https://site222326.tw.cs.unibo.it/logout')">log out</button>
+    <p>or sign in</p> 
+    <form>
+        <input type="text" name="username" id="usernameInputSignIn">
+        <input type="email" name="email" id="emailInputSignIn">
+        <input type="password" name="password" id="passwordInputSignIn">
+        <input type="submit" onclick="{event.preventDefault(); signin()}">
+    </form>
 </body>
 <script src="login.js"></script>

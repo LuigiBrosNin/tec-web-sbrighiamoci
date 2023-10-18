@@ -60,7 +60,7 @@ async function canLogIn(username, password) {
     const userFromDB = await searchProfileInDB(username);
     if (userFromDB !== null && userFromDB !== undefined && !userFromDB.is_banned) {
         return isPasswordCorrect(userFromDB, password);
-    } else if(userFromDB === null){
+    } else if (userFromDB === null) {
         return false;
     } else if (userFromDB.is_banned) {
         let now = new Date();
@@ -79,4 +79,23 @@ async function isPasswordCorrect(user, password) { // user is NOT the username, 
     return password === user.password;
 }
 
-module.exports = { typeOfProfile, isAuthorized, isAuthorizedOrHigher, canLogIn };
+async function registerNewUser(user, email, password) {
+    const body = {
+        email: email,
+        password: password,
+        account_type: typeOfProfile.user,
+    };
+
+    let res = await fetch(`https://site222326.tw.cs.unibo.it/profiles/${user}`, {
+        method: "PUT",
+        headers: {
+            "Content-type": "application/json; charset=UTF-8"
+        },
+        body: JSON.stringify(body)
+    });
+
+    console.log(res.status);
+    return res.status;
+}
+
+module.exports = { typeOfProfile, isAuthorized, isAuthorizedOrHigher, canLogIn, registerNewUser };

@@ -12,6 +12,21 @@ function sub(){
   });
 }
 
+function signin(){
+  fetch("https://site222326.tw.cs.unibo.it/signin", {
+  //fetch("http://localhost:8000/signin", {
+    method: "PUT",
+    body: JSON.stringify({
+      username: document.getElementById("usernameInputSignIn").value,
+      email: document.getElementById("emailInputSignIn").value,
+      password: document.getElementById("passwordInputSignIn").value
+    }),
+    headers: {
+      "Content-type": "application/json; charset=UTF-8"
+    }
+  });
+}
+
 /* -------------------------------------------------------------------------- */
 /*                         Luizo's temp test fucntions                        */
 /* -------------------------------------------------------------------------- */
