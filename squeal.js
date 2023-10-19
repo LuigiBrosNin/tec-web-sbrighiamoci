@@ -482,6 +482,7 @@ app.put("/squeals/:id", bodyParser.json(), async (req, res) => {
 // * DELETE 
 // elimina lo squeal con id = id ricevuto come parametro
 app.delete("/squeals/:id", async (req, res) => {
+console.log("non ancora passato il login")
     try {
         // check if the user has logged in
         if ((await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === squeal.author) || (await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin))) {
