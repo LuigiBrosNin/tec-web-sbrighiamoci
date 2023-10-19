@@ -481,13 +481,12 @@ app.put("/squeals/:id", bodyParser.json(), async (req, res) => {
 // * DELETE 
 // elimina lo squeal con id = id ricevuto come parametro
 app.delete("/squeals/:id", async (req, res) => {
-console.log("non ancora passato il login")
     try {
         // check if the user has logged in
         //*if ((await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === squeal.author) || (await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin))) {
         if(true){
             const squealId = req.params.id; // squeal to delete
-console.log("passato il login")
+
             // connect to the database
             await mongoClient.connect();
             const squeal = await collection.findOne({ id: squealId }); // fetching the squeal to delete
@@ -529,7 +528,7 @@ console.log("passato il login")
                 }
             }
             else {  // the squeal has replies: move it to the deletedAccount and modify father/children accordingly
-console.log("I'm in danger")                
+                
                 // retrieve the "DeletedSqueals" account
                 const deletedSquealsProfile = await collection_for_profiles.findOne({ name: "DeletedSqueals" })
                 const deletedSquealsNum = deletedSquealsProfile.squeals_num
@@ -559,26 +558,6 @@ console.log("I'm in danger")
 
                     await mongoClient.connect();
                     await collection.updateOne({ id: fatherId }, { $set: { replies_list: squealFather.replies_list } });
-
-                    console.log("ALl'indice " + elementIndex + " ho trovato l'id: " + squealFather.replies_list[elementIndex]);
-                    //const arrayFilters = [{ elementIndex: fatherId }];
-//console.log("fatherId: " + fatherId + " elementIndex: " + elementIndex)
-                    // replace father's "replies" occurrence of the deleted squeal with DeletedSqueals id
-                    /*await mongoClient.connect();
-                    await collection.updateOne(
-                        { id: fatherId },
-                        //{ $set: { [`replies_list.$[elementIndex]`] : `DeletedSqueals${deletedSquealsNum}` } },
-                        { $set: { [replies_list[0]] : `DeletedSqueals${deletedSquealsNum}` } },
-                        //{ arrayFilters: arrayFilters },
-                        (err, res) => {
-                            if (err) {
-                                console.error('Error during the update of the father: ', err);
-                            } else {
-                                console.log('Father successfuly updated.');
-                            }
-                        }
-                    );*/
-                    
                 }
 
                 // update the reply_to field of the squeals that were replying to the deleted one
