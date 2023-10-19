@@ -479,37 +479,29 @@ app.put("/squeals/:id", bodyParser.json(), async (req, res) => {
     }
 });
 
-// * DELETE UNFINISHED
+// * DELETE 
 // elimina lo squeal con id = id ricevuto come parametro
-
-// TODO controllare funzioni che usano il campo reply_to perché non dev'essere un array
 app.delete("/squeals/:id", async (req, res) => {
-console.log("------")
     try {
         // check if the user has logged in
         if ((await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === squeal.author) || (await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin))) {
             const squealId = req.params.id; // squeal to delete
 
             // connect to the database
-            await mongoClient.connect();  // TODO fare await ogni volta che ci si connette al database
-        //    const database = mongoClient.db(dbName);
-        //    const collection = database.collection(squealCollection);
+            await mongoClient.connect();
             const squeal = await collection.findOne({ id: squealId }); // fetching the squeal to delete
+
             // if the squeal is not found, return 404
             if (squeal === null) {
                 res.status(404).json({ message: "Error: ID not found in database." });
                 return;
             }
-console.log("Devo cancellare lo squeal con id: " + squealId)
-            // if the squeal does not have replies:
-            // - if it was replying to another one, modify the father deleting the id from the field "replies"
-            // - remove it from DB(if it was replying, modify the father)
-            if (squeal.replies_num === 0) {
-console.log("Lo squeal da cancellare NON ha figli")
-                if (squeal.reply_to !== undefined) {               // the squeal was replying to another one
+
+            // if the squeal does not have replies: remove it's id from the "replies_list" field of the father
+            // if it has replies, modify it into a DeletedAccount squeal and update father and sons (reply_to and replies_list)
+            if (squeal.replies_num === 0) {                                      // the squeal doesn't have replies
+                if (squeal.reply_to !== undefined && squeal.reply_to != "") {    // the squeal was replying to another one
                     let fatherId = squeal.reply_to
-    console.log("Lo squeal da cancellare NON ha figli ma HA un padre con id: " + fatherId)
-                    // remove from father's "replies" field the squeal that is going to be deleted
                     await collection.updateOne(
                         { id: fatherId },
                         { $pull: { replies_list: squealId }, $inc: { replies_num: -1 } },
@@ -523,11 +515,9 @@ console.log("Lo squeal da cancellare NON ha figli")
                     );
                 }
                 // delete squeal from database
-console.log("Sono PRIMA della deleteOne [1]")
                 await mongoClient.connect();
                 try {
                     const result = await collection.deleteOne({ id: squealId });
-console.log("Sto cancellando lo squeal [1]")
                     if (result.deletedCount === 1) {
                         console.log('Squeal successfully erased.');
                     } else {
@@ -536,18 +526,14 @@ console.log("Sto cancellando lo squeal [1]")
                 } catch (error) {
                     console.error('Error deleting the squeal:', error);
                 }
-
-console.log("Sono DOPO della deleteOne [1]")
             }
-            // the squeal has replies: move it to the deletedAccount and modify father/children accordingly
-            else {
-console.log("Lo squeal da cancellare HA FIGLI")
-// retrieve the "DeletedSqueals" account
+            else {  // the squeal has replies: move it to the deletedAccount and modify father/children accordingly
+                
+                // retrieve the "DeletedSqueals" account
                 const deletedSquealsProfile = await collection_for_profiles.findOne({ name: "DeletedSqueals" })
                 const deletedSquealsNum = deletedSquealsProfile.squeals_num
-console.log("ho il profilo: " + deletedSquealsProfile.name + " con num: " + deletedSquealsNum)
 
-                // reset fields of the squeal to be deleted, and move it to the DeletedSqueals profile
+                // reset fields of the squeal to be deleted
                 await mongoClient.connect();
                 await collection.updateOne( 
                     { _id: squeal._id },
@@ -567,15 +553,14 @@ console.log("ho il profilo: " + deletedSquealsProfile.name + " con num: " + dele
                 if (squeal.reply_to !== undefined && squeal.reply_to !== "") {
                     let fatherId = squeal.reply_to
                     const squealFather = await collection.findOne({ id: fatherId })
-                    console.log("Lo squeal da cancellare HA un padre con id: " + fatherId)
-                    
-
                     const index = 0
-                    squealFather.replies_list[0] = `DeletedSqueals${deletedSquealsNum}`
+                    squealFather.replies_list[index] = `DeletedSqueals${deletedSquealsNum}`
+
                     await mongoClient.connect();
                     await collection.updateOne({ id: fatherId }, { $set: { replies_list: squealFather.replies_list } });
 
-                    //*const elementIndex = squealFather.replies_list.indexOf(squealId); // indice nella replies_list a cui si trova squealId
+                    const elementIndex = squealFather.replies_list.indexOf(squealId); // indice nella replies_list a cui si trova squealId
+                    console.log("ALl'indice " + elementIndex + " ho trovato l'id: " + squealFather.replies_list[elementIndex]);
                     //const arrayFilters = [{ elementIndex: fatherId }];
 //console.log("fatherId: " + fatherId + " elementIndex: " + elementIndex)
                     // replace father's "replies" occurrence of the deleted squeal with DeletedSqueals id
@@ -595,17 +580,13 @@ console.log("ho il profilo: " + deletedSquealsProfile.name + " con num: " + dele
                     );*/
                     
                 }
-                // update the replies of the deleted squeal
-                await mongoClient.connect();
-console.log("Ora modifico il campo reply_to del figlio")
-                let squealRepliesList = squeal.replies_list
 
+                // update the reply_to field of the squeals that were replying to the deleted one
+                let squealRepliesList = squeal.replies_list
+                await mongoClient.connect();
                 squealRepliesList.forEach(async (reply) => {            
-console.log("Devo modificare il reply_to, uso il campo: " + squealRepliesList + " con reply: " + reply)
-                    
                     try {
                         let tmp_reply = await collection.findOne({ id: reply })  // retrieve a squeal that was a reply to the deleted squeal
-console.log("Ho trovato una reply_to, ora faccio update, l'id è: " + tmp_reply.id)
                         await collection.updateOne(
                             { _id: tmp_reply._id },
                             { $set: { reply_to: `DeletedSqueals${deletedSquealsNum}` } }
@@ -615,10 +596,9 @@ console.log("Ho trovato una reply_to, ora faccio update, l'id è: " + tmp_reply.
                         res.status(500).json({ message: error.message });
                     }
                 });
-
-                // TODO è corretta la posizione dell'incremento di DeletedSqueals?
+                
+                // update the counter of the deleted squeals profile
                 await mongoClient.connect();
-console.log("Incremento il contatore del profilo DeletedSqueals")
                 await collection_for_profiles.updateOne(
                     { _id: deletedSquealsProfile._id },
                     { $inc: { squeals_num: 1 } }
@@ -630,6 +610,7 @@ console.log("Incremento il contatore del profilo DeletedSqueals")
         console.error('Error connecting to the database:', error);
     }
 });
+
 
 //* POST
 // solo per admin -> modifica quello che vuole (tranne id e autore)
