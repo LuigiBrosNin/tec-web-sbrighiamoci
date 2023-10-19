@@ -555,13 +555,12 @@ console.log("I'm in danger")
                 if (squeal.reply_to !== undefined && squeal.reply_to !== "") {
                     let fatherId = squeal.reply_to
                     const squealFather = await collection.findOne({ id: fatherId })
-                    const index = 0
+                    const index = squealFather.replies_list.indexOf(squealId); // indice nella replies_list a cui si trova squealId
                     squealFather.replies_list[index] = `DeletedSqueals${deletedSquealsNum}`
 
                     await mongoClient.connect();
                     await collection.updateOne({ id: fatherId }, { $set: { replies_list: squealFather.replies_list } });
 
-                    const elementIndex = squealFather.replies_list.indexOf(squealId); // indice nella replies_list a cui si trova squealId
                     console.log("ALl'indice " + elementIndex + " ho trovato l'id: " + squealFather.replies_list[elementIndex]);
                     //const arrayFilters = [{ elementIndex: fatherId }];
 //console.log("fatherId: " + fatherId + " elementIndex: " + elementIndex)
