@@ -8,7 +8,7 @@ const {
 } = require("./index.js");
 const {
     typeOfProfile,
-    isAuthorized
+    isAuthorizedOrHigher
 } = require("./loginUtils.js");
 const bodyParser = require('body-parser');
 const {
