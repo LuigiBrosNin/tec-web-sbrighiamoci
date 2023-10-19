@@ -486,7 +486,7 @@ app.delete("/squeals/:id", async (req, res) => {
         // check if the user has logged in
         if ((await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === squeal.author) || (await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin))) {
             const squealId = req.params.id; // squeal to delete
-
+console.log("passato il login")
             // connect to the database
             await mongoClient.connect();
             const squeal = await collection.findOne({ id: squealId }); // fetching the squeal to delete
@@ -528,7 +528,7 @@ app.delete("/squeals/:id", async (req, res) => {
                 }
             }
             else {  // the squeal has replies: move it to the deletedAccount and modify father/children accordingly
-                
+console.log("I'm in danger")                
                 // retrieve the "DeletedSqueals" account
                 const deletedSquealsProfile = await collection_for_profiles.findOne({ name: "DeletedSqueals" })
                 const deletedSquealsNum = deletedSquealsProfile.squeals_num
