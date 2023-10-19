@@ -88,7 +88,7 @@ async function registerNewUser(user, email, password) {
 
     let res = await fetch(`https://site222326.tw.cs.unibo.it/profiles/${user}`, {
         method: "PUT",
-        credentials: "same-origin",
+        credentials: "include",
         headers: {
             "Content-type": "application/json; charset=UTF-8"
         },
