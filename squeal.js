@@ -86,7 +86,7 @@ app.get("/squeals/", async (req, res) => {
         // check if the user is authorized to access private messages
         if (await !isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)) {
             if (req.query.is_private === "true" || req.query.is_private === true) {
-                res.status(403).json({
+                res.status(401).json({
                     message: "only admins can access private messages"
                 });
                 return;
@@ -342,8 +342,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
                 message: "squeal added successfully with db id:" + result.insertedId
             }));
         } else {
-            // https://auth0.com/blog/forbidden-unauthorized-http-status-codes/#Web-APIs-and-HTTP-Status-Codes
-            res.status(403).send();
+            res.status(401).send();
         }
     } catch (error) {
         console.error('Errore durante l inserimento del documento: ', error);
@@ -469,7 +468,7 @@ app.put("/squeals/:id", bodyParser.json(), async (req, res) => {
                 return;
             }
         } else {
-            res.status(403).send();
+            res.status(401).send();
         }
     } catch (error) {
         res.status(500).json({
@@ -693,7 +692,7 @@ app.post("/squeals/:id", bodyParser.json(), async (req, res) => {
                 message: "squeal updated successfully"
             });
         } else {
-            res.status(403).send();
+            res.status(401).send();
         }
     } catch (error) {
         res.status(500).json({
@@ -990,7 +989,7 @@ app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
 
         // check if the user is logged in
         if (await isAuthorizedOrHigher(req.session.user, typeOfProfile.user)) {
-            res.status(403).json({
+            res.status(401).json({
                 message: "you must be logged in to react to a squeal"
             });
             return;
