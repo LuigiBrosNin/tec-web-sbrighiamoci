@@ -559,26 +559,6 @@ console.log("I'm in danger")
 
                     await mongoClient.connect();
                     await collection.updateOne({ id: fatherId }, { $set: { replies_list: squealFather.replies_list } });
-
-                    console.log("ALl'indice " + elementIndex + " ho trovato l'id: " + squealFather.replies_list[elementIndex]);
-                    //const arrayFilters = [{ elementIndex: fatherId }];
-//console.log("fatherId: " + fatherId + " elementIndex: " + elementIndex)
-                    // replace father's "replies" occurrence of the deleted squeal with DeletedSqueals id
-                    /*await mongoClient.connect();
-                    await collection.updateOne(
-                        { id: fatherId },
-                        //{ $set: { [`replies_list.$[elementIndex]`] : `DeletedSqueals${deletedSquealsNum}` } },
-                        { $set: { [replies_list[0]] : `DeletedSqueals${deletedSquealsNum}` } },
-                        //{ arrayFilters: arrayFilters },
-                        (err, res) => {
-                            if (err) {
-                                console.error('Error during the update of the father: ', err);
-                            } else {
-                                console.log('Father successfuly updated.');
-                            }
-                        }
-                    );*/
-                    
                 }
 
                 // update the reply_to field of the squeals that were replying to the deleted one
