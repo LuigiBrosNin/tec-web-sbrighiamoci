@@ -196,59 +196,67 @@ app.get("/profiles/:name", async (req, res) => {
 // crea il profilo con nome name
 // ritorna 409 se esiste già
 // ritorna 400 se mancano informazioni
+// ritorna 401 se non sei autorizzato
 app.put("/profiles/:name", async (req, res) => {
+    const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
     try {
-        // setting up info for the new profile
-        const name = req.params.name;
-        const profile = {
-            name: name,
-            ...req.body,
-            followers_list: [],
-            following_list: [],
-            squeals_list: [],
-            squeals_num: 0,
-            credit: CREDIT_LIMITS,
-            credit_limits: CREDIT_LIMITS,
-            is_banned: false,
-            banned_until: null,
-        };
+        if (adminAuthorized) {
+            // setting up info for the new profile
+            const name = req.params.name;
+            const profile = {
+                name: name,
+                ...req.body,
+                followers_list: [],
+                following_list: [],
+                squeals_list: [],
+                squeals_num: 0,
+                credit: CREDIT_LIMITS,
+                credit_limits: CREDIT_LIMITS,
+                is_banned: false,
+                banned_until: null,
+            };
 
-        const allowedAccountTypes = ["normal", "admin", "premium", "smm"];
-        if (!allowedAccountTypes.includes(profile.account_type)) {
-            profile.account_type = "normal";
-        }
-        if (profile.propic === undefined) {
-            // STOCK PROFILE PIC
-            profile.propic === "SOME URI";
-        }
-        if (profile.bio === undefined) {
-            profile.bio = "";
-        }
+            const allowedAccountTypes = ["normal", "admin", "premium", "smm"];
+            if (!allowedAccountTypes.includes(profile.account_type)) {
+                profile.account_type = "normal";
+            }
+            if (profile.propic === undefined) {
+                // STOCK PROFILE PIC
+                profile.propic === "SOME URI";
+            }
+            if (profile.bio === undefined) {
+                profile.bio = "";
+            }
 
-        // checking if there's missing info
-        if (profile.password == null || profile.password === "" || profile.email == null || profile.email === "") { //// the check var == null is equivalent to var === null && var === undefined
-            res.status(400).json({
-                message: "Missing password or email"
+            // checking if there's missing info
+            if (profile.password == null || profile.password === "" || profile.email == null || profile.email === "") { //// the check var == null is equivalent to var === null && var === undefined
+                res.status(400).json({
+                    message: "Missing password or email"
+                });
+                return;
+            }
+
+            console.log(JSON.stringify(profile));
+
+            await mongoClient.connect();
+            const existingProfile = await collection.findOne({
+                name: profile.name
             });
-            return;
-        }
 
-        console.log(JSON.stringify(profile));
+            if (existingProfile == null) {
+                const result = await collection.insertOne(profile);
 
-        await mongoClient.connect();
-        const existingProfile = await collection.findOne({
-            name: profile.name
-        });
-
-        if (existingProfile == null) {
-            const result = await collection.insertOne(profile);
-
-            res.status(200).json({
-                message: "Profile created"
-            });
+                res.status(200).json({
+                    message: "Profile created"
+                });
+            } else {
+                res.status(409).json({
+                    message: "Profile already exists"
+                });
+            }
         } else {
-            res.status(409).json({
-                message: "Profile already exists"
+            res.status(401).json({
+                message: "Unauthorized"
             });
         }
     } catch (error) {
@@ -265,13 +273,13 @@ app.put("/profiles/:name", async (req, res) => {
 
 // ? handle dependencies (squeals, followers, following, channels mod list)
 //TODO FUTURE LUIZO: ADD DIPENDENCIES
-// TODO ADD AUTHORIZATION
 app.delete("/profiles/:name", async (req, res) => {
     try {
         const profileName = req.params.name;
-        const authorized = true; /*isAuthorized(req, "admin");*/
+        const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
+        const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === profileName;
 
-        if (authorized) {
+        if (authorized || adminAuthorized) {
             await mongoClient.connect();
             const result = await collection.deleteOne({
                 name: profileName
@@ -304,16 +312,14 @@ app.delete("/profiles/:name", async (req, res) => {
 // ritorna 400 se mancano informazioni necessarie
 // Parametri supportati: bio, account_type, propic, credit, credit_limits, is_banned, banned_until, password, email
 // Parametri modificabili da utenti: bio, propic, password, email
-// TODO ADD AUTHORIZATION
 app.post("/profiles/:name", async (req, res) => {
     try {
         // setting up info for the updated profile
         const profileName = req.params.name;
-        const adminAuthorized = true; /*isAuthorized(req, "admin");*/
-        const authorized = true; /*isAuthorized(req, "normal");*/
+        const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
+        const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === profileName;
 
-
-        if (!authorized) {
+        if (!authorized && !adminAuthorized) {
             res.status(401).json({
                 message: "Unauthorized"
             });
@@ -453,17 +459,15 @@ app.get("/profiles/:name/followers", async (req, res) => {
 // utente della sessione si aggiunge alla lista di un utente (altro)
 // rimuove il follower followerName dal profilo con nome name se presente
 // ritorna 404 se il profilo non esiste
-// ritorna 403 se non autorizzato (login non effettuato)
-
-//TODO ADD AUTHORIZATION
+// ritorna 401 se non autorizzato (login non effettuato)
 app.put("/profiles/:name/followers/", async (req, res) => {
     try {
         const profileName = req.params.name;
-        const followerName = req.body.follower_name; //! TEMP, REPLACE WITH SESSION USERNAME
-        const authorized = true; /*isAuthorized(req, "normal");*/
+        const followerName = req.session.user; // if this is undefined, then authorized is false
+        const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user);
 
         if (!authorized) {
-            res.status(403).json({
+            res.status(401).json({
                 message: "Unauthorized"
             });
             return;
@@ -578,13 +582,14 @@ app.get("/profiles/:name/propic", async (req, res) => {
 // ritorna 404 se non esiste
 // ritorna 401 se non sei autorizzato
 
-//TODO ADD AUTHORIZATION
+//TODO ADD FILE MANAMGEMENT FOR ACTUALLY DELETE THE PROFILE PIC FILE
 app.delete("/profiles/:name/propic", async (req, res) => {
     try {
         const profileName = req.params.name;
-        const authorized = true; /*isAuthorized(req, "normal");*/
+        const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
+        const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === profileName;
 
-        if (!authorized) {
+        if (!authorized && !adminAuthorized) {
             res.status(401).json({
                 message: "Unauthorized"
             });
