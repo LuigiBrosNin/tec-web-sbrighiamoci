@@ -79,19 +79,19 @@ async function isPasswordCorrect(user, password) { // user is NOT the username, 
     return password === user.password;
 }
 
-async function registerNewUser(user, email, password, sessionData) {
+async function registerNewUser(user, email, password, sessionCookie) {
     const body = {
         email: email,
         password: password,
         account_type: typeOfProfile.user,
     };
-
+    console.log(sessionCookie);
     let res = await fetch(`https://site222326.tw.cs.unibo.it/profiles/${user}`, {
         method: "PUT",
         credentials: "same-origin",
         headers: {
             "Content-type": "application/json; charset=UTF-8",
-            "cookie": sessionData
+            "cookie": sessionCookie
         },
         body: JSON.stringify(body)
     });
