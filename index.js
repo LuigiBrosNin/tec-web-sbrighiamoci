@@ -2,6 +2,7 @@ global.rootDir = __dirname;
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const app = express();
 
@@ -72,10 +73,10 @@ app.get("/logout", async (req, res) => {
   res.redirect("/");
 })
 
-app.put("/signin", async (req, res) => {
+app.put("/signin", cookieParser.json(), async (req, res) => {
   if(req.body.username != null && req.body.username !== "" && req.body.email != null && req.body.email !== "" && req.body.password != null && req.body.password !== ""){ // the check var == null is equivalent to var === null && var === undefined
     req.session.user = "Arturo";
-    console.log(req.session);
+    console.log(req.cookies);
     let status = await registerNewUser(req.body.username, req.body.email, req.body.password, req.cookies);
     req.session.user = undefined;
     res.status(status).send();
