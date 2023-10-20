@@ -8,9 +8,10 @@ const mongoClient = new MongoClient(mongouri);
 const dbName = "SquealerDB";
 const squealCollection = "Squeals";
 const profileCollection = "Profiles";
+const channelCollection = "Channels";
 
 const CREDIT_LIMITS = [150, 500, 1000];
 
 const CM = 0.25;
 
-module.exports = {dbName, squealCollection, profileCollection, mongoClient, CREDIT_LIMITS, CM};
+module.exports = {dbName, squealCollection, profileCollection, channelCollection, mongoClient, CREDIT_LIMITS, CM};

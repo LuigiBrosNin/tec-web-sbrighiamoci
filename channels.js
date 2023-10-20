@@ -17,7 +17,7 @@ const {
   dbName,
   squealCollection,
   profileCollection,
-  channelCollection, //todo aggiunto io, da aggiungere anche da altre parti?
+  channelCollection, 
   mongoClient,
   CM
 } = require("./const.js");
@@ -34,7 +34,7 @@ const collection_channels = database.collection(channelCollection);
 //? id è corretto come parametro per l'API?
 app.get("/channels/:name", async (req, res) => {
   try {
-    console.log("Sei nel subsribersnum")
+    console.log("Sei nel subscribersnum")
     const channelName = req.params.name
     
     await mongoClient.connect()

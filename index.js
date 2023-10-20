@@ -112,3 +112,4 @@ module.exports = {app};
 
 require("./squeal.js");
 require("./profiles.js");
+require("./channels.js");
