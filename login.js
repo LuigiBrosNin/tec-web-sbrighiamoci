@@ -217,7 +217,7 @@ function addReactionListTest(){
   .catch(error => console.error(error));
 }
 
-function testChannelGetSubs(param_name) {
+function testChannel(param_name) {
   fetch(`https://site222326.tw.cs.unibo.it/channels/${param_name}`, {
     method: "GET"
   })
