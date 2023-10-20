@@ -218,7 +218,7 @@ function addReactionListTest(){
 }
 
 function testChannel(param_name) {
-  fetch(`https://site222326.tw.cs.unibo.it/channels/${param_name}`, {
+  fetch(`https://site222326.tw.cs.unibo.it/channels/${param_name}/followers`, {
     method: "GET"
   })
     .then(response => response.json())

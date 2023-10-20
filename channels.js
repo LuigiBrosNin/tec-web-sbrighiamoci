@@ -32,13 +32,13 @@ const collection_channels = database.collection(channelCollection);
 
 
 /* -------------------------------------------------------------------------- */
-/*                           /CHANNELS/:NAME                                  */
+/*                   /CHANNELS/:NAME/SUBSCRIBERS_NUM                          */
 /*                                GET                                         */
 /* -------------------------------------------------------------------------- */
 
 //* GET
 // return the number of subscribers of a channel
-app.get("/channels/:name", async (req, res) => {
+app.get("/channels/:name/subscribers_num", async (req, res) => {
   try {
     const channelName = req.params.name
 
@@ -64,14 +64,14 @@ app.get("/channels/:name", async (req, res) => {
 
 
 /* -------------------------------------------------------------------------- */
-/*                            /CHANNELS/FOLLOWERS                             */
+/*                       /CHANNELS/:NAME/SUBSCRIBERS_LIST                     */
 /*                              GET, PUT, DELETE                              */
 /* -------------------------------------------------------------------------- */
 
 //* GET
 // returns the list of the subscribers of the channel
 
-app.get("/channels/:name", async (req, res) => {
+app.get("/channels/:name/subscribers_list", async (req, res) => {
   try {
   console.log("Benvenuto in quasta nuva get")
     // initializing the start and end index in case they are not specified
