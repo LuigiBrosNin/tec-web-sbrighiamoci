@@ -201,6 +201,7 @@ app.put("/profiles/:name", async (req, res) => {
     const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
     console.log(req.session.user);
     console.log(req.cookies);
+    console.log(req.session.id);
     try {
         if (adminAuthorized) {
             // setting up info for the new profile
