@@ -79,7 +79,7 @@ async function isPasswordCorrect(user, password) { // user is NOT the username, 
     return password === user.password;
 }
 
-async function registerNewUser(user, email, password, sessionCookie) {
+async function registerNewUser(user, email, password) {
     const body = {
         email: email,
         password: password,
@@ -91,7 +91,6 @@ async function registerNewUser(user, email, password, sessionCookie) {
         credentials: "same-origin",
         headers: {
             "Content-type": "application/json; charset=UTF-8",
-            "cookie": `connect.sid=${sessionCookie}`
         },
         body: JSON.stringify(body)
     });
