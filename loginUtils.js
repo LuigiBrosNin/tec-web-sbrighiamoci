@@ -91,7 +91,7 @@ async function registerNewUser(user, email, password, sessionCookie) {
         credentials: "same-origin",
         headers: {
             "Content-type": "application/json; charset=UTF-8",
-            "cookie": sessionCookie
+            "cookie": `connect.sid=${sessionCookie}`
         },
         body: JSON.stringify(body)
     });
