@@ -40,8 +40,6 @@ const collection_channels = database.collection(channelCollection);
 // supports pagination & queries
 // parameters: startindex, endindex, name, owner, type (privileged, private)
 // GTE prameters: subscribers_num
-
-//TODO TEST THE FUNCTION
 app.get("/channels", async (req, res) => {
   try {
 
