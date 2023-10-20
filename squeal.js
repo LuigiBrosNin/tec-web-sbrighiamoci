@@ -22,8 +22,8 @@ const {
 // connecting to the database
 mongoClient.connect();
 const database = mongoClient.db(dbName);
-const collection = database.collection(squealCollection);
-const collection_for_profiles = database.collection(profileCollection);
+const collection_squeals = database.collection(squealCollection);
+const collection_profiles = database.collection(profileCollection);
 
 /* -------------------------------------------------------------------------- */
 /*                                 /SQUEALS/                                  */
@@ -155,7 +155,7 @@ app.get("/squeals/", async (req, res) => {
 
 
         await mongoClient.connect();
-        const squeals = await collection.find(search)
+        const squeals = await collection_squeals.find(search)
             .sort({
                 timestamp: -1
             }) // ordered inverse chronological order
@@ -237,7 +237,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
 
             await mongoClient.connect();
 
-            const profile_author = await collection_for_profiles.findOne({
+            const profile_author = await collection_profiles.findOne({
                 name: newSqueal.author
             });
 
@@ -288,7 +288,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
             await mongoClient.connect();
 
             // update the author's squeals_num and squeals_list
-            await collection_for_profiles.updateOne({
+            await collection_profiles.updateOne({
                 name: profile_author.name
             }, {
                 $set: {
@@ -304,7 +304,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
 
             if (newSqueal.reply_to !== undefined) {
                 // retrieve the squeal that is being replied to
-                const squeal_replied_to = await collection.findOne({
+                const squeal_replied_to = await collection_squeals.findOne({
                     id: newSqueal.reply_to
                 });
 
@@ -324,7 +324,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
                 replies_list.push(newSqueal.id);
 
                 // update the squeal_replied_to's replies_num
-                await collection.updateOne({
+                await collection_squeals.updateOne({
                     id: squeal_replied_to.id
                 }, {
                     $set: {
@@ -335,7 +335,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
             }
 
             // Insert the new squeal in the database without converting it to a JSON string
-            const result = await collection.insertOne(newSqueal);
+            const result = await collection_squeals.insertOne(newSqueal);
 
             console.log('Documento inserito con successo: ', result.insertedId + '\n' + JSON.stringify(newSqueal));
             res.status(200).send(JSON.stringify({
@@ -366,7 +366,7 @@ app.get("/squeals/:id", async (req, res) => {
 
         await mongoClient.connect();
         // fetching the squeal with the given id
-        const squeal = await collection.findOne({
+        const squeal = await collection_squeals.findOne({
             id: squealId
         });
 
@@ -394,7 +394,7 @@ app.put("/squeals/:id", bodyParser.json(), async (req, res) => {
         const squealId = req.params.id;
 
         // fetching the squeal with the given id
-        const squeal = await collection.findOne({
+        const squeal = await collection_squeals.findOne({
             id: squealId
         });
 
@@ -449,7 +449,7 @@ app.put("/squeals/:id", bodyParser.json(), async (req, res) => {
 
             // if the squeal is found, update and return the update
             if (squeal != null) {
-                const result = await collection.updateOne({
+                const result = await collection_squeals.updateOne({
                     id: squealId
                 }, {
                     $set: newSqueal
@@ -460,7 +460,7 @@ app.put("/squeals/:id", bodyParser.json(), async (req, res) => {
                 return;
             } else {
                 // if the squeal is not found, add it to the database
-                const result = await collection.insertOne(newSqueal);
+                const result = await collection_squeals.insertOne(newSqueal);
                 res.status(200).json({
                     message: "squeal added successfully"
                 });
@@ -488,7 +488,7 @@ app.delete("/squeals/:id", async (req, res) => {
 
             // connect to the database
             await mongoClient.connect();
-            const squeal = await collection.findOne({ id: squealId }); // fetching the squeal to delete
+            const squeal = await collection_squeals.findOne({ id: squealId }); // fetching the squeal to delete
 
             // if the squeal is not found, return 404
             if (squeal === null) {
@@ -501,7 +501,7 @@ app.delete("/squeals/:id", async (req, res) => {
             if (squeal.replies_num === 0) {                                      // the squeal doesn't have replies
                 if (squeal.reply_to !== undefined && squeal.reply_to != "") {    // the squeal was replying to another one
                     let fatherId = squeal.reply_to
-                    await collection.updateOne(
+                    await collection_squeals.updateOne(
                         { id: fatherId },
                         { $pull: { replies_list: squealId }, $inc: { replies_num: -1 } },
                         (err, res) => {
@@ -516,7 +516,7 @@ app.delete("/squeals/:id", async (req, res) => {
                 // delete squeal from database
                 await mongoClient.connect();
                 try {
-                    const result = await collection.deleteOne({ id: squealId });
+                    const result = await collection_squeals.deleteOne({ id: squealId });
                     if (result.deletedCount === 1) {
                         console.log('Squeal successfully erased.');
                     } else {
@@ -529,12 +529,12 @@ app.delete("/squeals/:id", async (req, res) => {
             else {  // the squeal has replies: move it to the deletedAccount and modify father/children accordingly
                 
                 // retrieve the "DeletedSqueals" account
-                const deletedSquealsProfile = await collection_for_profiles.findOne({ name: "DeletedSqueals" })
+                const deletedSquealsProfile = await collection_profiles.findOne({ name: "DeletedSqueals" })
                 const deletedSquealsNum = deletedSquealsProfile.squeals_num
 
                 // reset fields of the squeal to be deleted
                 await mongoClient.connect();
-                await collection.updateOne( 
+                await collection_squeals.updateOne( 
                     { _id: squeal._id },
                     {
                         $set: {
@@ -551,12 +551,12 @@ app.delete("/squeals/:id", async (req, res) => {
                 // if the squeal has a father, replace the squeal occurrence in the "replies_list"
                 if (squeal.reply_to !== undefined && squeal.reply_to !== "") {
                     let fatherId = squeal.reply_to
-                    const squealFather = await collection.findOne({ id: fatherId })
+                    const squealFather = await collection_squeals.findOne({ id: fatherId })
                     const index = squealFather.replies_list.indexOf(squealId); // indice nella replies_list a cui si trova squealId
                     squealFather.replies_list[index] = `DeletedSqueals${deletedSquealsNum}`
 
                     await mongoClient.connect();
-                    await collection.updateOne({ id: fatherId }, { $set: { replies_list: squealFather.replies_list } });
+                    await collection_squeals.updateOne({ id: fatherId }, { $set: { replies_list: squealFather.replies_list } });
                 }
 
                 // update the reply_to field of the squeals that were replying to the deleted one
@@ -564,8 +564,8 @@ app.delete("/squeals/:id", async (req, res) => {
                 await mongoClient.connect();
                 squealRepliesList.forEach(async (reply) => {            
                     try {
-                        let tmp_reply = await collection.findOne({ id: reply })  // retrieve a squeal that was a reply to the deleted squeal
-                        await collection.updateOne(
+                        let tmp_reply = await collection_squeals.findOne({ id: reply })  // retrieve a squeal that was a reply to the deleted squeal
+                        await collection_squeals.updateOne(
                             { _id: tmp_reply._id },
                             { $set: { reply_to: `DeletedSqueals${deletedSquealsNum}` } }
                         );
@@ -577,7 +577,7 @@ app.delete("/squeals/:id", async (req, res) => {
                 
                 // update the counter of the deleted squeals profile
                 await mongoClient.connect();
-                await collection_for_profiles.updateOne(
+                await collection_profiles.updateOne(
                     { _id: deletedSquealsProfile._id },
                     { $inc: { squeals_num: 1 } }
                 );
@@ -647,7 +647,7 @@ app.post("/squeals/:id", bodyParser.json(), async (req, res) => {
 
             await mongoClient.connect();
             // fetching the squeal with the given id
-            const squeal = await collection.findOne({
+            const squeal = await collection_squeals.findOne({
                 id: squealId
             });
 
@@ -661,7 +661,7 @@ app.post("/squeals/:id", bodyParser.json(), async (req, res) => {
 
             await mongoClient.connect();
             // if the squeal is found, update it
-            const result = await collection.updateOne({
+            const result = await collection_squeals.updateOne({
                 id: squealId
             }, {
                 $set: update
@@ -692,7 +692,7 @@ app.get("/squeals/:id/media", async (req, res) => {
         const squealId = req.params.id;
 
         // fetching the squeal with the given id
-        const squeal = await collection.findOne({
+        const squeal = await collection_squeals.findOne({
             id: squealId
         });
 
@@ -727,7 +727,7 @@ app.get("/squeals/:id/repliesnumber", async (req, res) => {
         const squealId = req.params.id;
 
         // fetching the squeal with the given id
-        const squeal = await collection.findOne({
+        const squeal = await collection_squeals.findOne({
             id: squealId
         });
 
@@ -783,7 +783,7 @@ app.get("/squeals/:id/replies/", async (req, res) => {
         }
 
         // fetching the squeal with the given id
-        const main_squeal = await collection.findOne({
+        const main_squeal = await collection_squeals.findOne({
             id: squealId
         });
 
@@ -803,7 +803,7 @@ app.get("/squeals/:id/replies/", async (req, res) => {
 
         // fetching the replies
         for (const child_squeal_id of idsOfSquealRepliesToReturn) {
-            child_squeal = await collection.findOne({
+            child_squeal = await collection_squeals.findOne({
                 id: child_squeal_id
             });
 
@@ -845,7 +845,7 @@ app.get("/squeals/:id/:reaction_list", async (req, res) => {
         if (reactions == "impressions") {
             // fetching the squeal with the given id
             await mongoClient.connect();
-            const squeal = await collection.findOne({
+            const squeal = await collection_squeals.findOne({
                 id: squealId
             });
 
@@ -872,7 +872,7 @@ app.get("/squeals/:id/:reaction_list", async (req, res) => {
         const reaction_list = req.params.reaction_list;
 
         // fetching the squeal with the given id
-        const squeal = await collection.findOne({
+        const squeal = await collection_squeals.findOne({
             id: squealId
         });
 
@@ -908,7 +908,7 @@ app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
         if(reactions == "impressions"){
             // fetching the squeal with the given id
             await mongoClient.connect();
-            const squeal = await collection.findOne({
+            const squeal = await collection_squeals.findOne({
                 id: squealId
             });
 
@@ -926,7 +926,7 @@ app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
             squeal.neg_popolarity_ratio = squeal.negative_reactions / squeal.impressions;
 
             // update the squeal's impressions
-            const result = await collection.updateOne({
+            const result = await collection_squeals.updateOne({
                 id: squealId
             }, {
                 $set: {
@@ -975,7 +975,7 @@ app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
 
         await mongoClient.connect();
         // fetching the squeal with the given id
-        const squeal = await collection.findOne({
+        const squeal = await collection_squeals.findOne({
             id: squealId
         });
 
@@ -1003,7 +1003,7 @@ app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
         }
 
         await mongoClient.connect();
-        const result = await collection.updateOne({
+        const result = await collection_squeals.updateOne({
             id: squealId
         }, {
             $set: squeal

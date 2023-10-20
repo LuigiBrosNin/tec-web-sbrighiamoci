@@ -22,8 +22,8 @@ const {
 // connecting to the database
 mongoClient.connect();
 const database = mongoClient.db(dbName);
-const collection_for_squeals = database.collection(squealCollection);
-const collection = database.collection(profileCollection);
+const collection_squeals = database.collection(squealCollection);
+const collection_profiles = database.collection(profileCollection);
 
 /* -------------------------------------------------------------------------- */
 /*                                 /PROFILES/                                 */
@@ -136,7 +136,7 @@ app.get("/profiles/", async (req, res) => {
         console.log(JSON.stringify(search));
 
         await mongoClient.connect();
-        let profiles = await collection.find(search)
+        let profiles = await collection_profiles.find(search)
             .sort({
                 timestamp: -1
             }) // ordered inverse chronological order
@@ -172,7 +172,7 @@ app.get("/profiles/:name", async (req, res) => {
         const profileName = req.params.name;
 
         await mongoClient.connect();
-        const profile = await collection.findOne({
+        const profile = await collection_profiles.findOne({
             name: profileName
         });
 
@@ -241,12 +241,12 @@ app.put("/profiles/:name", async (req, res) => {
             console.log(JSON.stringify(profile));
 
             await mongoClient.connect();
-            const existingProfile = await collection.findOne({
+            const existingProfile = await collection_profiles.findOne({
                 name: profile.name
             });
 
             if (existingProfile == null) {
-                const result = await collection.insertOne(profile);
+                const result = await collection_profiles.insertOne(profile);
 
                 res.status(200).json({
                     message: "Profile created"
@@ -283,7 +283,7 @@ app.delete("/profiles/:name", async (req, res) => {
 
         if (authorized || adminAuthorized) {
             await mongoClient.connect();
-            const result = await collection.deleteOne({
+            const result = await collection_profiles.deleteOne({
                 name: profileName
             });
             if (result.deletedCount > 0) {
@@ -329,7 +329,7 @@ app.post("/profiles/:name", async (req, res) => {
         }
 
         await mongoClient.connect();
-        const exists = await collection.findOne({
+        const exists = await collection_profiles.findOne({
             name: profileName
         });
         // checking if the profile exists
@@ -371,7 +371,7 @@ app.post("/profiles/:name", async (req, res) => {
 
         console.log(JSON.stringify(profile));
 
-        const result = await collection.updateOne({
+        const result = await collection_profiles.updateOne({
             name: profileName
         }, {
             $set: profile
@@ -401,7 +401,7 @@ app.get("/profiles/:name/followersnumber", async (req, res) => {
         const profileName = req.params.name;
 
         await mongoClient.connect();
-        const profile = await collection.findOne({
+        const profile = await collection_profiles.findOne({
             name: profileName
         });
 
@@ -434,7 +434,7 @@ app.get("/profiles/:name/followers", async (req, res) => {
         const profileName = req.params.name;
 
         await mongoClient.connect();
-        const profile = await collection.findOne({
+        const profile = await collection_profiles.findOne({
             name: profileName
         });
 
@@ -476,10 +476,10 @@ app.put("/profiles/:name/followers/", async (req, res) => {
         }
 
         await mongoClient.connect();
-        const followedProfile = await collection.findOne({
+        const followedProfile = await collection_profiles.findOne({
             name: profileName
         });
-        const followingProfile = await collection.findOne({
+        const followingProfile = await collection_profiles.findOne({
             name: followerName
         });
 
@@ -498,7 +498,7 @@ app.put("/profiles/:name/followers/", async (req, res) => {
             followedProfile.followers_list.splice(followedProfile.followers_list.indexOf(followerName), 1);
             followingProfile.following_list.splice(followingProfile.following_list.indexOf(profileName), 1);
 
-            await collection.updateOne({
+            await collection_profiles.updateOne({
                 name: profileName
             }, {
                 $set: {
@@ -506,7 +506,7 @@ app.put("/profiles/:name/followers/", async (req, res) => {
                 }
             });
 
-            await collection.updateOne({
+            await collection_profiles.updateOne({
                 name: followerName
             }, {
                 $set: {
@@ -518,7 +518,7 @@ app.put("/profiles/:name/followers/", async (req, res) => {
                 message: "Follower removed"
             });
         } else { // add the follower to the list
-            await collection.updateOne({
+            await collection_profiles.updateOne({
                 name: profileName
             }, {
                 $push: {
@@ -526,7 +526,7 @@ app.put("/profiles/:name/followers/", async (req, res) => {
                 }
             });
 
-            await collection.updateOne({
+            await collection_profiles.updateOne({
                 name: followerName
             }, {
                 $push: {
@@ -558,7 +558,7 @@ app.get("/profiles/:name/propic", async (req, res) => {
         const profileName = req.params.name;
 
         await mongoClient.connect();
-        const profile = await collection.findOne({
+        const profile = await collection_profiles.findOne({
             name: profileName
         });
 
@@ -599,12 +599,12 @@ app.delete("/profiles/:name/propic", async (req, res) => {
         }
 
         await mongoClient.connect();
-        const profile = await collection.findOne({
+        const profile = await collection_profiles.findOne({
             name: profileName
         });
 
         if (profile !== null) {
-            const result = await collection.updateOne({
+            const result = await collection_profiles.updateOne({
                 name: profileName
             }, {
                 $set: {

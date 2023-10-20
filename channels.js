@@ -25,29 +25,27 @@ const {
 // connecting to the database
 mongoClient.connect();
 const database = mongoClient.db(dbName);
-const collection = database.collection(squealCollection);
+const collection_squeals = database.collection(squealCollection);
 const collection_channels = database.collection(channelCollection);
 
 /********************** FUNCTIONS **********************/
 
-//  /channels/followersnumber | numero followers
-//? id è corretto come parametro per l'API?
+//* GET
+// return the number of subscribers of a channel
 app.get("/channels/:name", async (req, res) => {
   try {
-    console.log("Sei nel subscribersnum")
     const channelName = req.params.name
     
     await mongoClient.connect()
     const channel = await collection_channels.findOne({ name: channelName })
-    console.log("Il canale con nome: " + channelName + " contiene " + channel.subscribers_num)
+
     if (!channel) {
       res.status(404).json({
-        message: "Channel not fooooooooooouuuuuuuuuuuuuuuuu und."
+        message: "Channel not found."
       });
       return; 
     }
     else {
-      console.log("eeeeelsssseeeeee")
       res.status(200).json(channel.subscribers_num)
     }
   }
