@@ -216,3 +216,12 @@ function addReactionListTest(){
   .then(data => console.log(data))
   .catch(error => console.error(error));
 }
+
+function testChannelGetSubs(param_name) {
+  fetch(`https://site222326.tw.cs.unibo.it/channels/${param_name}`, {
+    method: "GET"
+  })
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error(error));
+}
