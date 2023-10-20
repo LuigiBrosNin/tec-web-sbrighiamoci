@@ -29,6 +29,8 @@ app.use(session({
     resave: false, 
     saveUninitialized: false
 }));
+
+app.use(cookieParser());
  
 app.use(express.static(global.rootDir));
 app.use(express.json());
@@ -73,7 +75,7 @@ app.get("/logout", async (req, res) => {
   res.redirect("/");
 })
 
-app.put("/signin", cookieParser.json(), async (req, res) => {
+app.put("/signin", async (req, res) => {
   if(req.body.username != null && req.body.username !== "" && req.body.email != null && req.body.email !== "" && req.body.password != null && req.body.password !== ""){ // the check var == null is equivalent to var === null && var === undefined
     req.session.user = "Arturo";
     console.log(req.cookies);
