@@ -79,9 +79,9 @@ app.put("/signin", async (req, res) => {
   if(req.body.username != null && req.body.username !== "" && req.body.email != null && req.body.email !== "" && req.body.password != null && req.body.password !== ""){ // the check var == null is equivalent to var === null && var === undefined
     req.session.regenerate(async (err) => {
       console.log(req.cookies);
-      console.log(req.session.id);
       req.session.user = "Arturo";
       req.session.save(async (err) => {
+        console.log(req.session.id);
         let status = await registerNewUser(req.body.username, req.body.email, req.body.password, req.cookies["connect.sid"]);
       //req.session.user = undefined;
       res.status(status).send();
