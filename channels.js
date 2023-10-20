@@ -39,7 +39,7 @@ app.get("/channels/:name", async (req, res) => {
     
     await mongoClient.connect()
     const channel = await collection_channels.findOne({ name: channelName })
-  console.log("Il canale con nome: " + channelName + " contiene " + channel)
+    console.log("Il canale con nome: " + channelName + " contiene " + channel.subscribers_num)
     if (!channel) {
       res.status(404).json({
         message: "Channel not fooooooooooouuuuuuuuuuuuuuuuu und."
