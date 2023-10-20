@@ -196,68 +196,60 @@ app.get("/profiles/:name", async (req, res) => {
 // crea il profilo con nome name
 // ritorna 409 se esiste già
 // ritorna 400 se mancano informazioni
-// ritorna 401 se non sei autorizzato
 app.put("/profiles/:name", async (req, res) => {
-    const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
-
     try {
-        if (adminAuthorized) {
-            // setting up info for the new profile
-            const name = req.params.name;
-            const profile = {
-                name: name,
-                ...req.body,
-                followers_list: [],
-                following_list: [],
-                squeals_list: [],
-                squeals_num: 0,
-                credit: CREDIT_LIMITS,
-                credit_limits: CREDIT_LIMITS,
-                is_banned: false,
-                banned_until: null,
-            };
 
-            const allowedAccountTypes = ["normal", "admin", "premium", "smm"];
-            if (!allowedAccountTypes.includes(profile.account_type)) {
-                profile.account_type = "normal";
-            }
-            if (profile.propic === undefined) {
-                // STOCK PROFILE PIC
-                profile.propic === "SOME URI";
-            }
-            if (profile.bio === undefined) {
-                profile.bio = "";
-            }
+        // setting up info for the new profile
+        const name = req.params.name;
+        const profile = {
+            name: name,
+            ...req.body,
+            followers_list: [],
+            following_list: [],
+            squeals_list: [],
+            squeals_num: 0,
+            credit: CREDIT_LIMITS,
+            credit_limits: CREDIT_LIMITS,
+            is_banned: false,
+            banned_until: null,
+        };
 
-            // checking if there's missing info
-            if (profile.password == null || profile.password === "" || profile.email == null || profile.email === "") { //// the check var == null is equivalent to var === null && var === undefined
-                res.status(400).json({
-                    message: "Missing password or email"
-                });
-                return;
-            }
+        const allowedAccountTypes = ["normal", "admin", "premium", "smm"];
+        if (!allowedAccountTypes.includes(profile.account_type)) {
+            profile.account_type = "normal";
+        }
+        if (profile.propic === undefined) {
+            // STOCK PROFILE PIC
+            profile.propic === "SOME URI";
+        }
+        if (profile.bio === undefined) {
+            profile.bio = "";
+        }
 
-            console.log(JSON.stringify(profile));
-
-            await mongoClient.connect();
-            const existingProfile = await collection_profiles.findOne({
-                name: profile.name
+        // checking if there's missing info
+        if (profile.password == null || profile.password === "" || profile.email == null || profile.email === "") { //// the check var == null is equivalent to var === null && var === undefined
+            res.status(400).json({
+                message: "Missing password or email"
             });
+            return;
+        }
 
-            if (existingProfile == null) {
-                const result = await collection_profiles.insertOne(profile);
+        console.log(JSON.stringify(profile));
 
-                res.status(200).json({
-                    message: "Profile created"
-                });
-            } else {
-                res.status(409).json({
-                    message: "Profile already exists"
-                });
-            }
+        await mongoClient.connect();
+        const existingProfile = await collection_profiles.findOne({
+            name: profile.name
+        });
+
+        if (existingProfile == null) {
+            const result = await collection_profiles.insertOne(profile);
+
+            res.status(200).json({
+                message: "Profile created"
+            });
         } else {
-            res.status(401).json({
-                message: "Unauthorized"
+            res.status(409).json({
+                message: "Profile already exists"
             });
         }
     } catch (error) {
