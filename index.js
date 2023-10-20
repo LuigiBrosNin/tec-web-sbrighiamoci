@@ -75,9 +75,27 @@ app.get("/logout", async (req, res) => {
 app.put("/signin", async (req, res) => {
   if(req.body.username != null && req.body.username !== "" && req.body.email != null && req.body.email !== "" && req.body.password != null && req.body.password !== ""){ // the check var == null is equivalent to var === null && var === undefined
     req.session.user = "Arturo";
-    let status = await registerNewUser(req.body.username, req.body.email,req.body.password);
+    //let status = await registerNewUser(req.body.username, req.body.email,req.body.password);
+    
+    const body = {
+      email: email,
+      password: password,
+      account_type: typeOfProfile.user,
+  };
+
+  let res = await fetch(`https://site222326.tw.cs.unibo.it/profiles/${user}`, {
+      method: "PUT",
+      credentials: "same-origin",
+      headers: {
+          "Content-type": "application/json; charset=UTF-8"
+      },
+      body: JSON.stringify(body)
+  });
+
+  console.log(res.status);
+    
     req.session.user = undefined;
-    res.status(status).send();
+    //res.status(status).send();
   } else {
     res.status(422).send("you need to specify username, email and password to sing in");
   }
