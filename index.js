@@ -80,10 +80,11 @@ app.put("/signin", async (req, res) => {
     req.session.regenerate(async (err) => {
       console.log(req.cookies);
       req.session.user = "Arturo";
-      req.session.save();
-      let status = await registerNewUser(req.body.username, req.body.email, req.body.password, req.cookies["connect.sid"]);
+      req.session.save(async (err) => {
+        let status = await registerNewUser(req.body.username, req.body.email, req.body.password, req.cookies["connect.sid"]);
       //req.session.user = undefined;
       res.status(status).send();
+      });
     });
     
   } else {
