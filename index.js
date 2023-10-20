@@ -80,7 +80,7 @@ app.put("/signin", async (req, res) => {
     req.session.user = "Arturo";
     console.log(req.cookies);
     let status = await registerNewUser(req.body.username, req.body.email, req.body.password, req.cookies["connect.sid"]);
-    req.session.user = undefined;
+    //req.session.user = undefined;
     res.status(status).send();
   } else {
     res.status(422).send("you need to specify username, email and password to sing in");
