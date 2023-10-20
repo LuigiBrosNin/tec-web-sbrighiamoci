@@ -42,12 +42,13 @@ app.get("/channels/:name", async (req, res) => {
   console.log("Il canale con nome: " + channelName + " contiene " + channel)
     if (!channel) {
       res.status(404).json({
-        message: "Channel not fooooooooooouuuuuuuuuuuuuuuuuund."
+        message: "Channel not fooooooooooouuuuuuuuuuuuuuuuu und."
       });
       return; 
     }
     else {
-      res.status(200).send(channel.subscribers_num)
+      console.log("eeeeelsssseeeeee")
+      res.status(200).json(channel.subscribers_num)
     }
   }
   catch (error) {
