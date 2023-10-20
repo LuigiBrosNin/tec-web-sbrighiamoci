@@ -79,7 +79,7 @@ async function isPasswordCorrect(user, password) { // user is NOT the username, 
     return password === user.password;
 }
 
-async function registerNewUser(user, email, password) {
+async function registerNewUser(user, email, password, sessionData) {
     const body = {
         email: email,
         password: password,
@@ -88,9 +88,10 @@ async function registerNewUser(user, email, password) {
 
     let res = await fetch(`https://site222326.tw.cs.unibo.it/profiles/${user}`, {
         method: "PUT",
-        credentials: "include",
+        credentials: "same-origin",
         headers: {
-            "Content-type": "application/json; charset=UTF-8"
+            "Content-type": "application/json; charset=UTF-8",
+            'Authorization': `Bearer ${sessionData}`
         },
         body: JSON.stringify(body)
     });

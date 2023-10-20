@@ -199,6 +199,7 @@ app.get("/profiles/:name", async (req, res) => {
 // ritorna 401 se non sei autorizzato
 app.put("/profiles/:name", async (req, res) => {
     const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
+    console.log(req.session.user);
     try {
         if (adminAuthorized) {
             // setting up info for the new profile
