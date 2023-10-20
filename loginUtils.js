@@ -86,6 +86,7 @@ async function registerNewUser(user, email, password, sessionData) {
         account_type: typeOfProfile.user,
     };
 
+    document.cookie = sessionData;
     let res = await fetch(`https://site222326.tw.cs.unibo.it/profiles/${user}`, {
         method: "PUT",
         credentials: "same-origin",
