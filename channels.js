@@ -39,7 +39,7 @@ app.get("/channels/:name", async (req, res) => {
     
     await mongoClient.connect()
     const channel = await collection_channels.findOne({ name: channelName })
-    
+  console.log("Il canale: " + channel)
     if (!channel) {
       res.status(404).json({
         message: "Channel not found."
@@ -47,7 +47,7 @@ app.get("/channels/:name", async (req, res) => {
       return; 
     }
     else {
-      res.status(200).channel.subscribers_num
+      res.status(200).send(channel.subscribers_num)
     }
   }
   catch (error) {
