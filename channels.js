@@ -112,3 +112,33 @@ app.get("/channels/:name/subscribers_list", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
+/*
+tra l'altro, il profilo da cui rimuovere come lo prendo? deve essere loggato, ma come lo prendo?
+Req.session.user
+
+
+Per testarlo passalo dal body  E fai req.body.user
+Così non serve il login per testare 
+*/
+
+//* PUT
+// returns the list of the subscribers of the channel
+//TODO aggiungere anche ai following dell'utente il canale
+app.put("/channels/:name/subscribers_list", async (req, res) => {
+  /*
+    ottenere l'utente
+    ottenere il canale
+    controllare se canale esiste
+    controllare se l'utente è già iscritto
+      se così, disiscriverlo (togliere da subscriber_list, e andare sul suo profilo a rimuovergli il follow)
+    se non è iscritto
+      iscriverlo (aggiungerlo a subscribers_list e andare nel suo profilo ad aggiungere il follow)
+  */
+  try {
+    
+  }
+  catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
