@@ -134,7 +134,6 @@ app.get("/channels/:name", async (req, res) => {
 // body parameters: type, rules (array of strings) (only admins)
 
 //TODO ADD AUTHORIZATION
-//TODO TEST
 app.put("/channels/:name", async (req, res) => {
   try {
     const channelName = req.params.name;
@@ -176,7 +175,6 @@ app.put("/channels/:name", async (req, res) => {
 //* DELETE
 // deletes the channel with the specified name
 //TODO ADD AUTHORIZATION (ADMIN OR OWNER)
-//TODO TEST
 app.delete("/channels/:name", async (req, res) => {
   try {
     const channelName = req.params.name;
@@ -369,7 +367,6 @@ app.get("/channels/:name/rules", async (req, res) => {
 // updates the rules of the channel
 // body parameters: rules (array of strings), has to be complete, as the old list will be overwritten
 //TODO ADD AUTHORIZATION (ADMIN OR OWNER)
-//TODO TEST
 app.put("/channels/:name/rules", async (req, res) => {
   try {
     const channelName = req.params.name;
@@ -416,7 +413,6 @@ app.put("/channels/:name/rules", async (req, res) => {
 //* DELETE
 // deletes the rules of the channel
 //TODO ADD AUTHORIZATION (ADMIN OR OWNER)
-//TODO TEST
 app.delete("/channels/:name/rules", async (req, res) => {
   try {
     const channelName = req.params.name;
@@ -489,7 +485,7 @@ app.put("/channels/:name/mod_list", async (req, res) => {
 
     await mongoClient.connect();
     const profile = await collection_profiles.findOne({
-      username: req.body.mod_name
+      name: req.body.mod_name
     });
 
     if (profile === null) {

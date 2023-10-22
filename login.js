@@ -30,6 +30,75 @@ function signin(){
 /* -------------------------------------------------------------------------- */
 /*                         Luizo's temp test fucntions                        */
 /* -------------------------------------------------------------------------- */
+
+
+// channel mod list PUT request
+function addModListTest(param_name) {
+  const body = {
+    mod_name: "EmanueleDiSante"
+  };
+
+  console.log("Sending body: " + JSON.stringify(body));
+
+  fetch(`https://site222326.tw.cs.unibo.it/channels/${param_name}/mod_list`, {
+    method: "PUT",
+    headers: {
+      "Content-type": "application/json; charset=UTF-8"
+    },
+    body: JSON.stringify(body)
+  });
+}
+
+// channel mod list DELETE request
+function deleteModListTest(param_name) {
+  fetch(`https://site222326.tw.cs.unibo.it/channels/${param_name}/mod_list`, {
+    method: "DELETE"
+  })
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error(error));
+}
+
+
+// channel rules DELETE request
+function deleteRulesTest(param_name) {
+  fetch(`https://site222326.tw.cs.unibo.it/channels/${param_name}/rules`, {
+    method: "DELETE"
+  })
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error(error));
+}
+
+
+// channel rules PUT request
+function addRulesTest(param_name) {
+  const body = {
+    rules: ["getBunnyPics()", "getCatPics()", "getDogPics()"]
+  };
+
+  console.log("Sending body: " + JSON.stringify(body));
+
+  fetch(`https://site222326.tw.cs.unibo.it/channels/${param_name}/rules`, {
+    method: "PUT",
+    headers: {
+      "Content-type": "application/json; charset=UTF-8"
+    },
+    body: JSON.stringify(body)
+  });
+}
+
+
+// channel DELETE request
+function deleteChannelTest(param_name) {
+  fetch(`https://site222326.tw.cs.unibo.it/channels/${param_name}`, {
+    method: "DELETE"
+  })
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error(error));
+}
+
 // channel PUT request
 function addChannelTest(param_name) {
   const body = {
