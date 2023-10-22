@@ -41,11 +41,8 @@ const collection_channels = database.collection(channelCollection);
 // parameters: startindex, endindex, name, owner, type (privileged, private)
 // GTE prameters: subscribers_num
 // NOTE: private channels do not appear in searches, even if you're the owner
-
-// TODO ADD AUTHORIZATION
 app.get("/channels", async (req, res) => {
   try {
-    const authorized = true //TODO ADD AUTHORIZATION
 
     // initializing the start and end index in case they are not specified
     let startIndex = 0;
@@ -79,10 +76,6 @@ app.get("/channels", async (req, res) => {
       search.subscribers_num = {
         $gte: parseInt(req.query.subscribers_num)
       };
-    }
-
-    if (req.query.type === "private" && !authorized) {
-      search.type = "privileged";
     }
 
     await mongoClient.connect();
@@ -584,8 +577,6 @@ app.delete("/channels/:name/mod_list", async (req, res) => {
 // returns the list of the squeals of the channel
 // supports pagination
 // parameters: startindex, endindex
-
-//TODO TEST
 app.get("/channels/:name/squeals_list", async (req, res) => {
   try {
     // initializing the start and end index in case they are not specified
