@@ -110,12 +110,9 @@ app.get("/channels", async (req, res) => {
 //* GET
 // returns the channel with the specified name
 
-//TODO ADD AUTHORIZATION
-//TODO TEST
 app.get("/channels/:name", async (req, res) => {
   try{
     const channelName = req.params.name;
-    const authorized = true //TODO ADD AUTHORIZATION
 
     await mongoClient.connect();
     const channel = await collection_channels.findOne({ name: channelName });
@@ -123,13 +120,6 @@ app.get("/channels/:name", async (req, res) => {
     if (channel === null) {
       res.status(404).json({
         message: "channel not found"
-      });
-      return;
-    }
-
-    if(!authorized && channel.type === "private"){
-      res.status(401).json({
-        message: "not authorized to view private channel"
       });
       return;
     }
@@ -158,7 +148,7 @@ app.put("/channels/:name", async (req, res) => {
     let channel = {
       name: channelName,
       owner: req.session.user,
-      type: req.body.type,
+      type: "private",
       mod_list: [req.session.user],
       subscribers_num: 1,
       subscribers_list: [req.session.user],
@@ -169,6 +159,7 @@ app.put("/channels/:name", async (req, res) => {
 
     if (authorized) {
       channel.rules = req.body.rules;
+      type = req.body.type;
     }
 
     await mongoClient.connect();
@@ -352,8 +343,6 @@ app.put("/channels/:name/subscribers_list", async (req, res) => {
 
 //* GET
 // returns the rules of the channel
-
-// TODO TEST
 app.get("/channels/:name/rules", async (req, res) => {
   try {
     const channelName = req.params.name;
@@ -736,7 +725,7 @@ app.delete("/channels/:name/squeals_list", async (req, res) => {
         squeals_list: req.body.squeal_id
       }
     });
-    
+
     if (result.modifiedCount === 0) {
       res.status(404).json({
         message: "channel/squeal not found"
