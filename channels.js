@@ -475,6 +475,21 @@ app.put("/channels/:name/mod_list", async (req, res) => {
       name: channelName
     });
 
+
+    if (channel === null) {
+      res.status(404).json({
+        message: "channel not found"
+      });
+      return;
+    }
+
+    if (channel.mod_list.includes(req.body.mod_name)) {
+      res.status(400).json({
+        message: "moderator already in the list"
+      });
+      return;
+    }
+
     if (!authorized) {
       res.status(401).json({
         message: "not authorized to modify this channel's mod_list"
@@ -535,6 +550,13 @@ app.delete("/channels/:name/mod_list", async (req, res) => {
       name: channelName
     });
 
+    if(channel === null){
+      res.status(404).json({
+        message: "channel not found"
+      });
+      return;
+    }
+
     if (!authorized) {
       res.status(401).json({
         message: "not authorized to modify this channel's mod_list"
@@ -552,7 +574,7 @@ app.delete("/channels/:name/mod_list", async (req, res) => {
 
     if (result.modifiedCount === 0) {
       res.status(404).json({
-        message: "channel not found"
+        message: "moderator not in the list"
       });
       return;
     }
