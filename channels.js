@@ -611,8 +611,7 @@ app.get("/channels/:name/squeals_list", async (req, res) => {
     await mongoClient.connect();
 
     const channel = await collection_channels.findOne({
-      name: channelName,
-      is_private: false
+      name: channelName
     })
     // if the channel is not found, return 404
     if (channel === null) {
