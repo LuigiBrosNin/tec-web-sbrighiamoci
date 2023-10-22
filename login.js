@@ -33,7 +33,7 @@ function signin(){
 // channel PUT request
 function addChannelTest(param_name) {
   const body = {
-    name: "AAAAAA",
+    name: "AAAAA",
     bio: "This is the luizo channel",
     propic: "some uri",
     rules: ["getBunnyPics()", "getCatPics()", "getDogPics()"],
