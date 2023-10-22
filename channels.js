@@ -564,7 +564,7 @@ app.delete("/channels/:name/mod_list", async (req, res) => {
       return;
     }
 
-    const updated_list = channel.mod_list.pull(req.body.mod_name);
+    const updated_list = channel.mod_list.filter(mod => mod !== req.body.mod_name);
 
     const result = await collection_channels.updateOne({
       name: channelName
