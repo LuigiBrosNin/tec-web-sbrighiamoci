@@ -479,6 +479,8 @@ app.put("/squeals/:id", bodyParser.json(), async (req, res) => {
 
 // * DELETE 
 // elimina lo squeal con id = id ricevuto come parametro
+
+//TODO elimina/sostituisci lo squealID se presente in un channel (chiama la delete di channel/:name/squealList, prendi i nomi da una ricerca)
 app.delete("/squeals/:id", async (req, res) => {
     try {
         // check if the user has logged in

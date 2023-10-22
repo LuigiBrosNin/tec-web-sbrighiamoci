@@ -40,8 +40,12 @@ const collection_channels = database.collection(channelCollection);
 // supports pagination & queries
 // parameters: startindex, endindex, name, owner, type (privileged, private)
 // GTE prameters: subscribers_num
+// NOTE: private channels do not appear in searches, even if you're the owner
+
+// TODO ADD AUTHORIZATION
 app.get("/channels", async (req, res) => {
   try {
+    const authorized = true //TODO ADD AUTHORIZATION
 
     // initializing the start and end index in case they are not specified
     let startIndex = 0;
@@ -77,6 +81,10 @@ app.get("/channels", async (req, res) => {
       };
     }
 
+    if (req.query.type === "private" && !authorized) {
+      search.type = "privileged";
+    }
+
     await mongoClient.connect();
     const channels = await collection_channels.find(search)
       .sort({
@@ -93,6 +101,133 @@ app.get("/channels", async (req, res) => {
     });
   }
 });
+
+/* -------------------------------------------------------------------------- */
+/*                               /CHANNELS/:NAME                              */
+/*                               GET, PUT, DELETE                             */
+/* -------------------------------------------------------------------------- */
+
+//* GET
+// returns the channel with the specified name
+
+//TODO ADD AUTHORIZATION
+//TODO TEST
+app.get("/channels/:name", async (req, res) => {
+  try{
+    const channelName = req.params.name;
+    const authorized = true //TODO ADD AUTHORIZATION
+
+    await mongoClient.connect();
+    const channel = await collection_channels.findOne({ name: channelName });
+
+    if (channel === null) {
+      res.status(404).json({
+        message: "channel not found"
+      });
+      return;
+    }
+
+    if(!authorized && channel.type === "private"){
+      res.status(401).json({
+        message: "not authorized to view private channel"
+      });
+      return;
+    }
+
+    res.status(200).json(channel);
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+
+});
+
+//* PUT
+// creates a new channel with the specified name
+// body parameters: type, rules (array of strings) (only admins)
+
+//TODO ADD AUTHORIZATION
+//TODO TEST
+app.put("/channels/:name", async (req, res) => {
+  try {
+    const channelName = req.params.name;
+    const authorized = true //TODO ADD AUTHORIZATION
+
+    let channel = {
+      name: channelName,
+      owner: req.session.user,
+      type: req.body.type,
+      mod_list: [req.session.user],
+      subscribers_num: 1,
+      subscribers_list: [req.session.user],
+      squeals_num: 0,
+      squeals_list: []
+    };
+
+
+    if (authorized) {
+      channel.rules = req.body.rules;
+    }
+
+    await mongoClient.connect();
+    const result = await collection_channels.insertOne(channel);
+
+    res.status(200).json({
+      message: "channel created"
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+});
+
+//* DELETE
+// deletes the channel with the specified name
+//TODO ADD AUTHORIZATION (ADMIN OR OWNER)
+//TODO TEST
+app.delete("/channels/:name", async (req, res) => {
+  try {
+    const channelName = req.params.name;
+    const authorized = true //TODO ADD AUTHORIZATION
+
+    await mongoClient.connect();
+    const channel = await collection_channels.findOne({ name: channelName });
+
+    if (!authorized && channel.owner !== req.session.user) {
+      res.status(401).json({
+        message: "not authorized to delete this channel"
+      });
+      return;
+    }
+
+    await mongoClient.connect();
+    const result = await collection_channels.deleteOne({
+      name: channelName
+    });
+
+    if (result.deletedCount === 0) {
+      res.status(404).json({
+        message: "channel not found"
+      });
+      return;
+    }
+
+    res.status(200).json({
+      message: "channel deleted"
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+});
+
+
 
 /* -------------------------------------------------------------------------- */
 /*                       /CHANNELS/:NAME/SUBSCRIBERS_NUM                      */
@@ -202,6 +337,414 @@ app.put("/channels/:name/subscribers_list", async (req, res) => {
       iscriverlo (aggiungerlo a subscribers_list e andare nel suo profilo ad aggiungere il follow)
   */
   try {
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+});
+
+/* -------------------------------------------------------------------------- */
+/*                           /CHANNELS/:NAME/RULES                            */
+/*                             GET, PUT, DELETE                               */
+/* -------------------------------------------------------------------------- */
+
+//* GET
+// returns the rules of the channel
+
+// TODO TEST
+app.get("/channels/:name/rules", async (req, res) => {
+  try {
+    const channelName = req.params.name;
+
+    await mongoClient.connect();
+    const channel = await collection_channels.findOne({ name: channelName });
+
+    if (channel === null) {
+      res.status(404).json({
+        message: "channel not found"
+      });
+      return;
+    }
+
+    res.status(200).json(channel.rules);
+  }
+  catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+});
+
+
+
+//* PUT
+// updates the rules of the channel
+// body parameters: rules (array of strings), has to be complete, as the old list will be overwritten
+//TODO ADD AUTHORIZATION (ADMIN OR OWNER)
+//TODO TEST
+app.put("/channels/:name/rules", async (req, res) => {
+  try {
+    const channelName = req.params.name;
+    const authorized = true //TODO ADD AUTHORIZATION
+
+    const channel = await collection_channels.findOne({
+      name: channelName
+    });
+
+    if (!authorized) {
+      res.status(401).json({
+        message: "not authorized to modify this channel's rules"
+      });
+      return;
+    }
+
+    await mongoClient.connect();
+    const result = await collection_channels.updateOne({
+      name: channelName
+    }, {
+      $set: {
+        rules: req.body.rules
+      }
+    });
+
+    if (result.modifiedCount === 0) {
+      res.status(404).json({
+        message: "channel not found"
+      });
+      return;
+    }
+
+    res.status(200).json({
+      message: "rules updated"
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+});
+
+//* DELETE
+// deletes the rules of the channel
+//TODO ADD AUTHORIZATION (ADMIN OR OWNER)
+//TODO TEST
+app.delete("/channels/:name/rules", async (req, res) => {
+  try {
+    const channelName = req.params.name;
+    const authorized = true //TODO ADD AUTHORIZATION
+
+    const channel = await collection_channels.findOne({
+      name: channelName
+    });
+
+    if (!authorized) {
+      res.status(401).json({
+        message: "not authorized to delete this channel's rules"
+      });
+      return;
+    }
+
+    await mongoClient.connect();
+    const result = await collection_channels.updateOne({
+      name: channelName
+    }, {
+      $set: {
+        rules: []
+      }
+    });
+
+    if (result.modifiedCount === 0) {
+      res.status(404).json({
+        message: "channel not found"
+      });
+      return;
+    }
+
+    res.status(200).json({
+      message: "rules deleted"
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+});
+
+/* -------------------------------------------------------------------------- */
+/*                         /CHANNELS/:NAME/MOD_LIST                           */
+/*                               PUT, DELETE                                  */
+/* -------------------------------------------------------------------------- */
+
+//* PUT
+// adds a moderator to the channel
+// body parameters: mod_name (string)
+//TODO ADD AUTHORIZATION (ADMIN OR OWNER)
+//TODO TEST
+app.put("/channels/:name/mod_list", async (req, res) => {
+  try {
+    const channelName = req.params.name;
+    const authorized = true //TODO ADD AUTHORIZATION
+
+    const channel = await collection_channels.findOne({
+      name: channelName
+    });
+
+    if (!authorized) {
+      res.status(401).json({
+        message: "not authorized to modify this channel's mod_list"
+      });
+      return;
+    }
+
+
+    await mongoClient.connect();
+    const profile = await collection_profiles.findOne({
+      username: req.body.mod_name
+    });
+
+    if (profile === null) {
+      res.status(404).json({
+        message: "profile not found"
+      });
+      return;
+    }
+
+    const result = await collection_channels.updateOne({
+      name: channelName
+    }, {
+      $push: {
+        mod_list: req.body.mod_name
+      }
+    });
+
+    if (result.modifiedCount === 0) {
+      res.status(404).json({
+        message: "channel not found"
+      });
+      return;
+    }
+
+    res.status(200).json({
+      message: "moderator added"
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+});
+
+//* DELETE
+// removes a moderator from the channel
+// body parameters: mod_name (string)
+//TODO ADD AUTHORIZATION (ADMIN OR OWNER)
+//TODO TEST
+app.delete("/channels/:name/mod_list", async (req, res) => {
+  try {
+    const channelName = req.params.name;
+    const authorized = true //TODO ADD AUTHORIZATION
+
+    const channel = await collection_channels.findOne({
+      name: channelName
+    });
+
+    if (!authorized) {
+      res.status(401).json({
+        message: "not authorized to modify this channel's mod_list"
+      });
+      return;
+    }
+
+    const result = await collection_channels.updateOne({
+      name: channelName
+    }, {
+      $pull: {
+        mod_list: req.body.mod_name
+      }
+    });
+
+    if (result.modifiedCount === 0) {
+      res.status(404).json({
+        message: "channel not found"
+      });
+      return;
+    }
+
+    res.status(200).json({
+      message: "moderator removed"
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+});
+
+/* -------------------------------------------------------------------------- */
+/*                        /CHANNELS/:NAME/SQUEALS_LIST                        */
+/*                             GET, PUT, DELETE                               */
+/* -------------------------------------------------------------------------- */
+
+//* GET
+// returns the list of the squeals of the channel
+// supports pagination
+// parameters: startindex, endindex
+
+//TODO TEST
+app.get("/channels/:name/squeals_list", async (req, res) => {
+  try {
+    // initializing the start and end index in case they are not specified
+    let startIndex = 0;
+    let endIndex = 10;
+
+    // check if the parameters are valid
+    if (req.query.startindex !== undefined && req.query.startindex !== NaN) {
+      startIndex = parseInt(req.query.startindex);
+    }
+    if (req.query.endindex !== undefined && req.query.endindex !== NaN) {
+      endIndex = parseInt(req.query.endindex);
+    }
+    if (startIndex > endIndex) {
+      res.status(400).json({
+        message: "startIndex must be less than endIndex."
+      });
+      return;
+    }
+
+    const channelName = req.params.name;
+
+    await mongoClient.connect();
+
+    const channel = await collection_channels.findOne({
+      name: channelName,
+      is_private: false
+    })
+    // if the channel is not found, return 404
+    if (channel === null) {
+      res.status(404).json({
+        message: "channel not found"
+      });
+      return;
+    }
+
+    const squeals = channel.squeals_list.slice(startIndex, endIndex + 1);
+    res.status(200).json(squeals);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+});
+
+//* PUT
+// adds a squeal to the channel
+// body parameters: squeal_id (string)
+//TODO ADD AUTHORIZATION (ADMIN OR OWNER OR USER)
+//TODO TEST
+app.put("/channels/:name/squeals_list", async (req, res) => {
+  try{
+    const name = req.params.name;
+    const authorized = true //TODO ADD AUTHORIZATION
+
+    const channel = await collection_channels.findOne({
+      name: name
+    });
+
+    if (!authorized) {
+      res.status(401).json({
+        message: "not authorized to modify this channel's squeals_list"
+      });
+      return;
+    }
+
+    const squeal = await collection_squeals.findOne({
+      id: req.body.squeal_id
+    });
+
+    if (squeal === null) {
+      res.status(404).json({
+        message: "squeal not found"
+      });
+      return;
+    }
+
+    channel.squeals_list.push(req.body.squeal_id);
+
+    await mongoClient.connect();
+    const result = await collection_channels.updateOne({
+      name: name
+    }, {
+      $set: {
+        squeals_list: channel.squeals_list
+      }
+    });
+
+    res.status(200).json({ message: "squeal added" });
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+});
+
+//* DELETE
+// removes a squeal from the channel
+// body parameters: squeal_id (string)
+//TODO ADD AUTHORIZATION (ADMIN OR OWNER OR MOD)
+//TODO TEST
+app.delete("/channels/:name/squeals_list", async (req, res) => {
+  try{
+    const name = req.params.name;
+    const authorized = true //TODO ADD AUTHORIZATION
+
+    const channel = await collection_channels.findOne({
+      name: name
+    });
+
+    if (!authorized) {
+      res.status(401).json({
+        message: "not authorized to modify this channel's squeals_list"
+      });
+      return;
+    }
+
+    const squeal = await collection_squeals.findOne({
+      id: req.body.squeal_id
+    });
+
+    if (squeal === null) {
+      res.status(404).json({
+        message: "squeal not found"
+      });
+      return;
+    }
+
+    channel.squeals_list.pull(req.body.squeal_id);
+
+    await mongoClient.connect();
+    const result = await collection_channels.updateOne({
+      name: name
+    }, {
+      $pull: {
+        squeals_list: req.body.squeal_id
+      }
+    });
+    
+    if (result.modifiedCount === 0) {
+      res.status(404).json({
+        message: "channel/squeal not found"
+      });
+      return;
+    }
+
+    res.status(200).json({ message: "squeal removed" });
 
   } catch (error) {
     res.status(500).json({
