@@ -540,7 +540,6 @@ app.put("/channels/:name/mod_list", async (req, res) => {
 // removes a moderator from the channel
 // body parameters: mod_name (string)
 //TODO ADD AUTHORIZATION (ADMIN OR OWNER)
-//TODO TEST
 app.delete("/channels/:name/mod_list", async (req, res) => {
   try {
     const channelName = req.params.name;
@@ -649,7 +648,6 @@ app.get("/channels/:name/squeals_list", async (req, res) => {
 // adds a squeal to the channel
 // body parameters: squeal_id (string)
 //TODO ADD AUTHORIZATION (ADMIN OR OWNER OR USER)
-//TODO TEST
 app.put("/channels/:name/squeals_list", async (req, res) => {
   try{
     const name = req.params.name;
@@ -729,14 +727,14 @@ app.delete("/channels/:name/squeals_list", async (req, res) => {
       return;
     }
 
-    channel.squeals_list.pull(req.body.squeal_id);
+    const updated_list = channel.mod_list.filter(mod => mod !== req.body.mod_name);
 
     await mongoClient.connect();
     const result = await collection_channels.updateOne({
       name: name
     }, {
-      $pull: {
-        squeals_list: req.body.squeal_id
+      $set: {
+        squeals_list: updated_list
       }
     });
 

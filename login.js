@@ -31,6 +31,40 @@ function signin(){
 /*                         Luizo's temp test fucntions                        */
 /* -------------------------------------------------------------------------- */
 
+// channel squeals_list DELETE request
+function deleteSquealListTest(param_name) {
+  const body = {
+    squeal_id: "EmanueleDiSante1"
+  };
+  fetch(`https://site222326.tw.cs.unibo.it/channels/${param_name}/squeals_list`, {
+    method: "DELETE",
+    headers: {
+      "Content-type": "application/json; charset=UTF-8"
+    },
+    body: JSON.stringify(body)
+  })
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error(error));
+}
+
+
+// channel squeals_list PUT request
+function addSquealListTest(param_name) {
+  const body = {
+    squeal_id: "EmanueleDiSante1"
+  };
+
+  console.log("Sending body: " + JSON.stringify(body));
+
+  fetch(`https://site222326.tw.cs.unibo.it/channels/${param_name}/squeals_list`, {
+    method: "PUT",
+    headers: {
+      "Content-type": "application/json; charset=UTF-8"
+    },
+    body: JSON.stringify(body)
+  });
+}
 
 // channel mod list PUT request
 function addModListTest(param_name) {
@@ -51,8 +85,15 @@ function addModListTest(param_name) {
 
 // channel mod list DELETE request
 function deleteModListTest(param_name) {
+  const body = {
+    mod_name: "EmanueleDiSante"
+  };
   fetch(`https://site222326.tw.cs.unibo.it/channels/${param_name}/mod_list`, {
-    method: "DELETE"
+    method: "DELETE",
+    headers: {
+      "Content-type": "application/json; charset=UTF-8"
+    },
+    body: JSON.stringify(body)
   })
   .then(response => response.json())
   .then(data => console.log(data))
