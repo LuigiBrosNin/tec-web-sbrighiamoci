@@ -699,7 +699,6 @@ app.put("/channels/:name/squeals_list", async (req, res) => {
 // removes a squeal from the channel
 // body parameters: squeal_id (string)
 //TODO ADD AUTHORIZATION (ADMIN OR OWNER OR MOD)
-//TODO TEST
 app.delete("/channels/:name/squeals_list", async (req, res) => {
   try{
     const name = req.params.name;
