@@ -30,6 +30,33 @@ function signin(){
 /* -------------------------------------------------------------------------- */
 /*                         Luizo's temp test fucntions                        */
 /* -------------------------------------------------------------------------- */
+// channel PUT request
+function addChannelTest(param_name) {
+  const body = {
+    name: "AAAAAA",
+    bio: "This is the luizo channel",
+    propic: "some uri",
+    rules: ["getBunnyPics()", "getCatPics()", "getDogPics()"],
+    type: "priviledged",
+
+
+    // useless fields
+    is_private: false,
+    followers: [],
+    squeals: []
+  };
+
+  console.log("Sending body: " + JSON.stringify(body));
+
+  fetch(`https://site222326.tw.cs.unibo.it/channels/${param_id}`, {
+    method: "PUT",
+    headers: {
+      "Content-type": "application/json; charset=UTF-8"
+    },
+    body: JSON.stringify(body)
+  });
+}
+
 
 // profile propic DELETE request
 function deletePropicTest(param_id) {

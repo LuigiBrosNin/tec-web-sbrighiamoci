@@ -27,6 +27,7 @@ mongoClient.connect();
 const database = mongoClient.db(dbName);
 const collection_squeals = database.collection(squealCollection);
 const collection_channels = database.collection(channelCollection);
+const collection_profiles = database.collection(profileCollection);
 
 /********************** FUNCTIONS **********************/
 
@@ -129,6 +130,7 @@ app.get("/channels/:name", async (req, res) => {
 
 //* PUT
 // creates a new channel with the specified name
+// body parameters: propic, bio (users)
 // body parameters: type, rules (array of strings) (only admins)
 
 //TODO ADD AUTHORIZATION
@@ -146,7 +148,9 @@ app.put("/channels/:name", async (req, res) => {
       subscribers_num: 1,
       subscribers_list: [req.session.user],
       squeals_num: 0,
-      squeals_list: []
+      squeals_list: [],
+      propic: req.body.propic,
+      bio: req.body.bio
     };
 
 
