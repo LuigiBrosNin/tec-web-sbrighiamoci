@@ -564,11 +564,13 @@ app.delete("/channels/:name/mod_list", async (req, res) => {
       return;
     }
 
+    const updated_list = channel.mod_list.pull(req.body.mod_name);
+
     const result = await collection_channels.updateOne({
       name: channelName
     }, {
-      $pull: {
-        mod_list: req.body.mod_name
+      $set: {
+        mod_list: updated_list
       }
     });
 
