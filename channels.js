@@ -308,9 +308,8 @@ console.log("Yo, sei nella PUT (in ur ass)")
     //const user = req.session.user;
     const debug_user = "EmanueleDiSante";//req.params.user;
     const channelName = req.params.name;
-console.log("User: " + user.name + " channelName: " + channelName)
     await mongoClient.connect();
-
+    
     // retrieve user and channel
     const user = await collection_profiles.findOne({
       name: debug_user   //TODO occhio a non lasciarlo qui
@@ -332,6 +331,7 @@ console.log("User: " + user.name + " channelName: " + channelName)
       });
       return;
     }
+    console.log("User: " + user.name + " channelName: " + channel.name)
 
     // find out if the user is already subscribed
     const repliesList = channel.replies_list;
