@@ -352,6 +352,7 @@ console.log(`"Utente già iscritto"`);
         { name: user.name },
         { $pull: { following_list: channel.name } }
       );
+      res.status(200).json({ message: "User subscribed successfully." })
     }
     else {
 console.log(`Utente non iscritto`);
@@ -365,8 +366,8 @@ console.log(`Utente non iscritto [1]`);
         { $addToSet: { following_list: channel.name } }
       );
 console.log(`Utente non iscritto [2]`);
+      res.status(200).json({ message: "User unsubscribed successfully." })
     }
-
   } catch (error) {
     res.status(500).json({
       message: error.message

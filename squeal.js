@@ -483,6 +483,7 @@ app.put("/squeals/:id", bodyParser.json(), async (req, res) => {
 //TODO elimina/sostituisci lo squealID se presente in un channel (chiama la delete di channel/:name/squealList, prendi i nomi da una ricerca)
 app.delete("/squeals/:id", async (req, res) => {
     try {
+        //TODO mettere la riga di autenticazione
         // check if the user has logged in
         //*if ((await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === squeal.author) || (await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin))) {
         if(true){
@@ -505,27 +506,20 @@ app.delete("/squeals/:id", async (req, res) => {
                     let fatherId = squeal.reply_to
                     await collection_squeals.updateOne(
                         { id: fatherId },
-                        { $pull: { replies_list: squealId }, $inc: { replies_num: -1 } },
-                        (err, res) => {
-                            if (err) {
-                                console.error('Error during the update of the father: ', err);
-                            } else {
-                                console.log('Father successfuly updated.');
-                            }
-                        }
+                        { $pull: { replies_list: squealId }, $inc: { replies_num: -1 } }
                     );
                 }
                 // delete squeal from database
                 await mongoClient.connect();
                 try {
                     const result = await collection_squeals.deleteOne({ id: squealId });
-                    if (result.deletedCount === 1) {
-                        console.log('Squeal successfully erased.');
-                    } else {
-                        console.log('No squeal found with the id:', squealId);
-                    }
+                    if (result.deletedCount !== 1) {
+                        res.status(500).json({ message: "No squeal found with the id: " + squealId + ", error: " + error.message });
+                        return;
+                    } 
                 } catch (error) {
-                    console.error('Error deleting the squeal:', error);
+                    res.status(500).json({ message: "Error deleting the squeal: " + error.message });
+                    return;
                 }
             }
             else {  // the squeal has replies: move it to the deletedAccount and modify father/children accordingly
@@ -585,6 +579,7 @@ app.delete("/squeals/:id", async (req, res) => {
                 );
             }
         }
+        res.status(200).json({ message: "Squeal deleted successfully." })
     }
     catch (error) {
         console.error('Error connecting to the database:', error);
