@@ -370,8 +370,6 @@ app.put("/channels/:name/subscribers_list", async (req, res) => {
   }
 });
 
-//* DELETE
-// delete 
 
 /* -------------------------------------------------------------------------- */
 /*                           /CHANNELS/:NAME/RULES                            */
