@@ -334,14 +334,27 @@ console.log("Yo, sei nella PUT (in ur ass)")
     console.log("User: " + user.name + " channelName: " + channel.name)
 
     // find out if the user is already subscribed
-    const repliesList = channel.replies_list;
+    const subscribersList = channel.subscribers_list;
+console.log("Contenuto di subscribersList: " + subscribersList)
     let found = false;
-    for (const reply of repliesList) {
+    for (const reply of subscribersList) {
       if (reply === user.name) {
         found = true;
         break;  
       }
     }
+    subscribersList.forEach(async (reply) => {
+      try {
+        let tmp_reply = await collection_squeals.findOne({ id: reply })  // retrieve a squeal that was a reply to the deleted squeal
+        await collection_squeals.updateOne(
+          { _id: tmp_reply._id },
+          { $set: { reply_to: `DeletedSqueals${deletedSquealsNum}` } }
+        );
+      }
+      catch {
+        res.status(500).json({ message: error.message });
+      }
+    });
     
     // if the user is already subscribed, remove follow from channel (update both lists: on profile and channel)
     // if not subscribed, add follow 
