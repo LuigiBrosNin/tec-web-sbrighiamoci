@@ -351,7 +351,7 @@ console.log("Contenuto di subscribersList: " + subscribersList)
           { $set: { reply_to: `DeletedSqueals${deletedSquealsNum}` } }
         );
       }
-      catch {
+      catch(error) {
         res.status(500).json({ message: error.message });
       }
     });
