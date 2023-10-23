@@ -356,7 +356,7 @@ function addReactionListTest(){
 
 function testChannel(param_name) {
   fetch(`https://site222326.tw.cs.unibo.it/channels/${param_name}/subscribers_list`, {
-    method: "GET"
+    method: "PUT"
   })
     .then(response => response.json())
     .then(data => console.log(data))

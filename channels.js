@@ -299,18 +299,11 @@ app.get("/channels/:name/subscribers_list", async (req, res) => {
   }
 });
 
-/*
-tra l'altro, il profilo da cui rimuovere come lo prendo? deve essere loggato, ma come lo prendo?
-Req.session.user
-
-
-Per testarlo passalo dal body  E fai req.body.user
-Così non serve il login per testare 
-*/
 
 //* PUT
 // add a subscriber to the channel, or remove it if already subscribed
 app.put("/channels/:name/subscribers_list", async (req, res) => {
+console.log("Yo, sei nella PUT (in ur ass)")
   try {
     //const user = req.session.user;
     const user = "EmanueleDiSante";//req.params.user;
