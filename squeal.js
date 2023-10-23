@@ -145,7 +145,7 @@ app.get("/squeals/", async (req, res) => {
 
         // check if any of the possible query params are present in the request body
         for (const field of possibleParams) {
-            if (req.query[field] !== undefined) {
+            if (req.query[field] !== undefined && req.query[field] != "") {
                 let tmp = req.query[field];
                 search[field] = tmp;
             }
@@ -188,7 +188,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
 
         // Check if all required fields are present in the request body
         for (const field of requiredFields) {
-            if (req.body[field] === undefined) {
+            if (req.body[field] === undefined && req.body[field] != "") {
                 res.status(400).json({
                     message: `${field} is required`
                 });
@@ -230,7 +230,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
             // Check if the optional fields are present in the request body
             // If they are, add them to the newSqueal object
             for (const field in optionalFields) {
-                if (req.body[field] !== undefined) {
+                if (req.body[field] !== undefined && req.body[field] != "") {
                     newSqueal[field] = req.body[field];
                 }
             }
@@ -406,7 +406,7 @@ app.put("/squeals/:id", bodyParser.json(), async (req, res) => {
 
         // Check if all required fields are present in the request body
         for (const field of requiredFields) {
-            if (req.body[field] === undefined) {
+            if (req.body[field] === undefined && req.body[field] != "") {
                 res.status(400).json({
                     message: `${field} is required`
                 });
@@ -427,6 +427,7 @@ app.put("/squeals/:id", bodyParser.json(), async (req, res) => {
                 positive_reactions_list: [],
                 negative_reactions: 0,
                 negative_reactions_list: [],
+                replies: [],
                 replies_num: 0,
                 impressions: 0
             }
@@ -434,7 +435,6 @@ app.put("/squeals/:id", bodyParser.json(), async (req, res) => {
             const optionalFields = [
                 "media",
                 "reply_to",
-                "replies",
                 "keywords",
                 "mentions"
             ];
@@ -442,7 +442,7 @@ app.put("/squeals/:id", bodyParser.json(), async (req, res) => {
             // Check if the optional fields are present in the request body
             // If they are, add them to the newSqueal object
             for (const field in optionalFields) {
-                if (req.body[field] !== undefined) {
+                if (req.body[field] !== undefined && req.body[field] != "") {
                     newSqueal[field] = req.body[field];
                 }
             }
@@ -802,6 +802,8 @@ app.get("/squeals/:id/replies/", async (req, res) => {
 
         // what we'll return
         let squealReplies = [];
+
+        let child_squeal;
 
         // fetching the replies
         for (const child_squeal_id of idsOfSquealRepliesToReturn) {

@@ -95,7 +95,7 @@ app.get("/profiles/", async (req, res) => {
 
         // check string params
         for (const param of possibleParams) {
-            if (req.query[param] !== undefined) {
+            if (req.query[param] !== undefined && req.query[param] !== "") {
                 search[param] = req.query[param];
             }
         }
@@ -203,7 +203,6 @@ app.put("/profiles/:name", async (req, res) => {
         const name = req.params.name;
         const profile = {
             name: name,
-            ...req.body,
             followers_list: [],
             following_list: [],
             squeals_list: [],
@@ -220,7 +219,7 @@ app.put("/profiles/:name", async (req, res) => {
         }
         if (profile.propic === undefined) {
             // STOCK PROFILE PIC
-            profile.propic === "SOME URI";
+            profile.propic === "SOME URI"; //! TEMP, CHANGE TO STOCK URI ONCE WE HAVE IT
         }
         if (profile.bio === undefined) {
             profile.bio = "";
@@ -339,9 +338,9 @@ app.post("/profiles/:name", async (req, res) => {
         }
         let profile = {};
         for (const param of possibleParams) {
-            if (param === "banned_until" && req.body[param] !== undefined) {
+            if (param === "banned_until" && req.body[param] !== undefined && req.body[param] !== "") {
                 profile[param] = parseInt(req.body[param]);
-            } else if (req.body[param] !== undefined) {
+            } else if (req.body[param] !== undefined && req.body[param] !== "") {
                 profile[param] = req.body[param];
             }
         }

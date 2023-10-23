@@ -174,6 +174,7 @@ app.put("/channels/:name", async (req, res) => {
 
 //* DELETE
 // deletes the channel with the specified name
+// TODO finish the function to consider dependencies
 //TODO ADD AUTHORIZATION (ADMIN OR OWNER)
 app.delete("/channels/:name", async (req, res) => {
   try {
