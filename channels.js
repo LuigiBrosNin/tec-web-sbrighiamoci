@@ -305,60 +305,42 @@ app.get("/channels/:name/subscribers_list", async (req, res) => {
 app.put("/channels/:name/subscribers_list", async (req, res) => {
 console.log("Yo, sei nella PUT (in ur ass)")
   try {
+    //TODO aggiungere l'if dell'autenticazione
     //const user = req.session.user;
     const debug_user = "EmanueleDiSante";//req.params.user;
     const channelName = req.params.name;
-    await mongoClient.connect();
     
     // retrieve user and channel
-    const user = await collection_profiles.findOne({
-      name: debug_user   //TODO occhio a non lasciarlo qui
-    })
+    await mongoClient.connect();
+
+    const user = await collection_profiles.findOne({ name: debug_user }) //TODO occhio a non lasciarlo qui il debug_user
     if (user === null) {
-      res.status(404).json({
-        message: "user not found"
-      });
+      res.status(404).json({ message: "user not found" });
       return;
     }
 
-    // try finding channel in database, if not return 404
-    const channel = await collection_channels.findOne({
-      name: channelName
-    })
+    const channel = await collection_channels.findOne({ name: channelName })
     if (channel === null) {
-      res.status(404).json({
-        message: "channel not found"
-      });
+      res.status(404).json({ message: "channel not found" });
       return;
     }
+
     console.log("User: " + user.name + " channelName: " + channel.name)
 
     // find out if the user is already subscribed
     const subscribersList = channel.subscribers_list;
 console.log("Contenuto di subscribersList: " + subscribersList)
-    let found = false;
+    let subscribed = false;
     for (const reply of subscribersList) {
       if (reply === user.name) {
-        found = true;
+        subscribed = true;
         break;  
       }
     }
-    subscribersList.forEach(async (reply) => {
-      try {
-        let tmp_reply = await collection_squeals.findOne({ id: reply })  // retrieve a squeal that was a reply to the deleted squeal
-        await collection_squeals.updateOne(
-          { _id: tmp_reply._id },
-          { $set: { reply_to: `DeletedSqueals${deletedSquealsNum}` } }
-        );
-      }
-      catch(error) {
-        res.status(500).json({ message: error.message });
-      }
-    });
     
     // if the user is already subscribed, remove follow from channel (update both lists: on profile and channel)
     // if not subscribed, add follow 
-    if (found) {
+    if (subscribed) {
 console.log(`"Utente già iscritto"`);
       
       await collection_channels.updateOne(
@@ -370,7 +352,8 @@ console.log(`"Utente già iscritto"`);
         { name: user.name },
         { $pull: { following_list: channel.name } }
       );
-    } else {
+    }
+    else {
 console.log(`Utente non iscritto`);
       await collection_channels.updateOne(
         { name: channel.name },
