@@ -363,51 +363,23 @@ console.log(`"Utente già iscritto"`);
       
       await collection_channels.updateOne(
         { name: channel.name },
-        { $pull: { subscribers_list: user.name }, $inc: { subscribers_num: -1 } },
-        (err, res) => {
-          if (err) {
-            console.error('Error during the removal of the subscriber: ', err);
-          } else {
-            console.log('Subscribers_list successfuly updated.');
-          }
-        }
+        { $pull: { subscribers_list: user.name }, $inc: { subscribers_num: -1 } }
       );
 
       await collection_profiles.updateOne(
         { name: user.name },
-        { $pull: { following_list: channel.name } },
-        (err, res) => {
-          if (err) {
-            console.error('Error during the removal of the following_list: ', err);
-          } else {
-            console.log('Following_list successfuly updated.');
-          }
-        }
+        { $pull: { following_list: channel.name } }
       );
     } else {
 console.log(`Utente non iscritto`);
       await collection_channels.updateOne(
         { name: channel.name },
-        { $addToSet: { subscribers_list: user.name }, $inc: { subscribers_num: 1 } },
-        (err, res) => {
-          if (err) {
-            console.error('Error on adding the subscriber: ', err);
-          } else {
-            console.log('Subscribers_list successfuly updated.');
-          }
-        }
+        { $addToSet: { subscribers_list: user.name }, $inc: { subscribers_num: 1 } }
       );
 console.log(`Utente non iscritto [1]`);
       await collection_profiles.updateOne(
         { name: user.name },
-        { $addToSet: { following_list: channel.name } },
-        (err, res) => {
-          if (err) {
-            console.error('Error on adding to the following_list: ', err);
-          } else {
-            console.log('Following_list successfuly updated.');
-          }
-        }
+        { $addToSet: { following_list: channel.name } }
       );
 console.log(`Utente non iscritto [2]`);
     }
