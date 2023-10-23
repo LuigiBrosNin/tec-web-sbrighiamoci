@@ -257,7 +257,6 @@ app.get("/channels/:name/subscribers_num", async (req, res) => {
 
 app.get("/channels/:name/subscribers_list", async (req, res) => {
   try {
-    console.log("Benvenuto in quasta nuva get")
     // initializing the start and end index in case they are not specified
     let startIndex = 0;
     let endIndex = 10;
@@ -310,19 +309,90 @@ Così non serve il login per testare
 */
 
 //* PUT
-// returns the list of the subscribers of the channel
-//TODO aggiungere anche ai following dell'utente il canale
+// add a subscriber to the channel, or remove it if already subscribed
 app.put("/channels/:name/subscribers_list", async (req, res) => {
-  /*
-    ottenere l'utente
-    ottenere il canale
-    controllare se canale esiste
-    controllare se l'utente è già iscritto
-      se così, disiscriverlo (togliere da subscriber_list, e andare sul suo profilo a rimuovergli il follow)
-    se non è iscritto
-      iscriverlo (aggiungerlo a subscribers_list e andare nel suo profilo ad aggiungere il follow)
-  */
   try {
+    //const user = req.session.user;
+    const user = req.body.user;
+    const channelName = req.params.name;
+
+    await mongoClient.connect();
+
+    // try finding channel in database, if not return 404
+    const channel = await collection_channels.findOne({
+      name: channelName
+    })
+    if (channel === null) {
+      res.status(404).json({
+        message: "channel not found"
+      });
+      return;
+    }
+
+    // find out if the user is already subscribed
+    const repliesList = channel.replies_list;
+    let found = false;
+    for (const reply of repliesList) {
+      if (reply === user.name) {
+        found = true;
+        break;  
+      }
+    }
+    
+    // if the user is already subscribed, remove follow from channel (update both lists: on profile and channel)
+    // if not subscribed, add follow 
+    if (found) {
+console.log(`"Utente già iscritto"`);
+      
+      await collection_channels.updateOne(
+        { name: channel.name },
+        { $pull: { subscribers_list: user.name }, $inc: { subscribers_num: -1 } },
+        (err, res) => {
+          if (err) {
+            console.error('Error during the removal of the subscriber: ', err);
+          } else {
+            console.log('Subscribers_list successfuly updated.');
+          }
+        }
+      );
+
+      await collection_profiles.updateOne(
+        { name: user.name },
+        { $pull: { following_list: channel.name } },
+        (err, res) => {
+          if (err) {
+            console.error('Error during the removal of the following_list: ', err);
+          } else {
+            console.log('Following_list successfuly updated.');
+          }
+        }
+      );
+    } else {
+console.log(`Utente non iscritto`);
+      await collection_channels.updateOne(
+        { name: channel.name },
+        { $addToSet: { subscribers_list: user.name }, $inc: { subscribers_num: 1 } },
+        (err, res) => {
+          if (err) {
+            console.error('Error on adding the subscriber: ', err);
+          } else {
+            console.log('Subscribers_list successfuly updated.');
+          }
+        }
+      );
+
+      await collection_profiles.updateOne(
+        { name: user.name },
+        { $addToSet: { following_list: channel.name } },
+        (err, res) => {
+          if (err) {
+            console.error('Error on adding to the following_list: ', err);
+          } else {
+            console.log('Following_list successfuly updated.');
+          }
+        }
+      );
+    }
 
   } catch (error) {
     res.status(500).json({
@@ -330,6 +400,9 @@ app.put("/channels/:name/subscribers_list", async (req, res) => {
     });
   }
 });
+
+//* DELETE
+// delete 
 
 /* -------------------------------------------------------------------------- */
 /*                           /CHANNELS/:NAME/RULES                            */
