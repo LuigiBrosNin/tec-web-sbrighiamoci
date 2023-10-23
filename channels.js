@@ -303,17 +303,21 @@ app.get("/channels/:name/subscribers_list", async (req, res) => {
 //* PUT
 // add a subscriber to the channel, or remove it if already subscribed
 app.put("/channels/:name/subscribers_list", async (req, res) => {
-console.log("Yo, sei nella PUT (in ur ass)")
   try {
-    //TODO aggiungere l'if dell'autenticazione
-    //const user = req.session.user;
-    const debug_user = "EmanueleDiSante";//req.params.user;
+    let authorized = true; //TODO add authorization
+
+    if (!authorized) {
+      res.status(401).json({ message: "Not authorized to modify this channel's rules" });
+      return;
+    }
+
+    const req_user = req.session.user;  //! non testato con login, fonte di potenziali errori
     const channelName = req.params.name;
     
     // retrieve user and channel
     await mongoClient.connect();
 
-    const user = await collection_profiles.findOne({ name: debug_user }) //TODO occhio a non lasciarlo qui il debug_user
+    const user = await collection_profiles.findOne({ name: req_user }) 
     if (user === null) {
       res.status(404).json({ message: "user not found" });
       return;
@@ -325,11 +329,8 @@ console.log("Yo, sei nella PUT (in ur ass)")
       return;
     }
 
-    console.log("User: " + user.name + " channelName: " + channel.name)
-
     // find out if the user is already subscribed
     const subscribersList = channel.subscribers_list;
-console.log("Contenuto di subscribersList: " + subscribersList)
     let subscribed = false;
     for (const reply of subscribersList) {
       if (reply === user.name) {
@@ -341,7 +342,6 @@ console.log("Contenuto di subscribersList: " + subscribersList)
     // if the user is already subscribed, remove follow from channel (update both lists: on profile and channel)
     // if not subscribed, add follow 
     if (subscribed) {
-console.log(`"Utente già iscritto"`);
       
       await collection_channels.updateOne(
         { name: channel.name },
@@ -352,26 +352,21 @@ console.log(`"Utente già iscritto"`);
         { name: user.name },
         { $pull: { following_list: channel.name } }
       );
-      res.status(200).json({ message: "User subscribed successfully." })
+      res.status(200).json({ message: "User unsubscribed successfully." })
     }
     else {
-console.log(`Utente non iscritto`);
       await collection_channels.updateOne(
         { name: channel.name },
         { $addToSet: { subscribers_list: user.name }, $inc: { subscribers_num: 1 } }
       );
-console.log(`Utente non iscritto [1]`);
       await collection_profiles.updateOne(
         { name: user.name },
         { $addToSet: { following_list: channel.name } }
       );
-console.log(`Utente non iscritto [2]`);
-      res.status(200).json({ message: "User unsubscribed successfully." })
+      res.status(200).json({ message: "User subscribed successfully." })
     }
   } catch (error) {
-    res.status(500).json({
-      message: error.message
-    });
+    res.status(500).json({ message: error.message });
   }
 });
 
