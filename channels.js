@@ -313,7 +313,7 @@ Così non serve il login per testare
 app.put("/channels/:name/subscribers_list", async (req, res) => {
   try {
     //const user = req.session.user;
-    const user = req.params.user;
+    const user = "EmanueleDiSante";//req.params.user;
     const channelName = req.params.name;
 console.log("User: " + user.name + " channelName: " + channelName)
     await mongoClient.connect();
