@@ -397,7 +397,7 @@ console.log(`Utente non iscritto`);
           }
         }
       );
-
+console.log(`Utente non iscritto [1]`);
       await collection_profiles.updateOne(
         { name: user.name },
         { $addToSet: { following_list: channel.name } },
@@ -409,6 +409,7 @@ console.log(`Utente non iscritto`);
           }
         }
       );
+console.log(`Utente non iscritto [2]`);
     }
 
   } catch (error) {
