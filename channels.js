@@ -306,10 +306,21 @@ app.put("/channels/:name/subscribers_list", async (req, res) => {
 console.log("Yo, sei nella PUT (in ur ass)")
   try {
     //const user = req.session.user;
-    const user = "EmanueleDiSante";//req.params.user;
+    const debug_user = "EmanueleDiSante";//req.params.user;
     const channelName = req.params.name;
 console.log("User: " + user.name + " channelName: " + channelName)
     await mongoClient.connect();
+
+    // retrieve user and channel
+    const user = await collection_profiles.findOne({
+      name: debug_user   //TODO occhio a non lasciarlo qui
+    })
+    if (user === null) {
+      res.status(404).json({
+        message: "user not found"
+      });
+      return;
+    }
 
     // try finding channel in database, if not return 404
     const channel = await collection_channels.findOne({
