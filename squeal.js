@@ -176,6 +176,7 @@ app.get("/squeals/", async (req, res) => {
 //* PUT
 // aggiunge/sovrascrive uno squeal al database (è impossibile sovrascrivere in quanto l'id è generato progressivamente)
 // nome utente + numero squeals = ID
+// TODO aggiungi controlli di validità receiver
 app.put("/squeals/", bodyParser.json(), async (req, res) => {
     try {
         // console.log('Request Body:', req.body);
