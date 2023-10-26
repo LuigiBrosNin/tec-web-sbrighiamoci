@@ -25,6 +25,8 @@ const database = mongoClient.db(dbName);
 const collection_squeals = database.collection(squealCollection);
 const collection_profiles = database.collection(profileCollection);
 
+//! ADD /SQUEALS/LIST GET REQUEST THAT SUPPORTS AN ARBITRARY LIST OF SQUEALS TO RETURN
+
 /* -------------------------------------------------------------------------- */
 /*                                 /SQUEALS/                                  */
 /*                                 GET & PUT                                  */
@@ -352,6 +354,48 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
         }));
     }
 })
+
+/* -------------------------------------------------------------------------- */
+/*                               /SQUEALS/LIST                                */
+/*                                    GET                                     */
+/* -------------------------------------------------------------------------- */
+
+//* GET
+// ritorna gli squeal di squeal dal database
+// SUPPORTA QUERY DI PAGINAZIONE
+//TODO FINISH
+app.get("/squeals/list", async (req, res) => {
+    try {
+        const squealList = req.body.squealList;
+
+        // initializing the start and end index in case they are not specified
+        let startIndex = 0;
+        let endIndex = 10;
+        // check if the parameters are valid
+        if (req.query.startindex !== undefined && req.query.startindex !== NaN) {
+            startIndex = parseInt(req.query.startindex);
+        }
+        if (req.query.endindex !== undefined && req.query.endindex !== NaN) {
+            endIndex = parseInt(req.query.endindex);
+        }
+        // check if the parameters are valid
+        if (startIndex > endIndex) {
+            res.status(400).json({
+                message: "startIndex must be less than endIndex"
+            });
+            return;
+        }
+
+        //TODO FINISH
+
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+
+    }
+});
+
 
 
 /* -------------------------------------------------------------------------- */
