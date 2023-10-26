@@ -175,6 +175,7 @@ app.put("/channels/:name", async (req, res) => {
 // TODO test
 app.delete("/channels/:name", async (req, res) => {
   try {
+console.log("Sono la delete da testare")
     const channelName = req.params.name;
     const authorized = true //TODO ADD AUTHORIZATION
 
@@ -189,20 +190,30 @@ app.delete("/channels/:name", async (req, res) => {
     }
 
     await mongoClient.connect();
-    const result = await collection_channels.deleteOne({
-      name: channelName
-    });
+    const result = await collection_channels.updateOne(
+      { name: channelName }, 
+      {
+        $set: {
+          owner: "",
+          type: "",
+          mods_list: [],
+          squeals_list: [],
+          subscribers_list: [],
+          subscribers_num : 0,
+          rules: [],
+          propic: "",
+          bio: "",
+          is_deleted: true
+        }
+      }
+    );
 
-    if (result.deletedCount === 0) {
-      res.status(404).json({
-        message: "channel not found"
-      });
+    if (result.modifiedCount === 0) {
+      res.status(404).json({ message: "Channel not found or no modifications were made." });
       return;
     }
 
-    res.status(200).json({
-      message: "channel deleted"
-    });
+    res.status(200).json({ message: "Channel deleted successfully." });
 
   } catch (error) {
     res.status(500).json({

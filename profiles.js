@@ -15,6 +15,7 @@ const {
     dbName,
     squealCollection,
     profileCollection,
+    channelCollection,
     mongoClient,
     CREDIT_LIMITS
 } = require("./const.js");
@@ -24,6 +25,7 @@ mongoClient.connect();
 const database = mongoClient.db(dbName);
 const collection_squeals = database.collection(squealCollection);
 const collection_profiles = database.collection(profileCollection);
+const collection_channels = database.collection(channelCollection);
 
 /* -------------------------------------------------------------------------- */
 /*                                 /PROFILES/                                 */
@@ -273,8 +275,54 @@ app.delete("/profiles/:name", async (req, res) => {
 
         if (authorized || adminAuthorized) {
             await mongoClient.connect();
-            const result = await collection_profiles.deleteOne({ name: profileName });
+            const profile = await collection_profiles.find({ name: profileName });
 
+            // if the profile was owning a channel, pass it to a mod; if there's no mods, reset the channel to null values
+            const channels_owned = await collection_channels.find({
+                $or: [
+                    { owner: profileName },
+                    { mods_list: profileName }
+                ]
+            });
+
+            for (const channel of channels_owned) { 
+                if (channel.mods_list[0] !== "" || channel.mods_list[0] !== undefined) { // there is a mod //! per niente sicuro di questo controllo
+                    const new_mod = channel.mods_list[0];
+
+                    await mongoClient.connect();
+                    const res = await collection_channels.updateOne(  //! è giusto usare res qui?
+                        { name: channel.name },
+                        {
+                            $set: {
+                                owner: new_mod
+                            },
+                            $pull: {
+                                mods_list: new_mod
+                            }
+                        }
+                    );
+                }
+                else {  // there is no mod
+                    await mongoClient.connect();
+                    const res = await collection_channels.updateOne(  //! è giusto usare res qui?
+                        { name: channel.name },
+                        {
+                            $set: {
+                                owner: "",
+                                type: "",
+                                mods_list: [],
+                                squeals_list: [],
+                                subscribers_list: [],
+                                subscribers_num: 0,
+                                rules: [],
+                                propic: "",
+                                bio: "",
+                                is_deleted: true
+                            }
+                        }
+                    ); 
+                }
+            } 
             if (result.deletedCount > 0) {
                 res.status(200).json({ message: "Profile deleted" });
             } else {
