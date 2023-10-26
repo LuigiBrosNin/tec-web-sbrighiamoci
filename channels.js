@@ -188,7 +188,7 @@ console.log("Sono la delete da testare")
       });
       return;
     }
-
+console.log("Devo cancelllare " + channelName + " ")
     await mongoClient.connect();
     const result = await collection_channels.updateOne(
       { name: channelName }, 
