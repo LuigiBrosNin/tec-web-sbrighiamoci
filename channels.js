@@ -1,4 +1,4 @@
-/********************** SETTINGS **********************/
+/* -------------------------------- SETTINGS -------------------------------- */
 
 global.rootDir = __dirname;
 
@@ -29,7 +29,9 @@ const collection_squeals = database.collection(squealCollection);
 const collection_channels = database.collection(channelCollection);
 const collection_profiles = database.collection(profileCollection);
 
-/********************** FUNCTIONS **********************/
+
+/* ------------------------------- FUNCTIONS -------------------------------- */
+
 
 /* -------------------------------------------------------------------------- */
 /*                                 /CHANNELS/                                 */
@@ -37,14 +39,12 @@ const collection_profiles = database.collection(profileCollection);
 /* -------------------------------------------------------------------------- */
 
 //* GET
-// returns the list of the channels
-// supports pagination & queries
+// returns the list of the channels on the database (supports pagination & queries)
 // parameters: startindex, endindex, name, owner, type (privileged, private)
 // GTE prameters: subscribers_num
 // NOTE: private channels do not appear in searches, even if you're the owner
 app.get("/channels", async (req, res) => {
-  try {
-
+  try { 
     // initializing the start and end index in case they are not specified
     let startIndex = 0;
     let endIndex = 10;
@@ -57,9 +57,7 @@ app.get("/channels", async (req, res) => {
     }
     // check if indexes are valid
     if (startIndex > endIndex) {
-      res.status(400).json({
-        message: "startIndex must be less than endIndex"
-      });
+      res.status(400).json({ message: "startIndex must be less than endIndex" });
       return;
     }
 

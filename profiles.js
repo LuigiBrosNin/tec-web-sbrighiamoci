@@ -273,27 +273,18 @@ app.delete("/profiles/:name", async (req, res) => {
 
         if (authorized || adminAuthorized) {
             await mongoClient.connect();
-            const result = await collection_profiles.deleteOne({
-                name: profileName
-            });
+            const result = await collection_profiles.deleteOne({ name: profileName });
+
             if (result.deletedCount > 0) {
-                res.status(200).json({
-                    message: "Profile deleted"
-                });
+                res.status(200).json({ message: "Profile deleted" });
             } else {
-                res.status(404).json({
-                    message: "Profile not found"
-                });
+                res.status(404).json({ message: "Profile not found" });
             }
         } else {
-            res.status(401).json({
-                message: "Unauthorized"
-            });
+            res.status(401).json({ message: "Unauthorized" });
         }
     } catch (error) {
-        res.status(500).json({
-            message: error.message
-        });
+        res.status(500).json({ message: error.message });
     }
 });
 
