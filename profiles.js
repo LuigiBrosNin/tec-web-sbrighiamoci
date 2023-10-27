@@ -72,7 +72,9 @@ app.get("/profiles/", async (req, res) => {
 
         const possibleGTEParams = ["credit", "credit_limits", "squeals_num", /* "followers_num",*/ "banned_until"];
 
-        let search = { is_deleted: false };
+        let search = {
+            is_deleted: false
+        };
 
         let credit_type = 0;
         let credit_limits_type = 0;
@@ -179,14 +181,16 @@ app.get("/profiles/:name", async (req, res) => {
         });
 
         if (profile.is_deleted || profile === null) {
-            res.status(404).json({ message: "Profile not found." });
+            res.status(404).json({
+                message: "Profile not found."
+            });
             return;
         }
-        
+
         delete profile.password;
         delete profile.email;
         res.status(200).json(profile);
-        
+
     } catch (error) {
         res.status(500).json({
             message: error.message
@@ -205,9 +209,13 @@ app.put("/profiles/:name", async (req, res) => {
         const name = req.params.name;
 
         // check if there is another profile with the same name, in that case deny the creation
-        const already_taken = await collection_profiles.findOne({ name: name })
+        const already_taken = await collection_profiles.findOne({
+            name: name
+        })
         if (already_taken !== null) {
-            res.status(409).json({ message: "Name already taken." });
+            res.status(409).json({
+                message: "Name already taken."
+            });
             return;
         }
 
@@ -283,83 +291,90 @@ app.delete("/profiles/:name", async (req, res) => {
 
         if (authorized || adminAuthorized) {
             await mongoClient.connect();
-            const profile = await collection_profiles.find({ name: profileName });
+            const profile = await collection_profiles.find({
+                name: profileName
+            });
 
             // if the profile was owning a channel, pass it to a mod; if there's no mods, reset the channel to null values
             const channels_owned = await collection_channels.find({
-                $or: [
-                    { owner: profileName },
-                    { mods_list: profileName }
+                $or: [{
+                        owner: profileName
+                    },
+                    {
+                        mods_list: profileName
+                    }
                 ]
             }).toArray();
-            for (const channel of channels_owned) { 
+            for (const channel of channels_owned) {
                 if (channel.mods_list[0] !== "" && channel.mods_list[0] !== undefined) { // there is a mod 
                     const new_mod = channel.mods_list[0];
 
                     await mongoClient.connect();
-                    const res = await collection_channels.updateOne(  
-                        { name: channel.name },
-                        {
-                            $set: {
-                                owner: new_mod
-                            },
-                            $pull: {
-                                mods_list: new_mod
-                            }
+                    const res = await collection_channels.updateOne({
+                        name: channel.name
+                    }, {
+                        $set: {
+                            owner: new_mod
+                        },
+                        $pull: {
+                            mods_list: new_mod
                         }
-                    );
-                }
-                else {  // there is no mod
+                    });
+                } else { // there is no mod
                     await mongoClient.connect();
-                    const res = await collection_channels.updateOne( 
-                        { name: channel.name },
-                        {
-                            $set: {
-                                owner: "",
-                                mods_list: [],
-                                squeals_list: [],
-                                subscribers_list: [],
-                                subscribers_num: 0,
-                                rules: [],
-                                propic: "",
-                                bio: "",
-                                is_deleted: true
-                            }
+                    const res = await collection_channels.updateOne({
+                        name: channel.name
+                    }, {
+                        $set: {
+                            owner: "",
+                            mods_list: [],
+                            squeals_list: [],
+                            subscribers_list: [],
+                            subscribers_num: 0,
+                            rules: [],
+                            propic: "",
+                            bio: "",
+                            is_deleted: true
                         }
-                    );
+                    });
                 }
 
                 // after the channel has been either deleted or gained a new mod, remove the profile
                 await mongoClient.connect();
-                const res = await collection_profiles.updateOne(  
-                    { name: profileName },
-                    {
-                        $set: {
-                            email: "",
-                            password: "",
-                            propic: "",
-                            bio: "",
-                            credit: [],
-                            credit_limits: [],
-                            squeals_list: [],
-                            followers_list: [],
-                            account_type: "",
-                            extra_credit: 0,
-                            squeals_num: 0,
-                            is_banned: false,
-                            banned_until: null,
-                            following_list: [],
-                            is_deleted: true
-                        }
+                const res = await collection_profiles.updateOne({
+                    name: profileName
+                }, {
+                    $set: {
+                        email: "",
+                        password: "",
+                        propic: "",
+                        bio: "",
+                        credit: [],
+                        credit_limits: [],
+                        squeals_list: [],
+                        followers_list: [],
+                        account_type: "",
+                        extra_credit: 0,
+                        squeals_num: 0,
+                        is_banned: false,
+                        banned_until: null,
+                        following_list: [],
+                        is_deleted: true
                     }
-                ); 
-            } 
-            res.status(200).json({ message: "Profile deleted successfully." });
+                });
+            }
+            res.status(200).json({
+                message: "Profile deleted successfully."
+            });
         } else {
-            res.status(401).json({ message: "Unauthorized to delete the profile." });
+            res.status(401).json({
+                message: "Unauthorized to delete the profile."
+            });
         }
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({
+            message: error.message
+        });
     }
 });
 
@@ -392,7 +407,9 @@ app.post("/profiles/:name", async (req, res) => {
 
         // checking if the profile exists
         if (exists.is_deleted || exists === null) {
-            res.status(404).json({ message: "Profile not found." });
+            res.status(404).json({
+                message: "Profile not found."
+            });
             return;
         }
 
@@ -462,12 +479,16 @@ app.get("/profiles/:name/followersnumber", async (req, res) => {
         });
 
         if (profile.is_deleted || profile === null) {
-            res.status(404).json({ message: "Profile not found." });
+            res.status(404).json({
+                message: "Profile not found."
+            });
             return;
         }
 
-        res.status(200).json({ followers_number: profile.followers_list.length });
-        
+        res.status(200).json({
+            followers_number: profile.followers_list.length
+        });
+
     } catch (error) {
         res.status(500).json({
             message: error.message
@@ -493,7 +514,9 @@ app.get("/profiles/:name/followers", async (req, res) => {
         });
 
         if (profile.is_deleted || profile === null) {
-            res.status(404).json({ message: "Profile not found." });
+            res.status(404).json({
+                message: "Profile not found."
+            });
             return;
         }
 
@@ -534,11 +557,16 @@ app.put("/profiles/:name/followers/", async (req, res) => {
             name: followerName
         });
 
-        //! LUIZO RIPRENDI DA QUI
-
-        if (followedProfile === null || followingProfile === null) {
+        if (followedProfile.is_deleted || followedProfile === null) {
             res.status(404).json({
-                message: "one or both profiles not found"
+                message: "the Profile you want to follow wasn't found."
+            });
+            return;
+        }
+
+        if (followingProfile.is_deleted || followingProfile === null) {
+            res.status(404).json({
+                message: "the profile you're following with wasn't found"
             });
             return;
         }
@@ -615,15 +643,17 @@ app.get("/profiles/:name/propic", async (req, res) => {
             name: profileName
         });
 
-        if (profile !== null) {
-            res.status(200).json({
-                propic: profile.propic
-            });
-        } else {
+        if (profile.is_deleted || profile === null) {
             res.status(404).json({
-                message: "Profile not found"
+                message: "Profile not found."
             });
+            return;
         }
+
+        res.status(200).json({
+            propic: profile.propic
+        });
+
 
     } catch (error) {
         res.status(500).json({
@@ -656,22 +686,23 @@ app.delete("/profiles/:name/propic", async (req, res) => {
             name: profileName
         });
 
-        if (profile !== null) {
-            const result = await collection_profiles.updateOne({
-                name: profileName
-            }, {
-                $set: {
-                    propic: "stock uri lmao" //! ADD STOCK URI
-                }
-            });
-            res.status(200).json({
-                message: "Propic removed"
-            });
-        } else {
+        if (profile.is_deleted || profile === null) {
             res.status(404).json({
-                message: "Profile not found"
+                message: "Profile not found."
             });
+            return;
         }
+
+        const result = await collection_profiles.updateOne({
+            name: profileName
+        }, {
+            $set: {
+                propic: "stock uri lmao" //! ADD STOCK URI
+            }
+        });
+        res.status(200).json({
+            message: "Propic removed"
+        });
 
     } catch (error) {
         res.status(500).json({
