@@ -286,6 +286,7 @@ app.delete("/profiles/:name", async (req, res) => {
             }).toArray();
 console.log("Sei nella profiles delete e channels_owned: " + JSON.stringify(channels_owned))
             for (const channel of channels_owned) { 
+                console.log("channel.mods_list[0]: " + channel.mods_list[0])
                 if (channel.mods_list[0] !== "" || channel.mods_list[0] !== undefined) { // there is a mod //! per niente sicuro di questo controllo
                     const new_mod = channel.mods_list[0];
 
@@ -304,8 +305,8 @@ console.log("Sei nella profiles delete e channels_owned: " + JSON.stringify(chan
                 }
                 else {  // there is no mod
                     await mongoClient.connect();
-                    const res = await collection_channels.updateOne(  //! è giusto usare res qui?
-                        { name: channel.name },
+                    const res = await collection_profiles.updateOne(  //! è giusto usare res qui?
+                        { name: profileName },
                         {
                             $set: {
                                 owner: "",
@@ -323,7 +324,7 @@ console.log("Sei nella profiles delete e channels_owned: " + JSON.stringify(chan
                     ); 
                 }
             } 
-            if (res.deletedCount > 0) {
+            if (res.modifiedCount > 0) {
                 res.status(200).json({ message: "Profile deleted" });
             } else {
                 res.status(404).json({ message: "Profile not found" });
