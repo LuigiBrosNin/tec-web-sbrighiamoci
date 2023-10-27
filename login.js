@@ -32,7 +32,7 @@ function signin(){
 /* -------------------------------------------------------------------------- */
 
 // squeals list POST request
-function addSquealListTest(param_name) {
+function addSquealListTest() {
   const body = {
     squealList: [
       "EmanueleDiSante1",
