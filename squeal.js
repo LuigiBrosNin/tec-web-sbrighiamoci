@@ -356,7 +356,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
 })
 
 /* -------------------------------------------------------------------------- */
-/*                               /SQUEALS/LIST                                */
+/*                               /LIST_SQUEALS                                */
 /*                                   POST                                     */
 /* -------------------------------------------------------------------------- */
 
@@ -365,7 +365,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
 // campo da dare nel body: squealList
 // SUPPORTA QUERY DI PAGINAZIONE
 //TODO TEST
-app.get("/squeals/list", async (req, res) => {
+app.get("/list_squeals", async (req, res) => {
     try {
         const squealList = req.body.squealList;
 
@@ -389,6 +389,8 @@ app.get("/squeals/list", async (req, res) => {
 
         let squeals = [];
         let index = 0;
+
+        console.log('Squeal List:', squealList)
 
         await mongoClient.connect();
         for(const squeal of squealList){
