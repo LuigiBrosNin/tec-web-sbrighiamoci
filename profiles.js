@@ -284,7 +284,7 @@ app.delete("/profiles/:name", async (req, res) => {
                     { mods_list: profileName }
                 ]
             });
-
+console.log("Sei nella profiles delete e channels_owned: " + channels_owned)
             for (const channel of channels_owned) { 
                 if (channel.mods_list[0] !== "" || channel.mods_list[0] !== undefined) { // there is a mod //! per niente sicuro di questo controllo
                     const new_mod = channel.mods_list[0];
@@ -323,7 +323,7 @@ app.delete("/profiles/:name", async (req, res) => {
                     ); 
                 }
             } 
-            if (result.deletedCount > 0) {
+            if (res.deletedCount > 0) {
                 res.status(200).json({ message: "Profile deleted" });
             } else {
                 res.status(404).json({ message: "Profile not found" });
