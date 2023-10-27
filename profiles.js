@@ -271,7 +271,7 @@ app.delete("/profiles/:name", async (req, res) => {
     try {
         const profileName = req.params.name;
         const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
-        const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === profileName;
+        const authorized = true //await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === profileName;
 
         if (authorized || adminAuthorized) {
             await mongoClient.connect();
@@ -283,9 +283,10 @@ app.delete("/profiles/:name", async (req, res) => {
                     { owner: profileName },
                     { mods_list: profileName }
                 ]
-            });
-
+            }).toArray();
+console.log("Sei nella profiles delete e channels_owned: " + JSON.stringify(channels_owned))
             for (const channel of channels_owned) { 
+                console.log("channel.mods_list[0]: " + channel.mods_list[0])
                 if (channel.mods_list[0] !== "" || channel.mods_list[0] !== undefined) { // there is a mod //! per niente sicuro di questo controllo
                     const new_mod = channel.mods_list[0];
 
@@ -309,7 +310,6 @@ app.delete("/profiles/:name", async (req, res) => {
                         {
                             $set: {
                                 owner: "",
-                                type: "",
                                 mods_list: [],
                                 squeals_list: [],
                                 subscribers_list: [],
@@ -320,10 +320,36 @@ app.delete("/profiles/:name", async (req, res) => {
                                 is_deleted: true
                             }
                         }
-                    ); 
+                    );
                 }
+
+                // after the channel has been either deleted or gained a new mod, remove the profile
+                console.log("profileName: " + profileName)
+                await mongoClient.connect();
+                const res = await collection_profiles.updateOne(  //! è giusto usare res qui?
+                    { name: profileName },
+                    {
+                        $set: {
+                            email: "",
+                            password: "",
+                            propic: "",
+                            bio: "",
+                            credit: [],
+                            credit_limits: [],
+                            squeals_list: [],
+                            followers_list: [],
+                            account_type: "",
+                            extra_credit: 0,
+                            squeals_num: 0,
+                            is_banned: false,
+                            banned_until: null,
+                            following_list: [],
+                            is_deleted: true
+                        }
+                    }
+                ); 
             } 
-            if (result.deletedCount > 0) {
+            if (res.modifiedCount > 0) {
                 res.status(200).json({ message: "Profile deleted" });
             } else {
                 res.status(404).json({ message: "Profile not found" });
