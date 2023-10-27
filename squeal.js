@@ -356,7 +356,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
 })
 
 /* -------------------------------------------------------------------------- */
-/*                               /SQUEALS/LIST                                */
+/*                              /SQUEALS_LIST/                                */
 /*                                   POST                                     */
 /* -------------------------------------------------------------------------- */
 
@@ -364,8 +364,8 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
 // ritorna gli squeal di squeal dal database
 // campo da dare nel body: squealList
 // SUPPORTA QUERY DI PAGINAZIONE
-//TODO TEST
-app.get("/squeals/list", async (req, res) => {
+// node sucks, can't use /squeals/list so here we are...
+app.post("/squeals_list/", async (req, res) => {
     try {
         const squealList = req.body.squealList;
 
@@ -390,6 +390,8 @@ app.get("/squeals/list", async (req, res) => {
         let squeals = [];
         let index = 0;
 
+        console.log('Squeal List:', squealList)
+
         await mongoClient.connect();
         for(const squeal of squealList){
             // if we reached the end of index requested index, break
@@ -397,19 +399,19 @@ app.get("/squeals/list", async (req, res) => {
                 break;
             }
 
-            const squeal = await collection_squeals.findOne({
+            const found_squeal = await collection_squeals.findOne({
                 id: squeal
             });
             
             // squeal found
-            if (squeal !== null) {ù
+            if (found_squeal !== null) {
                 // if we didn't reach the start index, skip the found squeal
                 if (index < startIndex) {
                     index++;
                     continue;
                 }
                 // if we reached the start index, add the squeal to the list
-                squeals.push(squeal);
+                squeals.push(found_squeal);
                 index++;
             }
         }

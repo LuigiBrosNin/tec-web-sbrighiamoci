@@ -32,7 +32,7 @@ function signin(){
 /* -------------------------------------------------------------------------- */
 
 // squeals list POST request
-function addSquealListTest(param_name) {
+function addSquealListTest() {
   const body = {
     squealList: [
       "EmanueleDiSante1",
@@ -40,10 +40,9 @@ function addSquealListTest(param_name) {
       "AlexLorenzato1" 
     ]
   };
-
   console.log("Sending body: " + JSON.stringify(body));
 
-  fetch(`https://site222326.tw.cs.unibo.it/squeals/list`, {
+  fetch(`https://site222326.tw.cs.unibo.it/squeals_list`, {
     method: "POST",
     headers: {
       "Content-type": "application/json; charset=UTF-8"
