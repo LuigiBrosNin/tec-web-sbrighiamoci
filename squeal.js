@@ -356,7 +356,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
 })
 
 /* -------------------------------------------------------------------------- */
-/*                              /LIST_SQUEALS/                                */
+/*                              /SQUEALS_LIST/                                */
 /*                                   POST                                     */
 /* -------------------------------------------------------------------------- */
 
@@ -364,8 +364,8 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
 // ritorna gli squeal di squeal dal database
 // campo da dare nel body: squealList
 // SUPPORTA QUERY DI PAGINAZIONE
-//TODO TEST
-app.post("/list_squeals", async (req, res) => {
+// node sucks, can't use /squeals/list so here we are...
+app.post("/squeals_list/", async (req, res) => {
     try {
         const squealList = req.body.squealList;
 
