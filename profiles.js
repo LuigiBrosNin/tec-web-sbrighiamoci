@@ -305,7 +305,7 @@ console.log("Sei nella profiles delete e channels_owned: " + JSON.stringify(chan
                 }
                 else {  // there is no mod
                     await mongoClient.connect();
-                    const res = await collection_channels.updateOne(  //! è giusto usare res qui?
+                    const res = await collection_channels.updateOne( 
                         { name: channel.name },
                         {
                             $set: {
@@ -326,7 +326,7 @@ console.log("Sei nella profiles delete e channels_owned: " + JSON.stringify(chan
                 // after the channel has been either deleted or gained a new mod, remove the profile
                 console.log("profileName: " + profileName)
                 await mongoClient.connect();
-                const res = await collection_profiles.updateOne(  //! è giusto usare res qui?
+                const res = await collection_profiles.updateOne(  
                     { name: profileName },
                     {
                         $set: {
@@ -349,13 +349,9 @@ console.log("Sei nella profiles delete e channels_owned: " + JSON.stringify(chan
                     }
                 ); 
             } 
-            if (res.modifiedCount > 0) {
-                res.status(200).json({ message: "Profile deleted" });
-            } else {
-                res.status(404).json({ message: "Profile not found" });
-            }
+            res.status(200).json({ message: "Profile deleted successfully." });
         } else {
-            res.status(401).json({ message: "Unauthorized" });
+            res.status(401).json({ message: "Unauthorized to delete the profile." });
         }
     } catch (error) {
         res.status(500).json({ message: error.message });
