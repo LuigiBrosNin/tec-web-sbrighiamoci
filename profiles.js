@@ -284,14 +284,12 @@ app.delete("/profiles/:name", async (req, res) => {
                     { mods_list: profileName }
                 ]
             }).toArray();
-console.log("Sei nella profiles delete e channels_owned: " + JSON.stringify(channels_owned))
             for (const channel of channels_owned) { 
-                console.log("channel.mods_list[0]: " + channel.mods_list[0])
-                if (channel.mods_list[0] !== "" && channel.mods_list[0] !== undefined) { // there is a mod //! per niente sicuro di questo controllo
+                if (channel.mods_list[0] !== "" && channel.mods_list[0] !== undefined) { // there is a mod 
                     const new_mod = channel.mods_list[0];
 
                     await mongoClient.connect();
-                    const res = await collection_channels.updateOne(  //! è giusto usare res qui?
+                    const res = await collection_channels.updateOne(  
                         { name: channel.name },
                         {
                             $set: {
@@ -324,7 +322,6 @@ console.log("Sei nella profiles delete e channels_owned: " + JSON.stringify(chan
                 }
 
                 // after the channel has been either deleted or gained a new mod, remove the profile
-                console.log("profileName: " + profileName)
                 await mongoClient.connect();
                 const res = await collection_profiles.updateOne(  
                     { name: profileName },
