@@ -108,7 +108,6 @@ app.get("/channels/:name", async (req, res) => {
 
     await mongoClient.connect();
     const channel = await collection_channels.findOne({ name: channelName });
-    console.log("Sono la GET che cerca " + channelName + " e trova: " + channel);
 
     if (channel === null) {
       res.status(404).json({
@@ -124,7 +123,6 @@ app.get("/channels/:name", async (req, res) => {
       message: error.message
     });
   }
-
 });
 
 //* PUT
@@ -176,7 +174,6 @@ app.put("/channels/:name", async (req, res) => {
 // TODO test
 app.delete("/channels/:name", async (req, res) => {
   try {
-console.log("Sono la delete da testare")
     const channelName = req.params.name;
     const authorized = true //TODO ADD AUTHORIZATION
 
@@ -185,11 +182,11 @@ console.log("Sono la delete da testare")
 
     if (!authorized && channel.owner !== req.session.user) {
       res.status(401).json({
-        message: "not authorized to delete this channel"
+        message: "Not authorized to delete this channel."
       });
       return;
     }
-console.log("Devo cancelllare " + channelName + " ")
+
     await mongoClient.connect();
     const result = await collection_channels.updateOne(
       { name: channelName }, 
@@ -214,7 +211,7 @@ console.log("Devo cancelllare " + channelName + " ")
     }
 
     res.status(200).json({ message: "Channel deleted successfully." });
-
+    
   } catch (error) {
     res.status(500).json({
       message: error.message
