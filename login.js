@@ -31,6 +31,29 @@ function signin(){
 /*                         Luizo's temp test fucntions                        */
 /* -------------------------------------------------------------------------- */
 
+// squeals list POST request
+function addSquealListTest(param_name) {
+  const body = {
+    squealList: [
+      "EmanueleDiSante1",
+      "EmanueleDiSante2",
+      "AlexLorenzato1" 
+    ]
+  };
+
+  console.log("Sending body: " + JSON.stringify(body));
+
+  fetch(`https://site222326.tw.cs.unibo.it/squeals/list`, {
+    method: "POST",
+    headers: {
+      "Content-type": "application/json; charset=UTF-8"
+    },
+    body: JSON.stringify(body)
+  }).then(response => response.json())
+  .then(data => console.log(data));
+}
+
+
 // channel squeals_list DELETE request
 function deleteSquealListTest(param_name) {
   const body = {
