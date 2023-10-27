@@ -284,7 +284,7 @@ app.delete("/profiles/:name", async (req, res) => {
                     { mods_list: profileName }
                 ]
             });
-console.log("Sei nella profiles delete e channels_owned: " + channels_owned)
+console.log("Sei nella profiles delete e channels_owned: " + JSON.stringify(channels_owned))
             for (const channel of channels_owned) { 
                 if (channel.mods_list[0] !== "" || channel.mods_list[0] !== undefined) { // there is a mod //! per niente sicuro di questo controllo
                     const new_mod = channel.mods_list[0];
