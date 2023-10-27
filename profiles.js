@@ -72,7 +72,7 @@ app.get("/profiles/", async (req, res) => {
 
         const possibleGTEParams = ["credit", "credit_limits", "squeals_num", /* "followers_num",*/ "banned_until"];
 
-        let search = {};
+        let search = { is_deleted: false };
 
         let credit_type = 0;
         let credit_limits_type = 0;
@@ -178,15 +178,15 @@ app.get("/profiles/:name", async (req, res) => {
             name: profileName
         });
 
-        if (profile !== null) {
-            delete profile.password;
-            delete profile.email;
-            res.status(200).json(profile);
-        } else {
-            res.status(404).json({
-                message: "Profile not found"
-            });
+        if (profile.is_deleted || profile === null) {
+            res.status(404).json({ message: "Profile not found." });
+            return;
         }
+        
+        delete profile.password;
+        delete profile.email;
+        res.status(200).json(profile);
+        
     } catch (error) {
         res.status(500).json({
             message: error.message
@@ -203,6 +203,14 @@ app.put("/profiles/:name", async (req, res) => {
 
         // setting up info for the new profile
         const name = req.params.name;
+
+        // check if there is another profile with the same name, in that case deny the creation
+        const already_taken = await collection_profiles.findOne({ name: name })
+        if (already_taken !== null) {
+            res.status(409).json({ message: "Name already taken." });
+            return;
+        }
+
         const profile = {
             name: name,
             followers_list: [],
@@ -266,7 +274,7 @@ app.put("/profiles/:name", async (req, res) => {
 // ritorna 401 se non sei autorizzato
 
 // ? handle dependencies (squeals, followers, following, channels mod list)
-//TODO FUTURE LUIZO: ADD DIPENDENCIES
+//TODO FUTURE LUIZO: ADD DEPENDENCIES
 app.delete("/profiles/:name", async (req, res) => {
     try {
         const profileName = req.params.name;
@@ -355,6 +363,7 @@ app.delete("/profiles/:name", async (req, res) => {
     }
 });
 
+
 //* POST
 // modifica il profilo con nome name
 // ritorna 404 se non esiste
@@ -380,11 +389,10 @@ app.post("/profiles/:name", async (req, res) => {
         const exists = await collection_profiles.findOne({
             name: profileName
         });
+
         // checking if the profile exists
-        if (!exists) {
-            res.status(404).json({
-                message: "Profile does not exist"
-            });
+        if (exists.is_deleted || exists === null) {
+            res.status(404).json({ message: "Profile not found." });
             return;
         }
 
@@ -453,15 +461,13 @@ app.get("/profiles/:name/followersnumber", async (req, res) => {
             name: profileName
         });
 
-        if (profile !== null) {
-            res.status(200).json({
-                followers_number: profile.followers_list.length
-            });
-        } else {
-            res.status(404).json({
-                message: "Profile not found"
-            });
+        if (profile.is_deleted || profile === null) {
+            res.status(404).json({ message: "Profile not found." });
+            return;
         }
+
+        res.status(200).json({ followers_number: profile.followers_list.length });
+        
     } catch (error) {
         res.status(500).json({
             message: error.message
@@ -486,16 +492,12 @@ app.get("/profiles/:name/followers", async (req, res) => {
             name: profileName
         });
 
-
-        console.log(profile.followers_list);
-
-        if (profile !== null) {
-            res.status(200).json(profile.followers_list);
-        } else {
-            res.status(404).json({
-                message: "Profile not found"
-            });
+        if (profile.is_deleted || profile === null) {
+            res.status(404).json({ message: "Profile not found." });
+            return;
         }
+
+        res.status(200).json(profile.followers_list);
 
     } catch (error) {
         res.status(500).json({
@@ -503,6 +505,7 @@ app.get("/profiles/:name/followers", async (req, res) => {
         });
     }
 });
+
 
 //* PUT
 // aggiunge il follower followerName al profilo con nome name
@@ -530,6 +533,8 @@ app.put("/profiles/:name/followers/", async (req, res) => {
         const followingProfile = await collection_profiles.findOne({
             name: followerName
         });
+
+        //! LUIZO RIPRENDI DA QUI
 
         if (followedProfile === null || followingProfile === null) {
             res.status(404).json({

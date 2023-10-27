@@ -61,7 +61,7 @@ app.get("/channels", async (req, res) => {
       return;
     }
 
-    let search = {};
+    let search = { is_deleted: false };
     const possibleParams = ["name", "owner", "type"];
 
     for (const param of possibleParams) {
@@ -86,7 +86,6 @@ app.get("/channels", async (req, res) => {
       .limit(endIndex) // returns endIndex squeals
       .toArray(); // returns the squeals as an array
 
-    res.status(200).json(channels);
   } catch (error) {
     res.status(500).json({
       message: error.message
@@ -109,21 +108,20 @@ app.get("/channels/:name", async (req, res) => {
     await mongoClient.connect();
     const channel = await collection_channels.findOne({ name: channelName });
 
-    if (channel === null) {
-      res.status(404).json({
-        message: "channel not found"
-      });
-      return;
+    if (channel.is_deleted || channel === null) {
+      res.status(404).json({ message: "The channel does not exist." });
     }
-
-    res.status(200).json(channel);
-
+    else {
+      res.status(200).json(channel);
+    }
+    
   } catch (error) {
     res.status(500).json({
       message: error.message
     });
   }
 });
+
 
 //* PUT
 // creates a new channel with the specified name
@@ -136,6 +134,13 @@ app.put("/channels/:name", async (req, res) => {
     const channelName = req.params.name;
     const authorized = true //TODO ADD AUTHORIZATION
 
+    // check if there is another channel with the same name, in that case deny the creation
+    const already_taken = await collection_channels.findOne({ name: channelName })
+    if (already_taken !== null) {
+      res.status(409).json({ message: "Name already taken." });
+      return;
+    }
+
     let channel = {
       name: channelName,
       owner: req.session.user,
@@ -146,9 +151,9 @@ app.put("/channels/:name", async (req, res) => {
       squeals_num: 0,
       squeals_list: [],
       propic: req.body.propic,
-      bio: req.body.bio
+      bio: req.body.bio,
+      is_deleted: false
     };
-
 
     if (authorized) {
       channel.rules = req.body.rules;
@@ -159,7 +164,7 @@ app.put("/channels/:name", async (req, res) => {
     const result = await collection_channels.insertOne(channel);
 
     res.status(200).json({
-      message: "channel created"
+      message: "Channel created."
     });
 
   } catch (error) {
@@ -169,9 +174,9 @@ app.put("/channels/:name", async (req, res) => {
   }
 });
 
+
 //* DELETE
 // deletes the channel with the specified name
-// TODO test
 app.delete("/channels/:name", async (req, res) => {
   try {
     const channelName = req.params.name;
@@ -237,14 +242,13 @@ app.get("/channels/:name/subscribers_num", async (req, res) => {
       name: channelName
     })
 
-    if (!channel) {
-      res.status(404).json({
-        message: "Channel not found."
-      });
+    if (channel.is_deleted || channel === null) {
+      res.status(404).json({ message: "The channel does not exist." });
       return;
-    } else {
-      res.status(200).json(channel.subscribers_num)
     }
+
+    res.status(200).json(channel.subscribers_num)
+
   } catch (error) {
     res.status(500).json({
       message: error.message
@@ -288,16 +292,15 @@ app.get("/channels/:name/subscribers_list", async (req, res) => {
     const channel = await collection_channels.findOne({
       name: channelName
     })
-    // if the channel is not found, return 404
-    if (channel === null) {
-      res.status(404).json({
-        message: "channel not found"
-      });
+    
+    if (channel.is_deleted || channel === null) {
+      res.status(404).json({ message: "The channel does not exist." });
       return;
     }
 
     const subscribers = channel.subscribers_list.slice(startIndex, endIndex + 1);
     res.status(200).json(subscribers);
+
   } catch (error) {
     res.status(500).json({
       message: error.message
@@ -324,14 +327,15 @@ app.put("/channels/:name/subscribers_list", async (req, res) => {
     await mongoClient.connect();
 
     const user = await collection_profiles.findOne({ name: req_user }) 
-    if (user === null) {
-      res.status(404).json({ message: "user not found" });
+    if (user === null  || user.is_deleted) {
+      res.status(404).json({ message: "User not found." });
       return;
     }
 
     const channel = await collection_channels.findOne({ name: channelName })
-    if (channel === null) {
-      res.status(404).json({ message: "channel not found" });
+
+    if (channel.is_deleted || channel === null) {
+      res.status(404).json({ message: "The channel does not exist." });
       return;
     }
 
@@ -391,10 +395,8 @@ app.get("/channels/:name/rules", async (req, res) => {
     await mongoClient.connect();
     const channel = await collection_channels.findOne({ name: channelName });
 
-    if (channel === null) {
-      res.status(404).json({
-        message: "channel not found"
-      });
+    if (channel.is_deleted || channel === null) {
+      res.status(404).json({ message: "Channel not found." });
       return;
     }
 
@@ -421,6 +423,11 @@ app.put("/channels/:name/rules", async (req, res) => {
     const channel = await collection_channels.findOne({
       name: channelName
     });
+
+    if (channel.is_deleted || channel === null) {
+      res.status(404).json({ message: "Channel not found." });
+      return;
+    }
 
     if (!authorized) {
       res.status(401).json({
@@ -510,8 +517,6 @@ app.delete("/channels/:name/rules", async (req, res) => {
 //* PUT
 // adds a moderator to the channel
 // body parameters: mod_name (string)
-//TODO ADD AUTHORIZATION (ADMIN OR OWNER)
-//TODO TEST
 app.put("/channels/:name/mod_list", async (req, res) => {
   try {
     const channelName = req.params.name;
@@ -521,11 +526,8 @@ app.put("/channels/:name/mod_list", async (req, res) => {
       name: channelName
     });
 
-
-    if (channel === null) {
-      res.status(404).json({
-        message: "channel not found"
-      });
+    if (channel.is_deleted || channel === null) {
+      res.status(404).json({ message: "Channel not found." });
       return;
     }
 
@@ -549,10 +551,8 @@ app.put("/channels/:name/mod_list", async (req, res) => {
       name: req.body.mod_name
     });
 
-    if (profile === null) {
-      res.status(404).json({
-        message: "profile not found"
-      });
+    if (profile.is_deleted || profile === null) {
+      res.status(404).json({ message: "profile not found." });
       return;
     }
 
@@ -581,6 +581,7 @@ app.put("/channels/:name/mod_list", async (req, res) => {
     });
   }
 });
+
 
 //* DELETE
 // removes a moderator from the channel
@@ -673,11 +674,9 @@ app.get("/channels/:name/squeals_list", async (req, res) => {
     const channel = await collection_channels.findOne({
       name: channelName
     })
-    // if the channel is not found, return 404
-    if (channel === null) {
-      res.status(404).json({
-        message: "channel not found"
-      });
+
+    if (channel.is_deleted || channel === null) {
+      res.status(404).json({ message: "Channel not found." });
       return;
     }
 
@@ -689,6 +688,7 @@ app.get("/channels/:name/squeals_list", async (req, res) => {
     });
   }
 });
+
 
 //* PUT
 // adds a squeal to the channel
@@ -702,6 +702,11 @@ app.put("/channels/:name/squeals_list", async (req, res) => {
     const channel = await collection_channels.findOne({
       name: name
     });
+
+    if (channel.is_deleted || channel === null) {
+      res.status(404).json({ message: "Channel not found." });
+      return;
+    }
 
     if (!authorized) {
       res.status(401).json({
@@ -740,6 +745,7 @@ app.put("/channels/:name/squeals_list", async (req, res) => {
     });
   }
 });
+
 
 //* DELETE
 // removes a squeal from the channel
