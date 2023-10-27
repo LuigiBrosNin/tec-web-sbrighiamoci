@@ -402,14 +402,14 @@ app.get("/squeals/list", async (req, res) => {
             });
             
             // squeal found
-            if (squeal !== null) {ù
+            if (found_squeal !== null) {
                 // if we didn't reach the start index, skip the found squeal
                 if (index < startIndex) {
                     index++;
                     continue;
                 }
                 // if we reached the start index, add the squeal to the list
-                squeals.push(squeal);
+                squeals.push(found_squeal);
                 index++;
             }
         }
