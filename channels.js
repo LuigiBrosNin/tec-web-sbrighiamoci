@@ -108,6 +108,7 @@ app.get("/channels/:name", async (req, res) => {
 
     await mongoClient.connect();
     const channel = await collection_channels.findOne({ name: channelName });
+    console.log("Sono la GET che cerca " + channelName + " e trova: " + channel);
 
     if (channel === null) {
       res.status(404).json({
@@ -195,7 +196,6 @@ console.log("Devo cancelllare " + channelName + " ")
       {
         $set: {
           owner: "",
-          type: "",
           mods_list: [],
           squeals_list: [],
           subscribers_list: [],
