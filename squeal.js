@@ -357,13 +357,14 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
 
 /* -------------------------------------------------------------------------- */
 /*                               /SQUEALS/LIST                                */
-/*                                    GET                                     */
+/*                                   POST                                     */
 /* -------------------------------------------------------------------------- */
 
-//* GET
+//* POST
 // ritorna gli squeal di squeal dal database
+// campo da dare nel body: squealList
 // SUPPORTA QUERY DI PAGINAZIONE
-//TODO FINISH
+//TODO TEST
 app.get("/squeals/list", async (req, res) => {
     try {
         const squealList = req.body.squealList;
@@ -386,7 +387,41 @@ app.get("/squeals/list", async (req, res) => {
             return;
         }
 
-        //TODO FINISH
+        let squeals = [];
+        let index = 0;
+
+        await mongoClient.connect();
+        for(const squeal of squealList){
+            // if we reached the end of index requested index, break
+            if (index >= endIndex) {
+                break;
+            }
+
+            const squeal = await collection_squeals.findOne({
+                id: squeal
+            });
+            
+            // squeal found
+            if (squeal !== null) {ù
+                // if we didn't reach the start index, skip the found squeal
+                if (index < startIndex) {
+                    index++;
+                    continue;
+                }
+                // if we reached the start index, add the squeal to the list
+                squeals.push(squeal);
+                index++;
+            }
+        }
+
+        if (squeals.length === 0) {
+            res.status(404).json({
+                message: "no squeals found"
+            });
+            return;
+        }
+
+        res.status(200).send(JSON.stringify(squeals));
 
     } catch (error) {
         res.status(500).json({
