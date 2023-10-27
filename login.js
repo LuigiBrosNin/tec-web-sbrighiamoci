@@ -40,7 +40,6 @@ function addSquealListTest() {
       "AlexLorenzato1" 
     ]
   };
-
   console.log("Sending body: " + JSON.stringify(body));
 
   fetch(`https://site222326.tw.cs.unibo.it/squeals/list`, {
