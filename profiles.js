@@ -304,6 +304,7 @@ console.log("Sei nella profiles delete e channels_owned: " + JSON.stringify(chan
                     );
                 }
                 else {  // there is no mod
+                    console.log("profileName: " + profileName)
                     await mongoClient.connect();
                     const res = await collection_profiles.updateOne(  //! è giusto usare res qui?
                         { name: profileName },
