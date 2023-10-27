@@ -365,7 +365,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
 // campo da dare nel body: squealList
 // SUPPORTA QUERY DI PAGINAZIONE
 //TODO TEST
-app.get("/list_squeals", async (req, res) => {
+app.post("/list_squeals", async (req, res) => {
     try {
         const squealList = req.body.squealList;
 
