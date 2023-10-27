@@ -397,7 +397,7 @@ app.get("/squeals/list", async (req, res) => {
                 break;
             }
 
-            const squeal = await collection_squeals.findOne({
+            const found_squeal = await collection_squeals.findOne({
                 id: squeal
             });
             
