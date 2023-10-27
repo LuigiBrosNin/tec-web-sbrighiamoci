@@ -304,14 +304,12 @@ console.log("Sei nella profiles delete e channels_owned: " + JSON.stringify(chan
                     );
                 }
                 else {  // there is no mod
-                    console.log("profileName: " + profileName)
                     await mongoClient.connect();
-                    const res = await collection_profiles.updateOne(  //! è giusto usare res qui?
-                        { name: profileName },
+                    const res = await collection_channels.updateOne(  //! è giusto usare res qui?
+                        { name: channel.name },
                         {
                             $set: {
                                 owner: "",
-                                type: "",
                                 mods_list: [],
                                 squeals_list: [],
                                 subscribers_list: [],
@@ -322,8 +320,34 @@ console.log("Sei nella profiles delete e channels_owned: " + JSON.stringify(chan
                                 is_deleted: true
                             }
                         }
-                    ); 
+                    );
                 }
+
+                // after the channel has been either deleted or gained a new mod, remove the profile
+                console.log("profileName: " + profileName)
+                await mongoClient.connect();
+                const res = await collection_profiles.updateOne(  //! è giusto usare res qui?
+                    { name: profileName },
+                    {
+                        $set: {
+                            email: "",
+                            password: "",
+                            propic: "",
+                            bio: "",
+                            credit: [],
+                            credit_limits: [],
+                            squeals_list: [],
+                            followers_list: [],
+                            account_type: "",
+                            extra_credit: 0,
+                            squeals_num: 0,
+                            is_banned: false,
+                            banned_until: null,
+                            following_list: [],
+                            is_deleted: true
+                        }
+                    }
+                ); 
             } 
             if (res.modifiedCount > 0) {
                 res.status(200).json({ message: "Profile deleted" });
