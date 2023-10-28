@@ -19,7 +19,8 @@ app.set('trust proxy', 1); // trust first proxy
 
 let cors = require('cors');
 app.use(cors({
-  origin: BASE_SITE,
+  //origin: BASE_SITE,
+  origin: "*",
   credentials: true,
 }));
 
