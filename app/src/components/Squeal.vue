@@ -19,7 +19,7 @@ export default {
     },
     methods: {
         async fetchSqueal() {
-            let res = await fetch("http://site222326.tw.cs.unibo.it/squeals/AlexLorenzato0", {
+            let res = await fetch("https://pokeapi.co/api/v2/pokemon/ditto", {
                 method: "GET",
                 headers: {
                     "Content-type": "application/json; charset=UTF-8",
