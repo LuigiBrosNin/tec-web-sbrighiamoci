@@ -95,6 +95,9 @@ app.use('/images', express.static('/images/', {
   },
 }));
 
+app.get('/icons/:icon_name', function (req, res) {
+  res.sendFile(global.rootDir + "/icons/" + icon_name); // is this somehow secure?
+});
 
 
 // ci serve per pubblicare i nostri sorgenti
