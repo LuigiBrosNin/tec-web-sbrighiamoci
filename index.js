@@ -32,7 +32,6 @@ app.use(session({
 
 app.use(cookieParser());
 
-app.use(express.static(global.rootDir));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
