@@ -18,7 +18,7 @@ const {
     channelCollection,
     mongoClient,
     CREDIT_LIMITS
-} = require("../const.js");
+} = require("./const.js");
 
 // connecting to the database
 mongoClient.connect();
