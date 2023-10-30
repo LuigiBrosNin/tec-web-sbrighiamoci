@@ -181,6 +181,14 @@ app.get("/squeals/", async (req, res) => {
 app.put("/squeals/", bodyParser.json(), async (req, res) => {
     try {
         // console.log('Request Body:', req.body);
+        const authorized = true; //TODO ADD AUTHORIZATION
+
+        if (!authorized) {
+            res.status(401).json({
+                message: "you must be logged in to add a squeal"
+            });
+            return;
+        }
 
         const requiredFields = [
             "author",
@@ -199,175 +207,184 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
         }
         // If all required fields are present, continue with the insertion
 
-        if ((await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === req.body.author) || (await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin))) {
-            // defining the required fields as well as initializing the standard fields
-            let newSqueal = {
-                id: "",
-                author: req.body.author,
-                text: req.body.text,
-                receiver: req.body.receiver,
-                date: Date.now(),
-                positive_reactions: 0,
-                positive_reactions_list: [],
-                negative_reactions: 0,
-                negative_reactions_list: [],
-                replies_num: 0,
-                impressions: 0,
-                is_private: false
+        // defining the required fields as well as initializing the standard fields
+        let newSqueal = {
+            id: "",
+            author: req.body.author,
+            text: req.body.text,
+            receiver: req.body.receiver,
+            date: Date.now(),
+            positive_reactions: 0,
+            positive_reactions_list: [],
+            negative_reactions: 0,
+            negative_reactions_list: [],
+            replies_num: 0,
+            impressions: 0,
+            is_private: false,
+            mentions: [],
+            channel_mentions: [],
+            keywords: []
+        }
+
+        // checking boolean separately because in optionalFields it would be seen as string
+        if (req.body.is_private === "true" || req.body.is_private === true) {
+            newSqueal.is_private = true;
+        }
+
+        const optionalFields = [
+            "media",
+            "reply_to",
+            "replies"
+        ];
+
+        // Check if the optional fields are present in the request body
+        // If they are, add them to the newSqueal object
+        for (const field in optionalFields) {
+            if (req.body[field] !== undefined && req.body[field] != "") {
+                newSqueal[field] = req.body[field];
             }
+        }
 
-            // checking boolean separately because in optionalFields it would be seen as string
-            if (req.body.is_private === "true" || req.body.is_private === true) {
-                newSqueal.is_private = true;
+        const parsed_text = newSqueal.text.split(" ");
+
+        for (const word of parsed_text) {
+            if (word[0] === "#") {
+                newSqueal.keywords.push(word);
+            } else if (word[0] === "@") {
+                newSqueal.mentions.push(word);
+            } else if (word[0] === "§") {
+                newSqueal.channel_mentions.push(word);
             }
+        }
 
-            const optionalFields = [
-                "media",
-                "reply_to",
-                "replies",
-                "keywords",
-                "mentions"
-            ];
+        let char_cost = newSqueal.text.length;
 
-            // Check if the optional fields are present in the request body
-            // If they are, add them to the newSqueal object
-            for (const field in optionalFields) {
-                if (req.body[field] !== undefined && req.body[field] != "") {
-                    newSqueal[field] = req.body[field];
+        // if the media field is present, calculate the cost of the media
+        if (newSqueal.media !== undefined && newSqueal.media != "") {
+            char_cost += 125;
+        }
+
+        await mongoClient.connect();
+
+        const profile_author = await collection_profiles.findOne({
+            name: newSqueal.author
+        });
+
+        const profile_receiver = await collection_profiles.findOne({
+            name: newSqueal.receiver
+        });
+
+        const channel_receiver = await collection_channels.findOne({
+            name: newSqueal.receiver
+        });
+
+        if (profile_receiver === null && channel_receiver === null) {
+            res.status(400).json({
+                message: "receiver does not exist"
+            });
+            return;
+        }
+
+        // CREDITS
+        // 0 = giorno, 1 = settimana, 2 = mese
+        // if the author does not exist, invalid request
+        if (profile_author === null) {
+            res.status(400).json({
+                message: "author does not exist"
+            });
+            return;
+
+        } // check if the authos has enough credit 
+        else if (newSqueal.is_private == false && (profile_author.credit[0] < char_cost || profile_author.credit[1] < char_cost || profile_author.credit[2] < char_cost) && await !isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)) {
+            res.status(400).json({
+                message: "author does not have enough credit\navailable\ng: " + profile_author.credit[0] + " s: " + profile_author.credit[1] + " m: " + profile_author.credit[2] + ")\nrequired\n " + char_cost
+            });
+            return;
+        }
+        // if the author exists, update the number of squeals, the list of squeals and it's credit
+        const squeals_num = parseInt(profile_author.squeals_num) + 1;
+        const squeals_list = profile_author.squeals_list;
+
+        let g, s, m;
+
+        // if the author is an admin, don't subtract the credit
+        if (await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)) {
+            console.log("admin");
+            g = profile_author.credit[0];
+            s = profile_author.credit[1];
+            m = profile_author.credit[2];
+        } else if (newSqueal.is_private == true) {
+            console.log("not admin");
+            g = profile_author.credit[0] - char_cost;
+            s = profile_author.credit[1] - char_cost;
+            m = profile_author.credit[2] - char_cost;
+        }
+
+        console.log("g: " + g + " s: " + s + " m: " + m);
+
+        // update the author's squeals_num and squeals_list
+        newSqueal.id = `${profile_author.name}${squeals_num}`;
+
+        // adds the new squeal to the list of squeals
+        squeals_list.push(newSqueal.id);
+
+
+        await mongoClient.connect();
+
+        // update the author's squeals_num and squeals_list
+        await collection_profiles.updateOne({
+            name: profile_author.name
+        }, {
+            $set: {
+                squeals_num: squeals_num,
+                list_squeal_id: squeals_list,
+                credit: {
+                    0: g,
+                    1: s,
+                    2: m
                 }
             }
+        })
 
-            let char_cost = newSqueal.text.length;
-
-            // if the media field is present, calculate the cost of the media
-            if (newSqueal.media !== undefined && newSqueal.media != "") {
-                char_cost += 125;
-            }
-
-            await mongoClient.connect();
-
-            const profile_author = await collection_profiles.findOne({
-                name: newSqueal.author
+        if (newSqueal.reply_to !== undefined) {
+            // retrieve the squeal that is being replied to
+            const squeal_replied_to = await collection_squeals.findOne({
+                id: newSqueal.reply_to
             });
 
-            const profile_receiver = await collection_profiles.findOne({
-                name: newSqueal.receiver
-            });
-
-            const channel_receiver = await collection_channels.findOne({
-                name: newSqueal.receiver
-            });
-
-            if (profile_receiver === null && channel_receiver === null) {
+            // if the squeal is not found, return 404
+            if (squeal_replied_to === null) {
                 res.status(400).json({
-                    message: "receiver does not exist"
+                    message: "the squeal you are replying to does not exist"
                 });
                 return;
             }
 
-            // CREDITS
-            // 0 = giorno, 1 = settimana, 2 = mese
-            // if the author does not exist, invalid request
-            if (profile_author === null) {
-                res.status(400).json({
-                    message: "author does not exist"
-                });
-                return;
+            // if the squeal is found, update the replies_num
+            const replies_num = squeal_replied_to.replies_num + 1;
 
-            } // check if the authos has enough credit 
-            else if (newSqueal.is_private == false && (profile_author.credit[0] < char_cost || profile_author.credit[1] < char_cost || profile_author.credit[2] < char_cost) && await !isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)) {
-                res.status(400).json({
-                    message: "author does not have enough credit\navailable\ng: " + profile_author.credit[0] + " s: " + profile_author.credit[1] + " m: " + profile_author.credit[2] + ")\nrequired\n " + char_cost
-                });
-                return;
-            }
-            // if the author exists, update the number of squeals, the list of squeals and it's credit
-            const squeals_num = parseInt(profile_author.squeals_num) + 1;
-            const squeals_list = profile_author.squeals_list;
+            // update the list of replies
+            const replies_list = squeal_replied_to.replies;
+            replies_list.push(newSqueal.id);
 
-            let g, s, m;
-
-            // if the author is an admin, don't subtract the credit
-            if (await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)) {
-                console.log("admin");
-                g = profile_author.credit[0];
-                s = profile_author.credit[1];
-                m = profile_author.credit[2];
-            } else if (newSqueal.is_private == true) {
-                console.log("not admin");
-                g = profile_author.credit[0] - char_cost;
-                s = profile_author.credit[1] - char_cost;
-                m = profile_author.credit[2] - char_cost;
-            }
-
-            console.log("g: " + g + " s: " + s + " m: " + m);
-
-            // update the author's squeals_num and squeals_list
-            newSqueal.id = `${profile_author.name}${squeals_num}`;
-
-            // adds the new squeal to the list of squeals
-            squeals_list.push(newSqueal.id);
-
-
-            await mongoClient.connect();
-
-            // update the author's squeals_num and squeals_list
-            await collection_profiles.updateOne({
-                name: profile_author.name
+            // update the squeal_replied_to's replies_num
+            await collection_squeals.updateOne({
+                id: squeal_replied_to.id
             }, {
                 $set: {
-                    squeals_num: squeals_num,
-                    list_squeal_id: squeals_list,
-                    credit: {
-                        0: g,
-                        1: s,
-                        2: m
-                    }
+                    replies_num: replies_num,
+                    replies: replies_list
                 }
-            })
-
-            if (newSqueal.reply_to !== undefined) {
-                // retrieve the squeal that is being replied to
-                const squeal_replied_to = await collection_squeals.findOne({
-                    id: newSqueal.reply_to
-                });
-
-                // if the squeal is not found, return 404
-                if (squeal_replied_to === null) {
-                    res.status(400).json({
-                        message: "the squeal you are replying to does not exist"
-                    });
-                    return;
-                }
-
-                // if the squeal is found, update the replies_num
-                const replies_num = squeal_replied_to.replies_num + 1;
-
-                // update the list of replies
-                const replies_list = squeal_replied_to.replies;
-                replies_list.push(newSqueal.id);
-
-                // update the squeal_replied_to's replies_num
-                await collection_squeals.updateOne({
-                    id: squeal_replied_to.id
-                }, {
-                    $set: {
-                        replies_num: replies_num,
-                        replies: replies_list
-                    }
-                });
-            }
-
-            // Insert the new squeal in the database without converting it to a JSON string
-            const result = await collection_squeals.insertOne(newSqueal);
-
-            console.log('Documento inserito con successo: ', result.insertedId + '\n' + JSON.stringify(newSqueal));
-            res.status(200).send(JSON.stringify({
-                message: "squeal added successfully with db id:" + result.insertedId
-            }));
-        } else {
-            res.status(401).send();
+            });
         }
+
+        // Insert the new squeal in the database without converting it to a JSON string
+        const result = await collection_squeals.insertOne(newSqueal);
+
+        console.log('Documento inserito con successo: ', result.insertedId + '\n' + JSON.stringify(newSqueal));
+        res.status(200).send(JSON.stringify({
+            message: "squeal added successfully with db id:" + result.insertedId
+        }));
     } catch (error) {
         console.error('Errore durante l inserimento del documento: ', error);
         res.status(500).send(JSON.stringify({
