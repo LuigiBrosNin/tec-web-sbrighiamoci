@@ -63,7 +63,8 @@ app.get("/login", async (req, res) => {
 app.post("/login", bodyParser.json(), async (req, res) => {
   if (await canLogIn(req.body.username, req.body.password)) {
     req.session.user = req.body.username;
-    res.redirect("/");
+    console.log("session login: " + req.session.id);
+    //res.redirect("/");
   } else {
     res.send("wrong username or password");
     console.log("wrong username or password");
@@ -87,6 +88,7 @@ app.put("/signin", async (req, res) => {
 
 app.get("/user-check", async (req, res) => {
   console.log("user: " + req.session.user);
+  console.log("session check: " + req.session.id);
   res.send(req.session.user);
 })
 
@@ -132,8 +134,6 @@ async function prova() {
         'Cookie': cookie
       }
     }, function (e, r, b) {
-      console.log("2 " + r.headers['set-cookie']);
-      console.log("3 " + b);
     });
   });
 
