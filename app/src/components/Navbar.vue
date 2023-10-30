@@ -79,6 +79,7 @@ https://codepen.io/sosuke/pen/Pjoqqp
     width: 100%;
     flex-direction: row;
     justify-content: space-around;
+    padding-top: 0em;
     overflow: visible;
   }
   p {
