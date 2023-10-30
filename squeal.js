@@ -198,7 +198,8 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
 
         // Check if all required fields are present in the request body
         for (const field of requiredFields) {
-            if (req.body[field] == null || req.body[field] === "" || (typeof req.body[field] !== "string")) {
+            console.log(typeof req.body[field] + " " + req.body[field])
+            if (req.body[field] == null || req.body[field] === "" /*|| (typeof req.body[field] != "string")*/) {
                 res.status(400).json({
                     message: `${field} is required and has to be valid`
                 });
