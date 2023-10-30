@@ -113,10 +113,9 @@ app.use('/source', express.static('/webapp/tec-web-sbrighiamoci/source', {
  */
 require("./automatic_posts.js");
 
-// periodic function
+//* periodic function, activate when ready
 //setInterval(putPeriodicalSqueals, interval);
 
-putPeriodicalSqueals();
 
 module.exports = { app };
 
