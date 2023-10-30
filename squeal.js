@@ -15,6 +15,7 @@ const {
     dbName,
     squealCollection,
     profileCollection,
+    channelCollection,
     mongoClient,
     CM
 } = require("./const.js");
@@ -24,6 +25,7 @@ mongoClient.connect();
 const database = mongoClient.db(dbName);
 const collection_squeals = database.collection(squealCollection);
 const collection_profiles = database.collection(profileCollection);
+const collection_channels = database.collection(channelCollection);
 
 //! ADD /SQUEALS/LIST GET REQUEST THAT SUPPORTS AN ARBITRARY LIST OF SQUEALS TO RETURN
 
@@ -198,8 +200,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
 
         // Check if all required fields are present in the request body
         for (const field of requiredFields) {
-            console.log(typeof req.body[field] + " " + req.body[field])
-            if (req.body[field] == null || req.body[field] === "" /*|| (typeof req.body[field] != "string")*/) {
+            if (req.body[field] == null || req.body[field] === "" || (typeof req.body[field] != "string")) {
                 res.status(400).json({
                     message: `${field} is required and has to be valid`
                 });

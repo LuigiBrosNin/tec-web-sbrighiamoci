@@ -86,7 +86,6 @@ async function makeRequest(post) {
     
         // send and log the squeal
         console.log("sending: " + JSON.stringify(squealData));
-        console.log("sending RAW: " + squealData);
     
         const postResponse = await axios.put('https://site222326.tw.cs.unibo.it/squeals', squealData);
         console.log("response");
