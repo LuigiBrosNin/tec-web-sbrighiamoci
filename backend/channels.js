@@ -7,7 +7,7 @@ const {
 } = require("path");
 const {
   app
-} = require("./index.js");
+} = require("../index.js");
 const {
   typeOfProfile,
   isAuthorizedOrHigher

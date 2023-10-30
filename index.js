@@ -7,9 +7,9 @@ const session = require('express-session');
 const request = require('request');
 const app = express();
 
-const { isAuthorizedOrHigher, canLogIn, typeOfProfile, registerNewUser } = require("./loginUtils.js");
+const { isAuthorizedOrHigher, canLogIn, typeOfProfile, registerNewUser } = require("./backend/loginUtils.js");
 
-const { interval } = require("./const.js");
+//const { interval } = require("./backend/const.js");
 
 const BASE_SITE = 'https://site222326.tw.cs.unibo.it'
 //const BASE_SITE = 'http://localhost'
@@ -21,7 +21,7 @@ app.set('trust proxy', 1); // trust first proxy
 
 
 let cors = require('cors');
-const { putPeriodicalSqueals } = require('./automatic_posts.js');
+const { putPeriodicalSqueals } = require('./backend/automatic_posts.js');
 app.use(cors({
   //origin: BASE_SITE,
   credentials: true,
@@ -119,6 +119,6 @@ require("./automatic_posts.js");
 
 module.exports = { app };
 
-require("./squeal.js");
-require("./profiles.js");
-require("./channels.js");
+require("./backend/squeal.js");
+require("./backend/profiles.js");
+require("./backend/channels.js");

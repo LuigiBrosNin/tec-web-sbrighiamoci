@@ -18,7 +18,7 @@ axios.defaults.withCredentials = true;
 
 const {
     app
-} = require("./index.js");
+} = require("../index.js");
 const {
     typeOfProfile,
     isAuthorizedOrHigher

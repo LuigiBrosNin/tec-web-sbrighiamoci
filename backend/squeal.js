@@ -5,7 +5,7 @@ const {
 } = require("path");
 const {
     app
-} = require("./index.js");
+} = require("../index.js");
 const {
     typeOfProfile,
     isAuthorizedOrHigher
@@ -18,7 +18,7 @@ const {
     channelCollection,
     mongoClient,
     CM
-} = require("./const.js");
+} = require("../const.js");
 
 // connecting to the database
 mongoClient.connect();
