@@ -21,7 +21,6 @@ app.set('trust proxy', 1); // trust first proxy
 
 
 let cors = require('cors');
-const { putPeriodicalSqueals } = require('./backend/automatic_posts.js');
 app.use(cors({
   //origin: BASE_SITE,
   credentials: true,
