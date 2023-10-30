@@ -65,6 +65,7 @@ app.post("/login", bodyParser.json(), async (req, res) => {
     req.session.user = req.body.username;
     console.log("session login: " + req.session.id);
     //res.redirect("/");
+    res.send();
   } else {
     res.send("wrong username or password");
     console.log("wrong username or password");
