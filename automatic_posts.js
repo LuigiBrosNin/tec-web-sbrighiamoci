@@ -17,6 +17,14 @@ axios.defaults.jar = cookieJar;
 axios.defaults.withCredentials = true;
 
 const {
+    app
+} = require("./index.js");
+const {
+    typeOfProfile,
+    isAuthorizedOrHigher
+} = require("./loginUtils.js");
+const bodyParser = require('body-parser');
+const {
   dbName,
   squealCollection,
   channelCollection,
@@ -93,7 +101,6 @@ async function makeRequest(post) {
     catch (e) {
         console.log(e);
     }
-    
 }
 
 /* -------------------------------------------------------------------------- */
