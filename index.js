@@ -125,7 +125,7 @@ async function prova(){
       "Content-type": "application/json; charset=UTF-8"
     }
   });
-  console.log(res.cookie);
+  console.log(res);
 
   await fetch("https://site222326.tw.cs.unibo.it/user-check", {
     method: "GET",
