@@ -111,14 +111,13 @@ app.use('/source', express.static('/webapp/tec-web-sbrighiamoci/source', {
     },
 }), serveIndex('/webapp/tec-web-sbrighiamoci/source', { 'icons': true }));
  */
-require("./automatic_posts.js");
-
-//* periodic function, activate when ready
-//setInterval(putPeriodicalSqueals, interval);
-
 
 module.exports = { app };
 
 require("./backend/squeal.js");
 require("./backend/profiles.js");
 require("./backend/channels.js");
+require("./automatic_posts.js");
+
+//* periodic function, activate when ready
+//setInterval(putPeriodicalSqueals, interval);
