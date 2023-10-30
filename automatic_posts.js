@@ -33,8 +33,8 @@ const collection_automaticPosts = database.collection(automaticPostsCollection);
 
 const authData = {
     // Provide authentication data
-    username: 'Arturo', //! TEMP
-    password: 'baka'
+    username: "Arturo", //! TEMP
+    password: "baka"
 };
 
 /* ------------------------------- FUNCTIONS -------------------------------- */
@@ -84,10 +84,10 @@ async function makeRequest(post) {
     };
 
     // send and log the squeal
-    console.log("sending: " + squealData);
+    console.log("sending: " + JSON.stringify(squealData));
 
     const postResponse = await axios.put('https://site222326.tw.cs.unibo.it/squeals', JSON.stringify(squealData));
-    console.log("response; " + postResponse.data);
+    console.log("response; " + JSON.stringify(postResponse.data));
 }
 
 module.exports = {putPeriodicalSqueals};
