@@ -123,7 +123,7 @@ async function prova() {
       password: "baka"
     }),
   }, async function (error, response, body) {
-    console.log(response.headers['set-cookie']);
+    console.log("1" + response.headers['set-cookie']);
     let cookie = response.headers['set-cookie'];
     await request.get({
       url: 'https://site222326.tw.cs.unibo.it/user-check',
@@ -131,7 +131,7 @@ async function prova() {
         'Cookie': cookie
       }
     }, function (e, r, b) {
-      console.log(r.headers['set-cookie']);
+      console.log("2" + r.headers['set-cookie']);
     });
   });
 
