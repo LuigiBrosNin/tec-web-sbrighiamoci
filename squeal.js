@@ -238,6 +238,13 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
                 }
             }
 
+            let char_cost = newSqueal.text.length;
+
+            // if the media field is present, calculate the cost of the media
+            if (newSqueal.media !== undefined && newSqueal.media != "") {
+                char_cost += 125;
+            }
+
             await mongoClient.connect();
 
             const profile_author = await collection_profiles.findOne({
@@ -254,9 +261,9 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
                 return;
 
             } // check if the authos has enough credit 
-            else if ((profile_author.credit[0] < newSqueal.text.length || profile_author.credit[1] < newSqueal.text.length || profile_author.credit[2] < newSqueal.text.length) && await !isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)) {
+            else if (newSqueal.is_private== false && (profile_author.credit[0] < char_cost || profile_author.credit[1] < char_cost || profile_author.credit[2] < char_cost) && await !isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)) {
                 res.status(400).json({
-                    message: "author does not have enough credit\navailable\ng: " + profile_author.credit[0] + " s: " + profile_author.credit[1] + " m: " + profile_author.credit[2] + ")\nrequired\n " + newSqueal.text.length
+                    message: "author does not have enough credit\navailable\ng: " + profile_author.credit[0] + " s: " + profile_author.credit[1] + " m: " + profile_author.credit[2] + ")\nrequired\n " + char_cost
                 });
                 return;
             }
@@ -272,11 +279,11 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
                 g = profile_author.credit[0];
                 s = profile_author.credit[1];
                 m = profile_author.credit[2];
-            } else {
+            } else if(newSqueal.is_private == true) {
                 console.log("not admin");
-                g = profile_author.credit[0] - newSqueal.text.length;
-                s = profile_author.credit[1] - newSqueal.text.length;
-                m = profile_author.credit[2] - newSqueal.text.length;
+                g = profile_author.credit[0] - char_cost;
+                s = profile_author.credit[1] - char_cost;
+                m = profile_author.credit[2] - char_cost;
             }
 
             console.log("g: " + g + " s: " + s + " m: " + m);
