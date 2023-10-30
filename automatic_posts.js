@@ -87,7 +87,7 @@ async function makeRequest(post) {
     console.log("sending: " + JSON.stringify(squealData));
 
     const postResponse = await axios.put('https://site222326.tw.cs.unibo.it/squeals', JSON.stringify(squealData));
-    console.log("response; " + JSON.stringify(postResponse.data));
+    console.log("response");
 }
 
 module.exports = {putPeriodicalSqueals};
