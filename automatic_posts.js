@@ -59,16 +59,14 @@ async function putPeriodicalSqueals() {
 async function makeRequest(post) {
     console.log("Making request for post: " + post.uri + "");
 
-    let postData;
+    let text = "";
     // get the data from the post
     const response = await axios.get(post.uri);
     
     // get the fields we want from the response
     for(field of post.fields) {
-        postData[field] = response.data[field];
+        text = postData + "" + response.data[field];
     }
-    let text;
-    text = JSON.stringify(postData);
 
     let media = null;
     
