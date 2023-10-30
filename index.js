@@ -63,9 +63,7 @@ app.get("/login", async (req, res) => {
 app.post("/login", bodyParser.json(), async (req, res) => {
   if (await canLogIn(req.body.username, req.body.password)) {
     req.session.user = req.body.username;
-    console.log("session login: " + req.session.id);
-    //res.redirect("/");
-    res.send();
+    res.redirect("/");
   } else {
     res.send("wrong username or password");
     console.log("wrong username or password");
@@ -89,7 +87,6 @@ app.put("/signin", async (req, res) => {
 
 app.get("/user-check", async (req, res) => {
   console.log("user: " + req.session.user);
-  console.log("session check: " + req.session.id);
   res.send(req.session.user);
 })
 
@@ -117,50 +114,6 @@ app.use('/source', express.static('/webapp/tec-web-sbrighiamoci/source', {
     },
 }), serveIndex('/webapp/tec-web-sbrighiamoci/source', { 'icons': true }));
  */
-
-async function prova() {
-  await request.post({
-    headers: { "Content-type": "application/json; charset=UTF-8" },
-    url: 'https://site222326.tw.cs.unibo.it/login',
-    body: JSON.stringify({
-      username: "Arturo",
-      password: "baka"
-    }),
-  }, async function (error, response, body) {
-    console.log("1 " + response.headers['set-cookie']);
-    let cookie = response.headers['set-cookie'];
-    await request.get({
-      url: 'https://site222326.tw.cs.unibo.it/user-check',
-      header: {
-        'Cookie': cookie
-      }
-    }, function (e, r, b) {
-    });
-  });
-
-  
-/*
-  let res = await fetch("https://site222326.tw.cs.unibo.it/login", {
-    method: "POST",
-    credentials: "include",
-    body: JSON.stringify({
-      username: "Arturo",
-      password: "baka"
-    }),
-    headers: {
-      "Content-type": "application/json; charset=UTF-8"
-    }
-  });
-  console.log(res);
-
-  await fetch("https://site222326.tw.cs.unibo.it/user-check", {
-    method: "GET",
-    credentials: "include",
-  });
-  */
-}
-
-setTimeout(async () => { await prova(); }, 5000);
 
 module.exports = { app };
 
