@@ -65,7 +65,7 @@ async function makeRequest(post) {
     
     // get the fields we want from the response
     for(field of post.json_fields) {
-        text = postData + "" + response.data[field];
+        text = text + " " + response.data[field];
     }
 
     let media = null;
