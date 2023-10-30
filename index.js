@@ -4,6 +4,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
+const request = require('request');
 const app = express();
 
 const { isAuthorizedOrHigher, canLogIn, typeOfProfile, registerNewUser } = require("./loginUtils.js");
@@ -86,6 +87,7 @@ app.put("/signin", async (req, res) => {
 
 app.get("/user-check", async (req, res) => {
   console.log("user: " + req.session.user);
+  res.send(req.session.user);
 })
 
 app.use('/app', express.static(path.join(global.rootDir, 'app/dist/')));
@@ -113,7 +115,30 @@ app.use('/source', express.static('/webapp/tec-web-sbrighiamoci/source', {
 }), serveIndex('/webapp/tec-web-sbrighiamoci/source', { 'icons': true }));
  */
 
-async function prova(){
+async function prova() {
+  await request.post({
+    headers: { "Content-type": "application/json; charset=UTF-8" },
+    url: 'https://site222326.tw.cs.unibo.it/login',
+    body: JSON.stringify({
+      username: "Arturo",
+      password: "baka"
+    }),
+  }, async function (error, response, body) {
+    console.log("1 " + response.headers['set-cookie']);
+    let cookie = response.headers['set-cookie'];
+    await request.get({
+      url: 'https://site222326.tw.cs.unibo.it/user-check',
+      header: {
+        'Cookie': cookie
+      }
+    }, function (e, r, b) {
+      console.log("2 " + r.headers['set-cookie']);
+      console.log("3 " + b);
+    });
+  });
+
+  
+/*
   let res = await fetch("https://site222326.tw.cs.unibo.it/login", {
     method: "POST",
     credentials: "include",
@@ -131,9 +156,10 @@ async function prova(){
     method: "GET",
     credentials: "include",
   });
+  */
 }
 
-setTimeout(async() => {  await prova(); }, 5000);
+setTimeout(async () => { await prova(); }, 5000);
 
 module.exports = { app };
 
