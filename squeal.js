@@ -240,7 +240,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
         // Check if the optional fields are present in the request body
         // If they are, add them to the newSqueal object
         for (const field in optionalFields) {
-            if (req.body[field] !== undefined && req.body[field] != "") {
+            if (req.body[field] !== undefined && req.body[field] != "" && req.body[field] != null) {
                 newSqueal[field] = req.body[field];
             }
         }

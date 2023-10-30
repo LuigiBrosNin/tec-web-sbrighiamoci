@@ -9,6 +9,8 @@ const app = express();
 
 const { isAuthorizedOrHigher, canLogIn, typeOfProfile, registerNewUser } = require("./loginUtils.js");
 
+const { interval } = require("./const.js");
+
 const BASE_SITE = 'https://site222326.tw.cs.unibo.it'
 //const BASE_SITE = 'http://localhost'
 exports.BASE_SITE = BASE_SITE;
@@ -40,10 +42,6 @@ app.use(express.urlencoded({ extended: true }));
 app.listen(port, function () {
   console.log("Listen ongoing!");
 })
-
-
-
-
 
 //html files indexing
 app.get("/", async (req, res) => {
@@ -101,8 +99,6 @@ app.use('/images', express.static('/images/', {
 }));
 app.use('/icons', express.static(path.join(global.rootDir, 'icons/')));
 
-
-
 // ci serve per pubblicare i nostri sorgenti
 // potremmo fare anche a mano
 /*
@@ -117,7 +113,8 @@ app.use('/source', express.static('/webapp/tec-web-sbrighiamoci/source', {
  */
 require("./automatic_posts.js");
 
-setTimeout(async () => { await putPeriodicalSqueals(); }, 5000);
+// periodic function
+setInterval(putPeriodicalSqueals, interval);
 
 module.exports = { app };
 

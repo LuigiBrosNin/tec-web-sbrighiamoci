@@ -11,8 +11,12 @@ const profileCollection = "Profiles";
 const channelCollection = "Channels";
 const automaticPostsCollection = "AutomaticPosts";
 
+// interval for periodical posts
+const interval = 10000 // 10 seconds
+//1000 * 60 * 60; // 1 hour
+
 const CREDIT_LIMITS = [150, 500, 1000];
 
 const CM = 0.25;
 
-module.exports = {dbName, squealCollection, profileCollection, channelCollection, automaticPostsCollection, mongoClient, CREDIT_LIMITS, CM};
+module.exports = {dbName, squealCollection, profileCollection, channelCollection, automaticPostsCollection, mongoClient, interval, CREDIT_LIMITS, CM};
