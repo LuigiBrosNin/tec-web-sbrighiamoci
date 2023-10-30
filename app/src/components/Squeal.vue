@@ -5,7 +5,7 @@
 <template>
     <div class="squeal_container" v-if="!isPrivate">
         <p> §{{ channel }} </p>
-        <div v-if=replyTo.length > 0">
+        <div v-if=replyTo.length >
             <p>Reply to:</p>
             <p v-for="i in replyTo">{{ i }}</p>
         </div>
