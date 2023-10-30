@@ -114,7 +114,7 @@ app.use('/source', express.static('/webapp/tec-web-sbrighiamoci/source', {
  */
 
 async function prova(){
-  await fetch("https://site222326.tw.cs.unibo.it/login", {
+  let res = await fetch("https://site222326.tw.cs.unibo.it/login", {
     method: "POST",
     credentials: "include",
     body: JSON.stringify({
@@ -125,6 +125,8 @@ async function prova(){
       "Content-type": "application/json; charset=UTF-8"
     }
   });
+  res = await res.json();
+  console.log(res.cookie);
 
   await fetch("https://site222326.tw.cs.unibo.it/user-check", {
     method: "GET",
