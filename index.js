@@ -19,6 +19,7 @@ app.set('trust proxy', 1); // trust first proxy
 
 
 let cors = require('cors');
+const { putPeriodicalSqueals } = require('./automatic_posts.js');
 app.use(cors({
   //origin: BASE_SITE,
   credentials: true,
@@ -114,6 +115,9 @@ app.use('/source', express.static('/webapp/tec-web-sbrighiamoci/source', {
     },
 }), serveIndex('/webapp/tec-web-sbrighiamoci/source', { 'icons': true }));
  */
+require("./automatic_posts.js");
+
+setTimeout(async () => { await putPeriodicalSqueals(); }, 5000);
 
 module.exports = { app };
 
