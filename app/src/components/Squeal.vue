@@ -11,7 +11,7 @@
         </div>
 
         <div class="profile_data">
-            <img class="profile_img" :src="this.authorProfilePicUrl"/>
+            <img class="profile_img" :src="authorProfilePicUrl"/>
             <p class="profile_name"> @{{ author }}</p>
         </div>
 
