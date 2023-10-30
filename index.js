@@ -87,6 +87,7 @@ app.put("/signin", async (req, res) => {
 
 app.get("/user-check", async (req, res) => {
   console.log("user: " + req.session.user);
+  res.send(req.session.user);
 })
 
 app.use('/app', express.static(path.join(global.rootDir, 'app/dist/')));
@@ -123,7 +124,7 @@ async function prova() {
       password: "baka"
     }),
   }, async function (error, response, body) {
-    console.log("1" + response.headers['set-cookie']);
+    console.log("1 " + response.headers['set-cookie']);
     let cookie = response.headers['set-cookie'];
     await request.get({
       url: 'https://site222326.tw.cs.unibo.it/user-check',
@@ -131,7 +132,8 @@ async function prova() {
         'Cookie': cookie
       }
     }, function (e, r, b) {
-      console.log("2" + r.headers['set-cookie']);
+      console.log("2 " + r.headers['set-cookie']);
+      console.log("3 " + b);
     });
   });
 
