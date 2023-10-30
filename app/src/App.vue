@@ -9,7 +9,7 @@ import Navbar from "@/components/Navbar.vue"
     <Header title="Squealer"></Header>
     <div class="main_area">
       <Navbar></Navbar>
-      
+
       <div class="content">
         <RouterView />
       </div>
@@ -22,25 +22,33 @@ import Navbar from "@/components/Navbar.vue"
   display: flex;
   flex-direction: column;
 
-  position:absolute; 
-  height:100%; 
-  width:100%; 
-  top:0px; 
-  left:0px; 
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0px;
+  left: 0px;
 }
 
 Header {
   height: 15vh;
 }
-  .main_area {
-    height: 85vh;
-    display: flex;
-    flex-direction: row;
-  }
 
-  .content {
-    overflow-y: scroll;
-    width: 100%;
-    background-color: #ddddddff;
+.main_area {
+  height: 85vh;
+  display: flex;
+  flex-direction: row;
+}
+
+.content {
+  overflow-y: scroll;
+  width: 100%;
+  background-color: #ddddddff;
+}
+
+@media screen and (max-width: 950px) {
+  .main_area {
+    display: flex;
+    flex-direction: column-reverse;
   }
+}
 </style>
