@@ -194,4 +194,4 @@ app.delete('/automaticposts', bodyParser.json(), async (req, res) => {
 })
 
 
-module.exports = {putPeriodicalSqueals};
+//module.exports = {putPeriodicalSqueals};
