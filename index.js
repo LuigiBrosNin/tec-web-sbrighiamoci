@@ -4,6 +4,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
+const request = require('request');
 const app = express();
 
 const { isAuthorizedOrHigher, canLogIn, typeOfProfile, registerNewUser } = require("./loginUtils.js");
@@ -113,7 +114,18 @@ app.use('/source', express.static('/webapp/tec-web-sbrighiamoci/source', {
 }), serveIndex('/webapp/tec-web-sbrighiamoci/source', { 'icons': true }));
  */
 
-async function prova(){
+async function prova() {
+  request.post({
+    headers: { "Content-type": "application/json; charset=UTF-8" },
+    url: 'https://site222326.tw.cs.unibo.it/login',
+    body: JSON.stringify({
+      username: "Arturo",
+      password: "baka"
+    }),
+  }, function (error, response, body) {
+    console.log(response);
+  });
+/*
   let res = await fetch("https://site222326.tw.cs.unibo.it/login", {
     method: "POST",
     credentials: "include",
@@ -131,9 +143,10 @@ async function prova(){
     method: "GET",
     credentials: "include",
   });
+  */
 }
 
-setTimeout(async() => {  await prova(); }, 5000);
+setTimeout(async () => { await prova(); }, 5000);
 
 module.exports = { app };
 
