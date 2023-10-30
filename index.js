@@ -116,7 +116,7 @@ module.exports = { app };
 require("./backend/squeal.js");
 require("./backend/profiles.js");
 require("./backend/channels.js");
-require("./automatic_posts.js");
+require("./backend/automatic_posts.js");
 
 //* periodic function, activate when ready
 //setInterval(putPeriodicalSqueals, interval);
