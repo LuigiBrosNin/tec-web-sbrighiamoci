@@ -116,6 +116,7 @@ app.use('/source', express.static('/webapp/tec-web-sbrighiamoci/source', {
 function prova(){
   fetch("https://site222326.tw.cs.unibo.it/login", {
     method: "POST",
+    credentials: "same-origin",
     body: JSON.stringify({
       username: "Arturo",
       password: "baka"
@@ -125,7 +126,10 @@ function prova(){
     }
   });
 
-  fetch("https://site222326.tw.cs.unibo.it/user-check", {method: "GET"});
+  fetch("https://site222326.tw.cs.unibo.it/user-check", {
+    method: "GET",
+    credentials: "same-origin",
+  });
 }
 
 setTimeout(() => {  prova(); }, 5000);
