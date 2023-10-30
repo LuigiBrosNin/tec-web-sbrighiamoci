@@ -42,7 +42,7 @@ const authData = {
 // needed for posting squeals trough the API
 async function putPeriodicalSqueals() {
         // Authenticate and store the session in the cookie jar
-        await authenticate();
+        await axios.post('https://site222326.tw.cs.unibo.it/login', authData);
         // Once authenticated, the session is stored in the cookie jar for subsequent requests
         
         // Make subsequent requests with the established session
@@ -50,14 +50,9 @@ async function putPeriodicalSqueals() {
         const posts = await collection_automaticPosts.find({}).toArray();
 
         for (post of posts) {
-            makeRequest(post, username);
+            makeRequest(post);
         }
         console.log("Periodical squeals posted");
-}
-
-// Function to authenticate and store the session
-async function authenticate() {
-    const authResponse = await axios.post('https://site222326.tw.cs.unibo.it/login', authData);
 }
 
 // Function to make the actual request with the established session
