@@ -3,7 +3,8 @@
 </script>
 
 <template>
-    <div class="squeal_container" v-if="!this.isPrivate">
+    <div class="squeal_container">
+    <!--div class="squeal_container" v-if="!this.isPrivate"-->
         <p> §{{ channel }} </p>
         <div v-if="this.replyTo.length > 0">
             <p>Reply to:</p>
