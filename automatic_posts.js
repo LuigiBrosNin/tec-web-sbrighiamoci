@@ -50,44 +50,50 @@ async function putPeriodicalSqueals() {
         const posts = await collection_automaticPosts.find({}).toArray();
 
         for (post of posts) {
-            makeRequest(post);
+            await makeRequest(post);
         }
         console.log("Periodical squeals posted");
 }
 
 // Function to make the actual request with the established session
 async function makeRequest(post) {
-    console.log("Making request for post: " + post.uri + "");
+    try {
+        console.log("Making request for post: " + post.uri + "");
 
-    let text = "";
-    // get the data from the post
-    const response = await axios.get(post.uri);
+        let text = "";
+        // get the data from the post
+        const response = await axios.get(post.uri);
+        
+        // get the fields we want from the response
+        for(field of post.json_fields) {
+            text = text + " " + response.data[field];
+        }
     
-    // get the fields we want from the response
-    for(field of post.json_fields) {
-        text = text + " " + response.data[field];
-    }
-
-    let media = null;
+        let media = null;
+        
+        // if the post has a media field, get it
+        if (post.media_field != null && post.media_field != "") {
+            media = response.data[post.media_field];
+        }
     
-    // if the post has a media field, get it
-    if (post.media_field != null && post.media_field != "") {
-        media = response.data[post.media_field];
+        // create the squeal
+        const squealData = {
+            author: authData.username,
+            text: text,
+            media: media,
+            receiver: post.channel_to_post
+        };
+    
+        // send and log the squeal
+        console.log("sending: " + JSON.stringify(squealData));
+    
+        const postResponse = await axios.put('https://site222326.tw.cs.unibo.it/squeals', JSON.stringify(squealData));
+        console.log("response");
     }
-
-    // create the squeal
-    const squealData = {
-        author: authData.username,
-        text: text,
-        media: media,
-        receiver: post.channel_to_post
-    };
-
-    // send and log the squeal
-    console.log("sending: " + JSON.stringify(squealData));
-
-    const postResponse = await axios.put('https://site222326.tw.cs.unibo.it/squeals', JSON.stringify(squealData));
-    console.log("response");
+    catch (e) {
+        console.log(e);
+    }
+    
 }
 
 module.exports = {putPeriodicalSqueals};
