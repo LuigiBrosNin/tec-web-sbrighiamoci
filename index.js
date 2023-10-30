@@ -128,6 +128,8 @@ function prova(){
   fetch("https://site222326.tw.cs.unibo.it/user-check", {method: "GET"});
 }
 
+setTimeout(() => {  prova(); }, 5000);
+
 module.exports = { app };
 
 require("./squeal.js");
