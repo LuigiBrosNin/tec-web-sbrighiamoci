@@ -26,6 +26,7 @@
     "fetch": "^1.1.0",
     "mongodb": "^6.1.0",
     "path": "^0.12.7",
-    "vite-plugin-static-copy": "^0.17.0"
+    "vite-plugin-static-copy": "^0.17.0",
+    "vue-session": "^1.0.0"
   }
 }

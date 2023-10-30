@@ -84,6 +84,9 @@ app.put("/signin", async (req, res) => {
   }
 })
 
+app.get("/user-check", async (req, res) => {
+  console.log(req.session.user);
+})
 
 app.use('/app', express.static(path.join(global.rootDir, 'app/dist/')));
 app.use('/smm', express.static(path.join(global.rootDir, 'smm/build/')));
@@ -109,6 +112,21 @@ app.use('/source', express.static('/webapp/tec-web-sbrighiamoci/source', {
     },
 }), serveIndex('/webapp/tec-web-sbrighiamoci/source', { 'icons': true }));
  */
+
+function prova(){
+  fetch("https://site222326.tw.cs.unibo.it/login", {
+    method: "POST",
+    body: JSON.stringify({
+      username: "Arturo",
+      password: "baka"
+    }),
+    headers: {
+      "Content-type": "application/json; charset=UTF-8"
+    }
+  });
+
+  fetch("https://site222326.tw.cs.unibo.it/user-check", {method: "GET"});
+}
 
 module.exports = { app };
 
