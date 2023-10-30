@@ -178,7 +178,6 @@ app.get("/squeals/", async (req, res) => {
 //* PUT
 // aggiunge/sovrascrive uno squeal al database (è impossibile sovrascrivere in quanto l'id è generato progressivamente)
 // nome utente + numero squeals = ID
-// TODO aggiungi controlli di validità receiver
 app.put("/squeals/", bodyParser.json(), async (req, res) => {
     try {
         // console.log('Request Body:', req.body);
@@ -251,6 +250,21 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
                 name: newSqueal.author
             });
 
+            const profile_receiver = await collection_profiles.findOne({
+                name: newSqueal.receiver
+            });
+
+            const channel_receiver = await collection_channels.findOne({
+                name: newSqueal.receiver
+            });
+
+            if (profile_receiver === null && channel_receiver === null) {
+                res.status(400).json({
+                    message: "receiver does not exist"
+                });
+                return;
+            }
+
             // CREDITS
             // 0 = giorno, 1 = settimana, 2 = mese
             // if the author does not exist, invalid request
@@ -261,7 +275,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
                 return;
 
             } // check if the authos has enough credit 
-            else if (newSqueal.is_private== false && (profile_author.credit[0] < char_cost || profile_author.credit[1] < char_cost || profile_author.credit[2] < char_cost) && await !isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)) {
+            else if (newSqueal.is_private == false && (profile_author.credit[0] < char_cost || profile_author.credit[1] < char_cost || profile_author.credit[2] < char_cost) && await !isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)) {
                 res.status(400).json({
                     message: "author does not have enough credit\navailable\ng: " + profile_author.credit[0] + " s: " + profile_author.credit[1] + " m: " + profile_author.credit[2] + ")\nrequired\n " + char_cost
                 });
@@ -279,7 +293,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
                 g = profile_author.credit[0];
                 s = profile_author.credit[1];
                 m = profile_author.credit[2];
-            } else if(newSqueal.is_private == true) {
+            } else if (newSqueal.is_private == true) {
                 console.log("not admin");
                 g = profile_author.credit[0] - char_cost;
                 s = profile_author.credit[1] - char_cost;
@@ -400,7 +414,7 @@ app.post("/squeals_list/", async (req, res) => {
         console.log('Squeal List:', squealList)
 
         await mongoClient.connect();
-        for(const squeal of squealList){
+        for (const squeal of squealList) {
             // if we reached the end of index requested index, break
             if (index >= endIndex) {
                 break;
@@ -409,7 +423,7 @@ app.post("/squeals_list/", async (req, res) => {
             const found_squeal = await collection_squeals.findOne({
                 id: squeal
             });
-            
+
             // squeal found
             if (found_squeal !== null) {
                 // if we didn't reach the start index, skip the found squeal
@@ -569,108 +583,175 @@ app.put("/squeals/:id", bodyParser.json(), async (req, res) => {
 // * DELETE 
 // elimina lo squeal con id = id ricevuto come parametro
 
-//TODO elimina/sostituisci lo squealID se presente in un channel (chiama la delete di channel/:name/squealList, prendi i nomi da una ricerca)
 app.delete("/squeals/:id", async (req, res) => {
     try {
-        //TODO mettere la riga di autenticazione
+        const authenticated = true;
         // check if the user has logged in
-        //*if ((await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === squeal.author) || (await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin))) {
-        if(true){
-            const squealId = req.params.id; // squeal to delete
+        if (!authenticated) {
+            res.status(401).json({
+                message: "you must be logged in to delete a squeal"
+            });
+            return;
+        }
 
-            // connect to the database
-            await mongoClient.connect();
-            const squeal = await collection_squeals.findOne({ id: squealId }); // fetching the squeal to delete
+        const squealId = req.params.id; // squeal to delete
 
-            // if the squeal is not found, return 404
-            if (squeal === null) {
-                res.status(404).json({ message: "Error: ID not found in database." });
-                return;
-            }
+        // connect to the database
+        await mongoClient.connect();
+        const squeal = await collection_squeals.findOne({
+            id: squealId
+        }); // fetching the squeal to delete
 
-            // if the squeal does not have replies: remove it's id from the "replies_list" field of the father
-            // if it has replies, modify it into a DeletedAccount squeal and update father and sons (reply_to and replies_list)
-            if (squeal.replies_num === 0) {                                      // the squeal doesn't have replies
-                if (squeal.reply_to !== undefined && squeal.reply_to != "") {    // the squeal was replying to another one
-                    let fatherId = squeal.reply_to
-                    await collection_squeals.updateOne(
-                        { id: fatherId },
-                        { $pull: { replies_list: squealId }, $inc: { replies_num: -1 } }
-                    );
-                }
-                // delete squeal from database
-                await mongoClient.connect();
-                try {
-                    const result = await collection_squeals.deleteOne({ id: squealId });
-                    if (result.deletedCount !== 1) {
-                        res.status(500).json({ message: "No squeal found with the id: " + squealId + ", error: " + error.message });
-                        return;
-                    } 
-                } catch (error) {
-                    res.status(500).json({ message: "Error deleting the squeal: " + error.message });
-                    return;
-                }
-            }
-            else {  // the squeal has replies: move it to the deletedAccount and modify father/children accordingly
-                
-                // retrieve the "DeletedSqueals" account
-                const deletedSquealsProfile = await collection_profiles.findOne({ name: "DeletedSqueals" })
-                const deletedSquealsNum = deletedSquealsProfile.squeals_num
+        // if the squeal is not found, return 404
+        if (squeal === null) {
+            res.status(404).json({
+                message: "Error: ID not found in database."
+            });
+            return;
+        }
 
-                // reset fields of the squeal to be deleted
-                await mongoClient.connect();
-                await collection_squeals.updateOne( 
-                    { _id: squeal._id },
-                    {
-                        $set: {
-                            id: `DeletedSqueals${deletedSquealsNum}`,
-                            author: 'DeletedSqueals',
-                            media: '',
-                            keywords: [],
-                            mentions: [],
-                            text: ''
-                        }
-                    }
-                );
-            
-                // if the squeal has a father, replace the squeal occurrence in the "replies_list"
-                if (squeal.reply_to !== undefined && squeal.reply_to !== "") {
-                    let fatherId = squeal.reply_to
-                    const squealFather = await collection_squeals.findOne({ id: fatherId })
-                    const index = squealFather.replies_list.indexOf(squealId); // indice nella replies_list a cui si trova squealId
-                    squealFather.replies_list[index] = `DeletedSqueals${deletedSquealsNum}`
+        const channel = await collection_channels.findOne({
+            name: squeal.receiver
+        });
 
-                    await mongoClient.connect();
-                    await collection_squeals.updateOne({ id: fatherId }, { $set: { replies_list: squealFather.replies_list } });
-                }
-
-                // update the reply_to field of the squeals that were replying to the deleted one
-                let squealRepliesList = squeal.replies_list
-                await mongoClient.connect();
-                squealRepliesList.forEach(async (reply) => {            
-                    try {
-                        let tmp_reply = await collection_squeals.findOne({ id: reply })  // retrieve a squeal that was a reply to the deleted squeal
-                        await collection_squeals.updateOne(
-                            { _id: tmp_reply._id },
-                            { $set: { reply_to: `DeletedSqueals${deletedSquealsNum}` } }
-                        );
-                    }
-                    catch {
-                        res.status(500).json({ message: error.message });
+        // if the squeal does not have replies: remove it's id from the "replies_list" field of the father
+        // if it has replies, modify it into a DeletedAccount squeal and update father and sons (reply_to and replies_list)
+        if (squeal.replies_num === 0) { // the squeal doesn't have replies
+            if (squeal.reply_to !== undefined && squeal.reply_to != "") { // the squeal was replying to another one
+                let fatherId = squeal.reply_to
+                await collection_squeals.updateOne({
+                    id: fatherId
+                }, {
+                    $pull: {
+                        replies_list: squealId
+                    },
+                    $inc: {
+                        replies_num: -1
                     }
                 });
-                
-                // update the counter of the deleted squeals profile
-                await mongoClient.connect();
-                await collection_profiles.updateOne(
-                    { _id: deletedSquealsProfile._id },
-                    { $inc: { squeals_num: 1 } }
-                );
             }
+
+            // if receiver is a channel, remove the squeal from the channel's squeals_list
+            if (channel !== null) {
+                await collection_channels.updateOne({
+                    name: squeal.receiver
+                }, {
+                    $pull: {
+                        squeals_list: squealId
+                    }
+                });
+            }
+
+            // delete squeal from database
+            await mongoClient.connect();
+            try {
+                const result = await collection_squeals.deleteOne({
+                    id: squealId
+                });
+                if (result.deletedCount !== 1) {
+                    res.status(500).json({
+                        message: "No squeal found with the id: " + squealId + ", error: " + error.message
+                    });
+                    return;
+                }
+            } catch (error) {
+                res.status(500).json({
+                    message: "Error deleting the squeal: " + error.message
+                });
+                return;
+            }
+        } else { // the squeal has replies: move it to the deletedAccount and modify father/children accordingly
+
+            // retrieve the "DeletedSqueals" account
+            const deletedSquealsProfile = await collection_profiles.findOne({
+                name: "DeletedSqueals"
+            })
+            const deletedSquealsNum = deletedSquealsProfile.squeals_num
+
+            // reset fields of the squeal to be deleted
+            await mongoClient.connect();
+            await collection_squeals.updateOne({
+                _id: squeal._id
+            }, {
+                $set: {
+                    id: `DeletedSqueals${deletedSquealsNum}`,
+                    author: 'DeletedSqueals',
+                    media: '',
+                    keywords: [],
+                    mentions: [],
+                    text: ''
+                }
+            });
+
+            // if receiver is a channel, update the squeal from the channel's squeals_list
+            if (channel !== null) {
+                await collection_channels.updateOne({
+                    name: squeal.receiver
+                }, {
+                    $pull: {
+                        squeals_list: squealId
+                    },
+                    $put: {
+                        squeals_list: `DeletedSqueals${deletedSquealsNum}`
+                    }
+                });
+            }
+
+            // if the squeal has a father, replace the squeal occurrence in the "replies_list"
+            if (squeal.reply_to !== undefined && squeal.reply_to !== "") {
+                let fatherId = squeal.reply_to
+                const squealFather = await collection_squeals.findOne({
+                    id: fatherId
+                })
+                const index = squealFather.replies_list.indexOf(squealId); // indice nella replies_list a cui si trova squealId
+                squealFather.replies_list[index] = `DeletedSqueals${deletedSquealsNum}`
+
+                await mongoClient.connect();
+                await collection_squeals.updateOne({
+                    id: fatherId
+                }, {
+                    $set: {
+                        replies_list: squealFather.replies_list
+                    }
+                });
+            }
+
+            // update the reply_to field of the squeals that were replying to the deleted one
+            let squealRepliesList = squeal.replies_list
+            await mongoClient.connect();
+            squealRepliesList.forEach(async (reply) => {
+                try {
+                    let tmp_reply = await collection_squeals.findOne({
+                        id: reply
+                    }) // retrieve a squeal that was a reply to the deleted squeal
+                    await collection_squeals.updateOne({
+                        _id: tmp_reply._id
+                    }, {
+                        $set: {
+                            reply_to: `DeletedSqueals${deletedSquealsNum}`
+                        }
+                    });
+                } catch {
+                    res.status(500).json({
+                        message: error.message
+                    });
+                }
+            });
+
+            // update the counter of the deleted squeals profile
+            await mongoClient.connect();
+            await collection_profiles.updateOne({
+                _id: deletedSquealsProfile._id
+            }, {
+                $inc: {
+                    squeals_num: 1
+                }
+            });
         }
-        res.status(200).json({ message: "Squeal deleted successfully." })
-    }
-    catch (error) {
+        res.status(200).json({
+            message: "Squeal deleted successfully."
+        })
+    } catch (error) {
         console.error('Error connecting to the database:', error);
     }
 });
@@ -686,14 +767,12 @@ app.post("/squeals/:id", bodyParser.json(), async (req, res) => {
 
             // possible body params
             const possibleParams = [
-                "receiver",
                 "text",
                 "positive_reactions",
                 "negative_reactions",
                 "positive_reactions_list",
                 "negative_reactions_list",
                 "media",
-                "reply_to",
                 "impressions",
                 "keywords",
                 "mentions",
@@ -993,7 +1072,7 @@ app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
         const squealId = req.params.id;
         const reactions = req.params.reaction_list;
 
-        if(reactions == "impressions"){
+        if (reactions == "impressions") {
             // fetching the squeal with the given id
             await mongoClient.connect();
             const squeal = await collection_squeals.findOne({
@@ -1025,9 +1104,13 @@ app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
             });
 
             if (result.modifiedCount === 1) {
-                res.status(200).json({ message: "impression updated successfully" });
+                res.status(200).json({
+                    message: "impression updated successfully"
+                });
             } else {
-                res.status(500).json({ message: "failed to update impression" });
+                res.status(500).json({
+                    message: "failed to update impression"
+                });
             }
             return;
         }

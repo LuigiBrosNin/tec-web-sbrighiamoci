@@ -281,8 +281,7 @@ app.put("/profiles/:name", async (req, res) => {
 // ritorna 404 se non esiste
 // ritorna 401 se non sei autorizzato
 
-// ? handle dependencies (squeals, followers, following, channels mod list)
-//TODO FUTURE LUIZO: ADD DEPENDENCIES
+//TODO ADD AUTHORIZATION
 app.delete("/profiles/:name", async (req, res) => {
     try {
         const profileName = req.params.name;
@@ -291,7 +290,7 @@ app.delete("/profiles/:name", async (req, res) => {
 
         if (authorized || adminAuthorized) {
             await mongoClient.connect();
-            const profile = await collection_profiles.find({
+            const profile = await collection_profiles.findOne({
                 name: profileName
             });
 
@@ -305,6 +304,7 @@ app.delete("/profiles/:name", async (req, res) => {
                     }
                 ]
             }).toArray();
+
             for (const channel of channels_owned) {
                 if (channel.mods_list[0] !== "" && channel.mods_list[0] !== undefined) { // there is a mod 
                     const new_mod = channel.mods_list[0];
@@ -340,6 +340,13 @@ app.delete("/profiles/:name", async (req, res) => {
                 }
 
                 // after the channel has been either deleted or gained a new mod, remove the profile
+
+                const squeal_list_to_delete = profile.squeals_list;
+
+                for (const squeal of squeal_list_to_delete) {
+                    await deleteSquealById(squeal);
+                }
+
                 await mongoClient.connect();
                 const res = await collection_profiles.updateOne({
                     name: profileName
@@ -378,6 +385,20 @@ app.delete("/profiles/:name", async (req, res) => {
     }
 });
 
+async function deleteSquealById(squealId) {
+    fetch("http://localhost:8000/squeals/" + squealId, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }).then(res => {
+        if (res.ok) {
+            console.log(res.json());
+        } else {
+            throw new Error("Error in db network");
+        }
+    });
+}
 
 //* POST
 // modifica il profilo con nome name
