@@ -122,14 +122,19 @@ async function prova() {
       username: "Arturo",
       password: "baka"
     }),
-  }, function (error, response, body) {
+  }, async function (error, response, body) {
     console.log(response);
+    let cookie = response.headers['set-cookie'];
+    await request.get({
+      url: 'https://site222326.tw.cs.unibo.it/user-check',
+      header: {
+        'Cookie': cookie
+      }
+    }, function (e, r, b) {
+    });
   });
 
-  await request.get({
-    url: 'https://site222326.tw.cs.unibo.it/user-check',
-  }, function (error, response, body) {
-  });
+  
 /*
   let res = await fetch("https://site222326.tw.cs.unibo.it/login", {
     method: "POST",
