@@ -3,12 +3,11 @@
 </script>
 
 <template>
-    <div class="squeal_container">
-    <!--div class="squeal_container" v-if="!this.isPrivate"-->
+    <div class="squeal_container" v-if="!isPrivate">
         <p> §{{ channel }} </p>
-        <div v-if="this.replyTo.length > 0">
+        <div v-if=replyTo.length > 0">
             <p>Reply to:</p>
-            <p v-for="i in this.replyTo">{{ i }}</p>
+            <p v-for="i in replyTo">{{ i }}</p>
         </div>
 
         <div class="profile_data">
