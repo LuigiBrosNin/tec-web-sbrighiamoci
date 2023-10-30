@@ -198,7 +198,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
 
         // Check if all required fields are present in the request body
         for (const field of requiredFields) {
-            if (req.body[field] === undefined && req.body[field] != "" && typeof req.body[field] !== "string") {
+            if (req.body[field] == null || req.body[field] === "" || (typeof req.body[field] !== "string")) {
                 res.status(400).json({
                     message: `${field} is required and has to be valid`
                 });
@@ -240,7 +240,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
         // Check if the optional fields are present in the request body
         // If they are, add them to the newSqueal object
         for (const field in optionalFields) {
-            if (req.body[field] !== undefined && req.body[field] != "" && req.body[field] != null) {
+            if (req.body[field] != null && req.body[field] != "") {
                 newSqueal[field] = req.body[field];
             }
         }
