@@ -41,5 +41,6 @@ Header {
   .content {
     overflow-y: scroll;
     width: 100%;
+    background-color: #ddddddff;
   }
 </style>

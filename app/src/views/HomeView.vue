@@ -4,5 +4,6 @@
 
 <template>
   <p>home</p>
-  <Squeal></Squeal>
+  <Squeal id="AlexLorenzato0"></Squeal>
+  <Squeal id="EmanueleDiSante3"></Squeal>
 </template>

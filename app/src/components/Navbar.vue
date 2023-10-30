@@ -12,11 +12,11 @@
 nav {
   box-shadow: 0px 5px 5px;
   width: 20%;
-  font-size: 12px;
   text-align: center;
   display: flex;
   flex-direction: column;
   font-size: 1.5em;
+  padding-top: 1em;
 }
 
 nav a.router-link-exact-active {
@@ -29,8 +29,9 @@ nav a.router-link-exact-active:hover {
 
 nav a {
   display: inline-block;
-  padding: 0 1rem;
+  padding: 0.5em 1rem;
   border-left: 1px solid var(--color-border);
+  color: #005b82ff;
 }
 
 nav a:first-of-type {

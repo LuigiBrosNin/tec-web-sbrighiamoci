@@ -1,14 +1,8 @@
-<script setup>
-import Title from "@/components/Title.vue";
-
-const props = defineProps(["title"]);
-</script>
-
 <template>
     <header>
-      <img alt="Squealer logo" class="logo" src="@/assets/logoSquealer.svg" width="125" height="125" />
-      <div class="wrapper">
-        <Title></Title>
+      <img alt="Squealer logo" class="logo" src="@/assets/logoSquealer.svg"/>
+      <div class="title">
+        <h2>Squealer</h2>
       </div>
     </header>
 </template>
@@ -19,7 +13,21 @@ header {
   width: 100vw;
   display: flex;
   place-items: start stretch;
+  align-items: center;
   box-shadow: 0px 0px 5px;
+  overflow: hidden;
+  z-index: 10;
 }
+
+.logo {
+  height: 100%;
+  margin: 1em;
+}
+
+.title {
+    font-size: 2em;
+    color: #ff8900ff;
+    -webkit-text-stroke: 2px #c06700ff;
+  }
 
 </style>
