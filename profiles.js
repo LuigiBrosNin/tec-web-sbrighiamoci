@@ -385,7 +385,7 @@ app.delete("/profiles/:name", async (req, res) => {
     }
 });
 
-function deleteSquealById(squealId) {
+async function deleteSquealById(squealId) {
     fetch("http://localhost:8000/squeals/" + squealId, {
         method: "DELETE",
         headers: {
