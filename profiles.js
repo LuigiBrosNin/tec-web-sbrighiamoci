@@ -177,10 +177,11 @@ app.get("/profiles/:name", async (req, res) => {
 
         await mongoClient.connect();
         const profile = await collection_profiles.findOne({
-            name: profileName
+            name: profileName,
+            is_deleted: false
         });
 
-        if (profile.is_deleted || profile === null) {
+        if (profile === null) {
             res.status(404).json({
                 message: "Profile not found."
             });
@@ -229,6 +230,7 @@ app.put("/profiles/:name", async (req, res) => {
             credit_limits: CREDIT_LIMITS,
             is_banned: false,
             banned_until: null,
+            is_deleted: false
         };
 
         const allowedAccountTypes = ["normal", "admin", "premium", "smm"];

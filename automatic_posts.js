@@ -96,4 +96,95 @@ async function makeRequest(post) {
     
 }
 
+/* -------------------------------------------------------------------------- */
+/*                               /AUTOMATICPOSTS/                             */
+/*                               GET, PUT, DELETE                             */
+/* -------------------------------------------------------------------------- */
+
+//* GET
+// get all the automatic posts
+app.get('/automaticposts', async (req, res) => {
+    try {
+        await mongoClient.connect();
+        const automaticPosts = await collection_automaticPosts.find({}).toArray();
+        res.send(automaticPosts);
+    }
+    catch (e) {
+        res.status(500).send(e);
+    }
+})
+
+//* PUT
+// add a new automatic post
+// body params: uri, json_fields, media_field, channel_to_post
+app.put('/automaticposts', bodyParser.json(), async (req, res) => {
+    try {
+
+        const authorized = true; // TODO ADD AUTHORIZATION
+
+        if (!authorized) {
+            res.status(401).send("Unauthorized");
+            return;
+        }
+
+        const possibleParams = ["uri", "json_fields", "media_field", "channel_to_post"];
+
+        let toInsert = {};
+
+        // check if the body has all the required params
+        for (param of possibleParams) {
+            if (req.body[param] == null || req.body[param] == "" || (typeof req.body[field] != "string")) {
+                res.status(400).send("Missing/Invalid parameter: " + param);
+                return;
+            } else {
+                toInsert[param] = req.body[param];
+            }
+        }
+
+        await mongoClient.connect();
+        const automaticPost = await collection_automaticPosts.insertOne(toInsert);
+        res.send(automaticPost);
+    }
+    catch (e) {
+        res.status(500).send(e);
+    }
+})
+
+//* DELETE
+// delete an automatic post
+// body params: uri
+app.delete('/automaticposts', bodyParser.json(), async (req, res) => {
+    try {
+
+        const authorized = true; // TODO ADD AUTHORIZATION
+
+        if (!authorized) {
+            res.status(401).send("Unauthorized");
+            return;
+        }
+
+        const uri = req.body.uri;
+        // check if the body has all the required params
+        if (uri == null || uri == "" || (typeof uri != "string")) {
+            res.status(400).send("Missing/Invalid parameter: uri");
+            return;
+        }
+
+        await mongoClient.connect();
+        const post = await collection_automaticPosts.findOne({uri: uri});
+
+        if(post == null) {
+            res.status(404).send("Automatic post not found");
+            return;
+        }
+
+        const automaticPost = await collection_automaticPosts.deleteOne(toDelete);
+        res.send(automaticPost);
+    }
+    catch (e) {
+        res.status(500).send(e);
+    }
+})
+
+
 module.exports = {putPeriodicalSqueals};
