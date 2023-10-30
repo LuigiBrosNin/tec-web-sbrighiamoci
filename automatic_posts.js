@@ -64,7 +64,7 @@ async function makeRequest(post) {
     const response = await axios.get(post.uri);
     
     // get the fields we want from the response
-    for(field of post.fields) {
+    for(field of post.json_fields) {
         text = postData + "" + response.data[field];
     }
 
