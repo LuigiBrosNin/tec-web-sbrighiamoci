@@ -27,8 +27,6 @@ const collection_squeals = database.collection(squealCollection);
 const collection_profiles = database.collection(profileCollection);
 const collection_channels = database.collection(channelCollection);
 
-//! ADD /SQUEALS/LIST GET REQUEST THAT SUPPORTS AN ARBITRARY LIST OF SQUEALS TO RETURN
-
 /* -------------------------------------------------------------------------- */
 /*                                 /SQUEALS/                                  */
 /*                                 GET & PUT                                  */
