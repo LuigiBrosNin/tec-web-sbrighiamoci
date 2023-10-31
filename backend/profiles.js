@@ -211,11 +211,14 @@ app.put("/profiles/:name", async (req, res) => {
 
         // check if there is another profile with the same name, in that case deny the creation
         const already_taken = await collection_profiles.findOne({
-            name: name
-        })
+            $or: [
+                { name: name },
+                { email: req.body.email }
+            ]
+        });
         if (already_taken !== null) {
             res.status(409).json({
-                message: "Name already taken."
+                message: "Name or email already taken."
             });
             return;
         }
