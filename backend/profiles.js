@@ -222,6 +222,8 @@ app.put("/profiles/:name", async (req, res) => {
 
         const profile = {
             name: name,
+            email: req.body.email,
+            password: req.body.password,
             followers_list: [],
             following_list: [],
             squeals_list: [],
@@ -246,9 +248,9 @@ app.put("/profiles/:name", async (req, res) => {
         }
 
         // checking if there's missing info
-        if (profile.password == null || profile.password === "" || profile.email == null || profile.email === "") { //// the check var == null is equivalent to var === null && var === undefined
+        if (profile.password == null || profile.password === "" || !isValidEmail(profile.email)) { //// the check var == null is equivalent to var === null && var === undefined
             res.status(400).json({
-                message: "Missing password or email"
+                message: "Missing/invalid password or email"
             });
             return;
         }
@@ -277,6 +279,11 @@ app.put("/profiles/:name", async (req, res) => {
         });
     }
 });
+
+function isValidEmail(email) {
+    const regex = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/;
+    return regex.test(email);
+  }
 
 //* DELETE
 // cancella il profilo con nome name
