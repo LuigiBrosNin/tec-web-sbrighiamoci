@@ -254,7 +254,7 @@ app.put("/profiles/:name", async (req, res) => {
         }
 
         // checking if there's missing info
-        if (profile.password == null || profile.password === "" || !isValidEmail(profile.email)) { //// the check var == null is equivalent to var === null && var === undefined
+        if (profile.password == null || profile.password === "" || profile.email == null || profile.email == ""){// || !isValidEmail(profile.email)) { //// the check var == null is equivalent to var === null && var === undefined
             res.status(400).json({
                 message: "Missing/invalid password or email"
             });
