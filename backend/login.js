@@ -376,9 +376,31 @@ function addReactionListTest(){
   .catch(error => console.error(error));
 }
 
-function testChannel(param_name) {
+/*******************************************************************/
+//                  FUNZIONI POPOLAZIONE DATABASE                  //
+/*******************************************************************/
+
+function populateProfile(param_name) {
   fetch(`https://site222326.tw.cs.unibo.it/profiles/${param_name}`, {
-    method: "DELETE"
+    method: "PUT"
+  })
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error(error));
+}
+
+function populateChannel(param_name) {
+  fetch(`https://site222326.tw.cs.unibo.it/profiles/${param_name}`, {
+    method: "PUT"
+  })
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error(error));
+}
+
+function populateSqueal(param_name) {
+  fetch(`https://site222326.tw.cs.unibo.it/profiles/${param_name}`, {
+    method: "PUT"
   })
     .then(response => response.json())
     .then(data => console.log(data))
