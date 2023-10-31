@@ -161,9 +161,9 @@ app.put("/channels/:name", async (req, res) => {
     }
 
     // if type = private, set name to all lowercase
-    if (type === "private") {
+    if (channel.type === "private") {
       channel.name = channel.name.toLowerCase();
-    } else if (type === "privileged") {
+    } else if (channel.type === "privileged") {
       channel.name = channel.name.toUpperCase();
     }
 
