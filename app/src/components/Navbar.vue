@@ -70,7 +70,6 @@ https://codepen.io/sosuke/pen/Pjoqqp
 .router_link {
   display: flex;
   flex-direction: row;
-  align-items: center;
 }
 
 @media screen and (max-width: 950px) {

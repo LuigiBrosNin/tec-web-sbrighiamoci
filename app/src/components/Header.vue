@@ -25,9 +25,12 @@ header {
 }
 
 .title {
-    font-size: 2em;
     color: #ff8900ff;
     -webkit-text-stroke: 2px #c06700ff;
   }
 
+h2 {
+  font-size: 4em !important;
+  font-weight: bold;
+}
 </style>
