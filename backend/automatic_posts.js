@@ -29,7 +29,7 @@ const {
   squealCollection,
   channelCollection,
   mongoClient,
-  automaticPostsCollection
+  automationsCollection
 } = require("./const.js");
 
 // connecting to the database
@@ -37,7 +37,7 @@ mongoClient.connect();
 const database = mongoClient.db(dbName);
 const collection_squeals = database.collection(squealCollection);
 const collection_channels = database.collection(channelCollection);
-const collection_automaticPosts = database.collection(automaticPostsCollection);
+const collection_automations = database.collection(automationsCollection);
 
 const authData = {
     // Provide authentication data
@@ -55,7 +55,7 @@ async function putPeriodicalSqueals() {
         
         // Make subsequent requests with the established session
         await mongoClient.connect();
-        const posts = await collection_automaticPosts.find({}).toArray();
+        const posts = await collection_automations.find({}).toArray();
 
         for (post of posts) {
             await makeRequest(post);
@@ -89,7 +89,7 @@ async function makeRequest(post) {
             author: authData.username,
             text: text,
             media: media,
-            receiver: post.channel_to_post
+            receiver: post.channel
         };
     
         // send and log the squeal
@@ -113,7 +113,7 @@ async function makeRequest(post) {
 app.get('/automaticposts', async (req, res) => {
     try {
         await mongoClient.connect();
-        const automaticPosts = await collection_automaticPosts.find({}).toArray();
+        const automaticPosts = await collection_automations.find({}).toArray();
         res.send(automaticPosts);
     }
     catch (e) {
@@ -123,7 +123,7 @@ app.get('/automaticposts', async (req, res) => {
 
 //* PUT
 // add a new automatic post
-// body params: uri, json_fields, media_field, channel_to_post
+// body params: uri, json_fields, media_field, channel
 app.put('/automaticposts', bodyParser.json(), async (req, res) => {
     try {
 
@@ -134,7 +134,7 @@ app.put('/automaticposts', bodyParser.json(), async (req, res) => {
             return;
         }
 
-        const possibleParams = ["uri", "json_fields", "media_field", "channel_to_post"];
+        const possibleParams = ["uri", "json_fields", "media_field", "channel"];
 
         let toInsert = {};
 
@@ -149,7 +149,7 @@ app.put('/automaticposts', bodyParser.json(), async (req, res) => {
         }
 
         await mongoClient.connect();
-        const automaticPost = await collection_automaticPosts.insertOne(toInsert);
+        const automaticPost = await collection_automations.insertOne(toInsert);
         res.send(automaticPost);
     }
     catch (e) {
@@ -178,14 +178,14 @@ app.delete('/automaticposts', bodyParser.json(), async (req, res) => {
         }
 
         await mongoClient.connect();
-        const post = await collection_automaticPosts.findOne({uri: uri});
+        const post = await collection_automations.findOne({uri: uri});
 
         if(post == null) {
             res.status(404).send("Automatic post not found");
             return;
         }
 
-        const automaticPost = await collection_automaticPosts.deleteOne(toDelete);
+        const automaticPost = await collection_automations.deleteOne(toDelete);
         res.send(automaticPost);
     }
     catch (e) {
