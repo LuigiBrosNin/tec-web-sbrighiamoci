@@ -381,12 +381,18 @@ function addReactionListTest(){
 /*******************************************************************/
 
 function populateProfile(param_name, email, password) {
+  const body = {
+    email: email,
+    password: password
+  }
+  console.log("Inviati:", JSON.stringify(body))
+
   fetch(`https://site222326.tw.cs.unibo.it/profiles/${param_name}`, {
     method: "PUT",
-    body: {
-      email: email,
-      password: password
-    }
+    headers: {
+      "Content-type": "application/json; charset=UTF-8"
+    },
+    body: JSON.stringify(body)
   })
     .then(response => response.json())
     .then(data => console.log(data))
