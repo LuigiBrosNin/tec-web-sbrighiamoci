@@ -143,11 +143,11 @@ app.put("/channels/:name", async (req, res) => {
 
     let channel = {
       name: channelName,
-      owner: req.session.user,
+      owner: req.body.user, //req.session.user,  //TODO rimettere session.user
       type: "private",
-      mod_list: [req.session.user],
+      mod_list: [],
       subscribers_num: 1,
-      subscribers_list: [req.session.user],
+      subscribers_list: [req.body.user], //[req.session.user],
       squeals_num: 0,
       squeals_list: [],
       propic: req.body.propic,

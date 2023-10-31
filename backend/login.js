@@ -399,14 +399,27 @@ function populateProfile(param_name, email, password) {
     .catch(error => console.error(error));
 }
 
+
 function populateChannel(param_name) {
-  fetch(`https://site222326.tw.cs.unibo.it/profiles/${param_name}`, {
-    method: "PUT"
+  const body = {
+    user: "Luizo",
+    propic: "",
+    bio: "Canale dei conigli."
+  }
+  console.log("Inviati:", JSON.stringify(body))
+
+  fetch(`https://site222326.tw.cs.unibo.it/channels/${param_name}`, {
+    method: "PUT",
+    headers: {
+      "Content-type": "application/json; charset=UTF-8"
+    },
+    body: JSON.stringify(body)
   })
     .then(response => response.json())
     .then(data => console.log(data))
     .catch(error => console.error(error));
 }
+
 
 function populateSqueal(param_name) {
   fetch(`https://site222326.tw.cs.unibo.it/profiles/${param_name}`, {
