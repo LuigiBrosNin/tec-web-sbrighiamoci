@@ -240,7 +240,7 @@ app.put("/profiles/:name", async (req, res) => {
             banned_until: null,
             is_deleted: false
         };
-
+        console.log(JSON.stringify(profile))
         const allowedAccountTypes = ["normal", "admin", "premium", "smm"];
         if (!allowedAccountTypes.includes(profile.account_type)) {
             profile.account_type = "normal";
