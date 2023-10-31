@@ -992,12 +992,13 @@ app.get("/squeals/:id/replies/", async (req, res) => {
         // fetching the replies
         for (const child_squeal_id of idsOfSquealRepliesToReturn) {
             child_squeal = await collection_squeals.findOne({
-                id: child_squeal_id
+                id: child_squeal_id,
+                is_private: false
             });
 
             // if the squeal is not found, skip it, but log it so we know something's wrong
             if (child_squeal === null) {
-                console.log("Child squeal with id " + child_squeal_id + " not found");
+                console.log("Child squeal with id " + child_squeal_id + " not accessible");
             } // if the squeal is found, add it to the list of replies
             else {
                 squealReplies.push(child_squeal);
