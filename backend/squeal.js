@@ -180,6 +180,8 @@ app.get("/squeals/", async (req, res) => {
 //* PUT
 // aggiunge/sovrascrive uno squeal al database (è impossibile sovrascrivere in quanto l'id è generato progressivamente)
 // nome utente + numero squeals = ID
+// required: author, text, receiver
+// optional: media, reply_to
 app.put("/squeals/", bodyParser.json(), async (req, res) => {
     try {
         // console.log('Request Body:', req.body);
@@ -221,6 +223,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
             negative_reactions: 0,
             negative_reactions_list: [],
             replies_num: 0,
+            replies: [],
             impressions: 0,
             is_private: false,
             mentions: [],
@@ -235,8 +238,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
 
         const optionalFields = [
             "media",
-            "reply_to",
-            "replies"
+            "reply_to"
         ];
 
         // Check if the optional fields are present in the request body
