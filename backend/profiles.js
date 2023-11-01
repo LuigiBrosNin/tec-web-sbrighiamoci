@@ -3,6 +3,9 @@ global.rootDir = __dirname;
 const {
     parse
 } = require("path");
+const multer = require('multer');
+const sharp = require('sharp');
+
 const {
     app
 } = require("../index.js");
@@ -711,7 +714,7 @@ app.put("/profiles/:name/following_channels/", async (req, res) => {
         const channelName = req.body.channel_name;
         const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user);
 
-        if (false /*!authorized*/) {
+        if (false /*!authorized*/ ) {
             res.status(401).json({
                 message: "Unauthorized"
             });
@@ -870,6 +873,49 @@ app.get("/profiles/:name/propic", async (req, res) => {
             message: error.message
         });
     }
+});
+
+// Set storage engine
+const storage = multer.diskStorage({
+    destination: './images/',
+    filename: function (req, file, cb) {
+        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+    }
+});
+
+// Init upload
+const upload = multer({
+    storage: storage,
+    limits: {
+        fileSize: 1000000
+    },
+}).single('file');
+
+app.put('/squeal/:name/propic', (req, res) => {
+    upload(req, res, async (err) => {
+        if (err) {
+            res.status(500).json({
+                message: err.message
+            });
+        } else {
+            if (req.file == undefined) {
+                res.status(400).json({
+                    message: 'No file selected'
+                });
+            } else {
+                // Resize the image to 512x512
+                const outputPath = './images/' + req.file.filename;
+                await sharp(req.file.path)
+                    .resize(512, 512)
+                    .toFile(outputPath);
+
+                res.status(200).json({
+                    message: 'File uploaded and resized successfully',
+                    fileName: req.file.filename
+                });
+            }
+        }
+    });
 });
 
 //* DELETE
