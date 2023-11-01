@@ -400,11 +400,11 @@ function populateProfile(param_name, email, password) {
 }
 
 
-function populateChannel(param_name) {
+function populateChannel(param_name, user, bio) {
   const body = {
-    user: "Luizo",
+    user: user,
     propic: "",
-    bio: "Canale dei conigli."
+    bio: bio
   }
   console.log("Inviati:", JSON.stringify(body))
 
@@ -421,9 +421,20 @@ function populateChannel(param_name) {
 }
 
 
-function populateSqueal(param_name) {
-  fetch(`https://site222326.tw.cs.unibo.it/profiles/${param_name}`, {
-    method: "PUT"
+function populateSqueal(author, text, receiver) {
+  const body = {
+    author: author,
+    text: text,
+    receiver: receiver
+  }
+  console.log("Inviati:", JSON.stringify(body))
+
+  fetch(`https://site222326.tw.cs.unibo.it/squeals/`, {
+    method: "PUT",
+    headers: {
+      "Content-type": "application/json; charset=UTF-8"
+    },
+    body: JSON.stringify(body)
   })
     .then(response => response.json())
     .then(data => console.log(data))
