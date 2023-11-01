@@ -341,11 +341,11 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
             $set: {
                 squeals_num: squeals_num,
                 list_squeal_id: squeals_list,
-                credit: {
-                    0: g,
-                    1: s,
-                    2: m
-                }
+                credit: [
+                    g,
+                    s,
+                    m
+                ]
             }
         })
 
