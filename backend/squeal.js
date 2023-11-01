@@ -310,17 +310,18 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
         let g, s, m;
 
         // if the author is an admin, don't subtract the credit
-        if (await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)) {
+        if (await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin) || newSqueal.is_private == true) {
             console.log("admin");
             g = profile_author.credit[0];
             s = profile_author.credit[1];
             m = profile_author.credit[2];
-        } else if (newSqueal.is_private == true) {
+        } else if (newSqueal.is_private == false) {
             console.log("not admin");
             g = profile_author.credit[0] - char_cost;
             s = profile_author.credit[1] - char_cost;
             m = profile_author.credit[2] - char_cost;
-        }
+        } 
+
 
         console.log("g: " + g + " s: " + s + " m: " + m);
 
