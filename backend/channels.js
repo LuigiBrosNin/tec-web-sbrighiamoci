@@ -284,7 +284,7 @@ app.get("/channels/:name/subscribers_num", async (req, res) => {
 
 /* -------------------------------------------------------------------------- */
 /*                       /CHANNELS/:NAME/SUBSCRIBERS_LIST                     */
-/*                              GET, PUT, DELETE                              */
+/*                                    GET                                     */
 /* -------------------------------------------------------------------------- */
 
 //* GET
@@ -335,7 +335,7 @@ app.get("/channels/:name/subscribers_list", async (req, res) => {
   }
 });
 
-
+/* USELESS AND REDUNDANT
 //* PUT
 // add a subscriber to the channel, or remove it if already subscribed
 app.put("/channels/:name/subscribers_list", async (req, res) => {
@@ -344,7 +344,7 @@ app.put("/channels/:name/subscribers_list", async (req, res) => {
 
     if (!authorized) {
       res.status(401).json({
-        message: "Not authorized to modify this channel's rules"
+        message: "Not authorized to modify this channel's subscriber list"
       });
       return;
     }
@@ -438,7 +438,7 @@ app.put("/channels/:name/subscribers_list", async (req, res) => {
       message: error.message
     });
   }
-});
+});*/
 
 
 /* -------------------------------------------------------------------------- */

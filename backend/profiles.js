@@ -211,9 +211,12 @@ app.put("/profiles/:name", async (req, res) => {
 
         // check if there is another profile with the same name, in that case deny the creation
         const already_taken = await collection_profiles.findOne({
-            $or: [
-                { name: name },
-                { email: req.body.email }
+            $or: [{
+                    name: name
+                },
+                {
+                    email: req.body.email
+                }
             ]
         });
         if (already_taken !== null) {
@@ -232,6 +235,7 @@ app.put("/profiles/:name", async (req, res) => {
             bio: req.body.bio,
             followers_list: [],
             following_list: [],
+            following_channels: [],
             squeals_list: [],
             squeals_num: 0,
             credit: CREDIT_LIMITS,
@@ -254,7 +258,7 @@ app.put("/profiles/:name", async (req, res) => {
         }
 
         // checking if there's missing info
-        if (profile.password == null || profile.password === "" || profile.email == null || profile.email == ""){// || !isValidEmail(profile.email)) { //// the check var == null is equivalent to var === null && var === undefined
+        if (profile.password == null || profile.password === "" || profile.email == null || profile.email == "") { // || !isValidEmail(profile.email)) { //// the check var == null is equivalent to var === null && var === undefined
             res.status(400).json({
                 message: "Missing/invalid password or email"
             });
@@ -289,7 +293,7 @@ app.put("/profiles/:name", async (req, res) => {
 function isValidEmail(email) {
     const regex = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/;
     return regex.test(email);
-  }
+}
 
 //* DELETE
 // cancella il profilo con nome name
@@ -375,6 +379,7 @@ app.delete("/profiles/:name", async (req, res) => {
                         credit_limits: [],
                         squeals_list: [],
                         followers_list: [],
+                        following_channels: [],
                         account_type: "",
                         extra_credit: 0,
                         squeals_num: 0,
@@ -533,7 +538,7 @@ app.get("/profiles/:name/followersnumber", async (req, res) => {
 });
 
 /* -------------------------------------------------------------------------- */
-/*                           /PROFILES/:NAME/FOLLOWER                         */
+/*                           /PROFILES/:NAME/FOLLOWERS                        */
 /*                                   GET, PUT                                 */
 /* -------------------------------------------------------------------------- */
 
@@ -655,6 +660,174 @@ app.put("/profiles/:name/followers/", async (req, res) => {
                 message: "Follower added"
             });
         }
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+});
+
+/* -------------------------------------------------------------------------- */
+/*                       /PROFILES/:NAME/FOLLOWING_CHANNELS                   */
+/*                                   GET, PUT                                 */
+/* -------------------------------------------------------------------------- */
+//* GET
+// ritorna la lista dei canali seguiti dal profilo con nome name
+// ritorna 404 se il profilo non esiste
+app.get("/profiles/:name/following_channels", async (req, res) => {
+    try {
+        const profileName = req.params.name;
+
+        await mongoClient.connect();
+        const profile = await collection_profiles.findOne({
+            name: profileName
+        });
+
+        if (profile.is_deleted || profile === null) {
+            res.status(404).json({
+                message: "Profile not found."
+            });
+            return;
+        }
+
+        res.status(200).json(profile.following_channels);
+
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+});
+
+//* PUT
+// aggiunge il canale channelName al profilo con nome name, oppure lo rimuove se già presente
+// aggiunge il nome utente alla lista di iscritti dei canali
+// ritorna 404 se il profilo non esiste
+// ritorna 401 se non autorizzato (login non effettuato)
+app.put("/profiles/:name/following_channels/", async (req, res) => {
+    try {
+        const profileName = req.params.name;
+        const channelName = req.body.channel_name;
+        const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user);
+
+        if (!authorized) {
+            res.status(401).json({
+                message: "Unauthorized"
+            });
+            return;
+        }
+
+        await mongoClient.connect();
+        const profile = await collection_profiles.findOne({
+            name: profileName
+        });
+
+        if (profile.is_deleted || profile === null) {
+            res.status(404).json({
+                message: "Profile not found."
+            });
+            return;
+        }
+
+        // do the same operation above but for the channel list ;)
+        const channel = await collection_channels.findOne({
+            name: channelName
+        })
+
+        if (channel.is_deleted || channel === null) {
+            res.status(404).json({
+                message: "The channel does not exist."
+            });
+            return;
+        }
+
+
+        if (profile.following_channels.includes(channelName)) {
+            //remove the channel from the list
+            profile.following_channels.splice(profile.following_channels.indexOf(channelName), 1);
+            await collection_profiles.updateOne({
+                name: profileName
+            }, {
+                $set: {
+                    following_channels: profile.following_channels
+                },
+            });
+            res.status(200).json({
+                message: "Channel removed from the list"
+            });
+        } else { // add the channel to the list
+            await collection_profiles.updateOne({
+                name: profileName
+            }, {
+                $push: {
+                    following_channels: channelName
+                }
+            });
+            res.status(200).json({
+                message: "Channel added to the list"
+            });
+        }
+
+
+        // find out if the user is already subscribed
+        const subscribersList = channel.subscribers_list;
+        let subscribed = false;
+        for (const reply of subscribersList) {
+            if (reply === profileName) {
+                subscribed = true;
+                break;
+            }
+        }
+
+        // if the user is already subscribed, remove follow from channel (update both lists: on profile and channel)
+        // if not subscribed, add follow 
+        if (subscribed) {
+
+            await collection_channels.updateOne({
+                name: channel.name
+            }, {
+                $pull: {
+                    subscribers_list: profileName
+                },
+                $inc: {
+                    subscribers_num: -1
+                }
+            });
+
+            await collection_profiles.updateOne({
+                name: profileName
+            }, {
+                $pull: {
+                    following_list: channel.name
+                }
+            });
+            res.status(200).json({
+                message: "User unsubscribed successfully."
+            })
+        } // not subscribed 
+        else {
+            await collection_channels.updateOne({
+                name: channel.name
+            }, {
+                $addToSet: {
+                    subscribers_list: profileName
+                },
+                $inc: {
+                    subscribers_num: 1
+                }
+            });
+            await collection_profiles.updateOne({
+                name: profileName
+            }, {
+                $addToSet: {
+                    following_list: channel.name
+                }
+            });
+            res.status(200).json({
+                message: "User subscribed successfully."
+            })
+        }
+
     } catch (error) {
         res.status(500).json({
             message: error.message
