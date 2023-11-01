@@ -31,6 +31,24 @@ function signin(){
 /*                         Luizo's temp test fucntions                        */
 /* -------------------------------------------------------------------------- */
 
+// profiles following_channels PUT request
+function addFollowingChannelTest(param_id) {
+  const body = {
+    channel_name: "MAINCHANNEL"
+  };
+
+  console.log("Sending body: " + JSON.stringify(body));
+
+  fetch(`https://site222326.tw.cs.unibo.it/profiles/${param_id}/following_channels`, {
+    method: "PUT",
+    headers: {
+      "Content-type": "application/json; charset=UTF-8"
+    },
+    body: JSON.stringify(body)
+  });
+}
+
+
 // squeals list POST request
 function addSquealListTest() {
   const body = {
