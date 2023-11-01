@@ -877,7 +877,7 @@ app.get("/profiles/:name/propic", async (req, res) => {
 
 // Set storage engine
 const storage = multer.diskStorage({
-    destination: './images/',
+    destination: __dirname + 'images/',
     filename: function (req, file, cb) {
         cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
     }
@@ -904,7 +904,7 @@ app.put('/squeal/:name/propic', (req, res) => {
                 });
             } else {
                 // Resize the image to 512x512
-                const outputPath = './images/' + req.file.filename;
+                const outputPath = __dirname + 'images/' + req.file.filename;
                 await sharp(req.file.path)
                     .resize(512, 512)
                     .toFile(outputPath);
