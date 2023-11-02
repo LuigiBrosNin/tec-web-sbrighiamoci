@@ -891,28 +891,29 @@ const upload = multer({
 
 app.put('/profiles/:name/propic', upload.single('file'), async (req, res) => {
     try {
-      const bucket = new GridFSBucket(database);
-  
-      const buffer = req.file.buffer;
-      const readableStream = new stream.PassThrough();
-      readableStream.end(buffer);
+        const bucket = new GridFSBucket(database);
 
-      console.log("file: " + req.file);
-  
-      await readableStream.pipe(bucket.openUploadStream(req.file.originalname))
-        .on('error', (error) => {
-          res.status(500).json({ message: error.message });
-        })
-        .on('finish', (file) => {
-          // Update the profile with the ID of the uploaded file
-          console.log("finish file" + file)
-          const profileName = req.params.name;
-          collection_profiles.updateOne({ name: profileName }, { $set: { propic: file._id } });
-  
-          res.status(200).json({ message: 'File uploaded successfully', fileId: file._id });
+        const buffer = req.file.buffer;
+        const readableStream = new stream.PassThrough();
+        readableStream.end(buffer);
+
+        const uploadStream = bucket.openUploadStream(req.file.originalname);
+
+        uploadStream.on('error', (error) => {
+            res.status(500).json({ message: error.message });
         });
+
+        uploadStream.on('finish', () => {
+            // Update the profile with the ID of the uploaded file
+            const profileName = req.params.name;
+            collection_profiles.updateOne({ name: profileName }, { $set: { propic: uploadStream.id } });
+
+            res.status(200).json({ message: 'File uploaded successfully', fileId: uploadStream.id });
+        });
+
+        readableStream.pipe(uploadStream);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+        res.status(500).json({ message: error.message });
     }
 });
 
