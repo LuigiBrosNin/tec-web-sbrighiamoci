@@ -905,6 +905,7 @@ app.put('/profiles/:name/propic', upload.single('file'), async (req, res) => {
         })
         .on('finish', (file) => {
           // Update the profile with the ID of the uploaded file
+          console.log("finish file" + file)
           const profileName = req.params.name;
           collection_profiles.updateOne({ name: profileName }, { $set: { propic: file._id } });
   
