@@ -899,7 +899,7 @@ app.put('/profiles/:name/propic', upload.single('file'), async (req, res) => {
 
       console.log("file: " + req.file);
   
-      readableStream.pipe(bucket.openUploadStream(req.file.originalname))
+      await readableStream.pipe(bucket.openUploadStream(req.file.originalname))
         .on('error', (error) => {
           res.status(500).json({ message: error.message });
         })
