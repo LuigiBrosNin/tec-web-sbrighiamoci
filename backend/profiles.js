@@ -896,7 +896,7 @@ const upload = multer({
 // caricando un file nel database nel campo propic (req.file)
 app.put('/profiles/:name/propic', async (req, res) => {
     try {
-        console.log("start, here req: " + req);
+        console.log("start, here req: " + req.body);
         if (req.file == undefined) {
             res.status(400).json({
                 message: 'No file selected'
