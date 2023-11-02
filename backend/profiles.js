@@ -844,8 +844,7 @@ app.put("/profiles/:name/following_channels/", async (req, res) => {
 /*                                GET, DELETE                                 */
 /* -------------------------------------------------------------------------- */
 
-const { GridFSBucket } = require('mongodb');
-const ObjectID = mongoClient.ObjectID;
+const { GridFSBucket, ObjectId } = require('mongodb');
 
 //* GET
 // ritorna la propic del profilo con nome name
@@ -867,7 +866,7 @@ app.get("/profiles/:name/propic", async (req, res) => {
         }
 
         const bucket = new GridFSBucket(mongoClient.db('test'));
-        const fileID = new ObjectID(profile.propic);
+        const fileID = new ObjectId(profile.propic);
 
         res.setHeader('Content-Type', 'image/*');
         bucket.openDownloadStream(fileID).pipe(res);
