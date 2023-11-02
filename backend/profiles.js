@@ -844,6 +844,8 @@ app.put("/profiles/:name/following_channels/", async (req, res) => {
 /*                                GET, DELETE                                 */
 /* -------------------------------------------------------------------------- */
 
+const {GridFSBucket, ObjectID } = require('mongodb');
+
 //* GET
 // ritorna la propic del profilo con nome name
 // ritorna 404 se non esiste
@@ -863,12 +865,12 @@ app.get("/profiles/:name/propic", async (req, res) => {
             return;
         }
 
-        let formData = new FormData(profile.propic);
+        const bucket = new GridFSBucket(mongoClient.db('test'));
+        const fileID = new ObjectID(profile.propic);
 
-        // Set the Content-Type header to image/*
         res.setHeader('Content-Type', 'image/*');
-        // Send the image in the response body
-        res.send(formData.get('file'));
+        bucket.openDownloadStream(fileID).pipe(res);
+
 
     } catch (error) {
         res.status(500).json({
@@ -884,14 +886,6 @@ const storage = multer.diskStorage({
         cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
     }
 });
-
-// Init upload
-const upload = multer({
-    storage: storage,
-    limits: {
-        fileSize: 1000000
-    },
-}).single('file');
 
 //* PUT
 // cambia la propic del profilo con nome name
