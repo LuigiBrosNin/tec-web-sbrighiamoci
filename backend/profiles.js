@@ -868,7 +868,17 @@ app.get("/profiles/:name/propic", async (req, res) => {
         const bucket = new GridFSBucket(database);
         const fileID = new ObjectId(profile.propic);
 
+        const file = await bucket.find({ _id: fileID }).toArray();
+        if (file.length === 0) {
+            res.status(404).json({
+                message: "File not found."
+            });
+            return;
+        }
+
+        const filename = file[0].metadata.originalname;
         res.setHeader('Content-Type', 'image/*');
+        res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
         bucket.openDownloadStream(fileID).pipe(res);
 
     } catch (error) {
