@@ -863,10 +863,10 @@ app.get("/profiles/:name/propic", async (req, res) => {
             return;
         }
 
-        res.status(200).json({
-            propic: profile.propic
-        });
-
+        // Set the Content-Type header to image/*
+        res.setHeader('Content-Type', 'image/*');
+        // Send the image data in the response body
+        res.send(profile.propic);
 
     } catch (error) {
         res.status(500).json({
