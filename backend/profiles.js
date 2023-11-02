@@ -865,6 +865,8 @@ app.get("/profiles/:name/propic", async (req, res) => {
             return;
         }
 
+        console.log("profile.propic: "+ profile.propic)
+
         const bucket = new GridFSBucket(database);
         const fileID = new ObjectId(profile.propic);
 
@@ -882,6 +884,8 @@ app.get("/profiles/:name/propic", async (req, res) => {
             });
             return;
         }
+
+        console.log("metadata: " + file[0].metadata)
 
         const filename = file[0].metadata.originalname;
         res.setHeader('Content-Type', 'image/*');
