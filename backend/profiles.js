@@ -894,9 +894,12 @@ const upload = multer({
 //* PUT
 // cambia la propic del profilo con nome name
 // caricando un file nel database nel campo propic (req.file)
-app.put('/profiles/:name/propic', async (req, res) => {
+const multer = require('multer');
+const upload_pic = multer({ storage: multer.memoryStorage() });
+
+app.put('/profiles/:name/propic', upload.single('file'), async (req, res) => {
     try {
-        console.log("start, here req: " + req.body);
+        console.log("start, here req: " + req.file);
         if (req.file == undefined) {
             res.status(400).json({
                 message: 'No file selected'
