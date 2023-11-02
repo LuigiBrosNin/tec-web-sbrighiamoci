@@ -21,7 +21,7 @@ export default {
             const formData = new FormData();
             const name_of_profile = "luizo"; //! TEMP, CHANGE TO CURRENT USER
             formData.append("file", this.file);
-            axios.put(`/profiles/${name_of_profile}/propic`, this.file, {
+            axios.put(`/profiles/${name_of_profile}/propic`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 },
