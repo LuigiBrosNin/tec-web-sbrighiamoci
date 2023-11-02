@@ -863,8 +863,7 @@ app.get("/profiles/:name/propic", async (req, res) => {
             return;
         }
 
-        let formData = new FormData();
-        formData = profile.propic;
+        let formData = new FormData(profile.propic);
 
         // Set the Content-Type header to image/*
         res.setHeader('Content-Type', 'image/*');
@@ -897,7 +896,9 @@ const upload = multer({
 //* PUT
 // cambia la propic del profilo con nome name
 // caricando un file nel database nel campo propic (req.file)
-const upload_pic = multer({ storage: multer.memoryStorage() });
+const upload_pic = multer({
+    storage: multer.memoryStorage()
+});
 
 app.put('/profiles/:name/propic', upload_pic.single('file'), async (req, res) => {
     try {
@@ -922,7 +923,7 @@ app.put('/profiles/:name/propic', upload_pic.single('file'), async (req, res) =>
             name: profileName
         });
 
-        if (/*profile.is_deleted ||*/ profile === null) {
+        if ( /*profile.is_deleted ||*/ profile === null) {
             res.status(404).json({
                 message: "Profile not found."
             });
@@ -946,7 +947,7 @@ app.put('/profiles/:name/propic', upload_pic.single('file'), async (req, res) =>
             message: error.message
         });
     }
-    
+
 
     /*
     upload(req, res, async (err) => {
