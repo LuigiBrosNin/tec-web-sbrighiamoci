@@ -19,7 +19,7 @@ export default {
         },
         uploadFile() {
             const formData = new FormData();
-            const name_of_profile = "luizo"; //! TEMP, CHANGE TO CURRENT USER
+            const name_of_profile = "Luizo"; //! TEMP, CHANGE TO CURRENT USER
             formData.append("file", this.file);
             axios.put(`/profiles/${name_of_profile}/propic`, formData, {
                 headers: {
