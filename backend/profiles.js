@@ -866,7 +866,7 @@ app.get("/profiles/:name/propic", async (req, res) => {
         // Set the Content-Type header to image/*
         res.setHeader('Content-Type', 'image/*');
         // Send the image in the response body
-        res.send(profile.propic.ger('file'));
+        res.send(profile.propic.get('file'));
 
     } catch (error) {
         res.status(500).json({
