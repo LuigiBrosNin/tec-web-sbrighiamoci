@@ -865,12 +865,11 @@ app.get("/profiles/:name/propic", async (req, res) => {
             return;
         }
 
-        const bucket = new GridFSBucket(mongoClient.db('test'));
+        const bucket = new GridFSBucket(database);
         const fileID = new ObjectId(profile.propic);
 
         res.setHeader('Content-Type', 'image/*');
         bucket.openDownloadStream(fileID).pipe(res);
-
 
     } catch (error) {
         res.status(500).json({
