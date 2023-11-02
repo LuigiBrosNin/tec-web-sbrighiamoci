@@ -891,7 +891,57 @@ const upload = multer({
     },
 }).single('file');
 
-app.put('/squeal/:name/propic', (req, res) => {
+//* PUT
+// cambia la propic del profilo con nome name
+// caricando un file nel database nel campo propic (req.file)
+app.put('/squeal/:name/propic', async (req, res) => {
+    try {
+        if (req.file == undefined) {
+            res.status(400).json({
+                message: 'No file selected'
+            });
+            return;
+        } else if (!req.file.mimetype.startsWith('image/')) {
+            res.status(400).json({
+                message: 'File is not an image'
+            });
+            return;
+        }
+
+        console.log(req.file);
+
+        await mongoClient.connect();
+        const profile = await collection_profiles.findOne({
+            name: squealName
+        });
+
+        if (profile.is_deleted || profile === null) {
+            res.status(404).json({
+                message: "Profile not found."
+            });
+            return;
+        }
+
+        const result = await collection_profiles.updateOne({
+            name: squealName
+        }, {
+            $set: {
+                propic: req.file
+            }
+        });
+
+        res.status(200).json({
+            message: "Propic updated"
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+    
+
+    /*
     upload(req, res, async (err) => {
         if (err) {
             res.status(500).json({
@@ -901,6 +951,10 @@ app.put('/squeal/:name/propic', (req, res) => {
             if (req.file == undefined) {
                 res.status(400).json({
                     message: 'No file selected'
+                });
+            } else if (!req.file.mimetype.startsWith('image/')) {
+                res.status(400).json({
+                    message: 'File is not an image'
                 });
             } else {
                 // Resize the image to 512x512
@@ -915,7 +969,7 @@ app.put('/squeal/:name/propic', (req, res) => {
                 });
             }
         }
-    });
+    });*/
 });
 
 //* DELETE

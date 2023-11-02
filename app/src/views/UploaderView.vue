@@ -1,6 +1,6 @@
 <template>
     <div>
-        <input type="file" @change="handleFileUpload" />
+        <input type="file" @change="handleFileUpload" accept="image/*"/>
         <button @click="uploadFile">Upload</button>
     </div>
 </template>
