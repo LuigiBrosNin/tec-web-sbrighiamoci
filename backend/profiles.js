@@ -868,6 +868,13 @@ app.get("/profiles/:name/propic", async (req, res) => {
         const bucket = new GridFSBucket(database);
         const fileID = new ObjectId(profile.propic);
 
+        if (!fileID) {
+            res.status(404).json({
+                message: "File not found."
+            });
+            return;
+        }
+
         const file = await bucket.find({ _id: fileID }).toArray();
         if (file.length === 0) {
             res.status(404).json({
@@ -900,6 +907,11 @@ const upload = multer({
 app.put('/profiles/:name/propic', upload.single('file'), async (req, res) => {
     try {
         const bucket = new GridFSBucket(database);
+
+        if (!req.file) {
+            res.status(400).json({ message: 'No file selected' });
+            return;
+        }
 
         const buffer = req.file.buffer;
         const readableStream = new stream.PassThrough();
