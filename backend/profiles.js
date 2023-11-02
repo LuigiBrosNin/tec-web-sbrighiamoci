@@ -880,7 +880,6 @@ app.get("/profiles/:name/propic", async (req, res) => {
     }
 });
 
-const { GridFSBucket } = require('mongodb');
 const stream = require('stream');
 
 //* PUT
