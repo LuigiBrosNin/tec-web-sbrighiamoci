@@ -863,7 +863,7 @@ app.get("/profiles/:name/propic", async (req, res) => {
             return;
         }
 
-        const formData = new FormData();
+        let formData = new FormData();
         formData = profile.propic;
 
         // Set the Content-Type header to image/*
