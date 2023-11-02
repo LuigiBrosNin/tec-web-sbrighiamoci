@@ -844,7 +844,8 @@ app.put("/profiles/:name/following_channels/", async (req, res) => {
 /*                                GET, DELETE                                 */
 /* -------------------------------------------------------------------------- */
 
-const {GridFSBucket, ObjectID } = require('mongodb');
+const {GridFSBucket } = require('mongodb');
+const ObjectID = mongoClient.ObjectID;
 
 //* GET
 // ritorna la propic del profilo con nome name
