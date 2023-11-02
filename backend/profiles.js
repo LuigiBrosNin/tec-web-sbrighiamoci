@@ -919,7 +919,7 @@ app.put('/profiles/:name/propic', upload_pic.single('file'), async (req, res) =>
             name: profileName
         });
 
-        if (profile.is_deleted || profile === null) {
+        if (/*profile.is_deleted ||*/ profile === null) {
             res.status(404).json({
                 message: "Profile not found."
             });
