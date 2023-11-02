@@ -921,7 +921,12 @@ app.put('/profiles/:name/propic', upload.single('file'), async (req, res) => {
         const readableStream = new stream.PassThrough();
         readableStream.end(buffer);
 
-        const uploadStream = bucket.openUploadStream(req.file.originalname);
+        const uploadStream = bucket.openUploadStream(req.file.originalname, {
+            metadata: {
+                originalname: req.file.originalname,
+                // Add other metadata here
+            }
+        });
 
         uploadStream.on('error', (error) => {
             res.status(500).json({ message: error.message });
