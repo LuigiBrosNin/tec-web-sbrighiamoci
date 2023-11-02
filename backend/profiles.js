@@ -894,8 +894,9 @@ const upload = multer({
 //* PUT
 // cambia la propic del profilo con nome name
 // caricando un file nel database nel campo propic (req.file)
-app.put('/squeal/:name/propic', async (req, res) => {
+app.put('/profiles/:name/propic', async (req, res) => {
     try {
+        console.log("start, here file: " + req.file);
         if (req.file == undefined) {
             res.status(400).json({
                 message: 'No file selected'
