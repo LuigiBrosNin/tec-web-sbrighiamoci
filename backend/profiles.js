@@ -896,6 +896,8 @@ app.put('/profiles/:name/propic', upload.single('file'), async (req, res) => {
       const buffer = req.file.buffer;
       const readableStream = new stream.PassThrough();
       readableStream.end(buffer);
+
+      console.log("file: " + req.file);
   
       readableStream.pipe(bucket.openUploadStream(req.file.originalname))
         .on('error', (error) => {
