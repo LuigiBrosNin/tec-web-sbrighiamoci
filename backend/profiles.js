@@ -898,6 +898,7 @@ const upload_pic = multer({ storage: multer.memoryStorage() });
 
 app.put('/profiles/:name/propic', upload_pic.single('file'), async (req, res) => {
     try {
+        const profileName = req.params.name;
         console.log("start, here req: " + req.file);
         if (req.file == undefined) {
             res.status(400).json({
@@ -915,7 +916,7 @@ app.put('/profiles/:name/propic', upload_pic.single('file'), async (req, res) =>
 
         await mongoClient.connect();
         const profile = await collection_profiles.findOne({
-            name: squealName
+            name: profileName
         });
 
         if (profile.is_deleted || profile === null) {
@@ -926,7 +927,7 @@ app.put('/profiles/:name/propic', upload_pic.single('file'), async (req, res) =>
         }
 
         const result = await collection_profiles.updateOne({
-            name: squealName
+            name: profileName
         }, {
             $set: {
                 propic: req.file
