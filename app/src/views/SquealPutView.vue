@@ -17,6 +17,11 @@
                 <label for="media">Media:</label>
                 <input type="file" id="media" @change="handleFileUpload" accept="image/*" class="form-control-file" />
             </div>
+            <div v-if="media">
+                <p>Uploaded file:</p>
+                <img :src="mediaUrl" alt="uploaded file" />
+            </div>
+            
             <div class="form-group">
                 <label for="reply_to">Reply To:</label>
                 <input type="text" id="reply_to" v-model="reply_to" class="form-control" />
