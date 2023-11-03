@@ -43,12 +43,17 @@ export default {
       this.media = event.target.files[0];
     },
     submitForm() {
+        const jsonBody = {
+            author: this.author,
+            text: this.text,
+            receiver: this.receiver,
+            reply_to: this.reply_to,
+            is_private: false
+        }
       const formData = new FormData();
-      formData.append("author", this.author);
-      formData.append("text", this.text);
-      formData.append("receiver", this.receiver);
-      //formData.append("media", this.media);
-      formData.append("reply_to", this.reply_to);
+      formData.append("json", JSON.stringify(jsonBody));
+      formData.append("file", this.media);
+
 
       console.log("sending body: ", formData);
       // Send formData to server using axios or fetch

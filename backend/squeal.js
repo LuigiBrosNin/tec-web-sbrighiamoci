@@ -11,6 +11,8 @@ const {
     isAuthorizedOrHigher
 } = require("./loginUtils.js");
 const bodyParser = require('body-parser');
+const multer = require('multer');
+const upload = multer();
 const {
     dbName,
     squealCollection,
@@ -180,10 +182,16 @@ app.get("/squeals/", async (req, res) => {
 // nome utente + numero squeals = ID
 // required: author, text, receiver, is_private
 // optional: media, reply_to
-app.put("/squeals/", bodyParser.json(), async (req, res) => {
+app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
+    extended: true
+}), async (req, res) => {
     try {
         // console.log('Request Body:', req.body);
         const authorized = true; //TODO ADD AUTHORIZATION
+
+        const reqBody = JSON.parse(req.body.json);
+
+        const media = req.file;
 
         if (!authorized) {
             res.status(401).json({
@@ -201,7 +209,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
 
         // Check if all required fields are present in the request body
         for (const field of requiredFields) {
-            if (req.body[field] == null || req.body[field] === "" || (typeof req.body[field] != "string")) {
+            if (reqBody[field] == null || reqBody[field] === "" || (typeof reqBody[field] != "string")) {
                 res.status(400).json({
                     message: `${field} is required and has to be valid`
                 });
@@ -212,12 +220,12 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
 
         //check reveiver validity (has to be a channel)
         const channel = await collection_channels.findOne({
-            name: req.body.receiver
+            name: reqBody.receiver
         });
 
 
         // if not a private msg, channel must exist
-        if (channel === null && (req.body.is_private == false || req.body.is_private == "false" || req.body.is_private == undefined)) {
+        if (channel === null && (reqBody.is_private == false || reqBody.is_private == "false" || reqBody.is_private == undefined)) {
             res.status(400).json({
                 message: "receiver must be an existing channel"
             });
@@ -227,9 +235,9 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
         // defining the required fields as well as initializing the standard fields
         let newSqueal = {
             id: "",
-            author: req.body.author,
-            text: req.body.text,
-            receiver: req.body.receiver,
+            author: reqBody.author,
+            text: reqBody.text,
+            receiver: reqBody.receiver,
             date: Date.now(),
             positive_reactions: 0,
             positive_reactions_list: [],
@@ -245,20 +253,19 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
         }
 
         // checking boolean separately because in optionalFields it would be seen as string
-        if (req.body.is_private === "true" || req.body.is_private === true) {
+        if (reqBody.is_private === "true" || reqBody.is_private === true) {
             newSqueal.is_private = true;
         }
 
         const optionalFields = [
-            "media",
             "reply_to"
         ];
 
         // Check if the optional fields are present in the request body
         // If they are, add them to the newSqueal object
         for (const field in optionalFields) {
-            if (req.body[field] != null && req.body[field] != "") {
-                newSqueal[field] = req.body[field];
+            if (reqBody[field] != null && reqBody[field] != "") {
+                newSqueal[field] = reqBody[field];
             }
         }
 
@@ -277,7 +284,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
         let char_cost = newSqueal.text.length;
 
         // if the media field is present, calculate the cost of the media
-        if (newSqueal.media !== undefined && newSqueal.media != "") {
+        if (!media) {
             char_cost += 125;
         }
 
@@ -301,6 +308,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
             });
             return;
         }
+
 
         // CREDITS
         // 0 = giorno, 1 = settimana, 2 = mese
@@ -335,7 +343,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
             g = profile_author.credit[0] - char_cost;
             s = profile_author.credit[1] - char_cost;
             m = profile_author.credit[2] - char_cost;
-        } 
+        }
 
 
         console.log("g: " + g + " s: " + s + " m: " + m);
@@ -398,6 +406,38 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
 
         // Insert the new squeal in the database without converting it to a JSON string
         const result = await collection_squeals.insertOne(newSqueal);
+
+        // Upload media if present
+        if (media) {
+            const buffer = media.buffer;
+            const readableStream = new stream.PassThrough();
+            readableStream.end(buffer);
+
+            const uploadStream = bucket.openUploadStream(media.originalname, {
+                metadata: {
+                    originalname: media.originalname,
+                }
+            });
+
+            uploadStream.on('error', (error) => {
+                res.status(500).json({
+                    message: error.message
+                });
+                console.log("media problem: " + error.message);
+                return;
+            });
+
+            uploadStream.on('finish', () => {
+                // Update the squeal with the ID of the uploaded file
+                collection_squeals.updateOne({
+                    id: newSqueal.id
+                }, {
+                    $set: {
+                        media: uploadStream.id
+                    }
+                });
+            });
+        }
 
         console.log('Documento inserito con successo: ', result.insertedId + '\n' + JSON.stringify(newSqueal));
         res.status(200).send(JSON.stringify({
