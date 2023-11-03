@@ -55,7 +55,6 @@ app.get("/", async (req, res) => {
 })
 
 app.get("/login", async (req, res) => {
-  console.log(global.rootDir);
   res.status(200).sendFile(global.rootDir + '/login.html');
 })
 
