@@ -1,7 +1,5 @@
 /* -------------------------------- SETTINGS -------------------------------- */
 
-global.rootDir = __dirname;
-
 const {
   parse
 } = require("path");
