@@ -311,6 +311,7 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
             return;
         }
 
+        console.log("author does not have enough credit\navailable\ng: " + profile_author.credit[0] + " s: " + profile_author.credit[1] + " m: " + profile_author.credit[2] + ")\nrequired\n " + char_cost);
 
         // CREDITS
         // 0 = giorno, 1 = settimana, 2 = mese
@@ -321,8 +322,8 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
             });
             return;
 
-        } // check if the authos has enough credit 
-        else if (newSqueal.is_private == false && (profile_author.credit[0] < char_cost || profile_author.credit[1] < char_cost || profile_author.credit[2] < char_cost) && await !isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)) {
+        }// check if the authos has enough credit 
+        else if (newSqueal.is_private == false && (profile_author.credit[g] < char_cost || profile_author.credit[s] < char_cost || profile_author.credit[m] < char_cost) && await !isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)) {
             res.status(400).json({
                 message: "author does not have enough credit\navailable\ng: " + profile_author.credit[0] + " s: " + profile_author.credit[1] + " m: " + profile_author.credit[2] + ")\nrequired\n " + char_cost
             });
