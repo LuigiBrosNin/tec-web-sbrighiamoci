@@ -15,7 +15,7 @@
             </div>
             <div class="form-group">
                 <label for="media">Media:</label>
-                <input type="file" id="media" @change="handleFileUpload" required accept="image/*" class="form-control-file" />
+                <input type="file" id="media" @change="handleFileUpload" accept="image/*" class="form-control-file" />
             </div>
             <div class="form-group">
                 <label for="reply_to">Reply To:</label>
