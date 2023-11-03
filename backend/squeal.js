@@ -410,6 +410,7 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
 
         // Upload media if present
         if (media) {
+            const bucket = new GridFSBucket(database);
             const buffer = media.buffer;
             const readableStream = new stream.PassThrough();
             readableStream.end(buffer);
