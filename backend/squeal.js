@@ -249,7 +249,8 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
             is_private: false,
             mentions: [],
             channel_mentions: [],
-            keywords: []
+            keywords: [],
+            media: ""
         }
 
         // checking boolean separately because in optionalFields it would be seen as string
