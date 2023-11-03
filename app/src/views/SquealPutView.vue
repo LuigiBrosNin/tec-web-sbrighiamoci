@@ -1,34 +1,61 @@
 <template>
-    <div class="container">
-        <form @submit.prevent="submitForm" class="mt-5">
-            <div class="form-group">
-                <label for="author">Author:</label>
-                <input type="text" id="author" v-model="author" required class="form-control" />
-            </div>
-            <div class="form-group">
-                <label for="text">Text:</label>
-                <textarea id="text" v-model="text" required class="form-control"></textarea>
-            </div>
-            <div class="form-group">
-                <label for="receiver">Receiver:</label>
-                <input type="text" id="receiver" v-model="receiver" required class="form-control" />
-            </div>
-            <div class="form-group">
-                <label for="media">Media:</label>
-                <input type="file" id="media" @change="handleFileUpload" accept="image/*" class="form-control-file" />
-            </div>
-            <div v-if="media">
-                <p>Uploaded file:</p>
-                <img :src="mediaUrl" alt="uploaded file" />
-            </div>
-            
-            <div class="form-group">
-                <label for="reply_to">Reply To:</label>
-                <input type="text" id="reply_to" v-model="reply_to" class="form-control" />
-            </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
-    </div>
+  <div class="container">
+    <form @submit.prevent="submitForm" class="mt-5">
+      <div class="form-group">
+        <label for="author">Author:</label>
+        <input
+          type="text"
+          id="author"
+          v-model="author"
+          required
+          class="form-control"
+        />
+      </div>
+      <div class="form-group">
+        <label for="text">Text:</label>
+        <textarea
+          id="text"
+          v-model="text"
+          required
+          class="form-control"
+        ></textarea>
+      </div>
+      <div class="form-group">
+        <label for="receiver">Receiver:</label>
+        <input
+          type="text"
+          id="receiver"
+          v-model="receiver"
+          required
+          class="form-control"
+        />
+      </div>
+      <div class="form-group">
+        <label for="media">Media:</label>
+        <input
+          type="file"
+          id="media"
+          @change="handleFileUpload"
+          accept="image/*"
+          class="form-control-file"
+        />
+      </div>
+      <div v-if="media">
+        <p>Uploaded file:</p>
+        <img v-if="mediaUrl" :src="mediaUrl" alt="uploaded file" />
+      </div>
+      <div class="form-group">
+        <label for="reply_to">Reply To:</label>
+        <input
+          type="text"
+          id="reply_to"
+          v-model="reply_to"
+          class="form-control"
+        />
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+  </div>
 </template>
 
 <script>
@@ -43,32 +70,32 @@ export default {
       reply_to: "",
     };
   },
+  computed: {
+    mediaUrl() {
+      return URL.createObjectURL(this.media);
+    },
+  },
   methods: {
     handleFileUpload(event) {
-        console.log("file uploaded");
+      console.log("file uploaded");
       this.media = event.target.files[0];
     },
     submitForm() {
-        const jsonBody = {
-            author: this.author,
-            text: this.text,
-            receiver: this.receiver,
-            reply_to: this.reply_to,
-            is_private: false
-        }
+      const jsonBody = {
+        author: this.author,
+        text: this.text,
+        receiver: this.receiver,
+        reply_to: this.reply_to,
+        is_private: false,
+      };
       const formData = new FormData();
       formData.append("json", JSON.stringify(jsonBody));
       formData.append("file", this.media);
 
-
       console.log("sending body: ", formData);
       // Send formData to server using axios or fetch
       axios
-        .put("/squeals/", formData,{
-        headers: {
-                    'Content-Type': 'application/json'
-                }
-                })
+        .put("/squeals/", formData)
         .then((response) => {
           console.log(response.data);
         })
