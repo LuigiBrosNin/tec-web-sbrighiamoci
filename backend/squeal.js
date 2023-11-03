@@ -409,7 +409,9 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
         const result = await collection_squeals.insertOne(newSqueal);
 
         // Upload media if present
+        console.log("media: " + media)
         if (media) {
+            console.log("entered media")
             const buffer = media.buffer;
             const readableStream = new stream.PassThrough();
             readableStream.end(buffer);
@@ -438,6 +440,7 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
                     }
                 });
             });
+            readableStream.pipe(uploadStream);
         }
 
         console.log('Documento inserito con successo: ', result.insertedId + '\n' + JSON.stringify(newSqueal));
