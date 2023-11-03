@@ -209,6 +209,18 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
         }
         // If all required fields are present, continue with the insertion
 
+        //check reveiver validity (has to be a channel)
+        const channel = await collection_channels.findOne({
+            name: req.body.receiver
+        });
+
+        if (channel === null) {
+            res.status(400).json({
+                message: "receiver must be an existing channel"
+            });
+            return;
+        }
+
         // defining the required fields as well as initializing the standard fields
         let newSqueal = {
             id: "",
