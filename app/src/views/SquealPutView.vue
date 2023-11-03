@@ -40,6 +40,7 @@ export default {
   },
   methods: {
     handleFileUpload(event) {
+        console.log("file uploaded");
       this.media = event.target.files[0];
     },
     submitForm() {
