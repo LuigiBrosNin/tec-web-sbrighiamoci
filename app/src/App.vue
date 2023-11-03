@@ -1,5 +1,6 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
+
 import Header from "@/components/Header.vue"
 import Navbar from "@/components/Navbar.vue"
 </script>
@@ -11,6 +12,8 @@ import Navbar from "@/components/Navbar.vue"
       <Navbar></Navbar>
 
       <div class="content">
+        <!-- <p>aa {{ $attrs.props.user }}</p> -->
+        <p>aa {{ this.$user }}</p>
         <RouterView />
       </div>
     </div>
