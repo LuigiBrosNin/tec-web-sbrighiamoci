@@ -13,6 +13,7 @@ const {
 const bodyParser = require('body-parser');
 const multer = require('multer');
 const upload = multer();
+const stream = require('stream');
 const {
     dbName,
     squealCollection,
@@ -408,9 +409,7 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
         const result = await collection_squeals.insertOne(newSqueal);
 
         // Upload media if present
-        console.log("media: " + media)
         if (media) {
-            console.log("entered media")
             const buffer = media.buffer;
             const readableStream = new stream.PassThrough();
             readableStream.end(buffer);
