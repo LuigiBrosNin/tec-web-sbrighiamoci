@@ -3,5 +3,5 @@
 </script>
 
 <template>
-    <Profile id="MatildeMariano"></Profile>
+    <Profile id="Luizo"></Profile>
 </template>

@@ -89,6 +89,7 @@ app.get("/user-check", async (req, res) => {
 })
 
 app.use('/app', express.static(path.join(global.rootDir, 'app/dist/')));
+app.use('/app/*', express.static(path.join(global.rootDir, 'app/dist/')));
 app.use('/smm', express.static(path.join(global.rootDir, 'smm/build/')));
 app.use('/images', express.static('/images/', {
   index: false,
