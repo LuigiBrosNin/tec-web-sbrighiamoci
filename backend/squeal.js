@@ -930,7 +930,8 @@ app.post("/squeals/:id", bodyParser.json(), async (req, res) => {
 /* -------------------------------------------------------------------------- */
 
 //* GET
-// ritorna il campo media dello squeal con id = id ricevuto come parametro
+// returns the image of the squeal with id = id in the media field
+// from the id to the image
 app.get("/squeals/:id/media", async (req, res) => {
     try {
         const squealId = req.params.id;
@@ -949,7 +950,21 @@ app.get("/squeals/:id/media", async (req, res) => {
         }
 
         // if the squeal is found, return its media
-        res.status(200).json(squeal.media);
+        const bucket = new GridFSBucket(database);
+        const downloadStream = bucket.openDownloadStream(squeal.media);
+        
+        downloadStream.on('data', (chunk) => {
+            res.write(chunk);
+        }
+        );
+        downloadStream.on('error', () => {
+            res.sendStatus(404);
+        }
+        );
+        downloadStream.on('end', () => {
+            res.end();
+        }
+        );
     } catch (error) {
         res.status(500).json({
             message: error.message
