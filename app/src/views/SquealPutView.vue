@@ -47,11 +47,17 @@ export default {
       formData.append("author", this.author);
       formData.append("text", this.text);
       formData.append("receiver", this.receiver);
-      formData.append("media", this.media);
+      //formData.append("media", this.media);
       formData.append("reply_to", this.reply_to);
+
+      console.log("sending body: ", formData);
       // Send formData to server using axios or fetch
       axios
-        .put("/squeals/", formData)
+        .put("/squeals/", formData,{
+        headers: {
+                    'Content-Type': 'application/json'
+                }
+                })
         .then((response) => {
           console.log(response.data);
         })
