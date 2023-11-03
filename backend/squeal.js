@@ -178,7 +178,7 @@ app.get("/squeals/", async (req, res) => {
 //* PUT
 // aggiunge/sovrascrive uno squeal al database (è impossibile sovrascrivere in quanto l'id è generato progressivamente)
 // nome utente + numero squeals = ID
-// required: author, text, receiver
+// required: author, text, receiver, is_private
 // optional: media, reply_to
 app.put("/squeals/", bodyParser.json(), async (req, res) => {
     try {
@@ -214,7 +214,9 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
             name: req.body.receiver
         });
 
-        if (channel === null) {
+
+        // if not a private msg, channel must exist
+        if (channel === null && (req.body.is_private == false || req.body.is_private == "false" || req.body.is_private == undefined)) {
             res.status(400).json({
                 message: "receiver must be an existing channel"
             });

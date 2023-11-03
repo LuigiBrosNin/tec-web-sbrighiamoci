@@ -24,6 +24,10 @@
       <img class="icon not_selected" src="https://site222326.tw.cs.unibo.it/icons/user-svgrepo-com.svg" />
       <p>Uploader TEMP</p>
     </RouterLink>
+    <RouterLink to="/squealPut" class="router_link">
+      <img class="icon not_selected" src="https://site222326.tw.cs.unibo.it/icons/house-floor-svgrepo-com.svg" />
+      <p>Squeals PUT TEMP</p>
+    </RouterLink>
   </nav>
 </template>
 

@@ -5,6 +5,7 @@ import ChannelsView from '../views/ChannelsView.vue'
 import MessagesView from '../views/MessagesView.vue'
 import ProfileView from '../views/ProfileView.vue'
 import UploaderView from '../views/UploaderView.vue'
+import SquealPutView from '../views/SquealPutView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -38,6 +39,11 @@ const router = createRouter({
       path: '/uploader',
       name: 'uploader',
       component: UploaderView
+    },
+    {
+      path: '/squealPut',
+      name: 'squealPut',
+      component: SquealPutView
     }
   ]
 })
