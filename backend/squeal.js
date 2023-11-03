@@ -192,6 +192,7 @@ app.put("/squeals/", bodyParser.json(), async (req, res) => {
             return;
         }
 
+        // TODO Author needs to be assigned with session.user
         const requiredFields = [
             "author",
             "text",

@@ -90,6 +90,9 @@ app.get("/channels", async (req, res) => {
       .limit(endIndex) // returns endIndex squeals
       .toArray(); // returns the squeals as an array
 
+
+    res.status(200).json(channels);
+
   } catch (error) {
     res.status(500).json({
       message: error.message
