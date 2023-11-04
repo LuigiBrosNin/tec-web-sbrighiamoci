@@ -11,7 +11,7 @@
 
         <div class="profile_data">
             <img class="profile_img" :src="authorProfilePicUrl"/>
-            <p class="profile_name"> @{{ author }}</p>
+            <RouterLink :to="`/profile/${author}`" class="profile_name"> @{{ author }}</RouterLink>
         </div>
 
         <p class="squeal_body"> {{ body }} </p>
