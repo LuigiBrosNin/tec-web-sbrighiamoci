@@ -80,7 +80,7 @@ async function importPic(pic, collection, name) {
     }
 }
 
-async function exportPic(collection, entry) {
+async function exportPic(collection, entry, res) {
     try {
         let pic;
         if(collection == collection_squeals){
