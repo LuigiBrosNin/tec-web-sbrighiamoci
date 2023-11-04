@@ -963,7 +963,7 @@ app.get("/squeals/:id/media", async (req, res) => {
         }
 
         //TODO TEST
-        exportPic(collection_squeals, squeal, res);
+        exportPic(squeal.media, res);
         /*
 
         // if the squeal is found, return its media
