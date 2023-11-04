@@ -57,7 +57,7 @@ async function importPic(pic, collection, name) {
         });
 
         uploadStream.on('finish', () => {
-            if (collection === collection_squeals) {
+            if (collection.collectionName === collection_squeals.collectionName) {
                 // Update the squeal with the ID of the uploaded file
                 collection.updateOne({
                     id: name
