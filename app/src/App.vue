@@ -13,7 +13,7 @@ import Navbar from "@/components/Navbar.vue"
 
       <div class="content">
         <!-- <p>aa {{ $attrs.props.user }}</p> -->
-        <p>aa {{ this.$user }}</p>
+        <p>aa {{ $user }}</p>
         <RouterView />
       </div>
     </div>
