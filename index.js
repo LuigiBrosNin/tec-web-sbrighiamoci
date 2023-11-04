@@ -1,15 +1,14 @@
 global.rootDir = __dirname;
-
-const { isAuthorizedOrHigher, canLogIn, typeOfProfile, registerNewUser } = require("./backend/loginUtils.js");
-
-const { request } = require("./backend/const.js");
 const express = require('express');
-const cors = require('cors');
 const path = require('path');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
+const request = require('request');
 const app = express();
+
+const { isAuthorizedOrHigher, canLogIn, typeOfProfile, registerNewUser } = require("./backend/loginUtils.js");
+
 //const { interval } = require("./backend/const.js");
 
 const BASE_SITE = 'https://site222326.tw.cs.unibo.it'
@@ -20,6 +19,8 @@ const port = 8000;
 
 app.set('trust proxy', 1); // trust first proxy
 
+
+let cors = require('cors');
 app.use(cors({
   //origin: BASE_SITE,
   credentials: true,
