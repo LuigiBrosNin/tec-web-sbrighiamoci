@@ -4,6 +4,7 @@ const {
 const multer = require('multer');
 const stream = require('stream');
 const sharp = require('sharp');
+const fs = require('fs');
 const upload = multer({
     storage: multer.memoryStorage()
 });
@@ -247,7 +248,8 @@ app.put("/profiles/:name", async (req, res) => {
             credit_limits: CREDIT_LIMITS,
             is_banned: false,
             banned_until: null,
-            is_deleted: false
+            is_deleted: false,
+            propic: null
         };
         console.log(JSON.stringify(profile))
         const allowedAccountTypes = ["normal", "admin", "premium", "smm"];
@@ -256,7 +258,13 @@ app.put("/profiles/:name", async (req, res) => {
         }
         if (profile.propic == undefined) {
             // STOCK PROFILE PIC
-            profile.propic == "SOME URI"; //! TEMP, CHANGE TO STOCK URI ONCE WE HAVE IT
+            fs.readFile('/path/to/your/file', (err, data) => {
+                if (err) {
+                    console.error('There was an error reading the file!', err);
+                    return;
+                }
+                importPic(data, collection_profiles, profile.name);
+            });
         }
         if (profile.bio == undefined) {
             profile.bio = "";
@@ -463,7 +471,7 @@ app.post("/profiles/:name", async (req, res) => {
 
         // checking if the user is authorized to modify the profile
         if (adminAuthorized) {
-            possibleParams = ["bio", "account_type", "propic", "credit", "credit_limits", "banned_until", "password", "email"];
+            possibleParams = ["bio", "account_type", "credit", "credit_limits", "banned_until", "password", "email"];
         }
         let profile = {};
         for (const param of possibleParams) {
@@ -866,33 +874,7 @@ app.get("/profiles/:name/propic", async (req, res) => {
             return;
         }
 
-
-        console.log("profile.propic: "+ profile.propic)
-
-        const bucket = new GridFSBucket(database);
-        const fileID = new ObjectId(profile.propic);
-
-        if (!fileID) {
-            res.status(404).json({
-                message: "File not found."
-            });
-            return;
-        }
-
-        const file = await bucket.find({ _id: fileID }).toArray();
-        if (file.length === 0) {
-            res.status(404).json({
-                message: "File not found."
-            });
-            return;
-        }
-
-        console.log("metadata: " + file[0].metadata)
-
-        const filename = file[0].metadata.originalname;
-        res.setHeader('Content-Type', 'image/*');
-        res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
-        bucket.openDownloadStream(fileID).pipe(res);
+        exportPic(profile.propic, res);
 
     } catch (error) {
         res.status(500).json({
@@ -907,39 +889,36 @@ app.get("/profiles/:name/propic", async (req, res) => {
 // cambia la propic del profilo con nome name
 // caricando un file nel database nel campo propic (req.file)
 
+//TODO ADD AUTHORIZATION
 app.put('/profiles/:name/propic', upload.single('file'), async (req, res) => {
     try {
-        const bucket = new GridFSBucket(database);
+        const authorized = true;
+
+        if (!authorized) {
+            res.status(401).json({ message: 'Unauthorized' });
+            return;
+        }
 
         if (!req.file) {
             res.status(400).json({ message: 'No file selected' });
             return;
         }
 
-        const buffer = req.file.buffer;
-        const readableStream = new stream.PassThrough();
-        readableStream.end(buffer);
+        const profileName = req.params.name;
 
-        const uploadStream = bucket.openUploadStream(req.file.originalname, {
-            metadata: {
-                originalname: req.file.originalname,
-                // Add other metadata here
-            }
+        await mongoClient.connect();
+        const profile = await collection_profiles.findOne({
+            name: profileName
         });
 
-        uploadStream.on('error', (error) => {
-            res.status(500).json({ message: error.message });
-        });
+        if(profile.is_deleted || profile === null) {
+            res.status(404).json({ message: 'Profile not found.' });
+            return;
+        }
 
-        uploadStream.on('finish', () => {
-            // Update the profile with the ID of the uploaded file
-            const profileName = req.params.name;
-            collection_profiles.updateOne({ name: profileName }, { $set: { propic: uploadStream.id } });
+        importPic(req.file, res, collection_profiles, profileName);
 
-            res.status(200).json({ message: 'File uploaded successfully', fileId: uploadStream.id });
-        });
-
-        readableStream.pipe(uploadStream);
+        res.status(200).json({ message: 'File uploaded successfully', fileId: uploadStream.id });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -981,7 +960,6 @@ app.put('/profiles/:name/propic', upload.single('file'), async (req, res) => {
 // ritorna 404 se non esiste
 // ritorna 401 se non sei autorizzato
 
-//TODO ADD FILE MANAMGEMENT FOR ACTUALLY DELETE THE PROFILE PIC FILE
 app.delete("/profiles/:name/propic", async (req, res) => {
     try {
         const profileName = req.params.name;
@@ -1011,7 +989,7 @@ app.delete("/profiles/:name/propic", async (req, res) => {
             name: profileName
         }, {
             $set: {
-                propic: "stock uri lmao" //! ADD STOCK URI
+                propic: null
             }
         });
         res.status(200).json({

@@ -155,7 +155,8 @@ app.put("/channels/:name", async (req, res) => {
       squeals_list: [],
       propic: req.body.propic, //TODO handle this
       bio: req.body.bio,
-      is_deleted: false
+      is_deleted: false,
+      propic: "",
     };
 
     if (authorized && (req.body.type === "private" || req.body.type === "privileged")){
@@ -741,6 +742,138 @@ app.delete("/channels/:name/squeals_list", async (req, res) => {
 
     res.status(200).json({
       message: "squeal removed"
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+});
+
+/* -------------------------------------------------------------------------- */
+/*                             /CHANNELS/:NAME/PROPIC                         */
+/*                               GET, PUT, DELETE                             */
+/* -------------------------------------------------------------------------- */
+
+//* GET
+// returns the propic of the channel
+app.get("/channels/:name/propic", async (req, res) => {
+  try {
+    const channelName = req.params.name;
+
+    await mongoClient.connect();
+    const channel = await collection_channels.findOne({
+      name: channelName
+    });
+
+    if (channel.is_deleted || channel === null) {
+      res.status(404).json({
+        message: "The channel does not exist."
+      });
+      return;
+    }
+
+    exportPic(channel.propic, res);
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+});
+
+//* PUT
+// sets the propic of the channel
+// body parameters: propic (file)
+//TODO ADD AUTHORIZATION (ADMIN OR OWNER)
+app.put("/channels/:name/propic", async (req, res) => {
+  try {
+    const channelName = req.params.name;
+    const authorized = true //TODO ADD AUTHORIZATION
+
+    const channel = await collection_channels.findOne({
+      name: channelName
+    });
+
+    if (channel.is_deleted || channel === null) {
+      res.status(404).json({
+        message: "Channel not found."
+      });
+      return;
+    }
+
+    if (!authorized) {
+      res.status(401).json({
+        message: "not authorized to modify this channel's propic"
+      });
+      return;
+    }
+
+    const pic = req.body.propic;
+
+    if (!importPic(pic, channelName, collection_channels)) {
+      res.status(500).json({
+        message: "Error uploading the propic."
+      });
+      return;
+    }
+
+    res.status(200).json({
+      message: "propic updated"
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+});
+
+//* DELETE
+// deletes the propic of the channel
+//TODO ADD AUTHORIZATION (ADMIN OR OWNER)
+app.delete("/channels/:name/propic", async (req, res) => {
+  try {
+    const channelName = req.params.name;
+    const authorized = true //TODO ADD AUTHORIZATION
+
+    const channel = await collection_channels.findOne({
+      name: channelName
+    });
+
+    if (channel.is_deleted || channel === null) {
+      res.status(404).json({
+        message: "Channel not found."
+      });
+      return;
+    }
+
+    if (!authorized) {
+      res.status(401).json({
+        message: "not authorized to modify this channel's propic"
+      });
+      return;
+    }
+
+    await mongoClient.connect();
+    const result = await collection_channels.updateOne({
+      name: channelName
+    }, {
+      $set: {
+        propic: null
+      }
+    });
+
+    if (result.modifiedCount == 0) {
+      res.status(404).json({
+        message: "channel not found"
+      });
+      return;
+    }
+
+    res.status(200).json({
+      message: "propic deleted"
     });
 
   } catch (error) {
