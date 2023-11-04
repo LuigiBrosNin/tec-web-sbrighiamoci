@@ -62,7 +62,6 @@ app.use(express.static(path.join(global.rootDir, '/login/')));
 app.post("/login", bodyParser.json(), async (req, res) => {
   if (await canLogIn(req.body.username, req.body.password)) {
     req.session.user = req.body.username;
-    res.cookie("squealerUser", req.session.user, { maxAge: 900000, httpOnly: false});
     res.redirect("/");
   } else {
     res.send("wrong username or password");
@@ -72,7 +71,6 @@ app.post("/login", bodyParser.json(), async (req, res) => {
 
 app.get("/logout", async (req, res) => {
   req.session.destroy();
-  res.clearCookie("squealerUser");
   res.redirect("/");
 })
 
