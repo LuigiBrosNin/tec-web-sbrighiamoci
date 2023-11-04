@@ -83,11 +83,11 @@ async function importPic(pic, collection, name) {
 async function exportPic(collection, entry, res) {
     try {
         let pic;
-        if(collection == collection_squeals){
-            console.log("media: " + entry.media);
+        if(collection === collection_squeals){
+            console.log("media: "+ entry.media);
             pic = entry.media;
         } else {
-            console.log("propic: " + entry.propic);
+            console.log("propic: "+ entry.propic);
             pic = entry.propic;
         }
         const bucket = new GridFSBucket(database);
