@@ -45,8 +45,14 @@ app.listen(port, function () {
 //html files indexing
 app.get("/", async (req, res) => {
   console.log(req.session.user);
-  if (await isAuthorizedOrHigher(req.session.user, typeOfProfile.user)) {
-    res.status(200).sendFile(global.rootDir + '/hello.html');
+  if(await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)){
+    res.redirect("/admin");
+  }
+  else if (await isAuthorizedOrHigher(req.session.user, typeOfProfile.smm)) {
+    res.redirect("/smm");
+  }
+  else if (await isAuthorizedOrHigher(req.session.user, typeOfProfile.user)) {
+    res.redirect("/app");
   }
   else {
     res.redirect("/login");

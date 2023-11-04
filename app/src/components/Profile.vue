@@ -80,7 +80,7 @@ export default {
             this.bio = profileJson.bio;
             this.credit = profileJson.credit;
             this.creditLimits = profileJson.credit_limits;
-            this.squealsList = profileJson.list_squeal_id;
+            this.squealsList = profileJson.squeals_list;
             this.followersList = profileJson.followers_list;
             this.followingList = profileJson.following_list;
             this.accountType = profileJson.account_type;
