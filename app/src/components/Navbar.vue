@@ -1,3 +1,5 @@
+
+
 <template>
   <nav>
     <RouterLink to="/" class="router_link">
@@ -18,7 +20,7 @@
     </RouterLink>
     <RouterLink to="/profile" class="router_link">
       <img class="icon not_selected" src="https://site222326.tw.cs.unibo.it/icons/user-svgrepo-com.svg" />
-      <p>Profile</p>
+      <p>{{ $user || "Profile" }}</p>
     </RouterLink>
     <RouterLink to="/uploader" class="router_link">
       <img class="icon not_selected" src="https://site222326.tw.cs.unibo.it/icons/user-svgrepo-com.svg" />

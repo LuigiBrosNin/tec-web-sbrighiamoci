@@ -3,11 +3,10 @@
 </script>
 
 <template>
-    <div class="squeal_container" v-if="!isPrivate">
+    <div class="squeal_container" v-if="isValid && !isPrivate">
         <p> §{{ channel }} </p>
-        <div v-if=replyTo.length >
-            <p>Reply to:</p>
-            <p v-for="i in replyTo">{{ i }}</p>
+        <div v-if='replyTo != null && replyTo != ""' >
+            <p>Reply to: {{ replyTo }}</p>
         </div>
 
         <div class="profile_data">
@@ -16,6 +15,7 @@
         </div>
 
         <p class="squeal_body"> {{ body }} </p>
+        <img class="squeal_media" v-if='media != null && media != ""' :src="`https://site222326.tw.cs.unibo.it/squeals/${id}/media`">
         <p> {{ date }} </p>
 
         <div class="interaction_data">
@@ -35,6 +35,9 @@
 
         <p>See more...</p>
     </div>
+    <div class="squeal_container" v-else>
+        <p>Squeal not found</p>
+    </div>
 
 </template>
 
@@ -42,10 +45,12 @@
 export default {
     data() {
         return {
+            isValid: true, // isValid becomes false if the fetch fails
+
             author: "",
             authorProfilePicUrl: "",
             channel: "",
-            replyTo: [],
+            replyTo: "",
             date: 0,
             body: "",
             media: "",
@@ -64,8 +69,12 @@ export default {
                     "Access-Control-Allow-Origin": "*"
                 }
             });
-            fetched = await fetched.json();
-            this.populate(fetched);
+            if(fetched.status == 200){
+                fetched = await fetched.json();
+                this.populate(fetched);
+            } else {
+                this.isValid = false;
+            }
             
         },
         populate(squealJson) {
@@ -98,6 +107,7 @@ export default {
     border-style: solid;
     border-width: thin;
     border-radius: 1em;
+    border-color: #616161;
     margin: 0.5em 2em 0.5em 2em;
     padding: 1em;
 }
@@ -121,6 +131,14 @@ export default {
 
 .squeal_body {
     font-size: 2em;
+}
+
+.squeal_media {
+    width: 100%;
+    border-style: solid;
+    border-width: thin;
+    border-radius: 1em;
+    border-color: #616161;
 }
 
 .interaction_data {
