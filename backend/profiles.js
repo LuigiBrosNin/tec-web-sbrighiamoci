@@ -22,7 +22,9 @@ const {
     profileCollection,
     channelCollection,
     mongoClient,
-    CREDIT_LIMITS
+    CREDIT_LIMITS,
+    importPic,
+    exportPic
 } = require("./const.js");
 
 // connecting to the database
@@ -235,7 +237,6 @@ app.put("/profiles/:name", async (req, res) => {
             email: req.body.email,
             password: req.body.password,
             account_type: req.body.account_type,
-            propic: req.body.propic,
             bio: req.body.bio,
             followers_list: [],
             following_list: [],
@@ -253,11 +254,11 @@ app.put("/profiles/:name", async (req, res) => {
         if (!allowedAccountTypes.includes(profile.account_type)) {
             profile.account_type = "normal";
         }
-        if (profile.propic === undefined) {
+        if (profile.propic == undefined) {
             // STOCK PROFILE PIC
-            profile.propic === "SOME URI"; //! TEMP, CHANGE TO STOCK URI ONCE WE HAVE IT
+            profile.propic == "SOME URI"; //! TEMP, CHANGE TO STOCK URI ONCE WE HAVE IT
         }
-        if (profile.bio === undefined) {
+        if (profile.bio == undefined) {
             profile.bio = "";
         }
 
@@ -842,7 +843,7 @@ app.put("/profiles/:name/following_channels/", async (req, res) => {
 
 /* -------------------------------------------------------------------------- */
 /*                           /PROFILES/:NAME/PROPIC                           */
-/*                                GET, DELETE                                 */
+/*                              GET, PUT, DELETE                              */
 /* -------------------------------------------------------------------------- */
 
 
@@ -864,6 +865,7 @@ app.get("/profiles/:name/propic", async (req, res) => {
             });
             return;
         }
+
 
         console.log("profile.propic: "+ profile.propic)
 

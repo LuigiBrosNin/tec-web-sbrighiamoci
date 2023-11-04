@@ -1,6 +1,7 @@
 /* -------------------------------- SETTINGS -------------------------------- */
 const axios = require('axios');
 const tough = require('tough-cookie');
+const bodyParser = require('body-parser');
 const {wrapper} = require('axios-cookiejar-support');
 const { CookieJar } = tough;
 
@@ -21,7 +22,6 @@ const {
     isAuthorizedOrHigher
 } = require("./loginUtils.js");
 const {
-    bodyParser,
     mongoClient,
     collection_automations
 } = require("./const.js");

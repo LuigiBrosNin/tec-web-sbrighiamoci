@@ -17,7 +17,9 @@ const {
   profileCollection,
   channelCollection,
   mongoClient,
-  CM
+  CM,
+  importPic,
+  exportPic
 } = require("./const.js");
 
 // connecting to the database

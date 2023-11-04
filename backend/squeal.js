@@ -1,7 +1,4 @@
 const {
-    parse
-} = require("path");
-const {
     app
 } = require("../index.js");
 const {
@@ -19,7 +16,9 @@ const {
     profileCollection,
     channelCollection,
     mongoClient,
-    CM
+    CM,
+    importPic,
+    exportPic
 } = require("./const.js");
 
 // connecting to the database
@@ -285,7 +284,7 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
         let char_cost = newSqueal.text.length;
 
         // if the media field is present, calculate the cost of the media
-        if (!media) {
+        if (media != null) {
             char_cost += 125;
         }
 
@@ -294,20 +293,29 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
         const profile_author = await collection_profiles.findOne({
             name: newSqueal.author
         });
-
-        const profile_receiver = await collection_profiles.findOne({
-            name: newSqueal.receiver
-        });
-
-        const channel_receiver = await collection_channels.findOne({
-            name: newSqueal.receiver
-        });
-
-        if (profile_receiver === null && channel_receiver === null) {
-            res.status(400).json({
-                message: "receiver does not exist"
+        
+        if(newSqueal.is_private == true || newSqueal.is_private == "true"){
+            const profile_receiver = await collection_profiles.findOne({
+                name: newSqueal.receiver
             });
-            return;
+
+            if (profile_receiver == null) {
+                res.status(400).json({
+                    message: "profile receiver does not exist"
+                });
+                return;
+            }
+        } else {
+            const channel_receiver = await collection_channels.findOne({
+                name: newSqueal.receiver
+            });
+    
+            if (channel_receiver == null) {
+                res.status(400).json({
+                    message: "channel receiver does not exist"
+                });
+                return;
+            }
         }
 
         console.log("author credit\navailable: g: " + profile_author.credit[0] + " s: " + profile_author.credit[1] + " m: " + profile_author.credit[2] + ")\nrequired: " + char_cost);
@@ -320,7 +328,6 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
                 message: "author does not exist"
             });
             return;
-
         }// check if the authos has enough credit 
         //TODO admin check, if it's an admin don't subtract credit
         else if (false){//newSqueal.is_private == false && (profile_author.credit[0] < char_cost || profile_author.credit[1] < char_cost || profile_author.credit[2] < char_cost) /*&& await !isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)*/) {
@@ -411,7 +418,12 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
         const result = await collection_squeals.insertOne(newSqueal);
 
         // Upload media if present
-        if (media) {
+        if (media != null) {
+
+            // TODO TEST
+            importPic(media, collection_squeals, newSqueal.id)
+
+            /*
             const bucket = new GridFSBucket(database);
             const buffer = media.buffer;
             const readableStream = new stream.PassThrough();
@@ -441,7 +453,7 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
                     }
                 });
             });
-            readableStream.pipe(uploadStream);
+            readableStream.pipe(uploadStream);*/
         }
 
         console.log('Documento inserito con successo: ', result.insertedId + '\n' + JSON.stringify(newSqueal));
@@ -950,6 +962,10 @@ app.get("/squeals/:id/media", async (req, res) => {
             return;
         }
 
+        //TODO TEST
+        exportPic(collection_squeals, squealId);
+        /*
+
         // if the squeal is found, return its media
         const bucket = new GridFSBucket(database);
         const downloadStream = bucket.openDownloadStream(squeal.media);
@@ -965,7 +981,7 @@ app.get("/squeals/:id/media", async (req, res) => {
         downloadStream.on('end', () => {
             res.end();
         }
-        );
+        );*/
     } catch (error) {
         res.status(500).json({
             message: error.message
