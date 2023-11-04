@@ -360,22 +360,7 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
 
         await mongoClient.connect();
 
-        // update the author's squeals_num and squeals_list
-        await collection_profiles.updateOne({
-            name: profile_author.name
-        }, {
-            $set: {
-                squeals_num: squeals_num,
-                squeals_list: squeals_list,
-                credit: [
-                    g,
-                    s,
-                    m
-                ]
-            }
-        })
-
-        if (newSqueal.reply_to !== undefined) {
+        if (newSqueal.reply_to != null && newSqueal.reply_to != "") {
             // retrieve the squeal that is being replied to
             const squeal_replied_to = await collection_squeals.findOne({
                 id: newSqueal.reply_to
@@ -406,6 +391,21 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
                 }
             });
         }
+
+        // update the author's squeals_num and squeals_list
+        await collection_profiles.updateOne({
+            name: profile_author.name
+        }, {
+            $set: {
+                squeals_num: squeals_num,
+                squeals_list: squeals_list,
+                credit: [
+                    g,
+                    s,
+                    m
+                ]
+            }
+        })
 
         // Insert the new squeal in the database without converting it to a JSON string
         const result = await collection_squeals.insertOne(newSqueal);
