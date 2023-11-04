@@ -6,6 +6,7 @@ import MessagesView from '../views/MessagesView.vue'
 import ProfileView from '../views/ProfileView.vue'
 import UploaderView from '../views/UploaderView.vue'
 import SquealPutView from '../views/SquealPutView.vue'
+import SquealInfoView from '../views/SquealInfoView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -34,6 +35,12 @@ const router = createRouter({
       path: '/profile/:id',
       name: 'profile',
       component: ProfileView,
+      props: true
+    },
+    {
+      path: '/squeal/:id',
+      name: 'squeal',
+      component: SquealInfoView,
       props: true
     },
     {

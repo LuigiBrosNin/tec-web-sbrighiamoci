@@ -33,7 +33,7 @@
             </button>
         </div>
 
-        <p>See more...</p>
+        <a :href="`/squeal/${id}`">See more...</a>
     </div>
     <div class="squeal_container" v-else>
         <p>Squeal not found</p>
