@@ -47,6 +47,7 @@ async function importPic(pic, collection, name) {
             }
         });
 
+        console.log("uploadStream.id: " + uploadStream.id);
         uploadStream.on('error', (error) => {
             res.status(500).json({
                 message: error.message
@@ -56,7 +57,7 @@ async function importPic(pic, collection, name) {
         });
 
         uploadStream.on('finish', () => {
-            if (collection == collection_squeals) {
+            if (collection === collection_squeals) {
                 // Update the squeal with the ID of the uploaded file
                 collection.updateOne({
                     id: name

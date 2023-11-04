@@ -419,9 +419,10 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
         // Upload media if present
         if (media != null) {
 
-            // TODO TEST
-            importPic(media, collection_squeals, newSqueal.id)
+            console.log("media: " + media.originalname);
+            const imported = await importPic(media, collection_squeals, newSqueal.id);
 
+            console.log("imported: " + imported);
             /*
             const bucket = new GridFSBucket(database);
             const buffer = media.buffer;
