@@ -955,7 +955,7 @@ app.get("/squeals/:id/media", async (req, res) => {
         });
 
         // if the squeal is not found, return 404
-        if (squeal === null) {
+        if (squeal == null) {
             res.status(404).json({
                 message: "squeal not found"
             });
