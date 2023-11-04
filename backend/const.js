@@ -8,6 +8,8 @@ const mongouri = `mongodb://site222326:ui9aeG5f@mongo_site222326?writeConcern=ma
 const mongoClient = new MongoClient(mongouri);
 /* FINE SEZIONE MONGODB ALEX */
 
+const stream = require('stream');
+
 const dbName = "SquealerDB";
 const squealCollection = "Squeals";
 const profileCollection = "Profiles";

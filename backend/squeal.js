@@ -8,8 +8,7 @@ const {
 const bodyParser = require('body-parser');
 const multer = require('multer');
 const upload = multer();
-const stream = require('stream');
-const { GridFSBucket } = require('mongodb');
+
 const {
     dbName,
     squealCollection,
@@ -962,7 +961,6 @@ app.get("/squeals/:id/media", async (req, res) => {
             return;
         }
 
-        //TODO TEST
         exportPic(squeal.media, res);
         /*
 
