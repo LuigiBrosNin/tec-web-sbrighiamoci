@@ -8,7 +8,6 @@ const mongouri = `mongodb://site222326:ui9aeG5f@mongo_site222326?writeConcern=ma
 const mongoClient = new MongoClient(mongouri);
 
 // packages & declarations
-const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -59,7 +58,6 @@ module.exports = (
     cors,
     dbName,
     database,
-    express,
     GridFSBucket,
     ObjectId,
     interval,
