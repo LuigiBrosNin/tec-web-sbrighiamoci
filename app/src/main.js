@@ -34,5 +34,5 @@ app.mount('#app');
 */
 fetch("https://site222326.tw.cs.unibo.it/user-check", { method: "GET"})
     .then(res => res.json())
-    .then(res => app.config.globalProperties.$user = res.user)
+    .then(res => app.config.globalProperties.$user = (res.user || null))
     .then(app.mount('#app')); // this have to be always the last action
