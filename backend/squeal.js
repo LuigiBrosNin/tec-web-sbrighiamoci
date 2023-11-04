@@ -249,7 +249,8 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
             is_private: false,
             mentions: [],
             channel_mentions: [],
-            keywords: []
+            keywords: [],
+            reply_to: ""
         }
 
         // checking boolean separately because in optionalFields it would be seen as string
@@ -322,7 +323,7 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
 
         }// check if the authos has enough credit 
         //TODO admin check, if it's an admin don't subtract credit
-        else if (newSqueal.is_private == false && (profile_author.credit[0] < char_cost || profile_author.credit[1] < char_cost || profile_author.credit[2] < char_cost) /*&& await !isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)*/) {
+        else if (false){//newSqueal.is_private == false && (profile_author.credit[0] < char_cost || profile_author.credit[1] < char_cost || profile_author.credit[2] < char_cost) /*&& await !isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)*/) {
             res.status(400).json({
                 message: "author does not have enough credit. available (g: " + profile_author.credit[0] + " s: " + profile_author.credit[1] + " m: " + profile_author.credit[2] + ") required: " + char_cost
             });
@@ -365,7 +366,7 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
         }, {
             $set: {
                 squeals_num: squeals_num,
-                list_squeal_id: squeals_list,
+                squeals_list: squeals_list,
                 credit: [
                     g,
                     s,
