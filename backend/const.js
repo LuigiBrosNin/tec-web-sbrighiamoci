@@ -11,9 +11,7 @@ const mongoClient = new MongoClient(mongouri);
 const path = require('path');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const session = require('express-session');
 const request = require('request');
-const cors = require('cors');
 const multer = require('multer');
 const stream = require('stream');
 const sharp = require('sharp');
@@ -55,7 +53,6 @@ module.exports = (
     collection_profiles,
     collection_squeals,
     cookieParser,
-    cors,
     dbName,
     database,
     GridFSBucket,

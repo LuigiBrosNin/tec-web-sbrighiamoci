@@ -2,9 +2,12 @@ global.rootDir = __dirname;
 
 const { isAuthorizedOrHigher, canLogIn, typeOfProfile, registerNewUser } = require("./backend/loginUtils.js");
 
-const { path, bodyParser, cookieParser, session, request } = require("./backend/const.js");
+const { request } = require("./backend/const.js");
 const express = require('express');
-const cors = require('cors');
+const path = require('path');
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
 const app = express();
 //const { interval } = require("./backend/const.js");
 
