@@ -66,6 +66,7 @@ async function importPic(pic, collection, name) {
                         media: uploadStream.id
                     }
                 });
+                console.log("updated squeal");
             } else {
                 collection.updateOne({
                     name: name

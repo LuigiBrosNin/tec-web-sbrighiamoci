@@ -248,7 +248,8 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
             mentions: [],
             channel_mentions: [],
             keywords: [],
-            reply_to: ""
+            reply_to: "",
+            media: ""
         }
 
         // checking boolean separately because in optionalFields it would be seen as string
@@ -962,7 +963,7 @@ app.get("/squeals/:id/media", async (req, res) => {
             return;
         }
 
-        exportPic(squeal.media, res);
+        await exportPic(squeal.media, res);
         /*
 
         // if the squeal is found, return its media
