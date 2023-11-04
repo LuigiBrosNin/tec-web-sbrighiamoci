@@ -24,15 +24,11 @@ const app = createApp(App);
 app.use(router);
 
 
-// vue does not support await at top level
-/*
+
 let user = await fetch("https://site222326.tw.cs.unibo.it/user-check", { method: "GET"});
 user = await user.json();
 app.config.globalProperties.$user = user.user;
 
+
+
 app.mount('#app');
-*/
-fetch("https://site222326.tw.cs.unibo.it/user-check", { method: "GET"})
-    .then(res => res.json())
-    .then(res => app.config.globalProperties.$user = (res.user || null))
-    .then(app.mount('#app')); // this have to be always the last action
