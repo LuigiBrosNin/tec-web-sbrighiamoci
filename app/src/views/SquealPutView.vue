@@ -42,7 +42,7 @@
       </div>
       <div v-if="media">
         <p>Uploaded file:</p>
-        <img v-if="mediaUrl" :src="mediaUrl" alt="uploaded file" />
+        <img v-if="mediaUrl" :src="mediaUrl" alt="uploaded file" style="max-width: 512px; max-height: 512px;" />
       </div>
       <div class="form-group">
         <label for="reply_to">Reply To:</label>
