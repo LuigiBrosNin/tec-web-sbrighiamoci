@@ -365,7 +365,7 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
         }, {
             $set: {
                 squeals_num: squeals_num,
-                list_squeal_id: squeals_list,
+                squeals_list: squeals_list,
                 credit: [
                     g,
                     s,
