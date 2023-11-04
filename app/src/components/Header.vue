@@ -1,6 +1,6 @@
 <template>
     <header>
-      <img alt="Squealer logo" class="logo" src="@/assets/logoSquealer.svg"/>
+      <img alt="Squealer logo" class="logo" src="https://site222326.tw.cs.unibo.it/images/logoSquealer.svg"/>
       <div class="title">
         <h2>Squealer</h2>
       </div>

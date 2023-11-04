@@ -15,8 +15,6 @@ const props = defineProps(['id', 'profile_json']);
     </div>
     <p>{{ bio }}</p>
 
-
-
     <ul class="nav nav-pills mb-3 flex-column flex-sm-row" id="pills-tab" role="tablist">
         <li class="nav-item flex-sm-fill" role="presentation">
             <button class="nav-link active" id="pills-squeals-tab" data-bs-toggle="pill" data-bs-target="#pills-squeals"
@@ -82,7 +80,7 @@ export default {
             this.bio = profileJson.bio;
             this.credit = profileJson.credit;
             this.creditLimits = profileJson.credit_limits;
-            this.squealsList = profileJson.squeals_list;
+            this.squealsList = profileJson.list_squeal_id;
             this.followersList = profileJson.followers_list;
             this.followingList = profileJson.following_list;
             this.accountType = profileJson.account_type;
