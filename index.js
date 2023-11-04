@@ -86,7 +86,7 @@ app.put("/signin", async (req, res) => {
 
 app.get("/user-check", async (req, res) => {
   console.log("user: " + req.session.user);
-  res.send(req.session.user);
+  res.json({ user: req.session.user });
 })
 
 app.use('/app', express.static(path.join(global.rootDir, 'app/dist/')));
