@@ -66,7 +66,6 @@ module.exports = (
     mongoClient,
     multer,
     path,
-    port,
     profileCollection,
     request,
     session,
