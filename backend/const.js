@@ -46,7 +46,6 @@ const CREDIT_LIMITS = [150, 500, 1000];
 const CM = 0.25;
 
 module.exports = (
-    BASE_SITE,
     CM,
     CREDIT_LIMITS,
     automationsCollection,

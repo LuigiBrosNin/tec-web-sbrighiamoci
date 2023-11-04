@@ -1,6 +1,5 @@
 global.rootDir = __dirname;
 
-
 const { isAuthorizedOrHigher, canLogIn, typeOfProfile, registerNewUser } = require("./backend/loginUtils.js");
 
 const { cors, path, express, bodyParser, cookieParser, session, request } = require("./backend/const.js");

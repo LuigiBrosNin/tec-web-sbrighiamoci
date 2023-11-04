@@ -20,21 +20,11 @@ const {
     typeOfProfile,
     isAuthorizedOrHigher
 } = require("./loginUtils.js");
-const bodyParser = require('body-parser');
 const {
-  dbName,
-  squealCollection,
-  channelCollection,
-  mongoClient,
-  automationsCollection
+    bodyParser,
+    mongoClient,
+    collection_automations
 } = require("./const.js");
-
-// connecting to the database
-mongoClient.connect();
-const database = mongoClient.db(dbName);
-const collection_squeals = database.collection(squealCollection);
-const collection_channels = database.collection(channelCollection);
-const collection_automations = database.collection(automationsCollection);
 
 const authData = {
     // Provide authentication data
