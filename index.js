@@ -4,6 +4,7 @@ const { isAuthorizedOrHigher, canLogIn, typeOfProfile, registerNewUser } = requi
 
 const { request } = require("./backend/const.js");
 const express = require('express');
+const cors = require('cors');
 const path = require('path');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
