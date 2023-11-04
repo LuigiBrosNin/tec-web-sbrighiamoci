@@ -92,12 +92,8 @@ app.use('/app', express.static(path.join(global.rootDir, 'app/dist/')));
 app.use('/app/*', express.static(path.join(global.rootDir, 'app/dist/')));
 app.use('/smm', express.static(path.join(global.rootDir, 'smm/build/')));
 app.use('/smm/*', express.static(path.join(global.rootDir, 'smm/build/')));
-app.use('/images', express.static('/images/', {
-  index: false,
-  setHeaders: function (res, path) {
-    res.set("Content-type", "image");
-  },
-}));
+
+app.use('/images', express.static(path.join(global.rootDir, 'images/')));
 app.use('/icons', express.static(path.join(global.rootDir, 'icons/')));
 
 // ci serve per pubblicare i nostri sorgenti
