@@ -12,7 +12,6 @@ import Navbar from "@/components/Navbar.vue"
       <Navbar></Navbar>
 
       <div class="content">
-        <p>user: {{ $user }}</p>
         <RouterView />
       </div>
     </div>

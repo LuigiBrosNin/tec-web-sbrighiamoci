@@ -3,7 +3,6 @@
 </script>
 
 <template>
-  <p>home</p>
   <Squeal id="Luizo2"></Squeal>
   <Squeal id="Luizo1"></Squeal>
 </template>

@@ -18,7 +18,7 @@
       <img class="icon not_selected" src="https://site222326.tw.cs.unibo.it/icons/message-circle-dots-svgrepo-com.svg" />
       <p>Messages</p>
     </RouterLink>
-    <RouterLink to="/profile" class="router_link">
+    <RouterLink :to="`/profile/${$user}`" class="router_link">
       <img class="icon not_selected" src="https://site222326.tw.cs.unibo.it/icons/user-svgrepo-com.svg" />
       <p>{{ $user || "Profile" }}</p>
     </RouterLink>

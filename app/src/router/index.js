@@ -31,9 +31,10 @@ const router = createRouter({
       component: MessagesView
     },
     {
-      path: '/profile',
+      path: '/profile/:id',
       name: 'profile',
-      component: ProfileView
+      component: ProfileView,
+      props: true
     },
     {
       path: '/uploader',
@@ -44,7 +45,7 @@ const router = createRouter({
       path: '/squealPut',
       name: 'squealPut',
       component: SquealPutView
-    }
+    },
   ]
 })
 
