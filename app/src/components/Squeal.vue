@@ -33,7 +33,7 @@
             </button>
         </div>
 
-        <a :href="`/squeal/${id}`">See more...</a>
+        <RouterLink :to="`/squeal/${id}`">See more...</RouterLink>
     </div>
     <div class="squeal_container" v-else>
         <p>Squeal not found</p>
