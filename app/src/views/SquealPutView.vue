@@ -2,7 +2,7 @@
   <div class="container">
     <form @submit.prevent="submitForm" class="mt-5">
       <div class="form-group">
-        <label for="author">Author:</label>
+        <label for="author">Author:</label> <!-- TODO remove author field and use $user in scripts -->
         <input
           type="text"
           id="author"

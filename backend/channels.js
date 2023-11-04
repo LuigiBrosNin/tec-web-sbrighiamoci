@@ -1,8 +1,4 @@
 /* -------------------------------- SETTINGS -------------------------------- */
-
-const {
-  parse
-} = require("path");
 const {
   app
 } = require("../index.js");
@@ -10,23 +6,22 @@ const {
   typeOfProfile,
   isAuthorizedOrHigher
 } = require("./loginUtils.js");
-const bodyParser = require('body-parser');
 const {
+  bodyParser,
+  collection_channels,
+  collection_profiles,
+  collection_squeals,
+  database,
   dbName,
-  squealCollection,
-  profileCollection,
-  channelCollection,
+  GridFSBucket,
+  ObjectId,
   mongoClient,
-  CM
+  muter,
+  path,
+  sharp,
+  stream,
+  upload
 } = require("./const.js");
-
-// connecting to the database
-mongoClient.connect();
-const database = mongoClient.db(dbName);
-const collection_squeals = database.collection(squealCollection);
-const collection_channels = database.collection(channelCollection);
-const collection_profiles = database.collection(profileCollection);
-
 
 /* ------------------------------- FUNCTIONS -------------------------------- */
 
@@ -134,7 +129,7 @@ app.get("/channels/:name", async (req, res) => {
 //* PUT
 // creates a new channel with the specified name
 // body parameters: propic, bio (users)
-// body parameters: type, rules (array of strings) (only admins)
+// body parameters: type     (only admins)
 
 //TODO ADD AUTHORIZATION
 app.put("/channels/:name", async (req, res) => {
@@ -156,8 +151,7 @@ app.put("/channels/:name", async (req, res) => {
       is_deleted: false
     };
 
-    if (authorized) {
-      channel.rules = req.body.rules;
+    if (authorized && (req.body.type === "private" || req.body.type === "privileged")) {
       channel.type = req.body.type;
     }
 
@@ -440,140 +434,6 @@ app.put("/channels/:name/subscribers_list", async (req, res) => {
     });
   }
 });*/
-
-
-/* -------------------------------------------------------------------------- */
-/*                           /CHANNELS/:NAME/RULES                            */
-/*                             GET, PUT, DELETE                               */
-/* -------------------------------------------------------------------------- */
-
-//* GET
-// returns the rules of the channel
-app.get("/channels/:name/rules", async (req, res) => {
-  try {
-    const channelName = req.params.name;
-
-    await mongoClient.connect();
-    const channel = await collection_channels.findOne({
-      name: channelName
-    });
-
-    if (channel.is_deleted || channel === null) {
-      res.status(404).json({
-        message: "Channel not found."
-      });
-      return;
-    }
-
-    res.status(200).json(channel.rules);
-  } catch (error) {
-    res.status(500).json({
-      message: error.message
-    });
-  }
-});
-
-
-
-//* PUT
-// updates the rules of the channel
-// body parameters: rules (array of strings), has to be complete, as the old list will be overwritten
-//TODO ADD AUTHORIZATION (ADMIN OR OWNER)
-app.put("/channels/:name/rules", async (req, res) => {
-  try {
-    const channelName = req.params.name;
-    const authorized = true //TODO ADD AUTHORIZATION
-
-    const channel = await collection_channels.findOne({
-      name: channelName
-    });
-
-    if (channel.is_deleted || channel === null) {
-      res.status(404).json({
-        message: "Channel not found."
-      });
-      return;
-    }
-
-    if (!authorized) {
-      res.status(401).json({
-        message: "not authorized to modify this channel's rules"
-      });
-      return;
-    }
-
-    await mongoClient.connect();
-    const result = await collection_channels.updateOne({
-      name: channelName
-    }, {
-      $set: {
-        rules: req.body.rules
-      }
-    });
-
-    if (result.modifiedCount === 0) {
-      res.status(404).json({
-        message: "channel not found"
-      });
-      return;
-    }
-
-    res.status(200).json({
-      message: "rules updated"
-    });
-
-  } catch (error) {
-    res.status(500).json({
-      message: error.message
-    });
-  }
-});
-
-//* DELETE
-// deletes the rules of the channel
-//TODO ADD AUTHORIZATION (ADMIN OR OWNER)
-app.delete("/channels/:name/rules", async (req, res) => {
-  try {
-    const channelName = req.params.name;
-    const authorized = true //TODO ADD AUTHORIZATION
-
-    const channel = await collection_channels.findOne({
-      name: channelName
-    });
-
-    if (!authorized) {
-      res.status(401).json({
-        message: "not authorized to delete this channel's rules"
-      });
-      return;
-    }
-
-    await mongoClient.connect();
-    const result = await collection_channels.updateOne({
-      name: channelName
-    }, {
-      $set: {
-        rules: []
-      }
-    });
-
-    if (result.modifiedCount === 0) {
-      res.status(404).json({
-        message: "channel not found"
-      });
-      return;
-    }
-
-    res.status(200).json({
-      message: "rules deleted"
-    });
-
-  } catch (error) {
-    res.status(500).json({
-      message: error.message
-    });
-  }
-});
 
 /* -------------------------------------------------------------------------- */
 /*                         /CHANNELS/:NAME/MOD_LIST                           */

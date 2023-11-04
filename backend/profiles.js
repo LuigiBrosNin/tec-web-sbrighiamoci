@@ -1,24 +1,25 @@
 const {
-    parse
-} = require("path");
-const multer = require('multer');
-const sharp = require('sharp');
-
-const {
     app
 } = require("../index.js");
 const {
     typeOfProfile,
     isAuthorizedOrHigher
 } = require("./loginUtils.js");
-const bodyParser = require('body-parser');
 const {
+    bodyParser,
+    CREDIT_LIMITS,
+    collection_channels,
+    collection_profiles,
+    database,
     dbName,
-    squealCollection,
-    profileCollection,
-    channelCollection,
+    GridFSBucket,
+    ObjectId,
     mongoClient,
-    CREDIT_LIMITS
+    muter,
+    path,
+    sharp,
+    stream,
+    upload
 } = require("./const.js");
 
 // connecting to the database
@@ -842,8 +843,6 @@ app.put("/profiles/:name/following_channels/", async (req, res) => {
 /*                                GET, DELETE                                 */
 /* -------------------------------------------------------------------------- */
 
-const { GridFSBucket, ObjectId } = require('mongodb');
-
 //* GET
 // ritorna la propic del profilo con nome name
 // ritorna 404 se non esiste
@@ -897,14 +896,10 @@ app.get("/profiles/:name/propic", async (req, res) => {
     }
 });
 
-const stream = require('stream');
-
 //* PUT
 // cambia la propic del profilo con nome name
 // caricando un file nel database nel campo propic (req.file)
-const upload = multer({
-    storage: multer.memoryStorage()
-});
+
 
 app.put('/profiles/:name/propic', upload.single('file'), async (req, res) => {
     try {

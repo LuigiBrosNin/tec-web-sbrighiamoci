@@ -1,34 +1,26 @@
 const {
-    parse
-} = require("path");
-const {
     app
 } = require("../index.js");
 const {
     typeOfProfile,
     isAuthorizedOrHigher
 } = require("./loginUtils.js");
-const bodyParser = require('body-parser');
-const multer = require('multer');
-const upload = multer();
-const stream = require('stream');
-const { GridFSBucket } = require('mongodb');
 const {
+    bodyParser,
+    CM,
+    collection_channels,
+    collection_profiles,
+    collection_squeals,
+    database,
     dbName,
-    squealCollection,
-    profileCollection,
-    channelCollection,
+    GridFSBucket,
+    ObjectId,
     mongoClient,
-    CM
+    muter,
+    path,
+    stream,
+    upload
 } = require("./const.js");
-
-// connecting to the database
-mongoClient.connect();
-const database = mongoClient.db(dbName);
-const collection_squeals = database.collection(squealCollection);
-const collection_profiles = database.collection(profileCollection);
-const collection_channels = database.collection(channelCollection);
-
 /* -------------------------------------------------------------------------- */
 /*                                 /SQUEALS/                                  */
 /*                                 GET & PUT                                  */
