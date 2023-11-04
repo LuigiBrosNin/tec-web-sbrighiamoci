@@ -63,7 +63,6 @@ module.exports = (
     path,
     profileCollection,
     request,
-    session,
     sharp,
     squealCollection,
     stream,
