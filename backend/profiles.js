@@ -2,8 +2,12 @@ const {
     parse
 } = require("path");
 const multer = require('multer');
+const stream = require('stream');
 const sharp = require('sharp');
-
+const upload = multer({
+    storage: multer.memoryStorage()
+});
+const { GridFSBucket, ObjectId } = require('mongodb');
 const {
     app
 } = require("../index.js");
@@ -24,7 +28,6 @@ const {
 // connecting to the database
 mongoClient.connect();
 const database = mongoClient.db(dbName);
-const collection_squeals = database.collection(squealCollection);
 const collection_profiles = database.collection(profileCollection);
 const collection_channels = database.collection(channelCollection);
 
@@ -842,7 +845,6 @@ app.put("/profiles/:name/following_channels/", async (req, res) => {
 /*                                GET, DELETE                                 */
 /* -------------------------------------------------------------------------- */
 
-const { GridFSBucket, ObjectId } = require('mongodb');
 
 //* GET
 // ritorna la propic del profilo con nome name
@@ -897,14 +899,11 @@ app.get("/profiles/:name/propic", async (req, res) => {
     }
 });
 
-const stream = require('stream');
+
 
 //* PUT
 // cambia la propic del profilo con nome name
 // caricando un file nel database nel campo propic (req.file)
-const upload = multer({
-    storage: multer.memoryStorage()
-});
 
 app.put('/profiles/:name/propic', upload.single('file'), async (req, res) => {
     try {
