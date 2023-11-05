@@ -143,7 +143,7 @@ export default {
       this.charCount = newText.length; // Update charCount when text changes
       const credit_fields = ["g","s","m"]
       for(const field of credit_fields) {
-        this.temp_credit[field] = this.credit[field] - charCount;
+        this.temp_credits[field] = this.credits[field] - charCount;
       }
     },
   },
