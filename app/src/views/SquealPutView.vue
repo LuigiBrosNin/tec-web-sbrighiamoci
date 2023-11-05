@@ -90,7 +90,7 @@ export default {
   // mounted: function that gets called when page loads
   mounted() {
     // retrieve credits
-    profile = "Luizo" // TODO replace with $user
+    let profile = "Luizo" // TODO replace with $user
     axios
       .get("/profiles/"+profile)
       .then((response) => {
