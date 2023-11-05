@@ -95,8 +95,8 @@ export default {
       .get("/profiles/"+profile)
       .then((response) => {
         console.log("response: ", response.data)
-        this.credits = response.data.credits;
-        this.temp_credits = response.data.credits;
+        this.credits = response.data.credit;
+        this.temp_credits = response.data.credit;
         console.log("credits: ", this.credits);
       })
       .catch((error) => {
