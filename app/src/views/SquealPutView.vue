@@ -19,6 +19,18 @@
             <span v-for="credit in temp_credits" :key="credit.id">
               {{ credit }}&nbsp;&nbsp;
             </span>
+            <span v-if="Math.min(...Object.values(temp_credits)) < 0">
+              <button class="btn btn-primary">
+                Buy
+                {{ Math.abs(Math.min(...Object.values(temp_credits))) }} credits
+                for
+                {{
+                  (
+                    Math.abs(Math.min(...Object.values(temp_credits))) * 0.01
+                  ).toFixed(2)
+                }}€
+              </button>
+            </span>
           </div>
         </div>
         <label for="text">Text:</label>
@@ -48,6 +60,9 @@
           accept="image/*"
           class="form-control-file"
         />
+        <button v-if="media" @click="media = null" class="btn btn-danger">
+          X
+        </button>
       </div>
       <div v-if="media">
         <p>Uploaded file:</p>
@@ -58,6 +73,7 @@
           style="max-width: 512px; max-height: 512px"
         />
       </div>
+      <p v-else>No file selected</p>
       <div class="form-group">
         <label for="reply_to">Reply To:</label>
         <input
@@ -84,17 +100,18 @@ export default {
       reply_to: "",
       credits: [],
       temp_credits: [],
-      charCount: 0
+      charCount: 0,
+      media_value: 0
     };
   },
   // mounted: function that gets called when page loads
   mounted() {
     // retrieve credits
-    const profile = "Luizo" // TODO replace with $user
+    const profile = "Luizo"; // TODO replace with $user
     axios
-      .get("/profiles/"+profile)
+      .get("https://site222326.tw.cs.unibo.it/profiles/" + profile)
       .then((response) => {
-        console.log("response: ", response.data)
+        console.log("response: ", response.data);
         this.credits = response.data.credit;
         this.temp_credits = response.data.credit;
         console.log("credits: ", this.credits);
@@ -119,7 +136,7 @@ export default {
         text: this.text,
         receiver: this.receiver,
         reply_to: this.reply_to,
-        is_private: false,
+        is_private: false
       };
       const formData = new FormData();
       formData.append("json", JSON.stringify(jsonBody));
@@ -128,24 +145,40 @@ export default {
       console.log("sending body: ", formData);
       // Send formData to server using axios or fetch
       axios
-        .put("/squeals/", formData)
+        .put("https://site222326.tw.cs.unibo.it/squeals/", formData)
         .then((response) => {
           console.log(response.data);
         })
         .catch((error) => {
           console.log(error);
         });
+    },
+    updateCreditsOnScreen(newText){
+      if(newText != null){
+        this.charCount = newText.length; // Update charCount when text changes
+      }
+        this.temp_credits = JSON.parse(JSON.stringify(this.credits)); // Create a deep copy of credits
+      for (let field in this.temp_credits) {
+        this.temp_credits[field] -= this.charCount + this.media_value;
+      }
+      console.log("credits: ", this.credits);
     }
   },
-    // watch: listeners
-    watch: {
+  // watch: listeners
+  watch: {
     text(newText) {
-      this.charCount = newText.length; // Update charCount when text changes
-      const credit_fields = ["g","s","m"]
-      for(const field of credit_fields) {
-        this.temp_credits[field] = this.credits[field] - this.charCount;
-      }
+      console.log("text changed: ", newText);
+      this.updateCreditsOnScreen(newText);
+    },
+    media(newMedia) {
+      console.log("media changed: ", newMedia);
+        if (newMedia) this.media_value = 125;
+        else
+          this.media_value = 0;
+
+        console.log("media value: ", this.media_value);
+        this.updateCreditsOnScreen(null);
     },
   },
-}
+};
 </script>
