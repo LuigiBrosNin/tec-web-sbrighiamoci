@@ -141,7 +141,7 @@ export default {
     watch: {
     text(newText) {
       this.charCount = newText.length; // Update charCount when text changes
-      credit_fields = ["g","s","m"]
+      const credit_fields = ["g","s","m"]
       for(field of credit_fields) {
         this.temp_credit[field] = this.credit[field] - charCount;
       }
