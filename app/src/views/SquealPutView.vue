@@ -2,7 +2,8 @@
   <div class="container">
     <form @submit.prevent="submitForm" class="mt-5">
       <div class="form-group">
-        <label for="author">Author:</label> <!-- TODO remove author field and use $user in scripts -->
+        <label for="author">Author:</label>
+        <!-- TODO remove author field and use $user in scripts -->
         <input
           type="text"
           id="author"
@@ -12,6 +13,14 @@
         />
       </div>
       <div class="form-group">
+        <div>
+          <h3>Credits:</h3>
+          <ul>
+            <li v-for="credit in temp_credits" :key="credit.id">
+              {{ credit }}
+            </li>
+          </ul>
+        </div>
         <label for="text">Text:</label>
         <textarea
           id="text"
@@ -42,7 +51,12 @@
       </div>
       <div v-if="media">
         <p>Uploaded file:</p>
-        <img v-if="mediaUrl" :src="mediaUrl" alt="uploaded file" style="max-width: 512px; max-height: 512px;" />
+        <img
+          v-if="mediaUrl"
+          :src="mediaUrl"
+          alt="uploaded file"
+          style="max-width: 512px; max-height: 512px"
+        />
       </div>
       <div class="form-group">
         <label for="reply_to">Reply To:</label>
@@ -68,7 +82,31 @@ export default {
       receiver: "",
       media: null,
       reply_to: "",
+      credits: [],
+      temp_credits: [],
+      charCount: 0
     };
+  },
+  // mounted: function that gets called when page loads
+  mounted() {
+    // retrieve credits
+    profile = "Luizo" // TODO replace with $user
+    axios
+      .get("/profiles/"+profile)
+      .then((response) => {
+        this.credits = response.data.credits;
+        this.temp_credits = response.data.credits;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  },
+  // watch: listeners
+  watch: {
+    text(newText) {
+      this.charCount = newText.length; // Update charCount when text changes
+      updateCreditsOnScreen();
+    },
   },
   computed: {
     mediaUrl() {
@@ -103,6 +141,12 @@ export default {
           console.log(error);
         });
     },
-  },
-};
+    updateCreditsOnScreen() {
+      credit_fields = ["g","s","m"]
+      for(field of credit_fields) {
+        this.temp_credit[field] = this.credit[field] - charCount;
+      }
+    }
+  }
+}
 </script>
