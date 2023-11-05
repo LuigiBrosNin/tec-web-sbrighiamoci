@@ -90,12 +90,13 @@ export default {
   // mounted: function that gets called when page loads
   mounted() {
     // retrieve credits
-    let profile = "Luizo" // TODO replace with $user
+    const profile = "Luizo" // TODO replace with $user
     axios
       .get("/profiles/"+profile)
       .then((response) => {
         this.credits = response.data.credits;
         this.temp_credits = response.data.credits;
+        console.log("credits: ", this.credits);
       })
       .catch((error) => {
         console.log(error);
