@@ -94,6 +94,7 @@ export default {
     axios
       .get("/profiles/"+profile)
       .then((response) => {
+        console.log("response: ", response.data)
         this.credits = response.data.credits;
         this.temp_credits = response.data.credits;
         console.log("credits: ", this.credits);
