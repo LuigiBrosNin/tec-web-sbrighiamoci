@@ -14,12 +14,12 @@
       </div>
       <div class="form-group">
         <div>
-          <h3>Credits:</h3>
-          <ul>
-            <li v-for="credit in temp_credits" :key="credit.id">
-              {{ credit }}
-            </li>
-          </ul>
+          <p>Credits:</p>
+          <div>
+            <span v-for="credit in temp_credits" :key="credit.id">
+              {{ credit }}&nbsp;&nbsp;
+            </span>
+          </div>
         </div>
         <label for="text">Text:</label>
         <textarea
@@ -103,13 +103,6 @@ export default {
         console.log(error);
       });
   },
-  // watch: listeners
-  watch: {
-    text(newText) {
-      this.charCount = newText.length; // Update charCount when text changes
-      updateCreditsOnScreen();
-    },
-  },
   computed: {
     mediaUrl() {
       return URL.createObjectURL(this.media);
@@ -142,13 +135,17 @@ export default {
         .catch((error) => {
           console.log(error);
         });
-    },
-    updateCreditsOnScreen() {
+    }
+  },
+    // watch: listeners
+    watch: {
+    text(newText) {
+      this.charCount = newText.length; // Update charCount when text changes
       credit_fields = ["g","s","m"]
       for(field of credit_fields) {
         this.temp_credit[field] = this.credit[field] - charCount;
       }
-    }
-  }
+    },
+  },
 }
 </script>
