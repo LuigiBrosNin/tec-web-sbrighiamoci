@@ -6,9 +6,11 @@
         <div class="signup">
             <h2 class="form-title" id="signup"><span>or</span>Sign up</h2>
             <div class="form-holder">
-                <input type="text" name="username" id="usernameInputSignIn" class="input" placeholder="Name" />
-                <input type="email" name="email" id="emailInputSignIn" class="input" placeholder="Email" />
-                <input type="password" name="password" id="passwordInputSignIn" class="input" placeholder="Password" onclick="{event.preventDefault(); sub()}"/>
+                <form>
+                    <input type="text" name="username" id="usernameInputSignIn" class="input" placeholder="Name" />
+                    <input type="email" name="email" id="emailInputSignIn" class="input" placeholder="Email" />
+                    <input type="password" name="password" id="passwordInputSignIn" class="input" placeholder="Password" onclick="{event.preventDefault(); sub()}"/>
+                </form>
             </div>
             <button type="submit" class="submit-btn">Sign up</button>
         </div>
@@ -16,8 +18,10 @@
             <div class="center">
                 <h2 class="form-title" id="login"><span>or</span>Log in</h2>
                 <div class="form-holder">
-                    <input type="email" name="username" class="input" placeholder="Email" id="usernameInput"/>
-                    <input type="password" name="password" id="passwordInput" class="input" placeholder="Password" />
+                    <form>
+                        <input type="email" name="username" class="input" placeholder="Email" id="usernameInput"/>
+                        <input type="password" name="password" id="passwordInput" class="input" placeholder="Password" />
+                    </form>
                 </div>
                 <button type="submit" class="submit-btn" onclick="{event.preventDefault(); signin()}">Log in</button>
             </div>
