@@ -190,6 +190,7 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
         const reqBody = JSON.parse(req.body.json);
 
         const media = req.file;
+        const location = req.body.location;
 
         if (!authorized) {
             res.status(401).json({
@@ -249,7 +250,8 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
             channel_mentions: [],
             keywords: [],
             reply_to: "",
-            media: ""
+            media: "",
+            location: {}
         }
 
         // checking boolean separately because in optionalFields it would be seen as string
@@ -258,7 +260,8 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
         }
 
         const optionalFields = [
-            "reply_to"
+            "reply_to",
+            "location"
         ];
 
         // Check if the optional fields are present in the request body
@@ -285,6 +288,10 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
 
         // if the media field is present, calculate the cost of the media
         if (media != null) {
+            char_cost += 125;
+        }
+
+        if (location != null && location != {}) {
             char_cost += 125;
         }
 

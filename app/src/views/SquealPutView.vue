@@ -137,7 +137,6 @@ export default {
       media_value: 0,
       map_value: 0,
       location: null,
-      map: null,
     };
   },
   // mounted: function that gets called when page loads
