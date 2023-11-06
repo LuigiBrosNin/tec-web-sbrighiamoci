@@ -51,7 +51,35 @@
           class="form-control"
         />
       </div>
-      <div class="form-group">
+      <div class="row">
+        <div class="col">
+          <div class="form-group">
+            <button @click="getGeolocation" class="btn btn-info">
+              Include Geolocation in your Squeal
+            </button>
+            <button
+              v-if="location"
+              @click="
+                {
+                  location = null;
+                }
+              "
+              class="btn btn-warning"
+            >
+              X
+            </button>
+            <p v-if="location">
+            Latitude: {{ location.latitude }}, Longitude:
+            {{ location.longitude }}
+          </p>
+          <p v-else>No Location will be sent</p>
+          <div id="map" style="height: 200px;"></div>
+          </div>
+        </div>
+
+        <div class="col">
+          <!-- Media form group goes here -->
+          <div class="form-group">
         <label for="media">Media:</label>
         <input
           type="file"
@@ -70,10 +98,12 @@
           v-if="mediaUrl"
           :src="mediaUrl"
           alt="uploaded file"
-          style="max-width: 512px; max-height: 512px"
+          style="max-width: 50vw; max-height: 50vh"
         />
       </div>
       <p v-else>No file selected</p>
+        </div>
+      </div>
       <div class="form-group">
         <label for="reply_to">Reply To:</label>
         <input
@@ -90,6 +120,9 @@
 
 <script>
 import axios from "axios";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+
 export default {
   data() {
     return {
@@ -101,7 +134,10 @@ export default {
       credits: [],
       temp_credits: [],
       charCount: 0,
-      media_value: 0
+      media_value: 0,
+      map_value: 0,
+      location: null,
+      map: null,
     };
   },
   // mounted: function that gets called when page loads
@@ -136,7 +172,8 @@ export default {
         text: this.text,
         receiver: this.receiver,
         reply_to: this.reply_to,
-        is_private: false
+        is_private: false,
+        location: this.location,
       };
       const formData = new FormData();
       formData.append("json", JSON.stringify(jsonBody));
@@ -153,16 +190,39 @@ export default {
           console.log(error);
         });
     },
-    updateCreditsOnScreen(newText){
-      if(newText != null){
+    updateCreditsOnScreen(newText) {
+      if (newText != null) {
         this.charCount = newText.length; // Update charCount when text changes
       }
-        this.temp_credits = JSON.parse(JSON.stringify(this.credits)); // Create a deep copy of credits
+      this.temp_credits = JSON.parse(JSON.stringify(this.credits)); // Create a deep copy of credits
       for (let field in this.temp_credits) {
-        this.temp_credits[field] -= this.charCount + this.media_value;
+        this.temp_credits[field] -= this.charCount + this.media_value + this.map_value;
       }
       console.log("credits: ", this.credits);
-    }
+    },
+    getGeolocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((position) => {
+          this.location = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          };
+          this.showMap();
+        });
+      } else {
+        alert("Geolocation is not supported by this browser.");
+      }
+    },
+    showMap() {
+      const map = L.map("map").setView(
+        [this.location.latitude, this.location.longitude],
+        13
+      );
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+      }).addTo(map);
+      L.marker([this.location.latitude, this.location.longitude]).addTo(map);
+    },
   },
   // watch: listeners
   watch: {
@@ -172,12 +232,19 @@ export default {
     },
     media(newMedia) {
       console.log("media changed: ", newMedia);
-        if (newMedia) this.media_value = 125;
-        else
-          this.media_value = 0;
+      if (newMedia) this.media_value = 125;
+      else this.media_value = 0;
 
-        console.log("media value: ", this.media_value);
-        this.updateCreditsOnScreen(null);
+      console.log("media value: ", this.media_value);
+      this.updateCreditsOnScreen(null);
+    },
+    location(newLocation) {
+      console.log("location changed: ", newLocation);
+      if (newLocation) this.map_value = 125;
+      else this.map_value = 0;
+
+      console.log("map value: ", this.map_value);
+      this.updateCreditsOnScreen(null);
     },
   },
 };

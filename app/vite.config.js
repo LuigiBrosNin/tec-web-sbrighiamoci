@@ -34,6 +34,9 @@ export default defineConfig({
   },
   server: {
     open: './vite/index.html',
+    fs: {
+      allow: ['../node_modules/leaflet', './']
+    }
   },
   esbuild: {
     supported: {
