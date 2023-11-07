@@ -444,7 +444,7 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
 
         if(channel_receiver != null && channel_receiver != "") {
             // add the squeal to the channel's squeals_list
-            fetch("https://site222326.tw.cs.unibo.it/channels/" + channel_receiver.name + "/squeal_list", {
+            fetch("https://site222326.tw.cs.unibo.it/channels/" + channel_receiver.name + "/squeals_list", {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
