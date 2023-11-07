@@ -69,39 +69,39 @@
               X
             </button>
             <p v-if="location">
-            Latitude: {{ location.latitude }}, Longitude:
-            {{ location.longitude }}
-          </p>
-          <p v-else>No Location will be sent</p>
-          <div id="map" style="height: 200px;"></div>
+              Latitude: {{ location.latitude }}, Longitude:
+              {{ location.longitude }}
+            </p>
+            <p v-else>No Location will be sent</p>
+            <div id="map" style="height: 200px"></div>
           </div>
         </div>
 
         <div class="col">
           <!-- Media form group goes here -->
           <div class="form-group">
-        <label for="media">Media:</label>
-        <input
-          type="file"
-          id="media"
-          @change="handleFileUpload"
-          accept="image/*"
-          class="form-control-file"
-        />
-        <button v-if="media" @click="media = null" class="btn btn-danger">
-          X
-        </button>
-      </div>
-      <div v-if="media">
-        <p>Uploaded file:</p>
-        <img
-          v-if="mediaUrl"
-          :src="mediaUrl"
-          alt="uploaded file"
-          style="max-width: 50vw; max-height: 50vh"
-        />
-      </div>
-      <p v-else>No file selected</p>
+            <label for="media">Media:</label>
+            <input
+              type="file"
+              id="media"
+              @change="handleFileUpload"
+              accept="image/*"
+              class="form-control-file"
+            />
+            <button v-if="media" @click="media = null" class="btn btn-danger">
+              X
+            </button>
+          </div>
+          <div v-if="media">
+            <p>Uploaded file:</p>
+            <img
+              v-if="mediaUrl"
+              :src="mediaUrl"
+              alt="uploaded file"
+              style="max-width: 50vw; max-height: 50vh"
+            />
+          </div>
+          <p v-else>No file selected</p>
         </div>
       </div>
       <div class="form-group">
@@ -195,7 +195,8 @@ export default {
       }
       this.temp_credits = JSON.parse(JSON.stringify(this.credits)); // Create a deep copy of credits
       for (let field in this.temp_credits) {
-        this.temp_credits[field] -= this.charCount + this.media_value + this.map_value;
+        this.temp_credits[field] -=
+          this.charCount + this.media_value + this.map_value;
       }
       console.log("credits: ", this.credits);
     },
@@ -220,7 +221,14 @@ export default {
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 19,
       }).addTo(map);
-      L.marker([this.location.latitude, this.location.longitude]).addTo(map);
+      // Create a new icon
+      const customIcon = L.icon({
+        iconUrl: "https://site222326.tw.cs.unibo.it/icons/squealer_marker.png",
+        iconSize: [38, 95], // size of the icon
+        iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
+        popupAnchor: [-3, -76], // point from which the popup should open relative to the iconAnchor
+      });
+      L.marker([this.location.latitude, this.location.longitude], {icon: customIcon}).addTo(map);
     },
   },
   // watch: listeners
