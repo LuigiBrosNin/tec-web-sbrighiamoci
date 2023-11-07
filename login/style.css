@@ -1,0 +1,88 @@
+body {
+  background: linear-gradient(to bottom, #ffffff, #bcbcbc);
+  color: white;
+  text-align: center;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+.btnsArea {
+  margin-top: 10vh;
+}
+
+.btns {
+  background-color: rgb(237, 144, 57) !important;
+}
+
+.btns:hover {
+  background-color: rgb(255, 157, 44) !important; 
+}
+
+.squealerLogoTitle {
+  color: #ff8900ff;
+  -webkit-text-stroke: 1px #c06700ff;
+  font-size: 3.5vh;
+}
+
+h1 {
+  font-size: 36px;
+  margin-bottom: 20px;
+}
+
+#logoutButton {
+  background-color: #D9534F;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.nav-link {
+  background-color: #54616f;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 0;
+  text-align: center;
+  opacity: 0.65;
+}
+
+.nav-link.active {
+  background-color: #b37100;
+  opacity: 1;
+}
+
+.tab-pane {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+form {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+input[type="submit"] {
+  background-color: #ff8900ff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+input[type="submit"]:hover {
+  background-color: rgb(255, 157, 44);
+}
