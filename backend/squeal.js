@@ -554,7 +554,7 @@ app.get("/feed/", async (req, res) => {
         const feed = await database.collection(squealCollection).find({
             $or: [{
                     receiver: {
-                        $in: ["Canale_Dei_Conigli"]//profile.following_channels
+                        $in: profile.following_channels
                     }
                 },
                 {
@@ -569,13 +569,11 @@ app.get("/feed/", async (req, res) => {
                 }
             ],
             is_private: false
-        }).sort({date: 1}) // ordered chronological order
+        }).sort({date: -1}) // ordered chronological order
             .skip(startIndex) // starting from startIndex
             .limit(endIndex) // returns endIndex squeals
             .toArray(); // returns the squeals as an array
 
-
-        console.log('Feed:', JSON.stringify(feed));
         res.status(200).json(feed); // returns the squeals
 
     } catch (error) {
