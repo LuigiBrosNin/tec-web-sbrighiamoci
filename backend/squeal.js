@@ -436,6 +436,10 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
             console.log("imported media: " + imported);
         }
 
+        const channel_receiver = await collection_channels.findOne({
+            name: newSqueal.receiver
+        });
+
         if(channel_receiver != null && channel_receiver != "") {
             // add the squeal to the channel's squeals_list
             fetch("https://site222326.tw.cs.unibo.it/channels/" + channel_receiver.name + "/squeal_list", {
