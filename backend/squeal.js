@@ -550,8 +550,6 @@ app.get("/feed/", async (req, res) => {
             name: author
         });
 
-        console.log('Profile:', JSON.stringify(profile));
-
         // get the list of followed profiles and channels
         const feed = database.collection(squealCollection).find({
             $or: [{
@@ -571,7 +569,7 @@ app.get("/feed/", async (req, res) => {
                 }
             ],
             is_private: false
-        }).sort({date: -1}) // ordered inverse chronological order
+        })/*.sort({date: -1})*/ // ordered inverse chronological order
             .skip(startIndex) // starting from startIndex
             .limit(endIndex) // returns endIndex squeals
             .toArray(); // returns the squeals as an array
