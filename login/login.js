@@ -187,7 +187,7 @@ function addChannelTest(param_name) {
     bio: "This is the luizo channel",
     propic: "some uri",
     rules: ["getBunnyPics()", "getCatPics()", "getDogPics()"],
-    type: "priviledged",
+    type: "required",
 
 
     // useless fields
