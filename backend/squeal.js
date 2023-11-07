@@ -569,7 +569,7 @@ app.get("/feed/", async (req, res) => {
                 }
             ],
             is_private: false
-        }).sort({date: -1}) // ordered inverse chronological order
+        }).sort({date: 1}) // ordered chronological order
             .skip(startIndex) // starting from startIndex
             .limit(endIndex) // returns endIndex squeals
             .toArray(); // returns the squeals as an array
