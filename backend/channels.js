@@ -159,14 +159,14 @@ app.put("/channels/:name", async (req, res) => {
       propic: "",
     };
 
-    if (authorized && (req.body.type === "private" || req.body.type === "privileged")){
+    if (authorized && (req.body.type === "private" || req.body.type === "privileged" || req.body.type === "required")){
       channel.type = req.body.type;
     }
 
     // if type = private, set name to all lowercase
     if (channel.type === "private") {
       channel.name = channel.name.toLowerCase();
-    } else if (channel.type === "privileged") {
+    } else if (channel.type === "privileged" || channel.type === "required") {
       channel.name = channel.name.toUpperCase();
     }
 
@@ -638,6 +638,7 @@ app.put("/channels/:name/squeals_list", async (req, res) => {
   try {
     const name = req.params.name;
     const authorized = true //TODO ADD AUTHORIZATION
+    const adminAuthorized = true //TODO ADD AUTHORIZATION
 
     const channel = await collection_channels.findOne({
       name: name
@@ -653,6 +654,13 @@ app.put("/channels/:name/squeals_list", async (req, res) => {
     if (!authorized) {
       res.status(401).json({
         message: "not authorized to modify this channel's squeals_list"
+      });
+      return;
+    }
+
+    if(!adminAuthorized && (channel.type === "required" || channel.type === "privileged")){
+      res.status(401).json({
+        message: "not authorized to modify this channel's squeals_list: not an admin"
       });
       return;
     }

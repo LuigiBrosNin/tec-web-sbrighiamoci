@@ -159,7 +159,7 @@ app.get("/squeals/", async (req, res) => {
         await mongoClient.connect();
         const squeals = await collection_squeals.find(search)
             .sort({
-                timestamp: -1
+                date: -1
             }) // ordered inverse chronological order
             .skip(startIndex) // starting from startIndex
             .limit(endIndex) // returns endIndex squeals
@@ -269,7 +269,7 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
         // Check if the optional fields are present in the request body
         // If they are, add them to the newSqueal object
         for (const field of optionalFields) {
-            console.log("field: "+ field + " body: " + reqBody[field]);
+            console.log("field: " + field + " body: " + reqBody[field]);
             if (reqBody[field] != null && reqBody[field] != "") {
                 newSqueal[field] = reqBody[field];
             }
@@ -303,8 +303,8 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
         const profile_author = await collection_profiles.findOne({
             name: newSqueal.author
         });
-        
-        if(newSqueal.is_private == true || newSqueal.is_private == "true"){
+
+        if (newSqueal.is_private == true || newSqueal.is_private == "true") {
             const profile_receiver = await collection_profiles.findOne({
                 name: newSqueal.receiver
             });
@@ -319,7 +319,7 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
             const channel_receiver = await collection_channels.findOne({
                 name: newSqueal.receiver
             });
-    
+
             if (channel_receiver == null) {
                 res.status(400).json({
                     message: "channel receiver does not exist"
@@ -338,9 +338,9 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
                 message: "author does not exist"
             });
             return;
-        }// check if the authos has enough credit 
+        } // check if the authos has enough credit 
         //TODO admin check, if it's an admin don't subtract credit
-        else if (false){//newSqueal.is_private == false && (profile_author.credit[0] < char_cost || profile_author.credit[1] < char_cost || profile_author.credit[2] < char_cost) /*&& await !isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)*/) {
+        else if (false) { //newSqueal.is_private == false && (profile_author.credit[0] < char_cost || profile_author.credit[1] < char_cost || profile_author.credit[2] < char_cost) /*&& await !isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)*/) {
             res.status(400).json({
                 message: "author does not have enough credit. available (g: " + profile_author.credit[0] + " s: " + profile_author.credit[1] + " m: " + profile_author.credit[2] + ") required: " + char_cost
             });
@@ -478,6 +478,121 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
         }));
     }
 })
+
+/* -------------------------------------------------------------------------- */
+/*                               /SQUEALS/FEED                                */
+/*                                   GET                                      */
+/* -------------------------------------------------------------------------- */
+
+//* GET
+// ritorna una lista di squeal del database basata sui profili e canali seguiti dall'utente, da startindex ad endindex
+// se non specificati ritorna le prime 10
+app.get("/squeals/feed/", async (req, res) => {
+    try {
+        //TODO REPLACE WITH SESSION USER
+        const author = "Luizo" // req.session.user;
+
+        // initializing the start and end index in case they are not specified
+        let startIndex = 0;
+        let endIndex = 10;
+        // check if the parameters are valid
+        if (req.query.startindex !== undefined && req.query.startindex !== NaN) {
+            startIndex = parseInt(req.query.startindex);
+        }
+        if (req.query.endindex !== undefined && req.query.endindex !== NaN) {
+            endIndex = parseInt(req.query.endindex);
+        }
+        // check if the parameters are valid
+        if (startIndex > endIndex) {
+            res.status(400).json({
+                message: "startIndex must be less than endIndex"
+            });
+            return;
+        }
+
+        // if the user has not logged in, return 401
+        if (req.session.user != undefined) {
+            res.status(401).json({
+                message: "you must be logged in to access your feed"
+            });
+            return;
+        }
+
+        // find squeals that belong to required channels
+        const required_channels = await database.collection(channelCollection).find({
+            type: "required"
+        }).toArray();
+
+        // get required channels names
+        let required_channels_names = [];
+        required_channels.forEach(channel => {
+            required_channels_names.push(channel.name);
+        });
+
+        console.log('Required Channels:', required_channels_names);
+
+        // if the profile is not found, return only required squeals
+        if (author == null || author == "") {
+            const feed = database.collection(squealCollection).find({
+                    receiver: {
+                        $in: required_channels_names
+                    },
+                    is_private: false
+                }).sort({
+                    date: -1
+                }) // ordered inverse chronological order
+                .skip(startIndex) // starting from startIndex
+                .limit(endIndex) // returns endIndex squeals
+                .toArray(); // returns the squeals as an array
+
+            res.status(200).json(feed); // returns the squeals
+            return;
+        }
+
+        await mongoClient.connect();
+        // fetching the profile with the given name
+        const profile = await collection_profiles.findOne({
+            name: author
+        });
+
+        console.log('Profile:', JSON.stringify(profile));
+
+        // get the list of followed profiles and channels
+        const feed = database.collection(squealCollection).find({
+            $or: [{
+                    receiver: {
+                        $in: profile.following_channels
+                    }
+                },
+                {
+                    receiver: {
+                        $in: required_channels_names
+                    }
+                },
+                {
+                    author: {
+                        $in: profile.following_list
+                    }
+                }
+            ],
+            is_private: false
+        }).sort({date: -1}) // ordered inverse chronological order
+            .skip(startIndex) // starting from startIndex
+            .limit(endIndex) // returns endIndex squeals
+            .toArray(); // returns the squeals as an array
+
+
+        console.log('Feed:', JSON.stringify(feed));
+        res.status(200).json(feed); // returns the squeals
+
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+
+    }
+});
+
 
 /* -------------------------------------------------------------------------- */
 /*                              /SQUEALS_LIST/                                */
