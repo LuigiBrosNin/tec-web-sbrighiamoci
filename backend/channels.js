@@ -648,6 +648,7 @@ app.put("/channels/:name/squeals_list", async (req, res) => {
       res.status(404).json({
         message: "Channel not found."
       });
+      console.log("channel not found");
       return;
     }
 
@@ -673,6 +674,7 @@ app.put("/channels/:name/squeals_list", async (req, res) => {
       res.status(404).json({
         message: "squeal not found"
       });
+      console.log("squeal not found");
       return;
     }
 
