@@ -556,7 +556,7 @@ app.get("/feed/", async (req, res) => {
         const feed = database.collection(squealCollection).find({
             $or: [{
                     receiver: {
-                        $in: profile.following_channels
+                        $in: ["Canale_Dei_Conigli"]//profile.following_channels
                     }
                 },
                 {
