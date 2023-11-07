@@ -640,6 +640,8 @@ app.put("/channels/:name/squeals_list", async (req, res) => {
     const authorized = true //TODO ADD AUTHORIZATION
     const adminAuthorized = true //TODO ADD AUTHORIZATION
 
+    console.log("enter channel put " + req.body.squeal_id);
+
     const channel = await collection_channels.findOne({
       name: name
     });

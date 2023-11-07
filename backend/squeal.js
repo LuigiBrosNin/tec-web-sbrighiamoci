@@ -440,6 +440,8 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
             name: newSqueal.receiver
         });
 
+        console.log("channel_receiver name: " + channel_receiver.name)
+
         if(channel_receiver != null && channel_receiver != "") {
             // add the squeal to the channel's squeals_list
             fetch("https://site222326.tw.cs.unibo.it/channels/" + channel_receiver.name + "/squeal_list", {
