@@ -480,14 +480,14 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
 })
 
 /* -------------------------------------------------------------------------- */
-/*                               /SQUEALS/FEED                                */
+/*                                  /FEED/                                    */
 /*                                   GET                                      */
 /* -------------------------------------------------------------------------- */
 
 //* GET
 // ritorna una lista di squeal del database basata sui profili e canali seguiti dall'utente, da startindex ad endindex
 // se non specificati ritorna le prime 10
-app.get("/squeals/feed/", async (req, res) => {
+app.get("/feed/", async (req, res) => {
     try {
         //TODO REPLACE WITH SESSION USER
         const author = "Luizo" // req.session.user;
