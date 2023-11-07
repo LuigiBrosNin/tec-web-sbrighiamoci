@@ -455,7 +455,7 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
                 if (response.status == 200) {
                     console.log("squeal added to channel");
                 } else {
-                    console.log("error adding squeal to channel");
+                    console.log("respone status: " + response.status + " message: " + response.message);
                 }
             });
         }
