@@ -434,37 +434,26 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
             const imported = await importPic(media, collection_squeals, newSqueal.id);
 
             console.log("imported media: " + imported);
-            /*
-            const bucket = new GridFSBucket(database);
-            const buffer = media.buffer;
-            const readableStream = new stream.PassThrough();
-            readableStream.end(buffer);
+        }
 
-            const uploadStream = bucket.openUploadStream(media.originalname, {
-                metadata: {
-                    originalname: media.originalname,
+        if(channel_receiver != null && channel_receiver != "") {
+            // add the squeal to the channel's squeals_list
+            fetch("https://site222326.tw.cs.unibo.it/channels/" + channel_receiver.name + "/squeal_list", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Cookie": req.headers.cookie
+                },
+                body: JSON.stringify({
+                    squeal_id: newSqueal.id
+                })
+            }).then(response => {
+                if (response.status == 200) {
+                    console.log("squeal added to channel");
+                } else {
+                    console.log("error adding squeal to channel");
                 }
             });
-
-            uploadStream.on('error', (error) => {
-                res.status(500).json({
-                    message: error.message
-                });
-                console.log("media problem: " + error.message);
-                return;
-            });
-
-            uploadStream.on('finish', () => {
-                // Update the squeal with the ID of the uploaded file
-                collection_squeals.updateOne({
-                    id: newSqueal.id
-                }, {
-                    $set: {
-                        media: uploadStream.id
-                    }
-                });
-            });
-            readableStream.pipe(uploadStream);*/
         }
 
         console.log('Documento inserito con successo: ', result.insertedId + '\n' + JSON.stringify(newSqueal));
