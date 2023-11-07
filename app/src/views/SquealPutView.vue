@@ -224,8 +224,8 @@ export default {
       // Create a new icon
       const customIcon = L.icon({
         iconUrl: "https://site222326.tw.cs.unibo.it/icons/squealer_marker.png",
-        iconSize: [38, 95], // size of the icon
-        iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
+        iconSize: [38, 38], // size of the icon
+        iconAnchor: [19, 38], // point of the icon which will correspond to marker's location
         popupAnchor: [-3, -76], // point from which the popup should open relative to the iconAnchor
       });
       L.marker([this.location.latitude, this.location.longitude], {icon: customIcon}).addTo(map);

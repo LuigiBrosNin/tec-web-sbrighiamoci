@@ -189,6 +189,8 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
 
         const reqBody = JSON.parse(req.body.json);
 
+        console.log("reqBody: " + JSON.stringify(reqBody));
+
         const media = req.file;
         const location = req.body.location;
 
@@ -267,6 +269,7 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
         // Check if the optional fields are present in the request body
         // If they are, add them to the newSqueal object
         for (const field in optionalFields) {
+            console.log("field body: " + reqBody[field]);
             if (reqBody[field] != null && reqBody[field] != "") {
                 newSqueal[field] = reqBody[field];
             }
