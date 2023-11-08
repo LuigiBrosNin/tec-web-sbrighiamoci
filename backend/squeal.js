@@ -505,16 +505,6 @@ app.get("/feed/", async (req, res) => {
             return;
         }
 
-        console.log("feed user: " + req.session.user);
-
-        // if the user has not logged in, return 401
-        if (req.session.user == null || req.session.user == "") {
-            res.status(401).json({
-                message: "you must be logged in to access your feed"
-            });
-            return;
-        }
-
         // find squeals that belong to required channels
         const required_channels = await database.collection(channelCollection).find({
             type: "required"
@@ -551,6 +541,16 @@ app.get("/feed/", async (req, res) => {
         const profile = await collection_profiles.findOne({
             name: feed_user
         });
+
+
+        if(profile == null || profile.is_deleted == true) {
+            res.status(400).json({
+                message: "profile does not exist"
+            });
+            return;
+        }
+
+        console.log('following_channels:'+ profile.following_channels +"\nfollowing_list: " + profile.following_list);
 
         // get the list of followed profiles and channels
         const feed = await database.collection(squealCollection).find({
