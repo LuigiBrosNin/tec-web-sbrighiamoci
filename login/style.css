@@ -71,7 +71,7 @@ input {
   border: 1px solid #ccc;
   border-radius: 5px;
   background-color: rgba(255, 255, 255, 0.1);
-  color: white;
+  color: black;
 }
 
 input[type="submit"] {
