@@ -4,7 +4,7 @@
 
 <template>
     <div class="squeal_container" v-if="isValid && !isPrivate">
-        <p> §{{ channel }} </p>
+        <p> §{{ channel }} </p> <!-- TODO add router link to channel -->
         <div v-if='replyTo != null && replyTo != ""' >
             <p>Reply to: {{ replyTo }}</p>
         </div>
@@ -16,6 +16,12 @@
 
         <p class="squeal_body"> {{ body }} </p>
         <img class="squeal_media" v-if='media != null && media != ""' :src="`https://site222326.tw.cs.unibo.it/squeals/${id}/media`">
+
+        <!-- leaflet map -->
+        <div v-if='location != null && location != ""' id="mapid">
+            <!--TODO ADD MAP-->
+        </div>
+
         <p> {{ date }} </p>
 
         <div class="interaction_data">
@@ -33,7 +39,7 @@
             </button>
         </div>
 
-        <RouterLink :to="`/squeal/${id}`">See more...</RouterLink>
+        <RouterLink :to="`/squeal/${id}`">Comments</RouterLink>
     </div>
     <div class="squeal_container" v-else>
         <p>Squeal not found</p>
@@ -42,6 +48,9 @@
 </template>
 
 <script>
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+
 export default {
     data() {
         return {
@@ -57,6 +66,7 @@ export default {
             positiveReactions: 0,
             negativeReactions: 0,
             replies: 0,
+            location: {},
             isPrivate: false, // just a for a redundant check, it should never be true
         }
     },
@@ -79,7 +89,15 @@ export default {
         },
         populate(squealJson) {
             this.author = squealJson.author;
-            this.authorProfilePicUrl = "https://picsum.photos/100/100"; // TODO: actually implement this
+            //this.authorProfilePicUrl = "https://picsum.photos/100/100"; // random pic
+            //this.authorProfilePicUrl = `https://site222326.tw.cs.unibo.it/profiles/${this.author}/propic`;
+            this.authorProfilePicUrl = squealJson.author_propic;
+            // if propic returns null, use a default one
+            if(this.authorProfilePicUrl == null || this.authorProfilePicUrl == "") {
+                this.authorProfilePicUrl = "https://site222326.tw.cs.unibo.it/images/user-default.svg";
+            } else {
+                this.authorProfilePicUrl = `https://site222326.tw.cs.unibo.it/profiles/${this.author}/propic`
+            }
             this.channel = squealJson.receiver;
             this.replyTo = squealJson.reply_to;
             this.date = new Date(squealJson.date);
@@ -88,7 +106,12 @@ export default {
             this.positiveReactions = squealJson.positive_reactions;
             this.negativeReactions = squealJson.negative_reactions;
             this.replies = squealJson.replies_num;
+            this.location = squealJson.location;
             this.isPrivate = squealJson.is_private;
+
+            console.log("propic: " + this.authorProfilePicUrl);
+        
+
         }
     },
     created() {

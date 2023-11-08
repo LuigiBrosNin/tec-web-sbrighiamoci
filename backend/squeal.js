@@ -369,7 +369,7 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
         console.log("g: " + g + " s: " + s + " m: " + m);
 
         // update the author's squeals_num and squeals_list
-        newSqueal.id = `${profile_author.name}${squeals_num}`;
+        newSqueal.id = `${squeals_num}-${profile_author.name}`;
 
         // adds the new squeal to the list of squeals
         squeals_list.push(newSqueal.id);

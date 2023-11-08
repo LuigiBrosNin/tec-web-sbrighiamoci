@@ -1,6 +1,23 @@
 <template>
-  <div class="container">
+  <div class="squeal_container">
     <form @submit.prevent="submitForm" class="mt-5">
+      <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">§</span>
+        <input
+          type="text"
+          id="receiver"
+          placeholder="Select a channel to squeal to"
+          v-model="receiver"
+          required
+          class="form-control"
+        />
+      </div>
+      <div class="profile_data">
+        <img class="profile_img" :src="propic" />
+        <RouterLink :to="`/profile/${$user}`" class="profile_name">
+          @{{ $user }}</RouterLink
+        >
+      </div>
       <div class="form-group">
         <label for="author">Author:</label>
         <!-- TODO remove author field and use $user in scripts -->
@@ -13,11 +30,21 @@
         />
       </div>
       <div class="form-group">
+        <label for="text">Text:</label>
+        <textarea
+          id="text"
+          v-model="text"
+          required
+          class="form-control"
+        ></textarea>
         <div>
-          <p>Credits:</p>
-          <div>
-            <span v-for="credit in temp_credits" :key="credit.id">
-              {{ credit }}&nbsp;&nbsp;
+          <div class="credits-container">
+            <span
+              v-for="(credit, index) in temp_credits"
+              :key="credit.id"
+              :class="{ positive: credit > 0, negative: credit <= 0 }"
+            >
+              {{ creditLabels[index] }}: {{ credit }}&nbsp;&nbsp;
             </span>
             <span v-if="Math.min(...Object.values(temp_credits)) < 0">
               <button class="btn btn-primary">
@@ -33,27 +60,11 @@
             </span>
           </div>
         </div>
-        <label for="text">Text:</label>
-        <textarea
-          id="text"
-          v-model="text"
-          required
-          class="form-control"
-        ></textarea>
-      </div>
-      <div class="form-group">
-        <label for="receiver">Receiver:</label>
-        <input
-          type="text"
-          id="receiver"
-          v-model="receiver"
-          required
-          class="form-control"
-        />
       </div>
       <div class="row">
         <div class="col">
           <div class="form-group">
+            <label for="location" class="form-label">Location:</label>
             <button @click="getGeolocation" class="btn btn-info">
               Include Geolocation in your Squeal
             </button>
@@ -80,13 +91,13 @@
         <div class="col">
           <!-- Media form group goes here -->
           <div class="form-group">
-            <label for="media">Media:</label>
+            <label for="media" class="form-label">Media:</label>
             <input
               type="file"
               id="media"
               @change="handleFileUpload"
               accept="image/*"
-              class="form-control-file"
+              class="form-control"
             />
             <button v-if="media" @click="media = null" class="btn btn-danger">
               X
@@ -113,7 +124,13 @@
           class="form-control"
         />
       </div>
-      <button type="submit" class="btn btn-primary">Submit</button>
+      <button
+        type="submit"
+        class="btn btn-primary"
+        style="background-color: #ff8900; color: white"
+      >
+        Submit
+      </button>
     </form>
   </div>
 </template>
@@ -137,18 +154,28 @@ export default {
       media_value: 0,
       map_value: 0,
       location: null,
+      creditLabels: ["daily", "weekly", "monthly"],
+      propic: null,
     };
   },
   // mounted: function that gets called when page loads
   mounted() {
     // retrieve credits
-    const profile = "Luizo"; // TODO replace with $user
+    const profile = "Luizo"//$user;
+
     axios
       .get("https://site222326.tw.cs.unibo.it/profiles/" + profile)
       .then((response) => {
         console.log("response: ", response.data);
         this.credits = response.data.credit;
         this.temp_credits = response.data.credit;
+        this.propic = response.data.propic;
+        if (this.propic == null || this.propic == "") {
+          this.propic =
+            "https://site222326.tw.cs.unibo.it/images/user-default.svg";
+        } else {
+          this.propic = `https://site222326.tw.cs.unibo.it/profiles/${profile}/propic`;
+        }
         console.log("credits: ", this.credits);
       })
       .catch((error) => {
@@ -228,7 +255,9 @@ export default {
         iconAnchor: [19, 38], // point of the icon which will correspond to marker's location
         popupAnchor: [-3, -76], // point from which the popup should open relative to the iconAnchor
       });
-      L.marker([this.location.latitude, this.location.longitude], {icon: customIcon}).addTo(map);
+      L.marker([this.location.latitude, this.location.longitude], {
+        icon: customIcon,
+      }).addTo(map);
     },
   },
   // watch: listeners
@@ -256,3 +285,64 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.squeal_container {
+  background-color: #fff;
+  border-style: solid;
+  border-width: thin;
+  border-radius: 1em;
+  border-color: #616161;
+  margin: 0.5em 2em 0.5em 2em;
+  padding: 1em;
+}
+
+.form-group {
+  margin-bottom: 20px; /* Add spacing between form groups */
+}
+
+.form-group button {
+  background-color: #ff8900; /* Change button color */
+  color: white; /* Change button text color */
+  margin-top: 10px; /* Add spacing above the button */
+  display: block; /* Make the button a block element */
+  margin-left: auto; /* Center the button */
+  margin-right: auto;
+}
+
+button[type="submit"] {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+.credits-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.positive {
+  color: green;
+}
+
+.negative {
+  color: red;
+}
+
+.profile_data {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.profile_img {
+  width: 4em;
+  height: 4em;
+  border-radius: 50%;
+  margin: 0.5em;
+}
+
+.profile_name {
+  font-size: 1.3em;
+}
+</style>
