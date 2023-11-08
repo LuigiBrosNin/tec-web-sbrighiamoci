@@ -724,7 +724,7 @@ app.put("/profiles/:name/following_channels/", async (req, res) => {
         const channelName = req.body.channel_name;
         const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user);
 
-        if (false /*!authorized*/ ) {
+        if (!authorized) {
             res.status(401).json({
                 message: "Unauthorized"
             });

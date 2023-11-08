@@ -30,11 +30,10 @@ function signin(){
 /* -------------------------------------------------------------------------- */
 /*                         Luizo's temp test fucntions                        */
 /* -------------------------------------------------------------------------- */
-
 // profiles following_channels PUT request
-function addFollowingChannelTest(param_id) {
+function addFollowingChannelTest(param_id, group_name) {
   const body = {
-    channel_name: "MAINCHANNEL"
+    channel_name: group_name
   };
 
   console.log("Sending body: " + JSON.stringify(body));
