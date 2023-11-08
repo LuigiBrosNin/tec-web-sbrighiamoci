@@ -256,22 +256,13 @@ app.put("/profiles/:name", async (req, res) => {
         if (!allowedAccountTypes.includes(profile.account_type)) {
             profile.account_type = "normal";
         }
-        if (profile.propic == undefined) {
-            // STOCK PROFILE PIC
-            fs.readFile('/path/to/your/file', (err, data) => {
-                if (err) {
-                    console.error('There was an error reading the file!', err);
-                    return;
-                }
-                importPic(data, collection_profiles, profile.name);
-            });
-        }
+
         if (profile.bio == undefined) {
             profile.bio = "";
         }
 
         // checking if there's missing info
-        if (profile.password == null || profile.password === "" || profile.email == null || profile.email == "") { // || !isValidEmail(profile.email)) { //// the check var == null is equivalent to var === null && var === undefined
+        if (profile.password == null || profile.password === "" || !isValidEmail(profile.email)) { //// the check var == null is equivalent to var === null && var === undefined
             res.status(400).json({
                 message: "Missing/invalid password or email"
             });
