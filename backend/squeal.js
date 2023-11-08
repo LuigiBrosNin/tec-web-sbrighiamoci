@@ -485,7 +485,7 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
 app.get("/feed/", async (req, res) => {
     try {
         //TODO REPLACE WITH SESSION USER
-        const author = "Luizo" // req.session.user;
+        const feed_user = req.session.user;
 
         // initializing the start and end index in case they are not specified
         let startIndex = 0;
@@ -504,6 +504,8 @@ app.get("/feed/", async (req, res) => {
             });
             return;
         }
+
+        console.log("feed user: " + req.session.user);
 
         // if the user has not logged in, return 401
         if (req.session.user == null || req.session.user == "") {
@@ -527,7 +529,7 @@ app.get("/feed/", async (req, res) => {
         console.log('Required Channels:', required_channels_names);
 
         // if the profile is not found, return only required squeals
-        if (author == null || author == "") {
+        if (feed_user == null || feed_user == "") {
             const feed = database.collection(squealCollection).find({
                     receiver: {
                         $in: required_channels_names
@@ -547,7 +549,7 @@ app.get("/feed/", async (req, res) => {
         await mongoClient.connect();
         // fetching the profile with the given name
         const profile = await collection_profiles.findOne({
-            name: author
+            name: feed_user
         });
 
         // get the list of followed profiles and channels
