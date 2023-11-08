@@ -506,7 +506,7 @@ app.get("/feed/", async (req, res) => {
         }
 
         // if the user has not logged in, return 401
-        if (req.session.user != undefined) {
+        if (req.session.user == null || req.session.user == "") {
             res.status(401).json({
                 message: "you must be logged in to access your feed"
             });
