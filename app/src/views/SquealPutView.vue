@@ -161,7 +161,7 @@ export default {
   // mounted: function that gets called when page loads
   mounted() {
     // retrieve credits
-    const profile = "Luizo"//$user;
+    const profile = $user;
 
     axios
       .get("https://site222326.tw.cs.unibo.it/profiles/" + profile)
