@@ -19,17 +19,6 @@
         >
       </div>
       <div class="form-group">
-        <label for="author">Author:</label>
-        <!-- TODO remove author field and use $user in scripts -->
-        <input
-          type="text"
-          id="author"
-          v-model="author"
-          required
-          class="form-control"
-        />
-      </div>
-      <div class="form-group">
         <label for="text">Text:</label>
         <textarea
           id="text"
@@ -115,6 +104,7 @@
           <p v-else>No file selected</p>
         </div>
       </div>
+      <!-- TODO REMOVE WHEN WE IMPLEMENT AUTOMATIC REPLIES-->
       <div class="form-group">
         <label for="reply_to">Reply To:</label>
         <input
@@ -143,7 +133,6 @@ import "leaflet/dist/leaflet.css";
 export default {
   data() {
     return {
-      author: "",
       text: "",
       receiver: "",
       media: null,
@@ -194,7 +183,7 @@ export default {
     },
     submitForm() {
       const jsonBody = {
-        author: this.author,
+        author: $user,
         text: this.text,
         receiver: this.receiver,
         reply_to: this.reply_to,
