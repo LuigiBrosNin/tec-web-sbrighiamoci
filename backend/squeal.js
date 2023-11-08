@@ -520,7 +520,7 @@ app.get("/feed/", async (req, res) => {
 
         // if the profile is not found, return only required squeals
         if (feed_user == null || feed_user == "") {
-            const feed = database.collection(squealCollection).find({
+            const feed = await database.collection(squealCollection).find({
                     receiver: {
                         $in: required_channels_names
                     },
