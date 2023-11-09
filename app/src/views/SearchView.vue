@@ -245,8 +245,6 @@ export default {
         keyword: "",
         mentions: "",
         isPrivate: false,
-        fetchURI: `https://site222326.tw.cs.unibo.it/squeals/?startindex=${this.startIndex}&endindex=${this.endIndex}&author=${this.query.author}&popularity=${this.query.popularity}&start_date=${this.query.startDate}&end_date=${this.query.endDate}&positive_reactions=${this.query.positiveReactions}&negative_reactions=${this.query.negativeReactions}&impressions=${this.query.impressions}&receiver=${this.query.receiver}&keyword=${this.query.keyword}&mentions=${this.query.mentions}&is_private=${this.query.isPrivate}`,
-        fetchNextURI: `https://site222326.tw.cs.unibo.it/squeals/?startindex=${this.startIndex+11}&endindex=${this.endIndex+11}&author=${this.query.author}&popularity=${this.query.popularity}&start_date=${this.query.startDate}&end_date=${this.query.endDate}&positive_reactions=${this.query.positiveReactions}&negative_reactions=${this.query.negativeReactions}&impressions=${this.query.impressions}&receiver=${this.query.receiver}&keyword=${this.query.keyword}&mentions=${this.query.mentions}&is_private=${this.query.isPrivate}`,
     },
     };
   },
@@ -281,13 +279,21 @@ export default {
     }
   },
   methods: {
+    getFetchUri() {
+        return `https://site222326.tw.cs.unibo.it/squeals/?startindex=${this.startIndex}&endindex=${this.endIndex}&author=${this.query.author}&popularity=${this.query.popularity}&start_date=${this.query.startDate}&end_date=${this.query.endDate}&positive_reactions=${this.query.positiveReactions}&negative_reactions=${this.query.negativeReactions}&impressions=${this.query.impressions}&receiver=${this.query.receiver}&keyword=${this.query.keyword}&mentions=${this.query.mentions}&is_private=${this.query.isPrivate}`
+
+    },
+    getNextFetchUri() {
+        return `https://site222326.tw.cs.unibo.it/squeals/?startindex=${this.startIndex+11}&endindex=${this.endIndex+11}&author=${this.query.author}&popularity=${this.query.popularity}&start_date=${this.query.startDate}&end_date=${this.query.endDate}&positive_reactions=${this.query.positiveReactions}&negative_reactions=${this.query.negativeReactions}&impressions=${this.query.impressions}&receiver=${this.query.receiver}&keyword=${this.query.keyword}&mentions=${this.query.mentions}&is_private=${this.query.isPrivate}`
+
+    },
     async submitForm() {
       console.log(this.query);
       //retrieve squeals and reset pages
       this.currentPage = 1;
       this.startIndex = 0;
       this.endIndex = 9;
-      const response = await fetch(this.fetchURI);
+      const response = await fetch(getFetchUri);
       // assigns the json to the feed variable
       this.feed = await response.json();
         // lazy check to avoid making another request
@@ -295,7 +301,7 @@ export default {
           this.nextPageIsEmpty = true;
         } else {
           // check if next page is empty for sure
-          const response2 = await fetch(this.fetchNextURI);
+          const response2 = await fetch(getNextFetchUri);
           const feed2 = await response2.json();
           console.log("feed2 length: " + feed2.length);
           if (feed2.length == 0) {
@@ -308,7 +314,7 @@ export default {
     async loadNext() {
       this.startIndex += 10;
       this.endIndex += 10;
-      const response = await fetch(this.fetchURI);
+      const response = await fetch(getFetchUri);
       // assigns the json to the feed variable
       this.feed = await response.json();
       // check if feed is empty
@@ -324,7 +330,7 @@ export default {
         this.nextPageIsEmpty = true;
       } else {
         // check if next page is empty for sure
-        const response2 = await fetch(this.fetchNextURI);
+        const response2 = await fetch(getNextFetchUri);
         const feed2 = await response2.json();
         if (feed2.length == 0) {
           this.nextPageIsEmpty = true;
@@ -340,7 +346,7 @@ export default {
 
       this.startIndex -= 10;
       this.endIndex -= 10;
-      const response = await fetch(this.fetchURI);
+      const response = await fetch(getFetchUri);
       // assigns the json to the feed variable
       this.feed = await response.json();
       // lazy check to avoid making another request
@@ -348,7 +354,7 @@ export default {
         this.nextPageIsEmpty = true;
       } else {
         // check if next page is empty for sure
-        const response2 = await fetch(this.fetchNextURI);
+        const response2 = await fetch(getNextFetchUri);
         const feed2 = await response2.json();
         if (feed2.length == 0) {
           this.nextPageIsEmpty = true;
