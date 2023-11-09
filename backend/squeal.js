@@ -537,6 +537,10 @@ app.get("/feed/", async (req, res) => {
                 .limit(endIndex - startIndex + 1) // returns endIndex squeals
                 .toArray(); // returns the squeals as an array
 
+            for (const squeal of feed) {
+                console.log("id: " + squeal.id)
+            }
+
             res.status(200).json(feed); // returns the squeals
             return;
         }

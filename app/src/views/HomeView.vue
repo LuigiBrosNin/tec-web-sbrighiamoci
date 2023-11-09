@@ -71,6 +71,7 @@ export default {
       endIndex: 9,
       currentPage: 1,
       nextPageIsEmpty: true,
+      offset: 10,
     };
   },
   computed: {
@@ -79,7 +80,7 @@ export default {
     },
   },
   async mounted() {
-    const response = await fetch(`https://site222326.tw.cs.unibo.it/feed/?startindex=${this.startIndex}&endindex=${this.endIndex}`);
+    const response = await fetch(this.getFetchUri(0));
     // assigns the json to the feed variable
     this.feed = await response.json();
 
@@ -88,9 +89,7 @@ export default {
       this.nextPageIsEmpty = true;
     } else {
       // check if next page is empty for sure
-      const response2 = await fetch(
-        `https://site222326.tw.cs.unibo.it/feed/?startindex=${this.startIndex + 10}&endindex=${this.endIndex + 10}`
-      );
+      const response2 = await fetch(this.getFetchUri(this.offset));
       const feed2 = await response2.json();
       console.log("feed2 length: " + feed2.length)
       if (feed2.length == 0) {
@@ -120,7 +119,7 @@ export default {
       }
 
       // lazy check to avoid making another request
-      if (this.feed.length < 9) {
+      if (this.feed.length < 10) {
         this.nextPageIsEmpty = true;
       } else {
         // check if next page is empty for sure
