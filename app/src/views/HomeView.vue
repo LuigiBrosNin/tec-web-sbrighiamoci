@@ -72,6 +72,7 @@ export default {
       currentPage: 1,
       nextPageIsEmpty: true,
       offset: 10,
+      feedVersion: 0,
     };
   },
   computed: {
@@ -104,10 +105,12 @@ export default {
       return `https://site222326.tw.cs.unibo.it/feed/?startindex=${this.startIndex + offset}&endindex=${this.endIndex + offset}`;
     },
     async loadNext() {
+      console.log("loadNext")
       this.startIndex += 10;
       this.endIndex += 10;
       const response = await fetch(this.getFetchUri(0));
       // assigns the json to the feed variable
+      this.feed = null;
       this.feed = await response.json();
       this.feedVersion++;
       this.currentPage++;
@@ -133,8 +136,10 @@ export default {
       }
     },
     async refresh() {
+      console.log("refresh")
       const response = await fetch(this.getFetchUri(0));
       // assigns the json to the feed variable
+      this.feed = null;
       this.feed = await response.json();
       this.feedVersion++;
       this.currentPage = 1;
@@ -155,6 +160,7 @@ export default {
       }
     },
     async loadPrev() {
+      console.log("loadPrev")
       if (this.currentPage > 1) {
         this.currentPage--;
       }
@@ -164,6 +170,7 @@ export default {
       const response = await fetch(this.getFetchUri(0));
 
       // assigns the json to the feed variable
+      this.feed = null;
       this.feed = await response.json();
       this.feedVersion++;
 
