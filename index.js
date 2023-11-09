@@ -7,6 +7,9 @@ const session = require('express-session');
 const request = require('request');
 const app = express();
 
+const axios = require('axios');
+const cheerio = require('cheerio');
+
 const { isAuthorizedOrHigher, canLogIn, typeOfProfile, registerNewUser } = require("./backend/loginUtils.js");
 
 //const { interval } = require("./backend/const.js");
@@ -103,6 +106,26 @@ app.use('/app', express.static(path.join(global.rootDir, 'app/dist/')));
 app.use('/app/*', express.static(path.join(global.rootDir, 'app/dist/')));
 app.use('/smm', express.static(path.join(global.rootDir, 'smm/build/')));
 app.use('/smm/*', express.static(path.join(global.rootDir, 'smm/build/')));
+
+app.get("/admin", async (req, res) => {
+  try {
+    const url = 'https://site222326.tw.cs.unibo.it/app';
+    const response = await axios.get(url); // Fetch the HTML content
+
+    // Load the HTML content into cheerio for easy manipulation
+    const $ = cheerio.load(response.data); // naming it $ is a good practice
+
+    $('title').text('Squealer Admin');
+
+    // Get the modified HTML
+    const modifiedHTML = $.html();
+
+    res.status(200).send(modifiedHTML);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+})
+app.use(express.static(path.join(global.rootDir, '/admin/')));
 
 app.use('/images', express.static(path.join(global.rootDir, 'images/')));
 app.use('/icons', express.static(path.join(global.rootDir, 'icons/')));
