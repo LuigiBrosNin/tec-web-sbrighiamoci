@@ -293,7 +293,7 @@ export default {
       this.currentPage = 1;
       this.startIndex = 0;
       this.endIndex = 9;
-      const response = await fetch(getFetchUri());
+      const response = await fetch(this.getFetchUri());
       // assigns the json to the feed variable
       this.feed = await response.json();
         // lazy check to avoid making another request
@@ -301,7 +301,7 @@ export default {
           this.nextPageIsEmpty = true;
         } else {
           // check if next page is empty for sure
-          const response2 = await fetch(getNextFetchUri());
+          const response2 = await fetch(this.getNextFetchUri());
           const feed2 = await response2.json();
           console.log("feed2 length: " + feed2.length);
           if (feed2.length == 0) {
@@ -314,7 +314,7 @@ export default {
     async loadNext() {
       this.startIndex += 10;
       this.endIndex += 10;
-      const response = await fetch(getFetchUri());
+      const response = await fetch(this.getFetchUri());
       // assigns the json to the feed variable
       this.feed = await response.json();
       // check if feed is empty
@@ -346,7 +346,7 @@ export default {
 
       this.startIndex -= 10;
       this.endIndex -= 10;
-      const response = await fetch(getFetchUri());
+      const response = await fetch(this.getFetchUri());
       // assigns the json to the feed variable
       this.feed = await response.json();
       // lazy check to avoid making another request

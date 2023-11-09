@@ -55,7 +55,7 @@ export default {
     return {
       feed: null,
       startIndex: 0,
-      endIndex: 10,
+      endIndex: 9,
       currentPage: 1,
       nextPageIsEmpty: true,
     };
@@ -67,7 +67,7 @@ export default {
     },
   },
   async mounted() {
-    const response = await fetch(`https://site222326.tw.cs.unibo.getNextFetchUri()it/feed/?startindex=${this.startIndex}&endindex=${this.endIndex}`);
+    const response = await fetch(`https://site222326.tw.cs.unibo.it/feed/?startindex=${this.startIndex}&endindex=${this.endIndex}`);
     // assigns the json to the feed variable
     this.feed = await response.json();
 

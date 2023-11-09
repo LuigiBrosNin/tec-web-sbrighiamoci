@@ -167,7 +167,7 @@ app.get("/squeals/", async (req, res) => {
                 date: -1
             }) // ordered inverse chronological order
             .skip(startIndex) // starting from startIndex
-            .limit(endIndex) // returns endIndex squeals
+            .limit(endIndex - startIndex + 1) // returns endIndex squeals
             .toArray(); // returns the squeals as an array
 
         res.status(200).json(squeals); // returns the squeals
@@ -534,7 +534,7 @@ app.get("/feed/", async (req, res) => {
                     date: -1
                 }) // ordered inverse chronological order
                 .skip(startIndex) // starting from startIndex
-                .limit(endIndex) // returns endIndex squeals
+                .limit(endIndex - startIndex + 1) // returns endIndex squeals
                 .toArray(); // returns the squeals as an array
 
             res.status(200).json(feed); // returns the squeals
