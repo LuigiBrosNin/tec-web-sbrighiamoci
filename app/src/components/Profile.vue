@@ -4,17 +4,45 @@ const props = defineProps(["id", "profile_json"]);
 </script>
 
 <template>
-  <div class="profile_container">
-    <div class="profile_main_data">
-      <img class="profile_img" :src="profilePicUrl" />
-      <p class="profile_name">@{{ name }}</p>
-      <div class="credits_info">
-        <p>{{ credit[0] }}/{{ creditLimits[0] }}</p>
-        <p>{{ credit[1] }}/{{ creditLimits[1] }}</p>
-        <p>{{ credit[2] }}/{{ creditLimits[2] }}</p>
+  <div class="container profile_container">
+    <div class="row profile_main_data">
+      <div class="col-sm-4">
+        <img
+          class="img-fluid rounded-circle profile_img"
+          :src="profilePicUrl"
+        />
+      </div>
+      <div class="col-sm-8">
+        <h2 class="profile_name">@{{ name }}</h2>
+        <div class="card">
+          <div class="card-header" style="background-color: #ff8900;">Remaining Credits</div>
+          <div class="card-body">
+            <div class="row credits_info">
+              <div class="col">
+                <p class="card-text">
+                  Daily: {{ credit[0] }}/{{ creditLimits[0] }}
+                </p>
+              </div>
+              <div class="col">
+                <p class="card-text">
+                  Weekly: {{ credit[1] }}/{{ creditLimits[1] }}
+                </p>
+              </div>
+              <div class="col">
+                <p class="card-text">
+                  Monthly: {{ credit[2] }}/{{ creditLimits[2] }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-    <p>{{ bio }}</p>
+    <div class="row">
+      <div class="col">
+        <p>{{ bio }}</p>
+      </div>
+    </div>
 
     <ul
       class="nav nav-pills mb-3 flex-column flex-sm-row"
@@ -180,10 +208,9 @@ export default {
 }
 
 .profile_img {
-    width: 8em;
-    height: 8em;
-    border-radius: 50%;
-    margin: 0.5em;
+  width: 16em;
+  height: 16em;
+  border-radius: 50%;
+  margin: 0.5em;
 }
-
 </style>
