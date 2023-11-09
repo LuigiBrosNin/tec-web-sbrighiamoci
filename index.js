@@ -107,17 +107,19 @@ app.use(['/smm', '/smm/*'], express.static(path.join(global.rootDir, 'smm/build/
 
 app.get(["/admin","/admin/:paths(*)"], async (req, res) => {
   try {
-    const url = 'https://site222326.tw.cs.unibo.it/app/';
-    if(req.params.path != null){
+    let url = 'https://site222326.tw.cs.unibo.it/app/';
+    if(req.params.paths != null){
       url = url + req.params.paths;
     }
-    
+    console.log(url);
     const response = await axios.get(url); // Fetch the HTML content
 
     // Load the HTML content into cheerio for easy manipulation
     const $ = cheerio.load(response.data); // naming it $ is a good practice
 
     $('title').text('Squealer Admin');
+    const script = '<script src="https://site222326.tw.cs.unibo.it/adminsrc/admin.js"></script>'
+    $('body').append(script);
 
     // Get the modified HTML
     const modifiedHTML = $.html();
@@ -127,7 +129,7 @@ app.get(["/admin","/admin/:paths(*)"], async (req, res) => {
     res.status(500).send(error);
   }
 })
-app.use(express.static(path.join(global.rootDir, '/admin/')));
+app.use("/adminsrc", express.static(path.join(global.rootDir, '/admin/')));
 
 app.use('/images', express.static(path.join(global.rootDir, 'images/')));
 app.use('/icons', express.static(path.join(global.rootDir, 'icons/')));
