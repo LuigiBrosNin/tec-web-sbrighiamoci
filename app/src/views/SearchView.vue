@@ -1,3 +1,448 @@
+<script setup>
+import Squeal from "@/components/Squeal.vue";
+</script>
+
 <template>
-    
+  <!-- navbar with fields to formulate a query to filter squeals -->
+  <!-- params: Author (text), 
+        popularity (number 0 -> 1), 
+        end_date (in milliseconds, user can choose from a calendar), 
+        start_date (in milliseconds, user can choose from a calendar), 
+        positive_reactions (number), 
+        negative_reactions (number),
+        impressions (number),
+        receiver (text), 
+        Keyword (text, spaced by commas), 
+        Mentions (text, spaced by commas),
+        is_private (boolean)
+    -->
+  <button
+    class="btn btn-primary mb-3 col-12 d-flex justify-content-center"
+    style="background-color: #206f91"
+    type="button"
+    data-bs-toggle="collapse"
+    data-bs-target="#formSection"
+    aria-expanded="true"
+    aria-controls="formSection"
+  >
+    <img
+      alt="Button image"
+      class="icon not_selected button-image"
+      src="https://site222326.tw.cs.unibo.it/icons/search-alt-1-svgrepo-com.svg"
+    />
+    Toggle Search Options
+  </button>
+  <div id="formSection" class="collapse show">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container-fluid">
+        <form @submit.prevent="submitForm" class="row g-3">
+          <div class="col-md-3">
+            <label for="author" class="form-label fw-bold mb-2">Author</label>
+            <input
+              type="text"
+              class="form-control"
+              v-model="query.author"
+              placeholder="Author"
+            />
+          </div>
+          <div class="col-md-3">
+            <label for="popularity" class="form-label fw-bold mb-2"
+              >Popularity</label
+            >
+            <select class="form-control" v-model="query.popularity">
+              <option disabled value="">Select popularity</option>
+              <option value="isPopular">isPopular</option>
+              <option value="isUnpopular">isUnpopular</option>
+              <option value="isControversial">isControversial</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label for="startDate" class="form-label fw-bold mb-2"
+              >Older date</label
+            >
+            <input
+              type="date"
+              class="form-control"
+              v-model="query.startDate"
+              placeholder="Start Date"
+            />
+          </div>
+          <div class="col-md-3">
+            <label for="endDate" class="form-label fw-bold mb-2"
+              >Newer date</label
+            >
+            <input
+              type="date"
+              class="form-control"
+              v-model="query.endDate"
+              placeholder="End Date"
+            />
+          </div>
+          <div class="col-md-3">
+            <label for="positiveReactions" class="form-label fw-bold mb-2"
+              >N° of Positive Reactions</label
+            >
+            <input
+              type="number"
+              class="form-control"
+              v-model="query.positiveReactions"
+              placeholder="Positive Reactions"
+            />
+          </div>
+          <div class="col-md-3">
+            <label for="negativeReactions" class="form-label fw-bold mb-2"
+              >N° of Negative Reactions</label
+            >
+            <input
+              type="number"
+              class="form-control"
+              v-model="query.negativeReactions"
+              placeholder="Negative Reactions"
+            />
+          </div>
+          <div class="col-md-3">
+            <label for="impressions" class="form-label fw-bold mb-2"
+              >N° of Impressions</label
+            >
+            <input
+              type="number"
+              class="form-control"
+              v-model="query.impressions"
+              placeholder="Impressions"
+            />
+          </div>
+          <div class="col-md-3">
+            <label for="receiver" class="form-label fw-bold mb-2"
+              >Channel</label
+            >
+            <input
+              type="text"
+              class="form-control"
+              v-model="query.receiver"
+              placeholder="Receiver"
+            />
+          </div>
+          <div class="col-md-3">
+            <label for="keyword" class="form-label fw-bold mb-2"
+              >Keywords</label
+            >
+            <input
+              type="text"
+              class="form-control"
+              v-model="query.keyword"
+              placeholder="Keyword"
+            />
+            <small class="form-text text-muted">*separated by commas</small>
+          </div>
+          <div class="col-md-3">
+            <label for="mentions" class="form-label fw-bold mb-2"
+              >Mentions</label
+            >
+            <input
+              type="text"
+              class="form-control"
+              v-model="query.mentions"
+              placeholder="Mentions"
+            />
+            <small class="form-text text-muted">*separated by commas</small>
+          </div>
+          <div class="col-md-3">
+            <label for="isPrivate" class="form-label fw-bold mb-2"
+              >Private messages</label
+            >
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                v-model="query.isPrivate"
+              />
+              <label class="form-check-label" for="isPrivate"
+                >Is a private squeal</label
+              >
+            </div>
+            <small class="form-text text-muted"
+              >*only your private squeals will appear</small
+            >
+          </div>
+          <div class="col-12 d-flex justify-content-center">
+            <button
+              type="submit"
+              class="btn"
+              :style="{ backgroundColor: '#ff8900' }"
+            >
+              Submit
+            </button>
+          </div>
+        </form>
+      </div>
+    </nav>
+  </div>
+
+  <!-- buttons to change page -->
+  <div class="d-flex justify-content-center align-items-center my-3">
+    <button
+      class="btn custom-btn mr-2"
+      :class="{ 'btn-disabled': isPrevDisabled }"
+      @click="loadPrev()"
+      :disabled="isPrevDisabled"
+    >
+      Load previous page
+    </button>
+    <span class="mx-3">Page: {{ currentPage }}</span>
+    <button
+      class="btn custom-btn ml-2"
+      :class="{ 'btn-disabled': this.nextPageIsEmpty }"
+      @click="loadNext()"
+      :disabled="this.nextPageIsEmpty"
+    >
+      Load next page
+    </button>
+  </div>
+
+  <!-- for function that defines every squeal in the feed object-->
+  <Squeal v-for="squeal in feed" :squeal_json="squeal"></Squeal>
+
+  <!-- buttons to change page -->
+  <div class="d-flex justify-content-center align-items-center my-3">
+    <button
+      class="btn custom-btn mr-2"
+      :class="{ 'btn-disabled': isPrevDisabled }"
+      @click="loadPrev()"
+      :disabled="isPrevDisabled"
+    >
+      Load previous page
+    </button>
+    <span class="mx-3">Page: {{ currentPage }}</span>
+    <button
+      class="btn custom-btn ml-2"
+      :class="{ 'btn-disabled': this.nextPageIsEmpty }"
+      @click="loadNext()"
+      :disabled="this.nextPageIsEmpty"
+    >
+      Load next page
+    </button>
+  </div>
 </template>
+
+<script>
+export default {
+  data() {
+    return {
+      feed: null,
+      startIndex: 0,
+      endIndex: 9,
+      currentPage: 1,
+      nextPageIsEmpty: true,
+      query: {
+        author: "",
+        popularity: 0,
+        startDate: "",
+        endDate: "",
+        positiveReactions: 0,
+        negativeReactions: 0,
+        impressions: 0,
+        receiver: "",
+        keyword: "",
+        mentions: "",
+        isPrivate: false,
+      },
+    };
+  },
+  computed: {
+    isPrevDisabled() {
+      console.log("prevcheck executed: " + this.currentPage);
+      return this.currentPage === 1;
+    },
+  },
+  async mounted() {
+    const response = await fetch(
+      `https://site222326.tw.cs.unibo.it/squeals/?startindex=${this.startIndex}&endindex=${this.endIndex}`
+    );
+    // assigns the json to the feed variable
+    this.feed = await response.json();
+
+    // lazy check to avoid making another request
+    if (this.feed.length < 9) {
+      this.nextPageIsEmpty = true;
+    } else {
+      // check if next page is empty for sure
+      const response2 = await fetch(
+        `https://site222326.tw.cs.unibo.it/squeals/?startindex=${
+          this.startIndex + 11
+        }&endindex=${this.endIndex + 11}`
+      );
+      const feed2 = await response2.json();
+      console.log("feed2 length: " + feed2.length);
+      if (feed2.length == 0) {
+        this.nextPageIsEmpty = true;
+      } else {
+        this.nextPageIsEmpty = false;
+      }
+    }
+  },
+  methods: {
+    async submitForm() {
+      console.log(this.query);
+      //retrieve squeals and reset pages
+      this.currentPage = 1;
+      this.startIndex = 0;
+      this.endIndex = 9;
+      const response = await fetch(
+        `https://site222326.tw.cs.unibo.it/squeals/?
+            startindex=${this.startIndex}&
+            endindex=${this.endIndex}
+            author=${this.query.author}&
+            popularity=${this.query.popularity}&
+            start_date=${this.query.startDate}&
+            end_date=${this.query.endDate}&
+            positive_reactions=${this.query.positiveReactions}&
+            negative_reactions=${this.query.negativeReactions}&
+            impressions=${this.query.impressions}&
+            receiver=${this.query.receiver}&
+            keyword=${this.query.keyword}&
+            mentions=${this.query.mentions}&
+            is_private=${this.query.isPrivate}
+            `
+      );
+      // assigns the json to the feed variable
+      this.feed = await response.json();
+    },
+    async loadNext() {
+      this.startIndex += 10;
+      this.endIndex += 10;
+      const response = await fetch(
+        `https://site222326.tw.cs.unibo.it/squeals/?
+            startindex=${this.startIndex}&
+            endindex=${this.endIndex}
+            author=${this.query.author}&
+            popularity=${this.query.popularity}&
+            start_date=${this.query.startDate}&
+            end_date=${this.query.endDate}&
+            positive_reactions=${this.query.positiveReactions}&
+            negative_reactions=${this.query.negativeReactions}&
+            impressions=${this.query.impressions}&
+            receiver=${this.query.receiver}&
+            keyword=${this.query.keyword}&
+            mentions=${this.query.mentions}&
+            is_private=${this.query.isPrivate}
+            `
+      );
+      // assigns the json to the feed variable
+      this.feed = await response.json();
+      // check if feed is empty
+      if (this.feed.length == 0) {
+        this.loadPrev();
+        return;
+      } else {
+        this.currentPage++;
+      }
+
+      // lazy check to avoid making another request
+      if (this.feed.length < 9) {
+        this.nextPageIsEmpty = true;
+      } else {
+        // check if next page is empty for sure
+        const response2 = await fetch(
+        `https://site222326.tw.cs.unibo.it/squeals/?
+            startindex=${this.startIndex + 11}&
+            endindex=${this.endIndex + 11}
+            author=${this.query.author}&
+            popularity=${this.query.popularity}&
+            start_date=${this.query.startDate}&
+            end_date=${this.query.endDate}&
+            positive_reactions=${this.query.positiveReactions}&
+            negative_reactions=${this.query.negativeReactions}&
+            impressions=${this.query.impressions}&
+            receiver=${this.query.receiver}&
+            keyword=${this.query.keyword}&
+            mentions=${this.query.mentions}&
+            is_private=${this.query.isPrivate}
+            `
+      );
+        const feed2 = await response2.json();
+        if (feed2.length == 0) {
+          this.nextPageIsEmpty = true;
+        } else {
+          this.nextPageIsEmpty = false;
+        }
+      }
+    },
+    async loadPrev() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+      }
+
+      this.startIndex -= 10;
+      this.endIndex -= 10;
+      const response = await fetch(
+        `https://site222326.tw.cs.unibo.it/squeals/?
+            startindex=${this.startIndex}&
+            endindex=${this.endIndex}
+            author=${this.query.author}&
+            popularity=${this.query.popularity}&
+            start_date=${this.query.startDate}&
+            end_date=${this.query.endDate}&
+            positive_reactions=${this.query.positiveReactions}&
+            negative_reactions=${this.query.negativeReactions}&
+            impressions=${this.query.impressions}&
+            receiver=${this.query.receiver}&
+            keyword=${this.query.keyword}&
+            mentions=${this.query.mentions}&
+            is_private=${this.query.isPrivate}
+            `
+      );
+      // assigns the json to the feed variable
+      this.feed = await response.json();
+      // lazy check to avoid making another request
+      if (this.feed.length < 10) {
+        this.nextPageIsEmpty = true;
+      } else {
+        // check if next page is empty for sure
+        const response2 = await fetch(
+        `https://site222326.tw.cs.unibo.it/squeals/?
+            startindex=${this.startIndex + 11}&
+            endindex=${this.endIndex + 11}
+            author=${this.query.author}&
+            popularity=${this.query.popularity}&
+            start_date=${this.query.startDate}&
+            end_date=${this.query.endDate}&
+            positive_reactions=${this.query.positiveReactions}&
+            negative_reactions=${this.query.negativeReactions}&
+            impressions=${this.query.impressions}&
+            receiver=${this.query.receiver}&
+            keyword=${this.query.keyword}&
+            mentions=${this.query.mentions}&
+            is_private=${this.query.isPrivate}
+            `
+      );
+        const feed2 = await response2.json();
+        if (feed2.length == 0) {
+          this.nextPageIsEmpty = true;
+        } else {
+          this.nextPageIsEmpty = false;
+        }
+      }
+    },
+  },
+};
+</script>
+
+<style scoped>
+.custom-btn {
+  background-color: #ff8900;
+}
+
+.custom-btn:hover {
+  background-color: #f0a34c;
+}
+
+.btn-disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.button-image {
+  width: 30px; /* Adjust as needed */
+  height: 30px; /* Adjust as needed */
+}
+</style>

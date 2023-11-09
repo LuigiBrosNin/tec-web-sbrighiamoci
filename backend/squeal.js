@@ -57,6 +57,9 @@ app.get("/squeals/", async (req, res) => {
             return;
         }
 
+        console.log('Start Index:', startIndex);
+        console.log('End Index:', endIndex);
+
         // initializing the start and end date in case they are not specified
         let start_date = 0;
         let end_date = Date.now();
