@@ -306,6 +306,36 @@ export default {
       );
       // assigns the json to the feed variable
       this.feed = await response.json();
+        // lazy check to avoid making another request
+        if (this.feed.length < 9) {
+          this.nextPageIsEmpty = true;
+        } else {
+          // check if next page is empty for sure
+          const response2 = await fetch(
+            `https://site222326.tw.cs.unibo.it/squeals/?startindex=${
+              this.startIndex + 11
+            }&endindex=${this.endIndex + 11}
+            author=${this.query.author}&
+            popularity=${this.query.popularity}&
+            start_date=${this.query.startDate}&
+            end_date=${this.query.endDate}&
+            positive_reactions=${this.query.positiveReactions}&
+            negative_reactions=${this.query.negativeReactions}&
+            impressions=${this.query.impressions}&
+            receiver=${this.query.receiver}&
+            keyword=${this.query.keyword}&
+            mentions=${this.query.mentions}&
+            is_private=${this.query.isPrivate}
+            `
+          );
+          const feed2 = await response2.json();
+          console.log("feed2 length: " + feed2.length);
+          if (feed2.length == 0) {
+            this.nextPageIsEmpty = true;
+          } else {
+            this.nextPageIsEmpty = false;
+          }
+        }
     },
     async loadNext() {
       this.startIndex += 10;

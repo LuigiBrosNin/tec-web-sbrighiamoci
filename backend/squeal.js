@@ -43,6 +43,8 @@ app.get("/squeals/", async (req, res) => {
         let startIndex = 0;
         let endIndex = 10;
         // check if the parameters are valid
+        console.log("req.query.startindex: "+req.query.startindex);
+        console.log("req.query.endindex: "+req.query.endindex);
         if (req.query.startindex !== undefined && req.query.startindex !== NaN) {
             startIndex = parseInt(req.query.startindex);
         }
