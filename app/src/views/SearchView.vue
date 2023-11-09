@@ -16,6 +16,7 @@ import Squeal from "@/components/Squeal.vue";
         Mentions (text, spaced by commas),
         is_private (boolean)
     -->
+
   <button
     class="btn btn-primary mb-3 col-12 d-flex justify-content-center"
     style="background-color: #206f91"
@@ -51,30 +52,30 @@ import Squeal from "@/components/Squeal.vue";
             >
             <select class="form-control" v-model="query.popularity">
               <option disabled value="">Select popularity</option>
-              <option value="isPopular">isPopular</option>
-              <option value="isUnpopular">isUnpopular</option>
-              <option value="isControversial">isControversial</option>
+              <option value="isPopular">Populars</option>
+              <option value="isUnpopular">Unpopulars</option>
+              <option value="isControversial">Controversial</option>
             </select>
           </div>
           <div class="col-md-3">
-            <label for="startDate" class="form-label fw-bold mb-2"
+            <label for="start_date" class="form-label fw-bold mb-2"
               >Older date</label
             >
             <input
               type="date"
               class="form-control"
-              v-model="query.startDate"
+              v-model="query.start_date"
               placeholder="Start Date"
             />
           </div>
           <div class="col-md-3">
-            <label for="endDate" class="form-label fw-bold mb-2"
+            <label for="end_date" class="form-label fw-bold mb-2"
               >Newer date</label
             >
             <input
               type="date"
               class="form-control"
-              v-model="query.endDate"
+              v-model="query.end_date"
               placeholder="End Date"
             />
           </div>
@@ -146,24 +147,6 @@ import Squeal from "@/components/Squeal.vue";
             />
             <small class="form-text text-muted">*separated by commas</small>
           </div>
-          <div class="col-md-3">
-            <label for="isPrivate" class="form-label fw-bold mb-2"
-              >Private messages</label
-            >
-            <div class="form-check">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                v-model="query.isPrivate"
-              />
-              <label class="form-check-label" for="isPrivate"
-                >Is a private squeal</label
-              >
-            </div>
-            <small class="form-text text-muted"
-              >*only your private squeals will appear</small
-            >
-          </div>
           <div class="col-12 d-flex justify-content-center">
             <button
               type="submit"
@@ -200,7 +183,11 @@ import Squeal from "@/components/Squeal.vue";
   </div>
 
   <!-- for function that defines every squeal in the feed object-->
-  <Squeal v-for="squeal in feed" :squeal_json="squeal"></Squeal>
+  <Squeal
+    v-for="squeal in this.feed"
+    :squeal_json="squeal"
+    :key="feedVersion"
+  ></Squeal>
 
   <!-- buttons to change page -->
   <div class="d-flex justify-content-center align-items-center my-3">
@@ -233,24 +220,38 @@ export default {
       endIndex: 9,
       currentPage: 1,
       nextPageIsEmpty: true,
+      offset: 10,
+      feedVersion: 0,
       query: {
         author: "",
-        popularity: 0,
-        startDate: "",
-        endDate: "",
-        positiveReactions: 0,
-        negativeReactions: 0,
+        popularity: "",
+        start_date: 0,
+        end_date: Date.now(),
+        positive_reactions: 0,
+        negative_reactions: 0,
         impressions: 0,
         receiver: "",
         keyword: "",
         mentions: "",
         isPrivate: false,
-    },
+      },
+      queryToSend: {
+        author: "",
+        popularity: "",
+        start_date: 0,
+        end_date: Date.now(),
+        positive_reactions: 0,
+        negative_reactions: 0,
+        impressions: 0,
+        receiver: "",
+        keyword: "",
+        mentions: "",
+        isPrivate: false,
+      },
     };
   },
   computed: {
     isPrevDisabled() {
-      console.log("prevcheck executed: " + this.currentPage);
       return this.currentPage === 1;
     },
   },
@@ -260,6 +261,7 @@ export default {
     );
     // assigns the json to the feed variable
     this.feed = await response.json();
+    this.feedVersion++;
 
     // lazy check to avoid making another request
     if (this.feed.length < 9) {
@@ -267,7 +269,9 @@ export default {
     } else {
       // check if next page is empty for sure
       const response2 = await fetch(
-        `https://site222326.tw.cs.unibo.it/squeals/?startindex=${this.startIndex + 10}&endindex=${this.endIndex + 10}`
+        `https://site222326.tw.cs.unibo.it/squeals/?startindex=${
+          this.startIndex + 10
+        }&endindex=${this.endIndex + 10}`
       );
       const feed2 = await response2.json();
       console.log("feed2 length: " + feed2.length);
@@ -279,50 +283,91 @@ export default {
     }
   },
   methods: {
-    getFetchUri() {
-        return `https://site222326.tw.cs.unibo.it/squeals/?startindex=${this.startIndex}&endindex=${this.endIndex}&author=${this.query.author}&popularity=${this.query.popularity}&start_date=${this.query.startDate}&end_date=${this.query.endDate}&positive_reactions=${this.query.positiveReactions}&negative_reactions=${this.query.negativeReactions}&impressions=${this.query.impressions}&receiver=${this.query.receiver}&keyword=${this.query.keyword}&mentions=${this.query.mentions}&is_private=${this.query.isPrivate}`
+    updateValidQuery() {
+      // update query used for fetch
+      this.queryToSend = JSON.parse(JSON.stringify(this.query));
 
+      // convert start_date in milliseconds
+      if (this.query.start_date != 0) {
+        this.queryToSend.start_date = new Date(this.query.start_date).getTime();
+      }
+      // convert end_date in milliseconds
+      if (this.query.end_date != 0) {
+        this.queryToSend.end_date = new Date(this.query.end_date).getTime();
+      }
+
+      // parse keywords and mentions
+      if (this.query.keyword != "") {
+        this.queryToSend.keyword = this.query.keyword.split(",");
+      }
+      if (this.query.mentions != "") {
+        this.queryToSend.mentions = this.query.mentions.split(",");
+      }
+      //remove spaces from keywords and mentions
+      for (let i = 0; i < this.query.keyword.length; i++) {
+        this.queryToSend.keyword[i] = this.query.keyword[i].trim();
+      }
+      for (let i = 0; i < this.query.mentions.length; i++) {
+        this.queryToSend.mentions[i] = this.query.mentions[i].trim();
+      }
     },
-    getNextFetchUri() {
-        return `https://site222326.tw.cs.unibo.it/squeals/?startindex=${this.startIndex+10}&endindex=${this.endIndex+10}&author=${this.query.author}&popularity=${this.query.popularity}&start_date=${this.query.startDate}&end_date=${this.query.endDate}&positive_reactions=${this.query.positiveReactions}&negative_reactions=${this.query.negativeReactions}&impressions=${this.query.impressions}&receiver=${this.query.receiver}&keyword=${this.query.keyword}&mentions=${this.query.mentions}&is_private=${this.query.isPrivate}`
-
+    getFetchUri(offset) {
+      // constructing query omitting empty fields
+      let returnUri = `https://site222326.tw.cs.unibo.it/squeals/?startindex=${
+        this.startIndex + offset
+      }&endindex=${this.endIndex + offset}`;
+      for (const field of Object.keys(this.query)) {
+        if (
+          this.queryToSend[field] != "" &&
+          this.queryToSend[field] != null &&
+          this.queryToSend[field] != NaN &&
+          this.queryToSend[field] != 0
+        ) {
+          returnUri += `&${field}=${this.queryToSend[field]}`;
+        }
+      }
+      return returnUri;
     },
     async submitForm() {
+      this.updateValidQuery();
       console.log(this.query);
       //retrieve squeals and reset pages
       this.currentPage = 1;
       this.startIndex = 0;
       this.endIndex = 9;
-      const response = await fetch(this.getFetchUri());
+      const response = await fetch(this.getFetchUri(0));
+
       // assigns the json to the feed variable
       this.feed = await response.json();
-        // lazy check to avoid making another request
-        if (this.feed.length < 9) {
+      this.feedVersion++;
+
+      // lazy check to avoid making another request
+      if (this.feed.length < 9) {
+        this.nextPageIsEmpty = true;
+      } else {
+        // check if next page is empty for sure
+        const response2 = await fetch(this.getFetchUri(this.offset));
+        const feed2 = await response2.json();
+        console.log("feed2 length: " + feed2.length);
+        if (feed2.length == 0) {
           this.nextPageIsEmpty = true;
         } else {
-          // check if next page is empty for sure
-          const response2 = await fetch(this.getNextFetchUri());
-          const feed2 = await response2.json();
-          console.log("feed2 length: " + feed2.length);
-          if (feed2.length == 0) {
-            this.nextPageIsEmpty = true;
-          } else {
-            this.nextPageIsEmpty = false;
-          }
+          this.nextPageIsEmpty = false;
         }
+      }
     },
     async loadNext() {
       this.startIndex += 10;
       this.endIndex += 10;
-      const response = await fetch(this.getFetchUri());
+      const response = await fetch(this.getFetchUri(0));
       // assigns the json to the feed variable
       this.feed = await response.json();
+      this.feedVersion++;
+      this.currentPage++;
       // check if feed is empty
       if (this.feed.length == 0) {
         this.loadPrev();
         return;
-      } else {
-        this.currentPage++;
       }
 
       // lazy check to avoid making another request
@@ -330,7 +375,7 @@ export default {
         this.nextPageIsEmpty = true;
       } else {
         // check if next page is empty for sure
-        const response2 = await fetch(getNextFetchUri());
+        const response2 = await fetch(this.getFetchUri(this.offset));
         const feed2 = await response2.json();
         if (feed2.length == 0) {
           this.nextPageIsEmpty = true;
@@ -346,15 +391,18 @@ export default {
 
       this.startIndex -= 10;
       this.endIndex -= 10;
-      const response = await fetch(this.getFetchUri());
+      const response = await fetch(this.getFetchUri(0));
+
       // assigns the json to the feed variable
       this.feed = await response.json();
+      this.feedVersion++;
+
       // lazy check to avoid making another request
       if (this.feed.length < 10) {
         this.nextPageIsEmpty = true;
       } else {
         // check if next page is empty for sure
-        const response2 = await fetch(getNextFetchUri());
+        const response2 = await fetch(this.getFetchUri(this.offset));
         const feed2 = await response2.json();
         if (feed2.length == 0) {
           this.nextPageIsEmpty = true;

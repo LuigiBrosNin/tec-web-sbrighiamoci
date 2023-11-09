@@ -15,7 +15,7 @@
         </div>
 
         <p class="squeal_body"> {{ body }} </p>
-        <img class="squeal_media" v-if='media != null && media != ""' :src="`https://site222326.tw.cs.unibo.it/squeals/${id}/media`">
+        <img class="squeal_media" v-if='media != null && media != ""' :src="`https://site222326.tw.cs.unibo.it/squeals/${squeal_id}/media`">
 
         <!-- leaflet map -->
         <div v-if='location != null && location != ""' id="mapid">
@@ -55,7 +55,7 @@ export default {
     data() {
         return {
             isValid: true, // isValid becomes false if the fetch fails
-
+            squeal_id: "",
             author: "",
             authorProfilePicUrl: "",
             channel: "",
@@ -98,6 +98,7 @@ export default {
             } else {
                 this.authorProfilePicUrl = `https://site222326.tw.cs.unibo.it/profiles/${this.author}/propic`
             }
+            this.squeal_id = squealJson.id;
             this.channel = squealJson.receiver;
             this.replyTo = squealJson.reply_to;
             this.date = new Date(squealJson.date);

@@ -62,7 +62,6 @@ export default {
   },
   computed: {
     isPrevDisabled() {
-      console.log("prevcheck executed: " + this.currentPage);
       return this.currentPage === 1;
     },
   },

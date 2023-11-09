@@ -36,15 +36,13 @@ const collection_channels = database.collection(channelCollection);
 // ritorna una lista di squeal del database, da startindex ad endindex
 
 // Author, popularity , end_date, start_date, positive_reactions, negative_reactions, impressions
-// receiver (group), Keyword, Mentions, is_private
+// receiver (group), keywords, mentions, is_private
 app.get("/squeals/", async (req, res) => {
     try {
         // initializing the start and end index in case they are not specified
         let startIndex = 0;
         let endIndex = 10;
         // check if the parameters are valid
-        console.log("req.query.startindex: "+req.query.startindex);
-        console.log("req.query.endindex: "+req.query.endindex);
         if (req.query.startindex !== undefined && req.query.startindex !== NaN) {
             startIndex = parseInt(req.query.startindex);
         }
@@ -578,7 +576,7 @@ app.get("/feed/", async (req, res) => {
             is_private: false
         }).sort({date: -1}) // ordered chronological order
             .skip(startIndex) // starting from startIndex
-            .limit(endIndex) // returns endIndex squeals
+            .limit(endIndex - startIndex + 1) // returns endIndex squeals
             .toArray(); // returns the squeals as an array
 
         res.status(200).json(feed); // returns the squeals
