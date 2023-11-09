@@ -19,6 +19,11 @@ const port = 8000;
 
 app.set('trust proxy', 1); // trust first proxy
 
+//! FOR ALLOWING LOCAL TESTING, REMOVE WHEN DEPLOYING
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  next();
+});
 
 let cors = require('cors');
 app.use(cors({
