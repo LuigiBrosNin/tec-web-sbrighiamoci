@@ -150,7 +150,7 @@ export default {
   // mounted: function that gets called when page loads
   mounted() {
     // retrieve credits
-    const profile = $user;
+    const profile = this.$user;
 
     axios
       .get("https://site222326.tw.cs.unibo.it/profiles/" + profile)
@@ -183,7 +183,7 @@ export default {
     },
     submitForm() {
       const jsonBody = {
-        author: $user,
+        author: this.$user,
         text: this.text,
         receiver: this.receiver,
         reply_to: this.reply_to,
