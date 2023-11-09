@@ -3,6 +3,15 @@ import Squeal from "@/components/Squeal.vue";
 </script>
 
 <template>
+  <!-- button to refresh current feed page -->
+  <div class="d-flex justify-content-center align-items-center my-3">
+    <button
+      class="btn custom-btn"
+      @click="refresh()"
+    >
+      Refresh feed
+    </button>
+  </div>
   <!-- buttons to change page -->
   <div class="d-flex justify-content-center align-items-center my-3">
     <button
@@ -25,7 +34,11 @@ import Squeal from "@/components/Squeal.vue";
   </div>
 
   <!-- for function that defines every squeal in the feed object-->
-  <Squeal v-for="squeal in feed" :squeal_json="squeal"></Squeal>
+  <Squeal
+    v-for="squeal in this.feed"
+    :squeal_json="squeal"
+    :key="feedVersion"
+  ></Squeal>
 
   <!-- buttons to change page -->
   <div class="d-flex justify-content-center align-items-center my-3">
@@ -76,9 +89,7 @@ export default {
     } else {
       // check if next page is empty for sure
       const response2 = await fetch(
-        `https://site222326.tw.cs.unibo.it/feed/?startindex=${
-          this.startIndex + 10
-        }&endindex=${this.endIndex + 10}`
+        `https://site222326.tw.cs.unibo.it/feed/?startindex=${this.startIndex + 10}&endindex=${this.endIndex + 10}`
       );
       const feed2 = await response2.json();
       console.log("feed2 length: " + feed2.length)
@@ -90,20 +101,22 @@ export default {
     }
   },
   methods: {
+    getFetchUri(offset) {
+      return `https://site222326.tw.cs.unibo.it/feed/?startindex=${this.startIndex + offset}&endindex=${this.endIndex + offset}`;
+    },
     async loadNext() {
       this.startIndex += 10;
       this.endIndex += 10;
-      const response = await fetch(
-        `https://site222326.tw.cs.unibo.it/feed/?startindex=${this.startIndex}&endindex=${this.endIndex}`
-      );
+      const response = await fetch(this.getFetchUri(0));
       // assigns the json to the feed variable
       this.feed = await response.json();
+      this.feedVersion++;
+      this.currentPage++;
       // check if feed is empty
       if (this.feed.length == 0) {
         this.loadPrev();
+        this.nextPageIsEmpty = true;
         return;
-      } else {
-        this.currentPage++;
       }
 
       // lazy check to avoid making another request
@@ -111,11 +124,29 @@ export default {
         this.nextPageIsEmpty = true;
       } else {
         // check if next page is empty for sure
-        const response2 = await fetch(
-          `https://site222326.tw.cs.unibo.it/feed/?startindex=${
-            this.startIndex + 10
-          }&endindex=${this.endIndex + 10}`
-        );
+        const response2 = await fetch(this.getFetchUri(this.offset));
+        const feed2 = await response2.json();
+        if (feed2.length == 0) {
+          this.nextPageIsEmpty = true;
+        } else {
+          this.nextPageIsEmpty = false;
+        }
+      }
+    },
+    async refresh() {
+      const response = await fetch(this.getFetchUri(0));
+      // assigns the json to the feed variable
+      this.feed = await response.json();
+      this.feedVersion++;
+      this.currentPage = 1;
+      this.startIndex = 0;
+      this.endIndex = 9;
+      // lazy check to avoid making another request
+      if (this.feed.length < 9) {
+        this.nextPageIsEmpty = true;
+      } else {
+        // check if next page is empty for sure
+        const response2 = await fetch(this.getFetchUri(this.offset));
         const feed2 = await response2.json();
         if (feed2.length == 0) {
           this.nextPageIsEmpty = true;
@@ -131,17 +162,18 @@ export default {
 
       this.startIndex -= 10;
       this.endIndex -= 10;
-      const response = await fetch(
-        `https://site222326.tw.cs.unibo.it/feed/?startindex=${this.startIndex}&endindex=${this.endIndex}`
-      );
+      const response = await fetch(this.getFetchUri(0));
+
       // assigns the json to the feed variable
       this.feed = await response.json();
+      this.feedVersion++;
+
       // lazy check to avoid making another request
       if (this.feed.length < 10) {
         this.nextPageIsEmpty = true;
       } else {
         // check if next page is empty for sure
-        const response2 = await fetch(`https://site222326.tw.cs.unibo.it/feed/?startindex=${this.startIndex + 10}&endindex=${this.endIndex + 10}`);
+        const response2 = await fetch(this.getFetchUri(this.offset));
         const feed2 = await response2.json();
         if (feed2.length == 0) {
           this.nextPageIsEmpty = true;

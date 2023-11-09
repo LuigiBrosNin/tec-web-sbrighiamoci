@@ -487,7 +487,6 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
 // se non specificati ritorna le prime 10
 app.get("/feed/", async (req, res) => {
     try {
-        //TODO REPLACE WITH SESSION USER
         const feed_user = req.session.user;
 
         // initializing the start and end index in case they are not specified
@@ -507,6 +506,9 @@ app.get("/feed/", async (req, res) => {
             });
             return;
         }
+
+        console.log('Start Index:', startIndex);
+        console.log('End Index:', endIndex);
 
         // find squeals that belong to required channels
         const required_channels = await database.collection(channelCollection).find({

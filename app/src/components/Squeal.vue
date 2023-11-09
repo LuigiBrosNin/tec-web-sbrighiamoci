@@ -39,7 +39,7 @@
             </button>
         </div>
 
-        <RouterLink :to="`/squeal/${id}`">Comments</RouterLink>
+        <RouterLink :to="`/squeal/${squeal_id}`">Comments</RouterLink>
     </div>
     <div class="squeal_container" v-else>
         <p>Squeal not found</p>
