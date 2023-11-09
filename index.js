@@ -102,8 +102,10 @@ app.get("/user-check", async (req, res) => {
   res.json({ user: req.session.user });
 })
 
-app.use(['/app', '/app/*'], express.static(path.join(global.rootDir, 'app/dist/')));
-app.use(['/smm', '/smm/*'], express.static(path.join(global.rootDir, 'smm/build/')));
+app.use('/app', express.static(path.join(global.rootDir, 'app/dist/')));
+app.use('/app/*', express.static(path.join(global.rootDir, 'app/dist/')));
+app.use('/smm', express.static(path.join(global.rootDir, 'smm/build/')));
+app.use('/smm/*', express.static(path.join(global.rootDir, 'smm/build/')));
 
 app.get(["/admin","/admin/:paths(*)"], async (req, res) => {
   try {
