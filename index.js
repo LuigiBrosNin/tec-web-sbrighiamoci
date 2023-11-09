@@ -102,14 +102,16 @@ app.get("/user-check", async (req, res) => {
   res.json({ user: req.session.user });
 })
 
-app.use('/app', express.static(path.join(global.rootDir, 'app/dist/')));
-app.use('/app/*', express.static(path.join(global.rootDir, 'app/dist/')));
-app.use('/smm', express.static(path.join(global.rootDir, 'smm/build/')));
-app.use('/smm/*', express.static(path.join(global.rootDir, 'smm/build/')));
+app.use(['/app', '/app/*'], express.static(path.join(global.rootDir, 'app/dist/')));
+app.use(['/smm', '/smm/*'], express.static(path.join(global.rootDir, 'smm/build/')));
 
-app.get("/admin", async (req, res) => {
+app.get(["/admin","/admin/:paths(*)"], async (req, res) => {
   try {
-    const url = 'https://site222326.tw.cs.unibo.it/app';
+    const url = 'https://site222326.tw.cs.unibo.it/app/';
+    if(req.params.path != null){
+      url = url + req.params.paths;
+    }
+    
     const response = await axios.get(url); // Fetch the HTML content
 
     // Load the HTML content into cheerio for easy manipulation
