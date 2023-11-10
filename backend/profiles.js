@@ -196,7 +196,6 @@ app.get("/profiles/:name", async (req, res) => {
         }
 
         delete profile.password;
-        delete profile.email;
         res.status(200).json(profile);
 
     } catch (error) {
