@@ -306,7 +306,7 @@ function isValidEmail(email) {
 //TODO ADD AUTHORIZATION
 app.delete("/profiles/:name", async (req, res) => {
     try {
-        //TODO CHANGE profileName to req.session.user
+        //TODO CHANGE profileName
         const profileName = req.params.name;
         const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
         const authorized = true //await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === profileName;
@@ -366,37 +366,39 @@ app.delete("/profiles/:name", async (req, res) => {
                 }
 
                 // after the channel has been either deleted or gained a new mod, remove the profile
-
                 const squeal_list_to_delete = profile.squeals_list;
 
                 for (const squeal of squeal_list_to_delete) {
                     await deleteSquealById(squeal);
                 }
 
-                await mongoClient.connect();
-                const res = await collection_profiles.updateOne({
-                    name: profileName
-                }, {
-                    $set: {
-                        email: "",
-                        password: "",
-                        propic: "",
-                        bio: "",
-                        credit: [],
-                        credit_limits: [],
-                        squeals_list: [],
-                        followers_list: [],
-                        following_channels: [],
-                        account_type: "",
-                        extra_credit: 0,
-                        squeals_num: 0,
-                        is_banned: false,
-                        banned_until: null,
-                        following_list: [],
-                        is_deleted: true
-                    }
-                });
+
             }
+
+            await mongoClient.connect();
+            const res = await collection_profiles.updateOne({
+                name: profileName
+            }, {
+                $set: {
+                    email: "",
+                    password: "",
+                    propic: "",
+                    bio: "",
+                    credit: [],
+                    credit_limits: [],
+                    squeals_list: [],
+                    followers_list: [],
+                    following_channels: [],
+                    account_type: "",
+                    extra_credit: 0,
+                    squeals_num: 0,
+                    is_banned: false,
+                    banned_until: null,
+                    following_list: [],
+                    is_deleted: true
+                }
+            });
+
             res.status(200).json({
                 message: "Profile deleted successfully."
             });
