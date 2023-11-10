@@ -1,8 +1,13 @@
 <template>
-    <div>
-        <input type="file" @change="handleFileUpload" accept="image/*"/>
-        <button @click="uploadFile">Upload</button>
-    </div>
+<div class="input-group mb-3">
+  <div class="custom-file">
+    <input type="file" class="custom-file-input" id="inputGroupFile01" @change="handleFileUpload" accept="image/*">
+    <label class="custom-file-label" for="inputGroupFile01">Choose file</label>
+  </div>
+  <div class="input-group-append">
+    <button class="btn btn-outline-secondary" type="button" @click="uploadFile">Upload</button>
+  </div>
+</div>
 </template>
 
 <script>

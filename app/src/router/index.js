@@ -4,7 +4,7 @@ import SearchView from '../views/SearchView.vue'
 import ChannelsView from '../views/ChannelsView.vue'
 import MessagesView from '../views/MessagesView.vue'
 import ProfileView from '../views/ProfileView.vue'
-import UploaderView from '../views/UploaderView.vue'
+import ProfileSettingsView from '../views/ProfileSettingsView.vue'
 import SquealPutView from '../views/SquealPutView.vue'
 import SquealInfoView from '../views/SquealInfoView.vue'
 
@@ -44,9 +44,9 @@ const router = createRouter({
       props: true
     },
     {
-      path: '/uploader',
-      name: 'uploader',
-      component: UploaderView
+      path: '/profile/:id/settings',
+      name: 'settings',
+      component: ProfileSettingsView
     },
     {
       path: '/squealPut',
