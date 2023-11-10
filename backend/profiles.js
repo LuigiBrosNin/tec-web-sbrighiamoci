@@ -376,7 +376,7 @@ app.delete("/profiles/:name", async (req, res) => {
             }
 
             await mongoClient.connect();
-            const res = await collection_profiles.updateOne({
+            const updated = await collection_profiles.updateOne({
                 name: profileName
             }, {
                 $set: {
