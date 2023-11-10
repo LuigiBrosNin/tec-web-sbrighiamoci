@@ -107,7 +107,7 @@ app.use('/app/*', express.static(path.join(global.rootDir, 'app/dist/')));
 app.use('/smm', express.static(path.join(global.rootDir, 'smm/build/')));
 app.use('/smm/*', express.static(path.join(global.rootDir, 'smm/build/')));
 
-app.get(["/admin","/admin/:paths(*)"], async (req, res) => {
+app.get(["/admin/:paths(*)", "/admin"], async (req, res) => {
   try {
     let url = 'https://site222326.tw.cs.unibo.it/app/';
     if(req.params.paths != null){
