@@ -306,9 +306,13 @@ function isValidEmail(email) {
 //TODO ADD AUTHORIZATION
 app.delete("/profiles/:name", async (req, res) => {
     try {
+        //TODO CHANGE profileName to req.session.user
         const profileName = req.params.name;
         const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
         const authorized = true //await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === profileName;
+
+
+        console.log("profileName: " + req.params.name);
 
         if (authorized || adminAuthorized) {
             await mongoClient.connect();
