@@ -14,17 +14,21 @@
       <img class="icon not_selected" src="https://site222326.tw.cs.unibo.it/icons/podcast-svgrepo-com.svg" />
       <p>Channels</p>
     </RouterLink>
-    <RouterLink to="/messages" class="router_link">
+    <RouterLink to="/messages" class="router_link" v-if="$user">
       <img class="icon not_selected" src="https://site222326.tw.cs.unibo.it/icons/message-circle-dots-svgrepo-com.svg" />
       <p>Messages</p>
     </RouterLink>
-    <RouterLink :to="`/profile/${$user}`" class="router_link">
+    <RouterLink :to="`/profile/${$user}`" class="router_link" v-if="$user">
       <img class="icon not_selected" src="https://site222326.tw.cs.unibo.it/icons/user-svgrepo-com.svg" />
       <p>{{ $user || "Profile" }}</p>
     </RouterLink>
-    <RouterLink :to="`/profile/${$user}/settings`" class="router_link">
+    <RouterLink :to="`/profile/${$user}/settings`" class="router_link" v-if="$user">
       <img class="icon not_selected" src="https://site222326.tw.cs.unibo.it/icons/user-svgrepo-com.svg" />
       <p>Profile Settings TEMP</p>
+    </RouterLink>
+    <RouterLink to="/login" class="router_link" v-if="!$user">
+      <img class="icon not_selected" src="https://site222326.tw.cs.unibo.it/icons/user-svgrepo-com.svg" />
+      <p>Login</p>
     </RouterLink>
   </nav>
 </template>
