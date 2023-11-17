@@ -42,7 +42,6 @@ const collection_profiles = database.collection(profileCollection);
 // returns the list of the channels on the database (supports pagination & queries)
 // parameters: startindex, endindex, name, owner, type (privileged, private)
 // GTE prameters: subscribers_num
-// NOTE: private channels do not appear in searches, even if you're the owner
 app.get("/channels", async (req, res) => {
   try {
     // initializing the start and end index in case they are not specified
@@ -156,7 +155,7 @@ app.put("/channels/:name", async (req, res) => {
       propic: req.body.propic, //TODO handle this
       bio: req.body.bio,
       is_deleted: false,
-      propic: "",
+      propic: null,
     };
 
     if (authorized && (req.body.type === "private" || req.body.type === "privileged" || req.body.type === "required")){

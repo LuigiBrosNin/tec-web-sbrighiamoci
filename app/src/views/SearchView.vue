@@ -424,6 +424,10 @@ export default {
   background-color: #f0a34c;
 }
 
+.custom-btn:active {
+  background-color: #916020 !important;
+}
+
 .btn-disabled {
   opacity: 0.65;
   cursor: not-allowed;

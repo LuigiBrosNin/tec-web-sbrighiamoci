@@ -7,6 +7,7 @@ import ProfileView from '../views/ProfileView.vue'
 import ProfileSettingsView from '../views/ProfileSettingsView.vue'
 import SquealPutView from '../views/SquealPutView.vue'
 import SquealInfoView from '../views/SquealInfoView.vue'
+import SearchChannelsView from '../views/SearchChannelsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -24,7 +25,7 @@ const router = createRouter({
     {
       path: '/channels',
       name: 'channels',
-      component: ChannelsView
+      component: SearchChannelsView,
     },
     {
       path: '/messages',
