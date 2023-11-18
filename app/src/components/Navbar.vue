@@ -6,7 +6,7 @@
       <img class="icon not_selected" src="https://site222326.tw.cs.unibo.it/icons/house-floor-svgrepo-com.svg" />
       <p>Home</p>
     </RouterLink>
-    <RouterLink to="/search" class="router_link">
+    <RouterLink to="/search/profiles" class="router_link">
       <img class="icon not_selected" src="https://site222326.tw.cs.unibo.it/icons/search-alt-1-svgrepo-com.svg" />
       <p>Search</p>
     </RouterLink>

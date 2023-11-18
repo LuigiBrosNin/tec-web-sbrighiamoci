@@ -1,5 +1,5 @@
 <template>
-    <!-- navbar with fields to formulate a query to filter channels -->
+    <!-- navbar with fields to formulate a query to filter profiles -->
     <button class="btn btn-primary mb-3 col-12 d-flex justify-content-center" style="background-color: #206f91"
         type="button" data-bs-toggle="collapse" data-bs-target="#formSection" aria-expanded="true"
         aria-controls="formSection">
@@ -7,41 +7,61 @@
             src="https://site222326.tw.cs.unibo.it/icons/search-alt-1-svgrepo-com.svg" />
         Toggle Search Options
     </button>
-    <div id="formSection" class="collapse">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <div class="container justify-content-center">
-        <div class="row justify-content-center">
-          <div class="col-lg-12">
-            <form @submit.prevent="submitForm" class="row g-3">
-              <div class="form-group">
-                <label for="name">Name</label>
-                <input type="text" class="form-control" id="name" v-model="query.name">
-              </div>
-              <div class="form-group">
-                <label for="owner">Owner</label>
-                <input type="text" class="form-control" id="owner" v-model="query.owner">
-              </div>
-              <div class="form-group">
-                <label for="type">Type</label>
-                <select class="form-control" id="type" v-model="query.type">
-                  <option value="privileged">Privileged</option>
-                  <option value="private">Private</option>
-                  <option value="required">Required</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="subscribers_num">Number of Subscribers</label>
-                <input type="number" class="form-control" id="subscribers_num" v-model="query.subscribers_num">
-              </div>
-              <div class="form-group d-flex justify-content-center">
-                <button type="submit" class="btn btn-primary custom-btn">Submit</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </nav>
-  </div>
+    <div id="formSection" class="collapse show">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container justify-content-center">
+                <div class="row justify-content-center">
+                    <div class="col-lg-12">
+                        <form @submit.prevent="submitForm" class="row g-3">
+                            <div class="form-group col-md-6">
+                                <label for="name">Name</label>
+                                <input type="text" class="form-control" id="name" v-model="query.name">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="bio">Bio</label>
+                                <input type="text" class="form-control" id="bio" v-model="query.bio">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="credit">Minimum available credit</label>
+                                <input type="number" class="form-control" id="credit" v-model="query.credit">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="credit_type">Credit Type</label>
+                                <select class="form-control" id="credit_type" v-model="query.credit_type">
+                                    <option value="g">Daily</option>
+                                    <option value="s">Weekly</option>
+                                    <option value="m">Monthly</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="credit_limits">Maximum possible credit</label>
+                                <input type="number" class="form-control" id="credit_limits" v-model="query.credit_limits">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="credit_limits_type">Credit Limits Type</label>
+                                <select class="form-control" id="credit_limits_type" v-model="query.credit_limits_type">
+                                    <option value="g">Daily</option>
+                                    <option value="s">Weekly</option>
+                                    <option value="m">Monthly</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="squeals_num">Number of squeals created</label>
+                                <input type="number" class="form-control" id="squeals_num" v-model="query.squeals_num">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="followers_num">Number of followers</label>
+                                <input type="number" class="form-control" id="followers_num" v-model="query.followers_num">
+                            </div>
+                            <div class="form-group d-flex justify-content-center">
+                                <button type="submit" class="btn btn-primary custom-btn">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
 
     <!-- buttons to change page -->
     <div class="d-flex justify-content-center align-items-center my-3">
@@ -57,25 +77,52 @@
     </div>
 
     <!-- for function that defines every channel in the feed object-->
-    <div v-for="channel in this.feed" :key="feedVersion" class="card mt-3">
-    <div class="row no-gutters">
-      <div class="col-md-4 d-flex justify-content-center align-items-center">
-        <img v-if="channel.propic" :src="channel.propic" class="card-img channel_img" alt="Profile Picture">
-        <img v-else src="https://site222326.tw.cs.unibo.it/images/logoSquealer.svg" class="card-img channel_img"
-            alt="Profile Picture">
-      </div>
-      <div class="col-md-8">
-        <div class="card-body">
-          <h5 class="card-title">
-            <a :href="`channels/${channel.name}`" class="text-decoration-none">{{ channel.name }}</a>
-          </h5>
-          <p class="card-text">{{ channel.bio }}</p>
-          <p class="card-text"><small class="text-muted">Owner: {{ channel.owner }}</small></p>
-          <p class="card-text"><small class="text-muted">Subscribers: {{ channel.subscribers_num }}</small></p>
+    <div v-for="profile in this.feed" :key="feedVersion" class="card mt-3">
+        <div class="row no-gutters">
+            <div class="col-md-4 d-flex justify-content-center align-items-center">
+                <img v-if="profile.propic" :src="profile.propic" class="card-img profile_img" alt="Profile Picture">
+                <img v-else src="https://site222326.tw.cs.unibo.it/images/user-default.svg" class="card-img profile_img"
+                    alt="Profile Picture">
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a :href="`profile/${profile.name}`" class="text-decoration-none">{{ profile.name }}</a>
+                    </h5>
+                    <p class="card-text">{{ profile.bio }}</p>
+                    <div class="row credits_info">
+                        <div class="col">
+                            <p class="card-text">
+                                Daily: {{ profile.credit[0] }}/{{ profile.credit_limits[0] }}
+                            </p>
+                        </div>
+                        <div class="col">
+                            <p class="card-text">
+                                Weekly: {{ profile.credit[1] }}/{{ profile.credit_limits[1] }}
+                            </p>
+                        </div>
+                        <div class="col">
+                            <p class="card-text">
+                                Monthly: {{ profile.credit[2] }}/{{ profile.credit_limits[2] }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <p class="card-text">
+                                Squeals: {{ profile.squeals_num }}
+                            </p>
+                        </div>
+                        <div class="col">
+                            <p class="card-text">
+                                Followers: {{ profile.followers_num }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 
     <!-- buttons to change page -->
     <div class="d-flex justify-content-center align-items-center my-3">
@@ -92,6 +139,7 @@
 </template>
 
 <script>
+
 export default {
     data() {
         return {
@@ -104,15 +152,25 @@ export default {
             feedVersion: 0,
             query: {
                 name: "",
-                owner: "",
-                type: "",
-                subscribers_num: 0,
+                bio: "",
+                credit: "",
+                credit_type: "",
+                credit_limits: "",
+                credit_limits_type: "",
+                squeals_num: "",
+                followers_num: "",
+                banned_until: "",
             },
             queryToSend: {
                 name: "",
-                owner: "",
-                type: "",
-                subscribers_num: 0,
+                bio: "",
+                credit: "",
+                credit_type: "",
+                credit_limits: "",
+                credit_limits_type: "",
+                squeals_num: "",
+                followers_num: "",
+                banned_until: "",
             },
         };
     },
@@ -123,7 +181,7 @@ export default {
     },
     async mounted() {
         const response = await fetch(
-            `https://site222326.tw.cs.unibo.it/channels/?startindex=${this.startIndex}&endindex=${this.endIndex}`
+            `https://site222326.tw.cs.unibo.it/profiles/?startindex=${this.startIndex}&endindex=${this.endIndex}`
         );
         // assigns the json to the feed variable
         this.feed = await response.json();
@@ -135,7 +193,7 @@ export default {
         } else {
             // check if next page is empty for sure
             const response2 = await fetch(
-                `https://site222326.tw.cs.unibo.it/channels/?startindex=${this.startIndex + 10
+                `https://site222326.tw.cs.unibo.it/profiles/?startindex=${this.startIndex + 10
                 }&endindex=${this.endIndex + 10}`
             );
             const feed2 = await response2.json();
@@ -155,7 +213,7 @@ export default {
         },
         getFetchUri(offset) {
             // constructing query omitting empty fields
-            let returnUri = `https://site222326.tw.cs.unibo.it/channels/?startindex=${this.startIndex + offset
+            let returnUri = `https://site222326.tw.cs.unibo.it/profiles/?startindex=${this.startIndex + offset
                 }&endindex=${this.endIndex + offset}`;
             for (const field of Object.keys(this.query)) {
                 if (
@@ -266,7 +324,7 @@ export default {
 }
 
 .custom-btn:active {
-  background-color: #916020 !important;
+    background-color: #916020 !important;
 }
 
 .btn-disabled {
@@ -282,11 +340,10 @@ export default {
     filter: brightness(0%) invert(100%);
 }
 
-.channel_img {
+.profile_img {
   width: 16em;
   height: 16em;
   border-radius: 50%;
   margin: 0.5em;
 }
-
 </style>
