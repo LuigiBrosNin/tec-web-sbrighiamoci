@@ -914,9 +914,8 @@ app.put('/profiles/:name/propic', upload.single('file'), async (req, res) => {
 
         importPic(req.file, collection_profiles, profileName);
 
-        res.status(200).json({ message: 'File uploaded successfully', fileId: uploadStream.id });
+        res.status(200).json({ message: 'File uploaded successfully' });
     } catch (error) {
-        console.log(error);
         res.status(500).json({ message: error.message });
     }
 });
