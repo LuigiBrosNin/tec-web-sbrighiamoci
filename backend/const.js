@@ -56,9 +56,6 @@ async function importPic(pic, collection, name) {
             return false;
         });
 
-        console.log("collection:", collection.collectionName);
-        /*
-
         uploadStream.on('finish', () => {
             if (collection.collectionName === collection_squeals.collectionName) {
                 // Update the squeal with the ID of the uploaded file
@@ -79,7 +76,7 @@ async function importPic(pic, collection, name) {
                 });
             }
         });
-        readableStream.pipe(uploadStream);*/
+        readableStream.pipe(uploadStream);
         return true;
     } catch (e) {
         console.log(e);
