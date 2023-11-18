@@ -56,7 +56,8 @@ async function importPic(pic, collection, name) {
             return false;
         });
 
-        console.log("collection from const: " + collection);
+        console.log("collection:", JSON.stringify(collection_profiles, null, 2));
+        /*
 
         uploadStream.on('finish', () => {
             if (collection.collectionName === collection_squeals.collectionName) {
@@ -78,7 +79,7 @@ async function importPic(pic, collection, name) {
                 });
             }
         });
-        readableStream.pipe(uploadStream);
+        readableStream.pipe(uploadStream);*/
         return true;
     } catch (e) {
         console.log(e);
