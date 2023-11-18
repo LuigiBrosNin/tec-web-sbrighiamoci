@@ -912,12 +912,11 @@ app.put('/profiles/:name/propic', upload.single('file'), async (req, res) => {
             return;
         }
 
-        console.log("collection:", collection_profiles);
-
         importPic(req.file, collection_profiles, profileName);
 
         res.status(200).json({ message: 'File uploaded successfully', fileId: uploadStream.id });
     } catch (error) {
+        console.log(error);
         res.status(500).json({ message: error.message });
     }
 });
