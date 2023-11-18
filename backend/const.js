@@ -56,7 +56,7 @@ async function importPic(pic, collection, name) {
             return false;
         });
 
-        console.log("collection:", JSON.stringify(collection, null, 2));
+        console.log("collection:", JSON.stringify(collection));
         /*
 
         uploadStream.on('finish', () => {
