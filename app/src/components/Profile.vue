@@ -162,11 +162,12 @@ export default {
       this.name = profileJson.name;
       this.profilePicUrl = profileJson.propic;
       // if propic returns null, use a default one
+      console.log(this.profilePicUrl);
       if (this.profilePicUrl == null || this.profilePicUrl == "") {
         this.profilePicUrl =
           "https://site222326.tw.cs.unibo.it/images/user-default.svg";
       } else {
-        this.profilePicUrl = `https://site222326.tw.cs.unibo.it/profiles/${this.author}/propic`;
+        this.profilePicUrl = `https://site222326.tw.cs.unibo.it/profiles/${this.name}/propic`;
       }
       //this.profilePicUrl = "https://picsum.photos/100/100"; // TODO: actually implement this
       this.bio = profileJson.bio;

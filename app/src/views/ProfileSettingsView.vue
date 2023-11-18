@@ -134,8 +134,9 @@ export default {
         this.bio = response.data.bio;
         this.current_email = response.data.email;
         this.email = response.data.email;
-        this.profilePicUrl = response.propic;
+        this.profilePicUrl = response.data.propic;
         // if propic returns null, use a default one
+        console.log(this.profilePicUrl)
         if (this.profilePicUrl == null || this.profilePicUrl == "") {
           this.profilePicUrl =
             "https://site222326.tw.cs.unibo.it/images/user-default.svg";
@@ -182,6 +183,7 @@ export default {
           console.log(response.data);
           // notify the user that the upload was successful
           alert("Upload successful");
+          this.profilePicUrl = `https://site222326.tw.cs.unibo.it/profiles/${name_of_profile}/propic`;
         });
     },
     removePic() {
@@ -194,6 +196,8 @@ export default {
           console.log(response.data);
           // notify the user that the upload was successful
           alert("Profile picture removed");
+          profilePicUrl =
+            "https://site222326.tw.cs.unibo.it/images/user-default.svg";
         });
     },
     handleSubmit() {

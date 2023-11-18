@@ -49,10 +49,6 @@
                                 <label for="squeals_num">Number of squeals created</label>
                                 <input type="number" class="form-control" id="squeals_num" v-model="query.squeals_num">
                             </div>
-                            <div class="form-group col-md-6">
-                                <label for="followers_num">Number of followers</label>
-                                <input type="number" class="form-control" id="followers_num" v-model="query.followers_num">
-                            </div>
                             <div class="form-group d-flex justify-content-center">
                                 <button type="submit" class="btn btn-primary custom-btn">Submit</button>
                             </div>
@@ -80,7 +76,7 @@
     <div v-for="profile in this.feed" :key="feedVersion" class="card mt-3">
         <div class="row no-gutters">
             <div class="col-md-4 d-flex justify-content-center align-items-center">
-                <img v-if="profile.propic" :src="profile.propic" class="card-img profile_img" alt="Profile Picture">
+                <img v-if="profile.propic" :src="`https://site222326.tw.cs.unibo.it/profiles/${profile.name}/propic`" class="card-img profile_img" alt="Profile Picture">
                 <img v-else src="https://site222326.tw.cs.unibo.it/images/user-default.svg" class="card-img profile_img"
                     alt="Profile Picture">
             </div>
@@ -111,11 +107,6 @@
                         <div class="col">
                             <p class="card-text">
                                 Squeals: {{ profile.squeals_num }}
-                            </p>
-                        </div>
-                        <div class="col">
-                            <p class="card-text">
-                                Followers: {{ profile.followers_num }}
                             </p>
                         </div>
                     </div>
