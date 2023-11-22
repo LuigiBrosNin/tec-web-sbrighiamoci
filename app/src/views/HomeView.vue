@@ -33,12 +33,17 @@ import Squeal from "@/components/Squeal.vue";
     </button>
   </div>
 
-  <!-- for function that defines every squeal in the feed object-->
+  <!-- for function that defines every squeal in the feed object, makes a loading screen if loading is true-->
   <Squeal
-    v-for="squeal in feed"
+    v-if="!loading"
+    v-for="squeal in this.feed"
     :squeal_json="squeal"
     :key="feedVersion"
   ></Squeal>
+  <div v-else class="d-flex justify-content-center align-items-center my-3">
+    <div class="spinner-border text-primary" role="status">
+    </div>
+  </div>
 
   <!-- buttons to change page -->
   <div class="d-flex justify-content-center align-items-center my-3">
@@ -73,6 +78,7 @@ export default {
       nextPageIsEmpty: true,
       offset: 10,
       feedVersion: 0,
+      loading: true,
     };
   },
   computed: {
@@ -99,6 +105,7 @@ export default {
         this.nextPageIsEmpty = false;
       }
     }
+    this.loading = false;
   },
   methods: {
     getFetchUri(offset) {
