@@ -36,7 +36,7 @@ import Squeal from "@/components/Squeal.vue";
   <!-- for function that defines every squeal in the feed object, makes a loading screen if loading is true-->
   <Squeal
     v-if="!loading"
-    v-for="squeal in this.feed"
+    v-for="squeal in feed"
     :squeal_json="squeal"
     :key="feedVersion"
   ></Squeal>
