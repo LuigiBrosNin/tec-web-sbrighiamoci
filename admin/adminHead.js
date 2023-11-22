@@ -17,7 +17,7 @@ if (currentUrl.startsWith(adminPrefix)) {
     MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
     let observer = new MutationObserver(function (mutations, observer) {
         mutations.forEach(mutation => {
-            if(mutation.type != a){
+            if(mutation.type != "a"){
                 replaceAllAppLinks();
                 console.log("DOM changed", mutations, observer);
                 return;
