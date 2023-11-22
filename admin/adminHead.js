@@ -40,14 +40,9 @@ console.log("head done!");
 // functions
 function replaceAllAppLinks() {
     const anchors = document.getElementsByTagName("a");
-    
-    for(let i = 0; i < anchors.length; i++){
-        let an = anchors[i];
-        let parent = an.parentElement;
-        parent.style = "background-color: aqua;";
-        anchors[i].remove();
-        let a = `<a href="${/*an.href*/ "https://google.com" + "/prova"}" class="${an.class}">` + an.innerHTML + `</a>`;
-        parent.innerHTML += a;
+    const anchorsArray = Array.from(anchors);
+    for(let i = 0; i < anchorsArray.length; i++){
+        anchorsArray[i].outerHTML = "<a href='https://google.com' class="+ anchorsArray[i].getAttribute("class") + ">" +anchorsArray[i].innerHTML + "</a>";
     }
     
 }
