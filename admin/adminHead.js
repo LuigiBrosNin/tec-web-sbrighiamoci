@@ -24,7 +24,7 @@ function replaceAllAppLinks() {
     var anchors = document.getElementsByTagName("a");
 
     for (var i = 0; i < anchors.length; i++) {
-        if (anchors[i].href.startsWith(appPrefix)){
+        if (anchors[i].href.startsWith(appPrefix) || anchors[i].href.startsWith("/")){
             let relativeUrl = currentUrl.slice(appPrefix.length);
             anchors[i].href = adminPrefix + relativeUrl;
         }
