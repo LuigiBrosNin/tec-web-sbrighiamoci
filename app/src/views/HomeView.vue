@@ -35,7 +35,7 @@ import Squeal from "@/components/Squeal.vue";
 
   <!-- for function that defines every squeal in the feed object-->
   <Squeal
-    v-for="squeal in this.feed"
+    v-for="squeal in feed"
     :squeal_json="squeal"
     :key="feedVersion"
   ></Squeal>
