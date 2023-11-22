@@ -33,9 +33,13 @@ import Squeal from "@/components/Squeal.vue";
     </button>
   </div>
 
+  <!-- write feed object-->
+    <b>Feed:</b>
+    <br />
+    {{ feed }}
+    <br />
   <!-- for function that defines every squeal in the feed object-->
   <Squeal
-    v-if="this.feed"
     v-for="squeal in this.feed"
     :squeal_json="squeal"
     :key="feedVersion"
