@@ -121,7 +121,7 @@ app.get(["/admin/:paths(*)", "/admin"], async (req, res) => {
 
     $('title').text('Squealer Admin');
     const scriptHead = '<script src="https://site222326.tw.cs.unibo.it/adminsrc/adminHead.js"></script>'
-    $('head').append(scriptHead);
+    $('head').prepend(scriptHead);
     const scriptBody = '<script src="https://site222326.tw.cs.unibo.it/adminsrc/admin.js"></script>'
     $('body').append(scriptBody);
 
