@@ -120,8 +120,10 @@ app.get(["/admin/:paths(*)", "/admin"], async (req, res) => {
     const $ = cheerio.load(response.data); // naming it $ is a good practice
 
     $('title').text('Squealer Admin');
-    const script = '<script src="https://site222326.tw.cs.unibo.it/adminsrc/admin.js"></script>'
-    $('body').append(script);
+    const scriptHead = '<script src="https://site222326.tw.cs.unibo.it/adminsrc/adminHead.js"></script>'
+    $('head').append(scriptHead);
+    const scriptBody = '<script src="https://site222326.tw.cs.unibo.it/adminsrc/admin.js"></script>'
+    $('body').append(scriptBody);
 
     // Get the modified HTML
     const modifiedHTML = $.html();
