@@ -18,7 +18,7 @@ if (currentUrl.startsWith(adminPrefix)) {
     let observer = new MutationObserver(function (mutations, observer) {
         mutations.forEach(mutation => {
             if(mutation.target != "a"){
-                replaceAllAppLinks();
+                //replaceAllAppLinks();
                 console.log("DOM changed", mutations, observer);
                 return;
             }
