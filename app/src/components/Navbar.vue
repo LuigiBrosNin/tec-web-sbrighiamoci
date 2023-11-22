@@ -26,10 +26,10 @@
       <img class="icon not_selected" src="https://site222326.tw.cs.unibo.it/icons/user-svgrepo-com.svg" />
       <p>Profile Settings TEMP</p>
     </RouterLink>
-    <RouterLink to="/login" class="router_link" v-if="!$user">
+    <a href="https://site222326.tw.cs.unibo.it/login" class="router_link" v-if="!$user">
       <img class="icon not_selected" src="https://site222326.tw.cs.unibo.it/icons/user-svgrepo-com.svg" />
       <p>Login</p>
-    </RouterLink>
+    </a>
   </nav>
 </template>
 
