@@ -33,11 +33,6 @@ import Squeal from "@/components/Squeal.vue";
     </button>
   </div>
 
-  <!-- write feed object-->
-    <b>Feed:</b>
-    <br />
-    {{ feed }}
-    <br />
   <!-- for function that defines every squeal in the feed object-->
   <Squeal
     v-for="squeal in this.feed"
@@ -71,7 +66,7 @@ import Squeal from "@/components/Squeal.vue";
 export default {
   data() {
     return {
-      feed: null,
+      feed: [],
       startIndex: 0,
       endIndex: 9,
       currentPage: 1,
