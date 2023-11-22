@@ -25,9 +25,9 @@ import Squeal from "@/components/Squeal.vue";
     <span class="mx-3">Page: {{ currentPage }}</span>
     <button
       class="btn custom-btn ml-2"
-      :class="{ 'btn-disabled': this.nextPageIsEmpty }"
+      :class="{ 'btn-disabled': nextPageIsEmpty }"
       @click="loadNext()"
-      :disabled="this.nextPageIsEmpty"
+      :disabled="nextPageIsEmpty"
     >
       Load next page
     </button>
