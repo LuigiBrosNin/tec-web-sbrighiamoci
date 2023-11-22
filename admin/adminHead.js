@@ -11,6 +11,7 @@ if (currentUrl.startsWith(adminPrefix)) {
 
     window.onload = function () {
         window.history.pushState({}, "", currentUrl);
+        replaceAllAppLinks();
     }
 
 
