@@ -33,17 +33,15 @@ console.log("head done!");
 
 // functions
 function replaceAllAppLinks() {
-    var anchors = document.getElementsByTagName("a");
-
-    for (var i = 0; i < anchors.length; i++) {
-        if (anchors[i].href.startsWith(appPrefix) || anchors[i].href.startsWith("/app")) {
-            if (anchors[i].href.startsWith(sitePrefix)) {
-                anchors[i].href = currentUrl.slice(sitePrefix.length);
-            }
-
-            let relativeUrl = currentUrl.slice("/app".length);
-            anchors[i].href = adminPrefix + relativeUrl;
-            console.log(adminPrefix + relativeUrl);
-        }
-    }
+    const anchors = document.getElementsByTagName("a");
+    
+    anchors.forEach(anc => {
+        let an = anc;
+        let parent = an.parentElement;
+        parent.style = "background-color: aqua;";
+        anc.remove();
+        let a = `<a href="${an.href + "/prova"}" class="${an.class}">` + an.innerHTML + `</a>`;
+        parent.innerHTML += a;
+    });
+    
 }
