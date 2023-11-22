@@ -998,3 +998,223 @@ app.delete("/profiles/:name/propic", async (req, res) => {
         });
     }
 });
+
+/* -------------------------------------------------------------------------- */
+/*                         /PROFILES/:NAME/ACCOUNT_TYPE                       */
+/*                                GET, PUT, POST                              */
+/* -------------------------------------------------------------------------- */
+
+//* GET
+// ritorna il tipo di account del profilo con nome name
+// ritorna 404 se non esiste
+app.get("/profiles/:name/account_type", async (req, res) => {
+    try {
+        const profileName = req.params.name;
+
+        await mongoClient.connect();
+        const profile = await collection_profiles.findOne({
+            name: profileName
+        });
+
+        if (profile.is_deleted || profile == null) {
+            res.status(404).json({
+                message: "Profile not found."
+            });
+            return;
+        }
+
+        res.status(200).json({
+            account_type: profile.account_type
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+}
+);
+
+//* PUT
+// cambia il tipo di account del profilo con nome name
+// ritorna 404 se non esiste
+// ritorna 401 se non sei autorizzato
+// body: account_type
+app.put("/profiles/:name/account_type", async (req, res) => {
+    try {
+        const profileName = req.params.name;
+        const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
+
+        if (!authorized) {
+            res.status(401).json({
+                message: "Unauthorized"
+            });
+            return;
+        }
+
+        await mongoClient.connect();
+        const profile = await collection_profiles.findOne({
+            name: profileName
+        });
+
+        if (profile.is_deleted || profile == null) {
+            res.status(404).json({
+                message: "Profile not found."
+            });
+            return;
+        }
+
+        // hypotetically, here a check should be implemented to process the payment
+        // since we don't have a payment system, we do nothing and keep going
+
+        const allowedAccountTypes = ["normal", "premium", "smm"];
+        if (!allowedAccountTypes.includes(req.body.account_type)) {
+            res.status(400).json({
+                message: "Invalid account type"
+            });
+            return;
+        }
+
+        const authData = {
+            // Provide authentication data
+            username: "SquealerTechnician", //! TEMP
+            password: "tecpw"
+        };
+
+        await axios.post('https://site222326.tw.cs.unibo.it/login', authData);
+
+        const op = await axios.post('https://site222326.tw.cs.unibo.it/profiles/' + profileName + '/account_type', {
+            account_type: req.body.account_type
+        });
+
+        if(op.status === 200) {
+            res.status(200).json({
+                message: "Account type changed"
+            });
+        } else {
+            res.status(400).json({
+                message: op.message
+            });
+        }
+
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+});
+
+async function switchAccountType(profileName, newAccountType) {
+    try {
+        await mongoClient.connect();
+        const profile = await collection_profiles.findOne({
+            name: profileName
+        });
+
+        switch (newAccountType) {
+            case "normal":
+                await collection_profiles.updateOne({
+                    name: profileName
+                }, {
+                    $set: {
+                        account_type: "normal",
+                    },
+                    $unset: {
+                        smm: "",
+                        smm_customers: []
+                    }
+                });
+                break;
+            case "premium":
+                await collection_profiles.updateOne({
+                    name: profileName
+                }, {
+                    $set: {
+                        account_type: "premium",
+                        smm: "",
+                    }
+                });
+                break;
+            case "smm":
+                await collection_profiles.updateOne({
+                    name: profileName
+                }, {
+                    $set: {
+                        account_type: "smm",
+                        smm_customers: []
+                    }
+                });
+                break;
+            case "admin":
+                await collection_profiles.updateOne({
+                    name: profileName
+                }, {
+                    $set: {
+                        account_type: "admin",
+                    }
+                });
+                break;
+            default:
+                return false;
+            }
+    }
+    catch (e) {
+        console.log(e);
+        return false;
+    }
+}
+
+//* POST
+// cambia il tipo di account del profilo con nome name
+// ritorna 404 se non esiste
+// ritorna 401 se non sei autorizzato
+// solo admin
+// body: account_type
+app.post("/profiles/:name/account_type", async (req, res) => {
+    try {
+        const profileName = req.params.name;
+        const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
+
+        if (!authorized) {
+            res.status(401).json({
+                message: "Unauthorized"
+            });
+            return;
+        }
+
+        await mongoClient.connect();
+        const profile = await collection_profiles.findOne({
+            name: profileName
+        });
+
+        if (profile.is_deleted || profile == null) {
+            res.status(404).json({
+                message: "Profile not found."
+            });
+            return;
+        }
+
+        const allowedAccountTypes = ["normal", "admin", "premium", "smm"];
+        if (!allowedAccountTypes.includes(req.body.account_type)) {
+            res.status(400).json({
+                message: "Invalid account type"
+            });
+            return;
+        }
+
+        if (await switchAccountType(profileName, req.body.account_type)) {
+            res.status(200).json({
+                message: "Account type changed"
+            });
+        } else {
+            res.status(400).json({
+                message: "Something went wrong :("
+            });
+        }
+
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+});
