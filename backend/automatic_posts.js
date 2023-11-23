@@ -28,8 +28,8 @@ const {
 
 const authData = {
     // Provide authentication data
-    username: "Arturo", //! TEMP
-    password: "baka"
+    username: "SquealerTechnician", //! TEMP
+    password: "tecpw"
 };
 
 /* ------------------------------- FUNCTIONS -------------------------------- */

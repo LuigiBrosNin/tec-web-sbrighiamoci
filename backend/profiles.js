@@ -236,7 +236,7 @@ app.put("/profiles/:name", async (req, res) => {
             name: name,
             email: req.body.email,
             password: req.body.password,
-            account_type: "admin",
+            account_type: "normal",
             bio: req.body.bio,
             followers_list: [],
             following_list: [],
