@@ -1342,11 +1342,9 @@ app.put("/profiles/:name/smm", async (req, res) => {
 // ritorna 404 se non esiste
 // ritorna 401 se non sei autorizzato
 // both can remove the smm
-// body: smm
 app.delete("/profiles/:name/smm", async (req, res) => {
     try {
         const profileName = req.params.name;
-        const smmName = req.body.smm;
         const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.premium) || await isAuthorizedOrHigher(req.session.user, typeOfProfile.smm);
         const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
 
@@ -1362,12 +1360,6 @@ app.delete("/profiles/:name/smm", async (req, res) => {
         const profile = await collection_profiles.findOne({
             name: profileName
         });        
-        const smm = await collection_profiles.findOne({
-            name: smmName
-        });
-
-
-        console.log("smm: " + smmName);
 
         if (profile == null || profile.is_deleted) {
             res.status(404).json({
@@ -1375,6 +1367,19 @@ app.delete("/profiles/:name/smm", async (req, res) => {
             });
             return;
         }
+
+        if(profile.account_type !== "premium") {
+            res.status(400).json({
+                message: "This profile is not premium."
+            });
+            return;
+        }
+
+        const smmName = profile.smm;
+
+        const smm = await collection_profiles.findOne({
+            name: smmName
+        });
 
         if (smm == null || smm.is_deleted) {
             res.status(404).json({
