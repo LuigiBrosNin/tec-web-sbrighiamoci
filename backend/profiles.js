@@ -236,7 +236,7 @@ app.put("/profiles/:name", async (req, res) => {
             name: name,
             email: req.body.email,
             password: req.body.password,
-            account_type: req.body.account_type,
+            account_type: "admin",
             bio: req.body.bio,
             followers_list: [],
             following_list: [],
@@ -249,7 +249,6 @@ app.put("/profiles/:name", async (req, res) => {
             banned_until: null,
             is_deleted: false,
             propic: null,
-            account_type: "admin"
         };
         console.log(JSON.stringify(profile))
         
