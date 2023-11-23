@@ -44,7 +44,7 @@ function replaceAllAppLinks() {
 
     for(let i = 0; i < anchorsArray.length; i++){
         if (anchorsArray[i].href.startsWith(appPrefix)){
-            anchorsArray[i].outerHTML = "<a href='https://google.com' class="+ anchorsArray[i].getAttribute("class") + ">" +anchorsArray[i].innerHTML + "</a>";
+            anchorsArray[i].outerHTML = `<a href="https://google.com" class="${anchorsArray[i].getAttribute("class")}" id="${anchorsArray[i].id}"> ${anchorsArray[i].innerHTML} </a>`;
         }
     }
     
