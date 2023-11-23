@@ -59,18 +59,21 @@
   </div>
 
   <!-- spaced div to switch account type -->
-  <div class="card mt-4 options_container">
+  <div class="card mt-4 options_container" v-if="current_account_type != 'admin'">
     <div class="card-body">
       <h5 class="card-title">Switch Account Type</h5>
       <p class="card-text">Logged in as: {{ $user }}</p>
       <p class="card-text">Current account type: {{ current_account_type }}</p>
-      <button type="button" v-if="current_account_type != 'premium'" class="btn btn-primary" style="background-color: #ff8900;" @click="changeAccountType('premium')">
+      <button type="button" v-if="current_account_type != 'premium'" class="btn btn-primary mb-3"
+        style="background-color: #ff8900;" @click="changeAccountType('premium')">
         Switch to Premium, 10€/month
       </button>
-      <button type="button" v-if="current_account_type != 'smm'" class="btn btn-primary" style="background-color: #ff8900;" @click="changeAccountType('smm')">
+      <button type="button" v-if="current_account_type != 'smm'" class="btn btn-primary mb-3"
+        style="background-color: #ff8900;" @click="changeAccountType('smm')">
         Switch to SMM, 15€/month
       </button>
-      <button type="button" v-if="current_account_type != 'normal'" class="btn btn-primary" style="background-color: #ff8900;" @click="changeAccountType('normal')">
+      <button type="button" v-if="current_account_type != 'normal'" class="btn btn-primary mb-3"
+        style="background-color: #ff8900;" @click="changeAccountType('normal')">
         Switch to User, free
       </button>
     </div>
@@ -322,5 +325,4 @@ export default {
 .button-spacing {
   margin-right: 10px !important;
   margin-left: 10px !important;
-}
-</style>
+}</style>
