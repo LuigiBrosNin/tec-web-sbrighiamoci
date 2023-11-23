@@ -1302,7 +1302,7 @@ app.put("/profiles/:name/smm", async (req, res) => {
             return;
         }
 
-        if (profile.smm_customers.includes(smmName)) {
+        if (smm.smm_customers.includes(smmName)) {
             res.status(400).json({
                 message: "This profile is already a customer of this SMM."
             });
