@@ -1082,18 +1082,20 @@ app.put("/profiles/:name/account_type", async (req, res) => {
 
         const op = await axios.post('https://site222326.tw.cs.unibo.it/profiles/' + profileName + '/account_type', {
             account_type: req.body.account_type
-        }).then(res => {
-            return {
-                status: res.status,
-                message: res.data.message
-                };
-            }).catch(err => {
-                return {
-                    status: err.response.status,
-                    message: err.response.data.message
-                };
+        }).then(resPost => {
+            if(resPost.status == 200) {
+                res.status(200).json({
+                    message: "Account type changed"
+                });
+            }
+        }).catch(err => {
+            console.log(err);
+            res.status(400).json({
+                message: "Something went wrong :("
             });
 
+        });
+        
     } catch (error) {
         res.status(500).json({
             message: error.message
@@ -1107,8 +1109,6 @@ async function switchAccountType(profileName, newAccountType) {
         const profile = await collection_profiles.findOne({
             name: profileName
         });
-
-        console.log("in switch, profile: " + JSON.stringify(profile));
 
         // if the profile was premium or smm, clear dependencies
         switch (profile.account_type) {
@@ -1145,7 +1145,7 @@ async function switchAccountType(profileName, newAccountType) {
                         smm_customers: []
                     }
                 });
-                break;
+                return true;
             case "premium":
                 await collection_profiles.updateOne({
                     name: profileName
@@ -1155,7 +1155,7 @@ async function switchAccountType(profileName, newAccountType) {
                         smm: "",
                     }
                 });
-                break;
+                return true;
             case "smm":
                 await collection_profiles.updateOne({
                     name: profileName
@@ -1165,7 +1165,7 @@ async function switchAccountType(profileName, newAccountType) {
                         smm_customers: []
                     }
                 });
-                break;
+                return true;
             case "admin":
                 await collection_profiles.updateOne({
                     name: profileName
@@ -1174,11 +1174,10 @@ async function switchAccountType(profileName, newAccountType) {
                         account_type: "admin",
                     }
                 });
-                break;
+                return true;
             default:
                 return false;
             }
-        return true;
     }
     catch (e) {
         console.log(e);
@@ -1225,10 +1224,12 @@ app.post("/profiles/:name/account_type", async (req, res) => {
         }
 
         if (await switchAccountType(profileName, req.body.account_type)) {
+            console.log("Account type changed")
             res.status(200).json({
                 message: "Account type changed"
             });
         } else {
+            console.log("Something went wrong")
             res.status(400).json({
                 message: "Something went wrong :("
             });
