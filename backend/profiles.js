@@ -1082,17 +1082,17 @@ app.put("/profiles/:name/account_type", async (req, res) => {
 
         const op = await axios.post('https://site222326.tw.cs.unibo.it/profiles/' + profileName + '/account_type', {
             account_type: req.body.account_type
-        });
-
-        if(op.status === 200) {
-            res.status(200).json({
-                message: "Account type changed"
+        }).then(res => {
+            return {
+                status: res.status,
+                message: res.data.message
+                };
+            }).catch(err => {
+                return {
+                    status: err.response.status,
+                    message: err.response.data.message
+                };
             });
-        } else {
-            res.status(400).json({
-                message: op.message
-            });
-        }
 
     } catch (error) {
         res.status(500).json({
@@ -1107,6 +1107,8 @@ async function switchAccountType(profileName, newAccountType) {
         const profile = await collection_profiles.findOne({
             name: profileName
         });
+
+        console.log("in switch, profile: " + JSON.stringify(profile));
 
         // if the profile was premium or smm, clear dependencies
         switch (profile.account_type) {
@@ -1176,6 +1178,7 @@ async function switchAccountType(profileName, newAccountType) {
             default:
                 return false;
             }
+        return true;
     }
     catch (e) {
         console.log(e);
