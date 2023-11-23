@@ -1345,16 +1345,8 @@ app.put("/profiles/:name/smm", async (req, res) => {
 app.delete("/profiles/:name/smm", async (req, res) => {
     try {
         const profileName = req.params.name;
-        const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.premium) || await isAuthorizedOrHigher(req.session.user, typeOfProfile.smm);
         const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
 
-
-        if (!authorized || (req.session.user != profileName && !adminAuthorized) || (req.session.user != smmName && !adminAuthorized)) {
-            res.status(401).json({
-                message: "Unauthorized"
-            });
-            return;
-        }
 
         await mongoClient.connect();
         const profile = await collection_profiles.findOne({
@@ -1376,6 +1368,15 @@ app.delete("/profiles/:name/smm", async (req, res) => {
         }
 
         const smmName = profile.smm;
+
+        const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.premium) || await isAuthorizedOrHigher(req.session.user, typeOfProfile.smm);
+
+        if (!authorized || (req.session.user != profileName && !adminAuthorized) || (req.session.user != smmName && !adminAuthorized)) {
+            res.status(401).json({
+                message: "Unauthorized"
+            });
+            return;
+        }
 
         const smm = await collection_profiles.findOne({
             name: smmName
