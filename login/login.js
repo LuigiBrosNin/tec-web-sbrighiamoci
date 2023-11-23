@@ -9,6 +9,12 @@ function sub(){
     headers: {
       "Content-type": "application/json; charset=UTF-8"
     }
+  }).then(res => {
+    if (res.status == 200) {
+      window.location.href = "https://site222326.tw.cs.unibo.it/app";
+    } else {
+      alert("Wrong Username or Password");
+    }
   });
 }
 
@@ -23,6 +29,12 @@ function signin(){
     }),
     headers: {
       "Content-type": "application/json; charset=UTF-8"
+    }
+  }).then(res => {
+    if (res.status == 200) {
+      window.location.href = "https://site222326.tw.cs.unibo.it/app";
+    } else {
+      alert("Username or email already taken");
     }
   });
 }
