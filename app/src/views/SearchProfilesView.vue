@@ -83,7 +83,7 @@
             <div class="col-md-8">
                 <div class="card-body">
                     <h5 class="card-title">
-                        <a :href="`profile/${profile.name}`" class="text-decoration-none">{{ profile.name }}</a>
+                        <a :href="`https://site222326.tw.cs.unibo.it/app/profile/${profile.name}`" class="text-decoration-none">{{ profile.name }}</a>
                     </h5>
                     <p class="card-text">{{ profile.bio }}</p>
                     <div class="row credits_info">

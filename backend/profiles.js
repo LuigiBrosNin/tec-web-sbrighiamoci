@@ -1093,7 +1093,7 @@ app.put("/profiles/:name/account_type", async (req, res) => {
                 });
             }
         })
-        
+
     } catch (error) {
         res.status(500).json({
             message: error.message
@@ -1251,11 +1251,11 @@ app.post("/profiles/:name/account_type", async (req, res) => {
 // ritorna 404 se non esiste
 // ritorna 401 se non sei autorizzato
 // premium user has to be the one who adds the smm
-// body: smm_name
+// body: smm
 app.put("/profiles/:name/smm", async (req, res) => {
     try {
         const profileName = req.params.name;
-        const smmName = req.body.smm_name;
+        const smmName = req.body.smm;
         const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.premium);
 
         if (!authorized || req.session.user != profileName) {

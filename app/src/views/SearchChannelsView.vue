@@ -67,7 +67,7 @@
       <div class="col-md-8">
         <div class="card-body">
           <h5 class="card-title">
-            <a :href="`channels/${channel.name}`" class="text-decoration-none">{{ channel.name }}</a>
+            <a :href="`https://site222326.tw.cs.unibo.it/app/channels/${channel.name}`" class="text-decoration-none">{{ channel.name }}</a>
           </h5>
           <p class="card-text">{{ channel.bio }}</p>
           <p class="card-text"><small class="text-muted">Owner: {{ channel.owner }}</small></p>

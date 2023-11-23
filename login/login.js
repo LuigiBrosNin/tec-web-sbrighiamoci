@@ -12,7 +12,7 @@ function sub(){
   .then(res => {
     console.log(res.status);
     if (res.status === 200) {
-      window.location.href = "https://site222326.tw.cs.unibo.it/app";
+      window.location.href = res.message;
     } else {
       alert("Wrong Username or Password");
     }
@@ -33,7 +33,7 @@ function signin(){
     }
   }).then(res => {
     if (res.status == 200) {
-      window.location.href = "https://site222326.tw.cs.unibo.it/app";
+      alert("Sign in successful, you can now log in");
     } else {
       alert("Username or email already taken");
     }
@@ -43,8 +43,35 @@ function signin(){
 /* -------------------------------------------------------------------------- */
 /*                         Luizo's temp test fucntions                        */
 /* -------------------------------------------------------------------------- */
+// profile smm DELETE request
+function deleteSmmTest(param_id) {
+  fetch(`https://site222326.tw.cs.unibo.it/profiles/${param_id}/smm`, {
+    method: "DELETE"
+  })
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error(error));
+}
 
-// profile account_type PUT requestù
+// profile smm PUT request
+function addSmmTest(param_id) {
+  const body = {
+    smm: "luizo3"
+  };
+
+  console.log("Sending body: " + JSON.stringify(body));
+
+  fetch(`https://site222326.tw.cs.unibo.it/profiles/${param_id}/smm`, {
+    method: "PUT",
+    headers: {
+      "Content-type": "application/json; charset=UTF-8"
+    },
+    body: JSON.stringify(body)
+  }).then(response => response.json())
+  .then(data => console.log(data));
+}
+
+// profile account_type PUT request
 function addAccountTypeTest(param_id) {
   const body = {
     account_type: "smm"
