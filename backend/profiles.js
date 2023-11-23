@@ -1342,11 +1342,11 @@ app.put("/profiles/:name/smm", async (req, res) => {
 // ritorna 404 se non esiste
 // ritorna 401 se non sei autorizzato
 // both can remove the smm
-// body: smm_name
+// body: smm
 app.delete("/profiles/:name/smm", async (req, res) => {
     try {
         const profileName = req.params.name;
-        const smmName = req.body.smm_name;
+        const smmName = req.body.smm;
         const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.premium) || await isAuthorizedOrHigher(req.session.user, typeOfProfile.smm);
         const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
 
@@ -1366,14 +1366,14 @@ app.delete("/profiles/:name/smm", async (req, res) => {
             name: smmName
         });
 
-        if (profile.is_deleted || profile == null) {
+        if (profile == null || profile.is_deleted) {
             res.status(404).json({
                 message: "Profile not found."
             });
             return;
         }
 
-        if (smm.is_deleted || smm == null) {
+        if (smm == null || smm.is_deleted) {
             res.status(404).json({
                 message: "SMM not found."
             });
