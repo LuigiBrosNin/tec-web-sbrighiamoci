@@ -14,6 +14,8 @@ const props = defineProps(["id", "profile_json"]);
       </div>
       <div class="col-sm-8">
         <h2 class="profile_name">@{{ name }}</h2>
+        <p class="profile_type">{{ accountType }}</p>
+        <button v-if="$user === name" class="btn btn-primary" @click="goToSettings">Settings</button>
         <div class="card">
           <div class="card-header" style="background-color: #ff8900;">Remaining Credits</div>
           <div class="card-body">
@@ -181,6 +183,9 @@ export default {
       this.numberOfSqueals = profileJson.squeals_num;
       this.isBanned = profileJson.is_banned;
       this.bannedUntil = profileJson.banned_until;
+    },
+    goToSettings() {
+      window.location.href = `https://site222326.tw.cs.unibo.it/app/profile/${this.name}/settings`;
     },
   },
   created() {

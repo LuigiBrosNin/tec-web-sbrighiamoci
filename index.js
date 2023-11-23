@@ -76,7 +76,7 @@ app.use(express.static(path.join(global.rootDir, '/login/')));
 app.post("/login", bodyParser.json(), async (req, res) => {
   if (await canLogIn(req.body.username, req.body.password)) {
     req.session.user = req.body.username;
-    res.status(200).send({message: "/"});
+    res.status(200).send({message: "https://site222326.tw.cs.unibo.it/"});
   } else {
     res.status(401).send("wrong username or password");
     console.log("wrong username or password");

@@ -12,7 +12,11 @@ function sub(){
   .then(res => {
     console.log(res.status);
     if (res.status === 200) {
-      window.location.href = res.message;
+      res.json().then(data => {
+        console.log(data.message);
+        window.location.href = data.message;
+      });
+
     } else {
       alert("Wrong Username or Password");
     }
