@@ -1087,6 +1087,10 @@ app.put("/profiles/:name/account_type", async (req, res) => {
                 res.status(200).json({
                     message: "Account type changed"
                 });
+            } else {
+                res.status(400).json({
+                    message: "Something went wrong :("
+                });
             }
         }).catch(err => {
             console.log(err);
@@ -1095,7 +1099,7 @@ app.put("/profiles/:name/account_type", async (req, res) => {
             });
 
         });
-        
+
     } catch (error) {
         res.status(500).json({
             message: error.message
