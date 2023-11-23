@@ -22,6 +22,7 @@ if (currentUrl.startsWith(adminPrefix)) {
     });
     observer.observe(document, {
         subtree: true,
+        childList: true,
         attributes: true
     });
 }
