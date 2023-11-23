@@ -1361,10 +1361,13 @@ app.delete("/profiles/:name/smm", async (req, res) => {
         await mongoClient.connect();
         const profile = await collection_profiles.findOne({
             name: profileName
-        });
+        });        
         const smm = await collection_profiles.findOne({
             name: smmName
         });
+
+
+        console.log("smm: " + smmName);
 
         if (profile == null || profile.is_deleted) {
             res.status(404).json({
