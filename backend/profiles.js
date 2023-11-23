@@ -1092,14 +1092,8 @@ app.put("/profiles/:name/account_type", async (req, res) => {
                     message: "Something went wrong :("
                 });
             }
-        }).catch(err => {
-            console.log(err);
-            res.status(400).json({
-                message: "Something went wrong :("
-            });
-
-        });
-
+        })
+        
     } catch (error) {
         res.status(500).json({
             message: error.message

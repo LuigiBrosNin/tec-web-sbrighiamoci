@@ -10,6 +10,7 @@ function sub(){
       "Content-type": "application/json; charset=UTF-8"
     }
   }).then(res => {
+    console.log(res.status);
     if (res.status == 200) {
       window.location.href = "https://site222326.tw.cs.unibo.it/app";
     } else {
