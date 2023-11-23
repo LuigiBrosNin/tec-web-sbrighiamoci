@@ -1257,8 +1257,9 @@ app.put("/profiles/:name/smm", async (req, res) => {
         const profileName = req.params.name;
         const smmName = req.body.smm;
         const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.premium);
+        const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
 
-        if (!authorized || req.session.user != profileName) {
+        if (!authorized || (req.session.user != profileName && !adminAuthorized)) {
             res.status(401).json({
                 message: "Unauthorized"
             });
