@@ -1348,8 +1348,10 @@ app.delete("/profiles/:name/smm", async (req, res) => {
         const profileName = req.params.name;
         const smmName = req.body.smm_name;
         const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.premium) || await isAuthorizedOrHigher(req.session.user, typeOfProfile.smm);
+        const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
 
-        if (!authorized || req.session.user != profileName) {
+
+        if (!authorized || (req.session.user != profileName && !adminAuthorized) || (req.session.user != smmName && !adminAuthorized)) {
             res.status(401).json({
                 message: "Unauthorized"
             });
