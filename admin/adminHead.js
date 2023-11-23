@@ -11,7 +11,6 @@ if (currentUrl.startsWith(adminPrefix)) {
 
     window.onload = function () {
         window.history.pushState({}, "", currentUrl);
-        replaceAllAppLinks();
     }
 
 
@@ -19,7 +18,7 @@ if (currentUrl.startsWith(adminPrefix)) {
     let observer = new MutationObserver(function (mutations, observer) {
         mutations.forEach(mutation => {
             if(mutation.target != "a"){
-                //replaceAllAppLinks();
+                replaceAllAppLinks();
                 console.log("DOM changed", mutations, observer);
                 return;
             }
@@ -42,8 +41,11 @@ console.log("head done!");
 function replaceAllAppLinks() {
     const anchors = document.getElementsByTagName("a");
     const anchorsArray = Array.from(anchors);
+
     for(let i = 0; i < anchorsArray.length; i++){
-        anchorsArray[i].outerHTML = "<a href='https://google.com' class="+ anchorsArray[i].getAttribute("class") + ">" +anchorsArray[i].innerHTML + "</a>";
+        if (anchorsArray[i].href.startsWith(appPrefix)){
+            anchorsArray[i].outerHTML = "<a href='https://google.com' class="+ anchorsArray[i].getAttribute("class") + ">" +anchorsArray[i].innerHTML + "</a>";
+        }
     }
     
 }
