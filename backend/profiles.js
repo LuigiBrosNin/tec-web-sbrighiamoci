@@ -1039,7 +1039,7 @@ app.get("/profiles/:name/account_type", async (req, res) => {
 app.put("/profiles/:name/account_type", async (req, res) => {
     try {
         const profileName = req.params.name;
-        const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
+        const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user);
 
         if (!authorized) {
             res.status(401).json({
@@ -1073,7 +1073,7 @@ app.put("/profiles/:name/account_type", async (req, res) => {
 
         const authData = {
             // Provide authentication data
-            username: "SquealerTechnician", //! TEMP
+            username: "SquealerTechnician",
             password: "tecpw"
         };
 
@@ -1106,6 +1106,28 @@ async function switchAccountType(profileName, newAccountType) {
         const profile = await collection_profiles.findOne({
             name: profileName
         });
+
+        // if the profile was premium or smm, clear dependencies
+        switch (profile.account_type) {
+            case "premium":
+                if (profile.smm !== "") {
+                    axios.delete('https://site222326.tw.cs.unibo.it/profiles/' + profile.smm + '/smm', {
+                        data: {
+                            smm_name: profile.smm
+                        }
+                        });
+                    }
+                break;
+            case "smm":
+                for (const customer of profile.smm_customers) {
+                    axios.delete('https://site222326.tw.cs.unibo.it/profiles/' + customer + '/smm', {
+                        data: {
+                            smm_name: profileName
+                        }
+                    });
+                }
+                break;
+        }
 
         switch (newAccountType) {
             case "normal":
@@ -1207,6 +1229,177 @@ app.post("/profiles/:name/account_type", async (req, res) => {
                 message: "Something went wrong :("
             });
         }
+
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+});
+
+/* -------------------------------------------------------------------------- */
+/*                             /PROFILES/:NAME/SMM                            */
+/*                                 PUT, DELETE                                */
+/* -------------------------------------------------------------------------- */
+
+//* PUT
+// aggiunge il profilo con nome name alla lista dei clienti del profilo smm
+// specificato nel body
+// ritorna 404 se non esiste
+// ritorna 401 se non sei autorizzato
+// premium user has to be the one who adds the smm
+// body: smm_name
+app.put("/profiles/:name/smm", async (req, res) => {
+    try {
+        const profileName = req.params.name;
+        const smmName = req.body.smm_name;
+        const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.premium);
+
+        if (!authorized || req.session.user != profileName) {
+            res.status(401).json({
+                message: "Unauthorized"
+            });
+            return;
+        }
+
+        await mongoClient.connect();
+        const profile = await collection_profiles.findOne({
+            name: profileName
+        });
+        const smm = await collection_profiles.findOne({
+            name: smmName
+        });
+
+        if (profile.is_deleted || profile == null) {
+            res.status(404).json({
+                message: "Profile not found."
+            });
+            return;
+        }
+
+        if (smm.is_deleted || smm == null) {
+            res.status(404).json({
+                message: "SMM not found."
+            });
+            return;
+        }
+
+        if (profile.account_type !== "premium") {
+            res.status(400).json({
+                message: "This profile is not premium."
+            });
+            return;
+        }
+
+        if (smm.account_type !== "smm") {
+            res.status(400).json({
+                message: "This profile is not an SMM."
+            });
+            return;
+        }
+
+        if (profile.smm_customers.includes(smmName)) {
+            res.status(400).json({
+                message: "This profile is already a customer of this SMM."
+            });
+            return;
+        }
+
+        await collection_profiles.updateOne({
+            name: profileName
+        }, {
+            $set: {
+                smm: smmName
+            }
+        });
+
+        await collection_profiles.updateOne({
+            name: smmName
+        }, {
+            $push: {
+                smm_customers: profileName
+            }
+        });
+
+        res.status(200).json({
+            message: "Customer added"
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+});
+
+//* DELETE
+// rimuove il profilo con nome name dalla lista dei clienti del profilo smm
+// specificato nel body
+// ritorna 404 se non esiste
+// ritorna 401 se non sei autorizzato
+// both can remove the smm
+// body: smm_name
+app.delete("/profiles/:name/smm", async (req, res) => {
+    try {
+        const profileName = req.params.name;
+        const smmName = req.body.smm_name;
+        const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.premium) || await isAuthorizedOrHigher(req.session.user, typeOfProfile.smm);
+
+        if (!authorized || req.session.user != profileName) {
+            res.status(401).json({
+                message: "Unauthorized"
+            });
+            return;
+        }
+
+        await mongoClient.connect();
+        const profile = await collection_profiles.findOne({
+            name: profileName
+        });
+        const smm = await collection_profiles.findOne({
+            name: smmName
+        });
+
+        if (profile.is_deleted || profile == null) {
+            res.status(404).json({
+                message: "Profile not found."
+            });
+            return;
+        }
+
+        if (smm.is_deleted || smm == null) {
+            res.status(404).json({
+                message: "SMM not found."
+            });
+            return;
+        }
+
+        if (!profile.smm_customers.includes(smmName)) {
+            res.status(400).json({
+                message: "This profile is not a customer of this SMM."
+            });
+            return;
+        }
+
+        await collection_profiles.updateOne({
+            name: profileName
+        }, {
+            $set: {
+                smm: ""
+            }
+        });
+
+        await collection_profiles.updateOne({
+            name: smmName
+        }, {
+            $pull: {
+                smm_customers: profileName
+            }
+        });
+
+        res.status(200).json({
+            message: "Customer removed"
+        });
 
     } catch (error) {
         res.status(500).json({
