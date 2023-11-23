@@ -1,0 +1,30 @@
+#NewSquealButton {
+    z-index: 10;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+.router_link {
+    display: flex;
+    flex-direction: row;
+}
+
+nav .router-link-exact-active {
+    filter: brightness(0%);
+}
+
+nav .router-link-exact-active:hover {
+    background-color: transparent;
+}
+
+.not_selected {
+    filter: invert(16%) sepia(78%) saturate(3470%) hue-rotate(182deg) brightness(92%) contrast(103%);
+}
+
+nav a {
+    display: inline-block;
+    padding: 0.5em 1rem;
+    border-left: 1px solid var(--color-border);
+    color: #005b82ff;
+}
