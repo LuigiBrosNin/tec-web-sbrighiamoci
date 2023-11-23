@@ -5,6 +5,7 @@ const multer = require('multer');
 const stream = require('stream');
 const sharp = require('sharp');
 const fs = require('fs');
+const axios = require('axios');
 const upload = multer({
     storage: multer.memoryStorage()
 });

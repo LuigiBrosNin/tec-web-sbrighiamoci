@@ -30,6 +30,26 @@ function signin(){
 /* -------------------------------------------------------------------------- */
 /*                         Luizo's temp test fucntions                        */
 /* -------------------------------------------------------------------------- */
+
+// profile account_type PUT requestù
+function addAccountTypeTest(param_id) {
+  const body = {
+    account_type: "smm"
+  };
+
+  console.log("Sending body: " + JSON.stringify(body));
+
+  fetch(`https://site222326.tw.cs.unibo.it/profiles/${param_id}/account_type`, {
+    method: "PUT",
+    headers: {
+      "Content-type": "application/json; charset=UTF-8"
+    },
+    body: JSON.stringify(body)
+  })
+  .then(response => response.json())
+  .then(data => console.log(data));
+}
+
 // profiles following_channels PUT request
 function addFollowingChannelTest(param_id, group_name) {
   const body = {
