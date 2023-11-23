@@ -248,14 +248,11 @@ app.put("/profiles/:name", async (req, res) => {
             is_banned: false,
             banned_until: null,
             is_deleted: false,
-            propic: null
+            propic: null,
+            account_type: "admin"
         };
         console.log(JSON.stringify(profile))
-        const allowedAccountTypes = ["normal", "admin", "premium", "smm"];
-        if (!allowedAccountTypes.includes(profile.account_type)) {
-            profile.account_type = "normal";
-        }
-
+        
         if (profile.bio == undefined) {
             profile.bio = "";
         }
