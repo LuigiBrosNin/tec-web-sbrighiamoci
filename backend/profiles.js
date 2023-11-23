@@ -1389,7 +1389,7 @@ app.delete("/profiles/:name/smm", async (req, res) => {
             return;
         }
 
-        if (!profile.smm_customers.includes(smmName)) {
+        if (!smm.smm_customers.includes(profileName)) {
             res.status(400).json({
                 message: "This profile is not a customer of this SMM."
             });
