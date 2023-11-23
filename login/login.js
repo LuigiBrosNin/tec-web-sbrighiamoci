@@ -1,6 +1,5 @@
 function sub(){
   fetch("https://site222326.tw.cs.unibo.it/login", {
-  //fetch("http://localhost:8000/login", {
     method: "POST",
     body: JSON.stringify({
       username: document.getElementById("usernameInput").value,
@@ -9,9 +8,10 @@ function sub(){
     headers: {
       "Content-type": "application/json; charset=UTF-8"
     }
-  }).then(res => {
+  })
+  .then(res => {
     console.log(res.status);
-    if (res.status == 200) {
+    if (res.status === 200) {
       window.location.href = "https://site222326.tw.cs.unibo.it/app";
     } else {
       alert("Wrong Username or Password");
