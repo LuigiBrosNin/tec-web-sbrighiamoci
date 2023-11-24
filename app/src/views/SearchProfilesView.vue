@@ -1,3 +1,7 @@
+<script setup>
+  import ProfileCard from "@/components/ProfileCard.vue"
+</script>
+
 <template>
     <!-- navbar with fields to formulate a query to filter profiles -->
     <button class="btn btn-primary mb-3 col-12 d-flex justify-content-center" style="background-color: #206f91"
@@ -74,45 +78,7 @@
 
     <!-- for function that defines every channel in the feed object-->
     <div v-for="profile in this.feed" :key="feedVersion" class="card mt-3">
-        <div class="row no-gutters">
-            <div class="col-md-4 d-flex justify-content-center align-items-center">
-                <img v-if="profile.propic" :src="`https://site222326.tw.cs.unibo.it/profiles/${profile.name}/propic`" class="card-img profile_img" alt="Profile Picture">
-                <img v-else src="https://site222326.tw.cs.unibo.it/images/user-default.svg" class="card-img profile_img"
-                    alt="Profile Picture">
-            </div>
-            <div class="col-md-8">
-                <div class="card-body">
-                    <h5 class="card-title">
-                        <a :href="`https://site222326.tw.cs.unibo.it/app/profile/${profile.name}`" class="text-decoration-none">{{ profile.name }}</a>
-                    </h5>
-                    <p class="card-text">{{ profile.bio }}</p>
-                    <div class="row credits_info">
-                        <div class="col">
-                            <p class="card-text">
-                                Daily: {{ profile.credit[0] }}/{{ profile.credit_limits[0] }}
-                            </p>
-                        </div>
-                        <div class="col">
-                            <p class="card-text">
-                                Weekly: {{ profile.credit[1] }}/{{ profile.credit_limits[1] }}
-                            </p>
-                        </div>
-                        <div class="col">
-                            <p class="card-text">
-                                Monthly: {{ profile.credit[2] }}/{{ profile.credit_limits[2] }}
-                            </p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <p class="card-text">
-                                Squeals: {{ profile.squeals_num }}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <ProfileCard :profile_json="profile"></ProfileCard>
     </div>
 
     <!-- buttons to change page -->
@@ -329,12 +295,5 @@ export default {
     height: 30px;
     /* Adjust as needed */
     filter: brightness(0%) invert(100%);
-}
-
-.profile_img {
-  width: 16em;
-  height: 16em;
-  border-radius: 50%;
-  margin: 0.5em;
 }
 </style>

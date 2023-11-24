@@ -56,9 +56,9 @@ const router = createRouter({
       component: SquealPutView
     },
     {
-      path: '/search/profiles',
-      name: 'searchProfiles',
-      component: SearchProfilesView
+      path: '/search',
+      name: 'searchView',
+      component: SearchView
     },
   ]
 })

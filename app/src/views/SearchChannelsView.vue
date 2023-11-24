@@ -1,3 +1,7 @@
+<script setup>
+  import ChannelCard from "@/components/ChannelCard.vue"
+</script>
+
 <template>
     <!-- navbar with fields to formulate a query to filter channels -->
     <button class="btn btn-primary mb-3 col-12 d-flex justify-content-center" style="background-color: #206f91"
@@ -8,40 +12,41 @@
         Toggle Search Options
     </button>
     <div id="formSection" class="collapse">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <div class="container justify-content-center">
-        <div class="row justify-content-center">
-          <div class="col-lg-12">
-            <form @submit.prevent="submitForm" class="row g-3">
-              <div class="form-group">
-                <label for="name">Name</label>
-                <input type="text" class="form-control" id="name" v-model="query.name">
-              </div>
-              <div class="form-group">
-                <label for="owner">Owner</label>
-                <input type="text" class="form-control" id="owner" v-model="query.owner">
-              </div>
-              <div class="form-group">
-                <label for="type">Type</label>
-                <select class="form-control" id="type" v-model="query.type">
-                  <option value="privileged">Privileged</option>
-                  <option value="private">Private</option>
-                  <option value="required">Required</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="subscribers_num">Number of Subscribers</label>
-                <input type="number" class="form-control" id="subscribers_num" v-model="query.subscribers_num">
-              </div>
-              <div class="form-group d-flex justify-content-center">
-                <button type="submit" class="btn btn-primary custom-btn">Submit</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </nav>
-  </div>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container justify-content-center">
+                <div class="row justify-content-center">
+                    <div class="col-lg-12">
+                        <form @submit.prevent="submitForm" class="row g-3">
+                            <div class="form-group">
+                                <label for="name">Name</label>
+                                <input type="text" class="form-control" id="name" v-model="query.name">
+                            </div>
+                            <div class="form-group">
+                                <label for="owner">Owner</label>
+                                <input type="text" class="form-control" id="owner" v-model="query.owner">
+                            </div>
+                            <div class="form-group">
+                                <label for="type">Type</label>
+                                <select class="form-control" id="type" v-model="query.type">
+                                    <option value="privileged">Privileged</option>
+                                    <option value="private">Private</option>
+                                    <option value="required">Required</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="subscribers_num">Number of Subscribers</label>
+                                <input type="number" class="form-control" id="subscribers_num"
+                                    v-model="query.subscribers_num">
+                            </div>
+                            <div class="form-group d-flex justify-content-center">
+                                <button type="submit" class="btn btn-primary custom-btn">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
 
     <!-- buttons to change page -->
     <div class="d-flex justify-content-center align-items-center my-3">
@@ -58,24 +63,8 @@
 
     <!-- for function that defines every channel in the feed object-->
     <div v-for="channel in this.feed" :key="feedVersion" class="card mt-3">
-    <div class="row no-gutters">
-      <div class="col-md-4 d-flex justify-content-center align-items-center">
-        <img v-if="channel.propic" :src="channel.propic" class="card-img channel_img" alt="Profile Picture">
-        <img v-else src="https://site222326.tw.cs.unibo.it/images/logoSquealer.svg" class="card-img channel_img"
-            alt="Profile Picture">
-      </div>
-      <div class="col-md-8">
-        <div class="card-body">
-          <h5 class="card-title">
-            <a :href="`https://site222326.tw.cs.unibo.it/app/channels/${channel.name}`" class="text-decoration-none">{{ channel.name }}</a>
-          </h5>
-          <p class="card-text">{{ channel.bio }}</p>
-          <p class="card-text"><small class="text-muted">Owner: {{ channel.owner }}</small></p>
-          <p class="card-text"><small class="text-muted">Subscribers: {{ channel.subscribers_num }}</small></p>
-        </div>
-      </div>
+        <ChannelCard :channel_json="channel"></ChannelCard>
     </div>
-  </div>
 
     <!-- buttons to change page -->
     <div class="d-flex justify-content-center align-items-center my-3">
@@ -266,7 +255,7 @@ export default {
 }
 
 .custom-btn:active {
-  background-color: #916020 !important;
+    background-color: #916020 !important;
 }
 
 .btn-disabled {
@@ -280,13 +269,6 @@ export default {
     height: 30px;
     /* Adjust as needed */
     filter: brightness(0%) invert(100%);
-}
-
-.channel_img {
-  width: 16em;
-  height: 16em;
-  border-radius: 50%;
-  margin: 0.5em;
 }
 
 </style>
