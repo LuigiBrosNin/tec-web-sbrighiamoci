@@ -70,14 +70,14 @@
             Load previous page
         </button>
         <span class="mx-3">Page: {{ currentPage }}</span>
-        <button class="btn custom-btn ml-2" :class="{ 'btn-disabled': this.nextPageIsEmpty }" @click="loadNext()"
-            :disabled="this.nextPageIsEmpty">
+        <button class="btn custom-btn ml-2" :class="{ 'btn-disabled': nextPageIsEmpty }" @click="loadNext()"
+            :disabled="nextPageIsEmpty">
             Load next page
         </button>
     </div>
 
     <!-- for function that defines every channel in the feed object-->
-    <div v-for="profile in this.feed" :key="feedVersion" class="card mt-3">
+    <div v-for="profile in feed" :key="feedVersion" class="card mt-3">
         <ProfileCard :profile_json="profile"></ProfileCard>
     </div>
 
@@ -88,8 +88,8 @@
             Load previous page
         </button>
         <span class="mx-3">Page: {{ currentPage }}</span>
-        <button class="btn custom-btn ml-2" :class="{ 'btn-disabled': this.nextPageIsEmpty }" @click="loadNext()"
-            :disabled="this.nextPageIsEmpty">
+        <button class="btn custom-btn ml-2" :class="{ 'btn-disabled': nextPageIsEmpty }" @click="loadNext()"
+            :disabled="nextPageIsEmpty">
             Load next page
         </button>
     </div>
