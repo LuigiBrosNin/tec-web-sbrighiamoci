@@ -8,7 +8,8 @@ const {
 } = require("../index.js");
 const {
   typeOfProfile,
-  isAuthorizedOrHigher
+  isAuthorizedOrHigher,
+  isSMMAuthorized
 } = require("./loginUtils.js");
 const bodyParser = require('body-parser');
 const {
@@ -101,7 +102,7 @@ app.get("/channels", async (req, res) => {
 
 /* -------------------------------------------------------------------------- */
 /*                               /CHANNELS/:NAME                              */
-/*                               GET, PUT, DELETE                             */
+/*                            GET, PUT, POST, DELETE                          */
 /* -------------------------------------------------------------------------- */
 
 //* GET
@@ -134,15 +135,16 @@ app.get("/channels/:name", async (req, res) => {
 
 //* PUT
 // creates a new channel with the specified name
-// body parameters: propic, bio (users)
+// body parameters: owner, bio (users)
 // body parameters: type (only admins)
 app.put("/channels/:name", async (req, res) => {
   try {
     const channelName = req.params.name;
-    const authorized = isAuthorizedOrHigher(req.session.user, typeOfProfile.user);
+    const authorized = isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === req.body.user;
     const adminAuthorized = isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
+    const SMMAuthorized = isSMMAuthorizedMAuthorized(req.session.user, req.body.user);
 
-    if (!authorized) {
+    if (!authorized && !SMMAuthorized) {
       res.status(401).json({
         message: "Not authorized to create a channel."
       });
@@ -151,21 +153,21 @@ app.put("/channels/:name", async (req, res) => {
 
     let channel = {
       name: channelName,
-      owner: req.body.user, //req.session.user,  //TODO rimettere session.user
+      owner: req.body.user,
       type: "private",
       mod_list: [],
       subscribers_num: 1,
-      subscribers_list: [req.body.user], //[req.session.user],
+      subscribers_list: [req.body.user],
       squeals_num: 0,
       squeals_list: [],
-      propic: req.body.propic, //TODO handle this
+      propic: null,
       bio: req.body.bio,
       is_deleted: false,
-      propic: null,
+      propic: null
     };
 
     // only admins can create privileged or required channels
-    if (adminAuthorized && (req.body.type === "private" || req.body.type === "privileged" || req.body.type === "required")){
+    if (adminAuthorized && (req.body.type === "private" || req.body.type === "privileged" || req.body.type === "required")) {
       channel.type = req.body.type;
     }
 
@@ -192,6 +194,90 @@ app.put("/channels/:name", async (req, res) => {
 
     res.status(200).json({
       message: "Channel created."
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+});
+
+//* POST
+// updates the channel with the specified name
+// body parameters: user, bio (users)
+app.post("/channels/:name", async (req, res) => {
+  try {
+    const channelName = req.params.name;
+    const authorized = isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === req.body.user;
+    const SMMAuthorized = isSMMAuthorized(req.session.user, req.body.user);
+
+    const bio = req.body.bio;
+
+    if (bio == null) {
+      res.status(400).json({
+        message: "bio cannot be null"
+      });
+      return;
+    }
+
+    if (!authorized && !SMMAuthorized) {
+      res.status(401).json({
+        message: "Not authorized to modify this channel."
+      });
+      return;
+    }
+
+    await mongoClient.connect();
+    const channel = await collection_channels.findOne({
+      name: channelName
+    });
+
+    if (channel.is_deleted || channel === null) {
+      res.status(404).json({
+        message: "Channel not found."
+      });
+      return;
+    }
+
+    let mod_auth = false;
+
+    for (const mod of channel.mod_list) {
+      if (mod == req.body.user) {
+        mod_auth = true;
+        break;
+      }
+    }
+
+    if (channel.owner == req.body.user) {
+      mod_auth = true;
+    }
+
+    if (!mod_auth) {
+      res.status(401).json({
+        message: "not authorized to modify this channel's propic (not valid mod)"
+      });
+      return;
+    }
+
+    await mongoClient.connect();
+    const result = await collection_channels.updateOne({
+      name: channelName
+    }, {
+      $set: {
+        bio: bio
+      }
+    });
+
+    if (result.modifiedCount === 0) {
+      res.status(404).json({
+        message: "Channel not found."
+      });
+      return;
+    }
+
+    res.status(200).json({
+      message: "Channel updated successfully."
     });
 
   } catch (error) {
@@ -667,7 +753,7 @@ app.put("/channels/:name/squeals_list", async (req, res) => {
       return;
     }
 
-    if(!adminAuthorized && (channel.type === "required" || channel.type === "privileged")){
+    if (!adminAuthorized && (channel.type === "required" || channel.type === "privileged")) {
       res.status(401).json({
         message: "not authorized to modify this channel's squeals_list: not an admin"
       });
@@ -803,12 +889,14 @@ app.get("/channels/:name/propic", async (req, res) => {
 
 //* PUT
 // sets the propic of the channel
-// body parameters: propic (file)
+// body parameters: user, propic (file)
 //TODO ADD AUTHORIZATION (ADMIN OR OWNER)
-app.put("/channels/:name/propic", async (req, res) => {
+app.put("/channels/:name/propic", upload.single('file'), async (req, res) => {
   try {
     const channelName = req.params.name;
     const authorized = true //TODO ADD AUTHORIZATION
+    const SMMAuthorized = isSMMAuthorized(req.session.user, req.body.user);
+
 
     const channel = await collection_channels.findOne({
       name: channelName
@@ -821,9 +909,29 @@ app.put("/channels/:name/propic", async (req, res) => {
       return;
     }
 
-    if (!authorized) {
+    if (!authorized && !SMMAuthorized) {
       res.status(401).json({
-        message: "not authorized to modify this channel's propic"
+        message: "not authorized to modify this channel's propic (not valid user)"
+      });
+      return;
+    }
+
+    let mod_auth = false;
+
+    for (const mod of channel.mod_list) {
+      if (mod === req.body.user) {
+        mod_auth = true;
+        break;
+      }
+    }
+
+    if (channel.owner == req.body.user) {
+      mod_auth = true;
+    }
+
+    if (!mod_auth) {
+      res.status(401).json({
+        message: "not authorized to modify this channel's propic (not valid mod)"
       });
       return;
     }
@@ -850,11 +958,13 @@ app.put("/channels/:name/propic", async (req, res) => {
 
 //* DELETE
 // deletes the propic of the channel
+// body: user
 //TODO ADD AUTHORIZATION (ADMIN OR OWNER)
 app.delete("/channels/:name/propic", async (req, res) => {
   try {
     const channelName = req.params.name;
     const authorized = true //TODO ADD AUTHORIZATION
+    const SMMAuthorized = isSMMAuthorized(req.session.user, req.body.user);
 
     const channel = await collection_channels.findOne({
       name: channelName
@@ -867,9 +977,29 @@ app.delete("/channels/:name/propic", async (req, res) => {
       return;
     }
 
-    if (!authorized) {
+    if (!authorized && !SMMAuthorized) {
       res.status(401).json({
         message: "not authorized to modify this channel's propic"
+      });
+      return;
+    }
+
+    let mod_auth = false;
+
+    for (const mod of channel.mod_list) {
+      if (mod == req.body.user) {
+        mod_auth = true;
+        break;
+      }
+    }
+
+    if (channel.owner == req.body.user) {
+      mod_auth = true;
+    }
+
+    if (!mod_auth) {
+      res.status(401).json({
+        message: "not authorized to modify this channel's propic (not valid mod)"
       });
       return;
     }

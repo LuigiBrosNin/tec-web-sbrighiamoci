@@ -431,8 +431,8 @@ async function deleteSquealById(squealId) {
 // ritorna 404 se non esiste
 // ritorna 401 se non sei autorizzato
 // ritorna 400 se mancano informazioni necessarie
-// Parametri supportati: bio, account_type, propic, credit, credit_limits, is_banned, banned_until, password, email
-// Parametri modificabili da utenti: bio, propic, password, email
+// Parametri supportati: bio, account_type, credit, credit_limits, is_banned, banned_until, password, email
+// Parametri modificabili da utenti: bio, password, email
 app.post("/profiles/:name", async (req, res) => {
     try {
         // setting up info for the updated profile
@@ -461,7 +461,7 @@ app.post("/profiles/:name", async (req, res) => {
             return;
         }
 
-        let possibleParams = ["bio", "propic", "password", "email"];
+        let possibleParams = ["bio", "password", "email"];
 
         // checking if the user is authorized to modify the profile
         if (adminAuthorized) {
