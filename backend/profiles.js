@@ -15,7 +15,8 @@ const {
 } = require("../index.js");
 const {
     typeOfProfile,
-    isAuthorizedOrHigher
+    isAuthorizedOrHigher,
+    isSMMAuthorized
 } = require("./loginUtils.js");
 const bodyParser = require('body-parser');
 const {
@@ -303,8 +304,7 @@ function isValidEmail(email) {
 //TODO ADD AUTHORIZATION
 app.delete("/profiles/:name", async (req, res) => {
     try {
-        //TODO CHANGE profileName
-        const profileName = req.params.name;
+        const profileName = req.session.user;
         const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
         const authorized = true //await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === profileName;
 
@@ -439,8 +439,9 @@ app.post("/profiles/:name", async (req, res) => {
         const profileName = req.params.name;
         const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
         const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === profileName;
+        const SMMAuthorized = await isSMMAuthorized(req.session.user, profileName);
 
-        if (!authorized && !adminAuthorized) {
+        if (!authorized && !adminAuthorized && !SMMAuthorized) {
             res.status(401).json({
                 message: "Unauthorized"
             });
@@ -716,8 +717,9 @@ app.put("/profiles/:name/following_channels/", async (req, res) => {
         const profileName = req.params.name;
         const channelName = req.body.channel_name;
         const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user);
+        const SMMAuthorized = await isSMMAuthorized(req.session.user, profileName);
 
-        if (!authorized) {
+        if (!authorized && !SMMAuthorized) {
             res.status(401).json({
                 message: "Unauthorized"
             });
@@ -886,8 +888,9 @@ app.get("/profiles/:name/propic", async (req, res) => {
 app.put('/profiles/:name/propic', upload.single('file'), async (req, res) => {
     try {
         const authorized = true;
+        const SMMAuthorized = await isSMMAuthorized(req.session.user, req.params.name);
 
-        if (!authorized) {
+        if (!authorized && !SMMAuthorized) {
             res.status(401).json({ message: 'Unauthorized' });
             return;
         }
@@ -958,8 +961,9 @@ app.delete("/profiles/:name/propic", async (req, res) => {
         const profileName = req.params.name;
         const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
         const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === profileName;
+        const SMMAuthorized = await isSMMAuthorized(req.session.user, profileName);
 
-        if (!authorized && !adminAuthorized) {
+        if (!authorized && !adminAuthorized && !SMMAuthorized) {
             res.status(401).json({
                 message: "Unauthorized"
             });
