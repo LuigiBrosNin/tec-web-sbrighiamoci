@@ -53,7 +53,7 @@ async function isAuthorizedOrHigher(user, level) {
 }
 
 async function isSMMAuthorized(user, smm){
-
+    return true;
 }
 
 async function canLogIn(username, password) {
@@ -103,4 +103,4 @@ async function registerNewUser(user, email, password) {
     return res.status;
 }
 
-module.exports = { typeOfProfile, isAuthorized, isAuthorizedOrHigher, canLogIn, registerNewUser };
+module.exports = { typeOfProfile, isAuthorized, isAuthorizedOrHigher, isSMMAuthorized, canLogIn, registerNewUser };
