@@ -136,12 +136,18 @@ app.get("/channels/:name", async (req, res) => {
 // creates a new channel with the specified name
 // body parameters: propic, bio (users)
 // body parameters: type (only admins)
-
-//TODO ADD AUTHORIZATION
 app.put("/channels/:name", async (req, res) => {
   try {
     const channelName = req.params.name;
-    const authorized = true //TODO ADD AUTHORIZATION
+    const authorized = isAuthorizedOrHigher(req.session.user, typeOfProfile.user);
+    const adminAuthorized = isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
+
+    if (!authorized) {
+      res.status(401).json({
+        message: "Not authorized to create a channel."
+      });
+      return;
+    }
 
     let channel = {
       name: channelName,
@@ -158,7 +164,8 @@ app.put("/channels/:name", async (req, res) => {
       propic: null,
     };
 
-    if (authorized && (req.body.type === "private" || req.body.type === "privileged" || req.body.type === "required")){
+    // only admins can create privileged or required channels
+    if (adminAuthorized && (req.body.type === "private" || req.body.type === "privileged" || req.body.type === "required")){
       channel.type = req.body.type;
     }
 

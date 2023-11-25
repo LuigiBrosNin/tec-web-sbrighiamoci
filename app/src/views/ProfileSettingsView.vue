@@ -1,119 +1,128 @@
+<script setup>
+const props = defineProps(["id"]);
+</script>
+
 <template>
-  <div class="row options_container">
-    <div>
-      <div class="row">
-        <div class="col-sm-6">
-          <!-- Current profile pic -->
-          <img class="profile_img img-fluid rounded-circle" :src="profilePicUrl" />
+  <div v-if="id == $user">
+    <div class="row options_container">
+      <div>
+        <div class="row">
+          <div class="col-sm-6">
+            <!-- Current profile pic -->
+            <img class="profile_img img-fluid rounded-circle" :src="profilePicUrl" />
+          </div>
+          <div class="col-sm-6">
+            <!-- New profile pic preview -->
+            <img v-if="file" class="profile_img img-fluid rounded-circle" :src="mediaUrl" alt="uploaded file" />
+            <img v-else class="profile_img img-fluid rounded-circle" :src="profilePicUrl" />
+          </div>
         </div>
-        <div class="col-sm-6">
-          <!-- New profile pic preview -->
-          <img v-if="file" class="profile_img img-fluid rounded-circle" :src="mediaUrl" alt="uploaded file" />
-          <img v-else class="profile_img img-fluid rounded-circle" :src="profilePicUrl" />
-        </div>
-      </div>
-      <!-- File uploader -->
-      <div class="input-group mb-3">
-        <div class="custom-file">
-          <input type="file" class="form-control" id="inputGroupFile01" @change="handleFileUpload" accept="image/*" />
-        </div>
-        <div class="input-group-append">
-          <button class="btn btn-outline-secondary button-spacing" type="button" @click="uploadFile">Upload</button>
-          <button v-if="file" @click="file = null" class="btn btn-danger button-spacing">X</button>
-          <button v-else class="btn btn-danger" @click="removePic">Remove current propic</button>
-        </div>
-      </div>
-    </div>
-
-    <form @submit.prevent="handleSubmit" class="mt-4">
-      <!-- display current bio -->
-      <div class="form-group">
-        <label for="bio">Current Bio</label>
-        <textarea class="form-control" id="bio" :placeholder="current_bio" disabled></textarea>
-      </div>
-      <div class="form-group">
-        <label for="bio">Bio</label>
-        <textarea class="form-control" id="bio" :placeholder="bio" v-model="bio"></textarea>
-      </div>
-
-      <!-- display current email-->
-      <div class="form-group">
-        <label for="email">Current Email</label>
-        <input type="email" class="form-control" id="email" :placeholder="current_email" disabled />
-      </div>
-
-      <div class="form-group">
-        <label for="email">Change Email</label>
-        <input type="email" class="form-control" id="email" v-model="email" />
-      </div>
-
-      <div class="form-group">
-        <label for="password">Change Password</label>
-        <input type="password" class="form-control" id="password" v-model="password" />
-      </div>
-
-      <div class="form-group text-center">
-        <button type="submit" class="btn btn-primary mt-3" style="background-color: #ff8900;">Submit</button>
-      </div>
-    </form>
-  </div>
-
-  <!-- spaced div to switch account type -->
-  <div class="card mt-4 options_container" v-if="current_account_type != 'admin'">
-    <div class="card-body">
-      <h5 class="card-title">Switch Account Type</h5>
-      <p class="card-text">Logged in as: {{ $user }}</p>
-      <p class="card-text">Current account type: {{ current_account_type }}</p>
-      <button type="button" v-if="current_account_type != 'premium'" class="btn btn-primary mb-3"
-        style="background-color: #ff8900;" @click="changeAccountType('premium')">
-        Switch to Premium, 10€/month
-      </button>
-      <button type="button" v-if="current_account_type != 'smm'" class="btn btn-primary mb-3"
-        style="background-color: #ff8900;" @click="changeAccountType('smm')">
-        Switch to SMM, 15€/month
-      </button>
-      <button type="button" v-if="current_account_type != 'normal'" class="btn btn-primary mb-3"
-        style="background-color: #ff8900;" @click="changeAccountType('normal')">
-        Switch to User, free
-      </button>
-    </div>
-  </div>
-
-  <!-- spaced div to insert an smm if you're premium-->
-  <div class="card mt-4 options_container" v-if="current_account_type == 'premium'">
-    <div class="card-body">
-      <h5 class="card-title">Insert SMM</h5>
-      <p class="card-text">Logged in as: {{ $user }}</p>
-      <p class="card-text" v-if="current_smm">Current SMM: {{ current_smm }}</p>
-      <p class="card-text" v-else>You currently have no SMM</p>
-
-      <div class="card mt-4 options_container" v-if="smm_preview">
-        <div class="card-body">
-          <h5 class="card-title">SMM Preview</h5>
-          <!--! INSERT PROFILE CARD HERE -->
-          <p class="card-text">{{ smm_preview }}</p>
+        <!-- File uploader -->
+        <div class="input-group mb-3">
+          <div class="custom-file">
+            <input type="file" class="form-control" id="inputGroupFile01" @change="handleFileUpload" accept="image/*" />
+          </div>
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary button-spacing" type="button" @click="uploadFile">Upload</button>
+            <button v-if="file" @click="file = null" class="btn btn-danger button-spacing">X</button>
+            <button v-else class="btn btn-danger" @click="removePic">Remove current propic</button>
+          </div>
         </div>
       </div>
-      <p class="card-text">No smm account for name: {{ smm }} found</p>
 
-      <form @submit.prevent="insertSMM">
+      <form @submit.prevent="handleSubmit" class="mt-4">
+        <!-- display current bio -->
         <div class="form-group">
-          <input type="text" class="form-control" v-model="smm" placeholder="Enter SMM" />
+          <label for="bio">Current Bio</label>
+          <textarea class="form-control" id="bio" :placeholder="current_bio" disabled></textarea>
         </div>
-        <button type="submit" class="btn btn-primary" style="background-color: #ff8900;">Insert SMM</button>
+        <div class="form-group">
+          <label for="bio">Bio</label>
+          <textarea class="form-control" id="bio" :placeholder="bio" v-model="bio"></textarea>
+        </div>
+
+        <!-- display current email-->
+        <div class="form-group">
+          <label for="email">Current Email</label>
+          <input type="email" class="form-control" id="email" :placeholder="current_email" disabled />
+        </div>
+
+        <div class="form-group">
+          <label for="email">Change Email</label>
+          <input type="email" class="form-control" id="email" v-model="email" />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Change Password</label>
+          <input type="password" class="form-control" id="password" v-model="password" />
+        </div>
+
+        <div class="form-group text-center">
+          <button type="submit" class="btn btn-primary mt-3" style="background-color: #ff8900;">Submit</button>
+        </div>
       </form>
     </div>
-  </div>
 
-  <!-- spaced button to delete account -->
-  <div class="card mt-4 options_container">
-    <div class="card-body">
-      <h5 class="card-title">Delete Account</h5>
-      <p class="card-text">Logged in as: {{ $user }}</p>
-      <button type="button" class="btn btn-danger" @click="deleteAccount">
-        Delete Account
-      </button>
+    <!-- spaced div to switch account type -->
+    <div class="card mt-4 options_container" v-if="current_account_type != 'admin'">
+      <div class="card-body">
+        <h5 class="card-title">Switch Account Type</h5>
+        <p class="card-text">Logged in as: {{ $user }}</p>
+        <p class="card-text">Current account type: {{ current_account_type }}</p>
+        <button type="button" v-if="current_account_type != 'premium'" class="btn btn-primary mb-3"
+          style="background-color: #ff8900;" @click="changeAccountType('premium')">
+          Switch to Premium, 10€/month
+        </button>
+        <button type="button" v-if="current_account_type != 'smm'" class="btn btn-primary mb-3"
+          style="background-color: #ff8900;" @click="changeAccountType('smm')">
+          Switch to SMM, 15€/month
+        </button>
+        <button type="button" v-if="current_account_type != 'normal'" class="btn btn-primary mb-3"
+          style="background-color: #ff8900;" @click="changeAccountType('normal')">
+          Switch to User, free
+        </button>
+      </div>
     </div>
+
+    <!-- spaced div to insert an smm if you're premium-->
+    <div class="card mt-4 options_container" v-if="current_account_type == 'premium'">
+      <div class="card-body">
+        <h5 class="card-title">Insert SMM</h5>
+        <p class="card-text">Logged in as: {{ $user }}</p>
+        <p class="card-text" v-if="current_smm">Current SMM: {{ current_smm }}</p>
+        <p class="card-text" v-else>You currently have no SMM</p>
+
+        <div class="card mt-4 options_container" v-if="smm_preview">
+          <div class="card-body">
+            <h5 class="card-title">SMM Preview</h5>
+            <!--! INSERT PROFILE CARD HERE -->
+            <p class="card-text">{{ smm_preview }}</p>
+          </div>
+        </div>
+        <p class="card-text">No smm account for name: {{ smm }} found</p>
+
+        <form @submit.prevent="insertSMM">
+          <div class="form-group">
+            <input type="text" class="form-control" v-model="smm" placeholder="Enter SMM" />
+          </div>
+          <button type="submit" class="btn btn-primary" style="background-color: #ff8900;">Insert SMM</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- spaced button to delete account -->
+    <div class="card mt-4 options_container">
+      <div class="card-body">
+        <h5 class="card-title">Delete Account</h5>
+        <p class="card-text">Logged in as: {{ $user }}</p>
+        <button type="button" class="btn btn-danger" @click="deleteAccount">
+          Delete Account
+        </button>
+      </div>
+    </div>
+  </div>
+  <div v-else>
+    <p> you are not authorized to edit the settings of this profile</p>
   </div>
 </template>
 
@@ -137,7 +146,7 @@ export default {
   },
   mounted() {
     //Send a GET request to /profiles/$user
-    const name_of_profile = this.$user;
+    const name_of_profile = this.id;
     axios
       .get(`https://site222326.tw.cs.unibo.it/profiles/${name_of_profile}`)
       .then((response) => {
@@ -325,4 +334,5 @@ export default {
 .button-spacing {
   margin-right: 10px !important;
   margin-left: 10px !important;
-}</style>
+}
+</style>

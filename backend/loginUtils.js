@@ -52,6 +52,10 @@ async function isAuthorizedOrHigher(user, level) {
     }
 }
 
+async function isSMMAuthorized(user, smm){
+
+}
+
 async function canLogIn(username, password) {
     if (username === null || username === undefined) {
         return false;

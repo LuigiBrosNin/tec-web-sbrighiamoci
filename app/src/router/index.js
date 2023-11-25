@@ -48,7 +48,8 @@ const router = createRouter({
     {
       path: '/profile/:id/settings',
       name: 'settings',
-      component: ProfileSettingsView
+      component: ProfileSettingsView,
+      props: true
     },
     {
       path: '/squealPut',
