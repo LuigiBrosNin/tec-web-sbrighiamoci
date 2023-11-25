@@ -43,10 +43,10 @@ app.get("/squeals/", async (req, res) => {
         let startIndex = 0;
         let endIndex = 10;
         // check if the parameters are valid
-        if (req.query.startindex !== undefined && req.query.startindex !== NaN) {
+        if (req.query.startindex !== undefined && !isNaN(req.query.startindex)) {
             startIndex = parseInt(req.query.startindex);
         }
-        if (req.query.endindex !== undefined && req.query.endindex !== NaN) {
+        if (req.query.endindex !== undefined && !isNaN(req.query.endindex)) {
             endIndex = parseInt(req.query.endindex);
         }
         // check if the parameters are valid
@@ -64,10 +64,10 @@ app.get("/squeals/", async (req, res) => {
         let start_date = 0;
         let end_date = Date.now();
         // check if the parameters are valid
-        if (req.query.start_date !== undefined && req.query.start_date !== NaN) {
+        if (req.query.start_date !== undefined && !isNaN(req.query.start_date)) {
             start_date = parseInt(req.query.start_date);
         }
-        if (req.query.end_date !== undefined && req.query.start_date !== NaN) {
+        if (req.query.end_date !== undefined && !isNaN(req.query.end_date)) {
             end_date = parseInt(req.query.end_date);
         }
         // check if the parameters are valid
@@ -189,22 +189,20 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
     try {
         // console.log('Request Body:', req.body);
         const authorized = true; //TODO ADD AUTHORIZATION
+        const SMMAuthorized = true; //TODO ADD AUTHORIZATION
 
         const reqBody = JSON.parse(req.body.json);
-
-        console.log("reqBody.location: " + JSON.stringify(reqBody.location));
 
         const media = req.file;
         const location = req.body.location;
 
-        if (!authorized) {
+        if (!authorized && !SMMAuthorized) {
             res.status(401).json({
                 message: "you must be logged in to add a squeal"
             });
             return;
         }
 
-        // TODO Author needs to be assigned with session.user
         const requiredFields = [
             "author",
             "text",
@@ -342,8 +340,7 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
             });
             return;
         } // check if the authos has enough credit 
-        //TODO admin check, if it's an admin don't subtract credit
-        else if (false) { //newSqueal.is_private == false && (profile_author.credit[0] < char_cost || profile_author.credit[1] < char_cost || profile_author.credit[2] < char_cost) /*&& await !isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)*/) {
+        else if (newSqueal.is_private == false && (profile_author.credit[0] < char_cost || profile_author.credit[1] < char_cost || profile_author.credit[2] < char_cost) && !isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)) {
             res.status(400).json({
                 message: "author does not have enough credit. available (g: " + profile_author.credit[0] + " s: " + profile_author.credit[1] + " m: " + profile_author.credit[2] + ") required: " + char_cost
             });
@@ -491,10 +488,10 @@ app.get("/feed/", async (req, res) => {
         let startIndex = 0;
         let endIndex = 10;
         // check if the parameters are valid
-        if (req.query.startindex !== undefined && req.query.startindex !== NaN) {
+        if (req.query.startindex !== undefined && !isNaN(req.query.startindex)) {
             startIndex = parseInt(req.query.startindex);
         }
-        if (req.query.endindex !== undefined && req.query.endindex !== NaN) {
+        if (req.query.endindex !== undefined && !isNaN(req.query.endindex)) {
             endIndex = parseInt(req.query.endindex);
         }
         // check if the parameters are valid
@@ -612,10 +609,10 @@ app.post("/squeals_list/", async (req, res) => {
         let startIndex = 0;
         let endIndex = 10;
         // check if the parameters are valid
-        if (req.query.startindex !== undefined && req.query.startindex !== NaN) {
+        if (req.query.startindex !== undefined && !isNaN(req.query.startindex)) {
             startIndex = parseInt(req.query.startindex);
         }
-        if (req.query.endindex !== undefined && req.query.endindex !== NaN) {
+        if (req.query.endindex !== undefined && !isNaN(req.query.endindex)) {
             endIndex = parseInt(req.query.endindex);
         }
         // check if the parameters are valid
@@ -639,7 +636,8 @@ app.post("/squeals_list/", async (req, res) => {
             }
 
             const found_squeal = await collection_squeals.findOne({
-                id: squeal
+                id: squeal,
+                is_private: false
             });
 
             // squeal found
@@ -685,16 +683,36 @@ app.get("/squeals/:id", async (req, res) => {
     try {
         const squealId = req.params.id;
 
+        const authorized = true; //TODO ADD AUTHORIZATION
+
+        let squeal = null;
+
         await mongoClient.connect();
+        if(!authorized) {
         // fetching the squeal with the given id
-        const squeal = await collection_squeals.findOne({
-            id: squealId
+        squeal = await collection_squeals.findOne({
+            id: squealId,
+            is_private: false
         });
+        } else {
+            // fetching the squeal with the given id
+            squeal = await collection_squeals.findOne({
+                id: squealId,
+            });
+        }
 
         // if the squeal is not found, return 404
-        if (squeal === null) {
+        if (squeal == null) {
             res.status(404).json({
                 message: "squeal not found"
+            });
+            return;
+        }
+
+        // if the squeal is private, check if the user is authorized to view it
+        if(squeal.is_private == true && (squeal.author != req.session.user || squeal.receiver != req.session.user)) {
+            res.status(401).json({
+                message: "you are not authorized to view this squeal"
             });
             return;
         }
@@ -708,104 +726,16 @@ app.get("/squeals/:id", async (req, res) => {
     }
 });
 
-// * PUT
-// aggiunge/sovrascrive lo squeal con id = id ricevuto come parametro
-app.put("/squeals/:id", bodyParser.json(), async (req, res) => {
-    try {
-        const squealId = req.params.id;
-
-        // fetching the squeal with the given id
-        const squeal = await collection_squeals.findOne({
-            id: squealId
-        });
-
-        const requiredFields = [
-            "author",
-            "text",
-            "receiver"
-        ];
-
-        // Check if all required fields are present in the request body
-        for (const field of requiredFields) {
-            if (req.body[field] === undefined && req.body[field] != "") {
-                res.status(400).json({
-                    message: `${field} is required`
-                });
-                return;
-            }
-        }
-        // If all required fields are present, continue with the insertion
-
-        if (await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)) {
-            // defining the required fields as well as initializing the standard fields
-            let newSqueal = {
-                id: squealId,
-                author: req.body.author,
-                text: req.body.text,
-                receiver: req.body.receiver,
-                date: Date.now(),
-                positive_reactions: 0,
-                positive_reactions_list: [],
-                negative_reactions: 0,
-                negative_reactions_list: [],
-                replies: [],
-                replies_num: 0,
-                impressions: 0
-            }
-
-            const optionalFields = [
-                "media",
-                "reply_to",
-                "keywords",
-                "mentions"
-            ];
-
-            // Check if the optional fields are present in the request body
-            // If they are, add them to the newSqueal object
-            for (const field in optionalFields) {
-                if (req.body[field] !== undefined && req.body[field] != "") {
-                    newSqueal[field] = req.body[field];
-                }
-            }
-
-            // if the squeal is found, update and return the update
-            if (squeal != null) {
-                const result = await collection_squeals.updateOne({
-                    id: squealId
-                }, {
-                    $set: newSqueal
-                });
-                res.status(200).json({
-                    message: "squeal updated successfully"
-                });
-                return;
-            } else {
-                // if the squeal is not found, add it to the database
-                const result = await collection_squeals.insertOne(newSqueal);
-                res.status(200).json({
-                    message: "squeal added successfully"
-                });
-                return;
-            }
-        } else {
-            res.status(401).send();
-        }
-    } catch (error) {
-        res.status(500).json({
-            message: error.message
-        });
-
-    }
-});
-
 // * DELETE 
 // elimina lo squeal con id = id ricevuto come parametro
 
 app.delete("/squeals/:id", async (req, res) => {
     try {
-        const authenticated = true;
+        const authorized = true; //TODO ADD AUTHORIZATION
+
+
         // check if the user has logged in
-        if (!authenticated) {
+        if (!authorized) {
             res.status(401).json({
                 message: "you must be logged in to delete a squeal"
             });
@@ -824,6 +754,16 @@ app.delete("/squeals/:id", async (req, res) => {
         if (squeal === null) {
             res.status(404).json({
                 message: "Error: ID not found in database."
+            });
+            return;
+        }
+
+        const SMMAuthorized = true; //TODO ADD AUTHORIZATION
+
+        // if the user is not authorized to delete the squeal, return 401
+        if (squeal.author !== req.session.user && !SMMAuthorized) {
+            res.status(401).json({
+                message: "you are not authorized to delete this squeal"
             });
             return;
         }
@@ -850,7 +790,7 @@ app.delete("/squeals/:id", async (req, res) => {
             }
 
             // if receiver is a channel, remove the squeal from the channel's squeals_list
-            if (channel !== null) {
+            if (channel != null) {
                 await collection_channels.updateOne({
                     name: squeal.receiver
                 }, {
@@ -1089,24 +1029,7 @@ app.get("/squeals/:id/media", async (req, res) => {
         }
 
         await exportPic(squeal.media, res);
-        /*
 
-        // if the squeal is found, return its media
-        const bucket = new GridFSBucket(database);
-        const downloadStream = bucket.openDownloadStream(squeal.media);
-        
-        downloadStream.on('data', (chunk) => {
-            res.write(chunk);
-        }
-        );
-        downloadStream.on('error', () => {
-            res.sendStatus(404);
-        }
-        );
-        downloadStream.on('end', () => {
-            res.end();
-        }
-        );*/
     } catch (error) {
         res.status(500).json({
             message: error.message
@@ -1169,10 +1092,10 @@ app.get("/squeals/:id/replies/", async (req, res) => {
         let startIndex = 0;
         let endIndex = 10;
         // check if the parameters are valid
-        if (req.query.startIndex !== undefined && req.query.startIndex !== NaN) {
+        if (req.query.startIndex !== undefined && !isNaN(req.query.startindex)) {
             startIndex = parseInt(req.query.startindex);
         }
-        if (req.query.endindex !== undefined && req.query.endindex !== NaN) {
+        if (req.query.endindex !== undefined && !isNaN(req.query.endindex)) {
             endIndex = parseInt(req.query.endindex);
         }
         // check if the parameters are valid
@@ -1212,7 +1135,7 @@ app.get("/squeals/:id/replies/", async (req, res) => {
             });
 
             // if the squeal is not found, skip it, but log it so we know something's wrong
-            if (child_squeal === null) {
+            if (child_squeal == null) {
                 console.log("Child squeal with id " + child_squeal_id + " not accessible");
             } // if the squeal is found, add it to the list of replies
             else {
@@ -1302,8 +1225,6 @@ app.get("/squeals/:id/:reaction_list", async (req, res) => {
 // aggiunge un utente alla lista di reazioni positive/negative dello squeal con id = id ricevuto come parametro
 // se l'utente è già presente nella lista, lo rimuove
 // aggiunge un' impressione allo squeal con id = id ricevuto come parametro se la lista ricevuta è "impressions"
-
-// ! the Function is tested, but the session.user is not, if this gives problems is because of the session.user param
 app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
     try {
         const squealId = req.params.id;
