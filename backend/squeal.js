@@ -3,7 +3,8 @@ const {
 } = require("../index.js");
 const {
     typeOfProfile,
-    isAuthorizedOrHigher
+    isAuthorizedOrHigher,
+    isSMMAuthorized
 } = require("./loginUtils.js");
 const bodyParser = require('body-parser');
 const multer = require('multer');
@@ -89,19 +90,30 @@ app.get("/squeals/", async (req, res) => {
         };
 
         // check if the user is authorized to access private messages
-        if (await !isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)) {
-            if (req.query.is_private === "true" || req.query.is_private === true) {
-                res.status(401).json({
-                    message: "only admins can access private messages"
-                });
-                return;
+        if (req.query.is_private === "true" || req.query.is_private === true) {
+            if(await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)) {
+                search.is_private = true;
             }
-        } else {
-            // if the user is authorized, add the is_private field to the search object if requested
-            if (req.query.is_private === "true" || req.query.is_private === true) {
-                search["is_private"] = true;
+            else if(await isAuthorizedOrHigher(req.session.user, typeOfProfile.user)){
+                if(req.params.author == null && req.params.receiver == null) {
+                    search.is_private = true;
+                    search.$or = [
+                        {author: req.session.user},
+                        {receiver: req.session.user}
+                    ]
+                }
+                else if(req.session.user === req.params.author || (await isSMMAuthorized(req.session.user, req.params.author) && await isAuthorizedOrHigher(req.params.author, typeOfProfile.user))){
+                    search.is_private = true;
+                    //search.author = req.params.author;
+                }
+                else if (await req.session.user === req.params.receiver || (isSMMAuthorized(req.session.user, req.params.receiver) && isAuthorizedOrHigher(req.params.receiver, typeOfProfile.user))){
+                    search.is_private = true;
+                    //search.receiver = req.params.receiver;
+                }
             }
         }
+
+        
 
         // possible query params
         const possibleParams = [
@@ -188,20 +200,11 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
 }), async (req, res) => {
     try {
         // console.log('Request Body:', req.body);
-        const authorized = true; //TODO ADD AUTHORIZATION
-        const SMMAuthorized = true; //TODO ADD AUTHORIZATION
 
         const reqBody = JSON.parse(req.body.json);
 
         const media = req.file;
         const location = req.body.location;
-
-        if (!authorized && !SMMAuthorized) {
-            res.status(401).json({
-                message: "you must be logged in to add a squeal"
-            });
-            return;
-        }
 
         const requiredFields = [
             "author",
@@ -219,6 +222,18 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
             }
         }
         // If all required fields are present, continue with the insertion
+
+
+        const authorized = await isAuthorizedOrHigher(reqBody["author"], typeOfProfile.user) && req.session.user === reqBody["author"];
+        const SMMAuthorized = await isSMMAuthorized(req.session.user, reqBody["author"]) && await isAuthorizedOrHigher(reqBody["author"], typeOfProfile.user);
+
+        if (!authorized && !SMMAuthorized) {
+            res.status(401).json({
+                message: "you must be logged in to add a squeal"
+            });
+            return;
+        }
+
 
         //check reveiver validity (has to be a channel)
         const channel = await collection_channels.findOne({
