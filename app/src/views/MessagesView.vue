@@ -8,11 +8,13 @@
 
   <!-- search area -->
   <div class="searchArea container d-flex justify-content-center">
-    <div class="col-sm-6 mx-auto my-5">
+    <div class="col-sm-6 mx-auto my-2">
       <div class="col-sm-6 mx-auto">
         <div class="form-group d-flex">
+          <img v-if="propic" :src="propic" alt="Profile Pic" class="profile-pic" />
           <input v-model="search_user" type="text" placeholder="Search profiles..." class="form-control searchProfileTextbox"/>
-          <button @click="fetchMsgs" class=" searchBtn"> Search </button>
+          <button @click="fetchMsgs" class="searchBtn "> Search </button>
+          <button  v-if="merged_msgs.length > 0" @click="fetchMsgs" class="searchBtn "> Load more </button>
         </div>
       </div>
     </div>
@@ -21,10 +23,7 @@
   <!-- messages area -->
   <div class="chatBox container mx-0 mx-auto">
     <div class="chatInner">
-      <div v-if="msgs.length > 0" class="center-button">
-        <button @click="fetchMsgs" class="searchBtn"> Load More </button>
-      </div>
-      <div :class="getMessageClass(message.author)" v-for="(message, index) in msgs" :key="index">
+      <div :class="getMessageClass(message.author)" v-for="(message, index) in merged_msgs" :key="index">
         {{ message.text }}  
       </div>
     </div>
@@ -48,30 +47,102 @@ export default {
   data() {   
     return {
       search_user: "", 
-      msgs: [],
       friend: '',
-      msgs_start_index: 0,  // indice da cui parte la fetch
       newMsgText: '',
-      msgs_shift: 50,        // quanti msg caricare ad ogni "load more"
+      propic: null,
+
+      merged_msgs: [],
+      user_date : 0,     // data ultimo msg utente
+      friend_date : 0,
+      user_index : 0,    // indici da usare nella query
+      friend_index : 0,
+      msgs_to_fetch : 5,   // numero di messaggi da fetchare ad ogni "load more" e al caricamento iniziale
     };
   },
   methods: {
     async fetchMsgs() {
       this.friend = this.search_user;
 
-      // fetch delle conversazioni
-      let conversation = await fetch(`https://site222326.tw.cs.unibo.it/squeals/?author=${this.$user}&is_private=true&reply_to=${this.friend}&startindex=${this.msgs_start_index}&endindex=${this.msgs_start_index + this.msgs_shift}`); 
-      let conversation2 = await fetch(`https://site222326.tw.cs.unibo.it/squeals/?author=${this.friend}&is_private=true&reply_to=${this.$user}&startindex=${this.msgs_start_index}&endindex=${this.msgs_start_index + this.msgs_shift}`); 
+      let fetched_msgs = 0  // contatore dei messaggi già fetchati 
+      let no_more_msgs = false
+      
+      // recupero ultimo msg di ciascuno 
+      let user_msgs   = await fetch(`https://site222326.tw.cs.unibo.it/squeals/?author=${this.$user}&is_private=true&reply_to=${this.friend}&startindex=${this.user_index}&endindex=${this.user_index}`); 
+      let friend_msgs = await fetch(`https://site222326.tw.cs.unibo.it/squeals/?author=${this.friend}&is_private=true&reply_to=${this.$user}&startindex=${this.friend_index}&endindex=${this.friend_index}`); 
+      user_msgs   = await user_msgs.json()
+      friend_msgs = await friend_msgs.json()
+      let tmp_msgs = user_msgs.concat(friend_msgs)
 
-      // trasformazione conversazioni in json e in un unico vettore ordinato cronologicamente
-      conversation = await conversation.json();
-      conversation2 = await conversation2.json();
-      let mergedConversation = conversation.concat(conversation2);
-      mergedConversation.sort((a, b) => a.date - b.date);
+      // capisco se ci sono messaggi rimanenti da entrambe, una o nessuna delle due parti
+      if (user_msgs.length === 1 && friend_msgs.length === 1) {
+        this.user_date = user_msgs[0].date
+        this.friend_date = friend_msgs[0].date
+        fetched_msgs = 2
+        this.user_index += 1
+        this.friend_index += 1
+      }
+      else if (user_msgs.length === 1) {
+        this.user_date = -1
+        fetched_msgs = 1
+        this.friend_index += 1
+      }
+      else if (friend_msgs.length === 1) {
+        this.friend_date = -1
+        fetched_msgs = 1
+        this.user_index += 1
+      }
+      else {
+        no_more_msgs = true
+      }
 
-      // msg fetchati prima di quelli che erano già visualizzati, poi sposto
-      this.msgs.unshift(...mergedConversation);  
-      this.msgs_start_index += (this.msgs_shift + 1)
+      // se ci sono ancora messaggi, vado a recuperarli
+      if (no_more_msgs == false) {
+        this.merged_msgs = this.merged_msgs.concat(tmp_msgs);
+        let new_msg = []
+        let counter = 0
+
+        while ((fetched_msgs < this.msgs_to_fetch || this.user_date > this.friend_date) && (this.friend_date !== -1 && this.user_date !== -1)) {
+
+          if (this.user_date > this.friend_date) {
+            new_msg = await fetch(`https://site222326.tw.cs.unibo.it/squeals/?author=${this.$user}&is_private=true&reply_to=${this.friend}&startindex=${this.user_index}&endindex=${this.user_index}`);
+            new_msg = await new_msg.json()
+
+            if (new_msg.length === 0) { this.user_date = -1 }
+            else {
+              this.user_date = new_msg[0].date
+              fetched_msgs += 1
+              this.user_index += 1
+              this.merged_msgs = this.merged_msgs.concat(new_msg)
+            }
+          }
+          else {
+            new_msg = await fetch(`https://site222326.tw.cs.unibo.it/squeals/?author=${this.friend}&is_private=true&reply_to=${this.$user}&startindex=${this.friend_index}&endindex=${this.friend_index}`);
+            new_msg = await new_msg.json()
+
+            if (new_msg.length === 0) { this.friend_date = -1 }
+            else {
+              this.friend_date = new_msg[0].date
+              fetched_msgs += 1
+              this.friend_index += 1
+              this.merged_msgs = this.merged_msgs.concat(new_msg)
+            }
+
+            while (this.user_date < this.friend_date) {
+              new_msg = await fetch(`https://site222326.tw.cs.unibo.it/squeals/?author=${this.friend}&is_private=true&reply_to=${this.$user}&startindex=${this.friend_index}&endindex=${this.friend_index}`);
+              new_msg = await new_msg.json()
+
+              if (new_msg.length === 0) { this.friend_date = -1 }
+              else {
+                this.friend_date = new_msg[0].date
+                fetched_msgs += 1
+                this.friend_index += 1
+                this.merged_msgs = this.merged_msgs.concat(new_msg)
+              }
+            }
+          }
+        }
+        this.merged_msgs.sort((a, b) => a.date - b.date);
+      }
     },
 
     async sendMessage() {
@@ -87,8 +158,12 @@ export default {
       
       try {
         // all'invio del msg "azzero" chat e rifaccio fetch in modo da avere anche ultimo msg
-        this.msgs = [];
-        this.msgs_start_index = 0;
+
+        this.user_date = 0;     
+        this.friend_date = 0;
+        this.user_index = 0;   
+        this.friend_index = 0;
+        this.merged_msgs = [];
 
         await axios
           .put(`https://site222326.tw.cs.unibo.it/squeals/`, formData);
@@ -112,22 +187,23 @@ export default {
 <!--------------------------------- CSS ----------------------------------->
 <style scoped>
   .searchArea {
-    height: 20vh;
+    height: 15vh;
+    position: fixed;
   }
 
   .searchProfileTextbox {
-    width: 30vh;
+    width: 25vh;
   }
 
   .searchBtn {
-    background-color: #ff8900ff;
+    background-color: #0d6efd;
     margin-left: 30px;
     color: white;
     border-radius: 5px;
     border: none;
   }
   .searchBtn:hover {
-  background-color: rgb(231, 123, 0);
+  background-color: #0066ff;
 }
 
   .center-button {
@@ -137,15 +213,17 @@ export default {
   }
   
   .chatBox {
-    max-height: auto; 
+    max-height: 60vh; 
     flex-direction: column;
     display: flex;
     justify-content: flex-end;
-    margin-bottom: 120px;
+    margin-top: 10vh;
+    margin-bottom: 10vh;
   }
 
   .chatInner {
     overflow-y: scroll; 
+    max-height: 60vh; 
   }
 
   .message {
@@ -181,6 +259,13 @@ export default {
 
   .messageInput input {
     margin-right: 10px; 
+  }
+
+  .profile-pic {
+    width: 50px; 
+    height: 50px;   
+    border-radius: 50%; 
+    object-fit: cover; 
   }
 
 </style>
