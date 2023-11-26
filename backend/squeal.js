@@ -804,22 +804,35 @@ app.get("/squeals/:id", async (req, res) => {
     try {
         const squealId = req.params.id;
 
-        const authorized = true; //TODO ADD AUTHORIZATION
+        const authorized = isAuthorizedOrHigher(req.session.id, typeOfProfile.user);
+        const adminAuthorized = isAuthorizedOrHigher(req.session.id, typeOfProfile.admin);
 
         let squeal = null;
 
         await mongoClient.connect();
-        if(!authorized) {
+
         // fetching the squeal with the given id
         squeal = await collection_squeals.findOne({
             id: squealId,
             is_private: false
         });
-        } else {
-            // fetching the squeal with the given id
-            squeal = await collection_squeals.findOne({
-                id: squealId,
-            });
+
+        // if the squeal is not found, check if a private one with that id exists and if the user can see it
+        if(squeal == null){
+            if(adminAuthorized) {
+                squeal = await collection_squeals.findOne({
+                    id: squealId
+                });
+            } else if(authorized){
+                squeal = await collection_squeals.findOne({
+                    id: squealId,
+                    is_private: true,
+                    $or: [
+                        {author: req.session.user},
+                        {receiver: req.session.user}
+                    ]
+                });
+            }
         }
 
         // if the squeal is not found, return 404
@@ -852,7 +865,7 @@ app.get("/squeals/:id", async (req, res) => {
 
 app.delete("/squeals/:id", async (req, res) => {
     try {
-        const authorized = true; //TODO ADD AUTHORIZATION
+        const authorized = isAuthorizedOrHigher(req.session.user, typeOfProfile.user);
 
 
         // check if the user has logged in
@@ -879,7 +892,7 @@ app.delete("/squeals/:id", async (req, res) => {
             return;
         }
 
-        const SMMAuthorized = true; //TODO ADD AUTHORIZATION
+        const SMMAuthorized = isSMMAuthorized(req.session.user, squeal.author) && isAuthorizedOrHigher(squeal.author, typeOfProfile.user);
 
         // if the user is not authorized to delete the squeal, return 401
         if (squeal.author !== req.session.user && !SMMAuthorized) {
@@ -1041,7 +1054,9 @@ app.delete("/squeals/:id", async (req, res) => {
 // the admin has the power to break all logics, use carefully
 app.post("/squeals/:id", bodyParser.json(), async (req, res) => {
     try {
-        if (await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)) {
+        let adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
+
+        if (adminAuthorized) {
             const squealId = req.params.id;
 
             // possible body params
@@ -1416,7 +1431,7 @@ app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
         }
 
         // check if the user is logged in
-        if (await isAuthorizedOrHigher(req.session.user, typeOfProfile.user)) {
+        if (await isAuthorizedOrHigher(req.session.user, typeOfProfile.user)) { // TODO: add SMM authorization
             res.status(401).json({
                 message: "you must be logged in to react to a squeal"
             });
