@@ -22,6 +22,7 @@ const {
   importPic,
   exportPic
 } = require("./const.js");
+const multer = require('multer');
 const upload = multer({
   storage: multer.memoryStorage()
 });
