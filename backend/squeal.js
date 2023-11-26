@@ -612,9 +612,103 @@ app.get("/feed/", async (req, res) => {
 /* -------------------------------------------------------------------------- */
 
 //* GET
-// ritorna cose
+// returns a list of squeals based on author and receiver to construct a chat with a user and the logged user
+// if not specified returns the first 10
+// params: user1 (logged user), user2 (chat user) 
 app.get("/chat/", async (req, res) => {
+    try {
+        const logged_user = req.session.user1;
+        const chat_user = req.query.user2;
 
+
+        // initializing the start and end index in case they are not specified
+        let startIndex = 0;
+        let endIndex = 10;
+        // check if the parameters are valid
+        if (req.query.startindex !== undefined && !isNaN(req.query.startindex)) {
+            startIndex = parseInt(req.query.startindex);
+        }
+        if (req.query.endindex !== undefined && !isNaN(req.query.endindex)) {
+            endIndex = parseInt(req.query.endindex);
+        }
+        // check if the parameters are valid
+        if (startIndex > endIndex) {
+            res.status(400).json({
+                message: "startIndex must be less than endIndex"
+            });
+            return;
+        }
+
+        console.log('Start Index:', startIndex);
+        console.log('End Index:', endIndex);
+
+        // if the profile is not found, return 404
+        if (chat_user == null || chat_user == "" || logged_user == null || logged_user == "") {
+            res.status(404).json({
+                message: "profile does not exist"
+            });
+            return;
+        }
+
+        await mongoClient.connect();
+        // fetching the profile with the given name
+        const chat_profile = await collection_profiles.findOne({
+            name: chat_user
+        });
+
+        const logged_profile = await collection_profiles.findOne({
+            name: logged_user
+        });
+
+        // if the profile is not found, return 404
+        if (isAuthorizedOrHigher(chat_profile, typeOfProfile.user) || chat_profile.is_deleted == true) {
+            res.status(404).json({
+                message: "chat profile does not exist"
+            });
+            return;
+        }
+
+        // if the profile is not found, return 404
+        if (isAuthorizedOrHigher(logged_profile, typeOfProfile.user) || logged_profile.is_deleted == true) {
+            res.status(404).json({
+                message: "logged profile does not exist"
+            });
+            return;
+        }
+
+
+        // if the profile is private and the user is not authorized to view it, return 401
+        if (!(await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin) || (await isSMMAuthorized(req.session.user, logged_user) && isAuthorizedOrHigher(logged_user, typeOfProfile.user)) || logged_user == req.session.user)) {
+            res.status(401).json({
+                message: "you are not authorized to view this profile"
+            });
+            return;
+        }
+
+        //retrieve the squeals that belong to the chat
+        const chat = await database.collection(squealCollection).find({
+            $or: [{
+                    $and: [{ author: logged_user }, { receiver: chat_user }]
+                },
+                {
+                    $and: [{ author: chat_user }, { receiver: logged_user }]
+                }
+            ]
+        }).sort({
+            date: -1
+        }) // ordered inverse chronological order
+            .skip(startIndex) // starting from startIndex
+            .limit(endIndex - startIndex + 1) // returns endIndex squeals
+            .toArray(); // returns the squeals as an array
+        
+        res.status(200).json(chat); // returns the squeals
+    }
+    catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+
+    }
 });
 
 

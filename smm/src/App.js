@@ -1,6 +1,7 @@
 import './App.css';
 import Header from './components/Header';
 import Navbar from './components/Navbar';
+import AccountSelector from './components/AccountSelector';
 
 import '../../node_modules/bootstrap/dist/css/bootstrap.css'
 import '../../node_modules/bootstrap/dist/js/bootstrap.bundle.js'
@@ -14,6 +15,7 @@ function App() {
   <div className="container-fluid">
     <div className="row">
       <nav className="col-md-2 d-none d-md-block bg-light sidebar">
+        <AccountSelector />
         <Navbar />
       </nav>
 
