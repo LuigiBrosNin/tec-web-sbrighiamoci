@@ -22,6 +22,9 @@ const {
   importPic,
   exportPic
 } = require("./const.js");
+const upload = multer({
+  storage: multer.memoryStorage()
+});
 
 // connecting to the database
 mongoClient.connect();
