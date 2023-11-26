@@ -113,7 +113,7 @@ app.get("/squeals/", async (req, res) => {
             }
         }
 
-        
+
 
         // possible query params
         const possibleParams = [
@@ -603,6 +603,18 @@ app.get("/feed/", async (req, res) => {
         });
 
     }
+});
+
+
+/* -------------------------------------------------------------------------- */
+/*                                  /CHAT/                                    */
+/*                                   GET                                      */
+/* -------------------------------------------------------------------------- */
+
+//* GET
+// ritorna cose
+app.get("/chat/", async (req, res) => {
+
 });
 
 
