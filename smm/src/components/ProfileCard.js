@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-import "ProfileCard.css"
+import "./ProfileCard.css"
 
 export class ProfileCard extends Component {
 
