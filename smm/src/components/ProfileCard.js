@@ -12,39 +12,41 @@ export class ProfileCard extends Component {
     }
 
     render() {
+        let propic = "https://site222326.tw.cs.unibo.it/images/user-default.svg"
+
+        if (this.props.profile.propic != null) {
+            propic = "https://site222326.tw.cs.unibo.it/profiles/" + this.props.profile.name + "/propic";
+        }
+
         return (
-            <div class="row no-gutters">
-                <div class="col-md-4 d-flex justify-content-center align-items-center">
-                    <img src="profilePicUrl" class="card-img profile_img" alt="Profile Picture" />
-                </div>
-                <div class="col-md-8">
-                    <div class="card-body">
-                        <h5 class="card-title">
-                            { this.props.profile.name }
-                        </h5>
-                        <p class="card-text">{ this.props.profile.bio }</p>
-                        <div class="row credits_info">
-                            <div class="col">
-                                <p class="card-text">
-                                    Daily: { this.props.profile.credit[0] }/{ this.props.profile.creditLimits[0] }
+            <div className="card">
+                <div className="row no-gutters">
+                    <div className="col-12 justify-content-center align-items-center">
+                        <img src={propic} className="card-img profile_img" alt="Profile Picture" />
+                    </div>
+                    <div className="col-12">
+                        <div className="card-body">
+                            <h5 className="card-title">
+                                Current: {this.props.profile.name}
+                            </h5>
+                            <p className="card-text">Bio: {this.props.profile.bio}</p>
+                            <div className="d-flex flex-column">
+                                <p className="card-text">
+                                    Daily: {this.props.profile.credit[0]}/{this.props.profile.creditLimits[0]}
+                                </p>
+                                <p className="card-text">
+                                    Weekly: {this.props.profile.credit[1]}/{this.props.profile.creditLimits[1]}
+                                </p>
+                                <p className="card-text">
+                                    Monthly: {this.props.profile.credit[2]}/{this.props.profile.creditLimits[2]}
                                 </p>
                             </div>
-                            <div class="col">
-                                <p class="card-text">
-                                    Weekly: { this.props.profile.credit[1] }/{ this.props.profile.creditLimits[1] }
-                                </p>
-                            </div>
-                            <div class="col">
-                                <p class="card-text">
-                                    Monthly: { this.props.profile.credit[2] }/{ this.props.profile.creditLimits[2] }
-                                </p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <p class="card-text">
-                                    Squeals: { this.props.profile.numberOfSqueals }
-                                </p>
+                            <div className="row">
+                                <div className="col">
+                                    <p className="card-text">
+                                        Squeals: {this.props.profile.numberOfSqueals}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>

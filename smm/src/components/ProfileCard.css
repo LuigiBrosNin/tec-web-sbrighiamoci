@@ -1,6 +1,4 @@
 .profile_img {
-    width: 16em;
-    height: 16em;
-    border-radius: 50%;
+    border-radius: 50%!important;
     margin: 0.5em;
   }
