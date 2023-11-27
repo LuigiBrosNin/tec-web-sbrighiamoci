@@ -121,7 +121,7 @@ app.get("/channels/:name", async (req, res) => {
       name: channelName
     });
 
-    if (channel.is_deleted || channel === null) {
+    if (channel.is_deleted || channel == null) {
       res.status(404).json({
         message: "The channel does not exist."
       });
@@ -139,14 +139,14 @@ app.get("/channels/:name", async (req, res) => {
 
 //* PUT
 // creates a new channel with the specified name
-// body parameters: owner, bio (users)
+// body parameters: owner, bio, user (users)
 // body parameters: type (only admins)
 app.put("/channels/:name", async (req, res) => {
   try {
     const channelName = req.params.name;
-    const authorized = isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === req.body.user;
+    const authorized = isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === req.body.owner;
     const adminAuthorized = isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
-    const SMMAuthorized = isSMMAuthorizedMAuthorized(req.session.user, req.body.user);
+    const SMMAuthorized = isSMMAuthorized(req.session.user, req.body.owner);
 
     if (!authorized && !SMMAuthorized) {
       res.status(401).json({
