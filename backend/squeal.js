@@ -614,7 +614,7 @@ app.get("/feed/", async (req, res) => {
 //* GET
 // returns a list of squeals based on author and receiver to construct a chat with a user and the logged user
 // if not specified returns the first 10
-// params: user1 (logged user), user2 (chat user) 
+// params: user1 (logged user), user2 (chat user) , startindex, endindex
 app.get("/chat/", async (req, res) => {
     try {
         const logged_user = req.session.user1;
