@@ -1,8 +1,8 @@
-import React, { Component } from 'react'
+import React, { Component, useState } from 'react'
 import axios from 'axios';
 import ProfileCard from './ProfileCard';
 
-import { $user, $selectedAccount } from '../App';
+import { globalState } from '../App';
 
 export class AccountSelector extends Component {
   constructor(props) {
@@ -12,18 +12,18 @@ export class AccountSelector extends Component {
         name: "",
         bio: "",
         credit: [],
-        creditLimits: [],
-        numberOfSqueals: 0,
-        profilePicUrl: ""
+        credit_limits: [],
+        squeals_num: 0,
+        propic: null
       },
       accounts: [],
       selectedAccount: {
         name: "",
         bio: "",
         credit: [],
-        creditLimits: [],
-        numberOfSqueals: 0,
-        profilePicUrl: ""
+        credit_limits: [],
+        squeals_num: 0,
+        propic: null
       }
     };
     this.handleAccountChange = this.handleAccountChange.bind(this);
@@ -31,6 +31,7 @@ export class AccountSelector extends Component {
   }
 
   handleAccountChange(event) {
+    console.log("selected account: " + event.target.value)
     if (event.target.value === '') {
       this.setState({ selectedAccount: this.smm_account });
       return;
@@ -40,18 +41,18 @@ export class AccountSelector extends Component {
       .then(res => {
         const currentAccount = res.data;
         if (currentAccount.propic == null) {
-          currentAccount.profilePicUrl = "https://site222326.tw.cs.unibo.it/images/user-default.svg";
+          currentAccount.propic = "https://site222326.tw.cs.unibo.it/images/user-default.svg";
         } else {
-          currentAccount.profilePicUrl = "https://site222326.tw.cs.unibo.it/profiles/" + currentAccount.name + "/propic";
+          currentAccount.propic = "https://site222326.tw.cs.unibo.it/profiles/" + currentAccount.name + "/propic";
         }
-        $selectedAccount = currentAccount;
+        globalState.$selectedAccount = currentAccount;
         this.setState({ selectedAccount: currentAccount });
       })
   }
 
 
   getAccounts() {
-    axios.get(`https://site222326.tw.cs.unibo.it/profiles/${$user}`)
+    axios.get(`https://site222326.tw.cs.unibo.it/profiles/${globalState.$user}`)
       .then(res => {
         const accounts = res.data.smm_customers;
         const smm_account = res.data;
@@ -64,11 +65,14 @@ export class AccountSelector extends Component {
       })
   }
 
-  render() {
+
+  componentDidMount() {
     this.getAccounts();
+  }
+
+  render() {
     return (
       <div>
-
         <h6 className="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
           <ProfileCard profile={this.state.selectedAccount} />
         </h6>
@@ -77,7 +81,7 @@ export class AccountSelector extends Component {
           {this.state.accounts.map(account => <option key={account} value={account}>{account}</option>)}
         </select>
       </div>
-    )
+    );
   }
 }
 

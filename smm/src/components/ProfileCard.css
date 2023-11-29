@@ -1,4 +1,5 @@
 .profile_img {
+    width: 5rem!important;
+    height: 5rem!important;
     border-radius: 50%!important;
-    margin: 0.5em;
   }
