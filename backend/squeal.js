@@ -617,9 +617,8 @@ app.get("/feed/", async (req, res) => {
 // params: user1 (logged user), user2 (chat user) , startindex, endindex
 app.get("/chat/", async (req, res) => {
     try {
-        const logged_user = req.session.user1;
+        const logged_user = req.query.user1;
         const chat_user = req.query.user2;
-
 
         // initializing the start and end index in case they are not specified
         let startIndex = 0;
