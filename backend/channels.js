@@ -139,14 +139,14 @@ app.get("/channels/:name", async (req, res) => {
 
 //* PUT
 // creates a new channel with the specified name
-// body parameters: owner, bio, user (users)
+// body parameters: bio, user (will be the owner) (users)
 // body parameters: type (only admins)
 app.put("/channels/:name", async (req, res) => {
   try {
     const channelName = req.params.name;
-    const authorized = isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === req.body.owner;
+    const authorized = isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === req.body.user;
     const adminAuthorized = isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
-    const SMMAuthorized = isSMMAuthorized(req.session.user, req.body.owner);
+    const SMMAuthorized = isSMMAuthorized(req.session.user, req.body.user);
 
     if (!authorized && !SMMAuthorized) {
       res.status(401).json({

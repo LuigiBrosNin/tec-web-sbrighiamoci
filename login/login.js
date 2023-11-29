@@ -43,3 +43,26 @@ function signin(){
     }
   });
 }
+
+
+/* Luizo needs this to populate some channels and not go insane */
+
+function populateChannels(name, owner, type, bio) {
+  fetch(`https://site222326.tw.cs.unibo.it/channels/${name}`, {
+    method: "PUT",
+    body: JSON.stringify({
+      user: owner,
+      type: type,
+      bio: bio
+    }),
+    headers: {
+      "Content-type": "application/json; charset=UTF-8"
+    }
+  }).then(res => {
+    if (res.status == 200) {
+      alert("Channel created");
+    } else {
+      alert("Channel not created");
+    }
+  });
+}
