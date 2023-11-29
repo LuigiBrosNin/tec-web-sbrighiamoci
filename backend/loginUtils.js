@@ -56,7 +56,7 @@ async function isSMMAuthorized(smm, user){
     const userFromDB = await searchProfileInDB(user);
     const smmFromDB = await searchProfileInDB(smm);
 
-    if(smmFromDB.typeOfProfile != typeOfProfile.smm) return false;
+    if(smmFromDB.account_type != typeOfProfile.smm) return false;
 
     if(userFromDB.smm != null && smmFromDB.smm_customers != null && userFromDB.smm == smmFromDB.name && smmFromDB.smm_customers.includes(userFromDB.name)) {
         return true;
