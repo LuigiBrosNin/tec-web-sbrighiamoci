@@ -660,7 +660,7 @@ app.get("/chat/", async (req, res) => {
         });
 
         // if the profile is not found, return 404
-        if (isAuthorizedOrHigher(chat_profile, typeOfProfile.user) || chat_profile.is_deleted == true) {
+        if (!(isAuthorizedOrHigher(chat_profile, typeOfProfile.user)) || chat_profile.is_deleted == true) {
             res.status(404).json({
                 message: "chat profile does not exist"
             });
@@ -668,7 +668,7 @@ app.get("/chat/", async (req, res) => {
         }
 
         // if the profile is not found, return 404
-        if (isAuthorizedOrHigher(logged_profile, typeOfProfile.user) || logged_profile.is_deleted == true) {
+        if (!(isAuthorizedOrHigher(logged_profile, typeOfProfile.user)) || logged_profile.is_deleted == true) {
             res.status(404).json({
                 message: "logged profile does not exist"
             });
