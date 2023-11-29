@@ -1,4 +1,6 @@
 <script setup>
+import ProfileCard from "@/components/ProfileCard.vue"
+
 const props = defineProps(["id"]);
 </script>
 
@@ -95,11 +97,10 @@ const props = defineProps(["id"]);
         <div class="card mt-4 options_container" v-if="smm_preview">
           <div class="card-body">
             <h5 class="card-title">SMM Preview</h5>
-            <!--! INSERT PROFILE CARD HERE -->
-            <p class="card-text">{{ smm_preview }}</p>
+            <ProfileCard :profile_json="smm_preview" />
           </div>
         </div>
-        <p class="card-text">No smm account for name: {{ smm }} found</p>
+        <p class="card-text" v-else>No smm account for name: {{ smm }} found</p>
 
         <form @submit.prevent="insertSMM">
           <div class="form-group">
@@ -276,7 +277,6 @@ export default {
         });
     },
     insertSMM() {
-      //TODO Send a POST request to /profiles/$user/smms
       const name_of_profile = this.$user;
       const jsonBody = {
         smm: this.smm,
@@ -296,7 +296,6 @@ export default {
     deleteAccount() {
       // send a message to the user asking for confirmation
       if (confirm("Are you sure you want to delete your account?")) {
-        //TODO Send a DELETE request to /profiles/$user
         const name_of_profile = this.$user;
         axios
           .delete(`https://site222326.tw.cs.unibo.it/profiles/${name_of_profile}`)

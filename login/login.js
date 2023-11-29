@@ -66,3 +66,21 @@ function populateChannels(name, owner, type, bio) {
     }
   });
 }
+
+function makeAdmin(name) {
+  fetch(`https://site222326.tw.cs.unibo.it/profiles/${name}/account_type`, {
+    method: "POST",
+    body: JSON.stringify({
+      account_type: "admin"
+    }),
+    headers: {
+      "Content-type": "application/json; charset=UTF-8"
+    }
+  }).then(res => {
+    if (res.status == 200) {
+      alert("Admin created");
+    } else {
+      alert("Admin not created");
+    }
+  });
+}
