@@ -18,7 +18,7 @@ p {
 
 .new_squeal_button {
   text-decoration: none;
-  font-size: 1.7em;
+  font-size: 1.4em;
   margin: 1em;
 }
 
