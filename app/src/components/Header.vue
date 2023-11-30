@@ -17,20 +17,22 @@ header {
   box-shadow: 0px 0px 5px;
   overflow: hidden;
   z-index: 10;
+
+  justify-content: center;
 }
 
 .logo {
-  height: 100%;
-  margin: 1em;
+  height: 5vh;
 }
 
 .title {
     color: #ff8900ff;
     -webkit-text-stroke: 2px #c06700ff;
+    text-align: center;
   }
 
 h2 {
-  font-size: 4em !important;
+  font-size: 3em !important;
   font-weight: bold;
 }
 </style>
