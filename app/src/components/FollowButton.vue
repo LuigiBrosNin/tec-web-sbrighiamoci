@@ -29,8 +29,7 @@ export default {
         }
       );
       followersList = await followersList.json();
-      this.followed = !followersList.contains($user);
-      console.log(this.followed);
+      this.followed = followersList.contains($user);
   },
 };
 </script>
