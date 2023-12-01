@@ -1,5 +1,6 @@
 <script setup>
 import Squeal from "@/components/Squeal.vue";
+import FollowButton from "@/components/FollowButton.vue";
 const props = defineProps(["id", "profile_json"]);
 </script>
 
@@ -38,6 +39,7 @@ const props = defineProps(["id", "profile_json"]);
             </div>
           </div>
         </div>
+        <FollowButton id="this.id"></FollowButton>
       </div>
     </div>
     <div class="row">
