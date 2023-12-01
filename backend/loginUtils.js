@@ -32,7 +32,7 @@ async function updateProfileInDB(username, updateObject) {
 
 async function isAuthorized(user, level) {
     const userFromDB = await searchProfileInDB(user);
-    if (userFromDB !== null && userFromDB !== undefined && userFromDB.account_type === level) {
+    if (userFromDB != null && !userFromDB.is_deleted && !userFromDB.is_banned && userFromDB.account_type === level) {
         return true;
     }
     else {
@@ -56,7 +56,12 @@ async function isSMMAuthorized(smm, user){
     const userFromDB = await searchProfileInDB(user);
     const smmFromDB = await searchProfileInDB(smm);
 
-    if(smmFromDB.account_type != typeOfProfile.smm) return false;
+    if(userFromDB == null || smmFromDB == null) {
+        return false;
+    }
+    if(isAuthorizedOrHigher(smm, typeOfProfile.smm) && !userFromDB.is_deleted && !userFromDB.is_banned) {
+        return false;
+    }
 
     if(userFromDB.smm != null && smmFromDB.smm_customers != null && userFromDB.smm == smmFromDB.name && smmFromDB.smm_customers.includes(userFromDB.name)) {
         return true;
@@ -66,12 +71,12 @@ async function isSMMAuthorized(smm, user){
 }
 
 async function canLogIn(username, password) {
-    if (username === null || username === undefined) {
+    if (username == null) {
         return false;
     }
 
     const userFromDB = await searchProfileInDB(username);
-    if (userFromDB !== null && userFromDB !== undefined && !userFromDB.is_banned) {
+    if (userFromDB != null && !userFromDB.is_banned && !userFromDB.is_deleted) {
         return isPasswordCorrect(userFromDB, password);
     } else if (userFromDB === null) {
         return false;
@@ -88,7 +93,7 @@ async function canLogIn(username, password) {
     }
 }
 
-async function isPasswordCorrect(user, password) { // user is NOT the username, but the object returned from the database quesry
+async function isPasswordCorrect(user, password) { // user is NOT the username, but the object returned from the database query
     return password === user.password;
 }
 

@@ -211,6 +211,8 @@ app.get("/profiles/:name", async (req, res) => {
 // crea il profilo con nome name
 // ritorna 409 se esiste già
 // ritorna 400 se mancano informazioni
+
+// TODO ADD AUTHORIZATION: fai in modo che solo gli admin possano creare nuovi utenti (e fixa il sistema di signin)
 app.put("/profiles/:name", async (req, res) => {
     try {
 
@@ -300,13 +302,11 @@ function isValidEmail(email) {
 // cancella il profilo con nome name
 // ritorna 404 se non esiste
 // ritorna 401 se non sei autorizzato
-
-//TODO ADD AUTHORIZATION
 app.delete("/profiles/:name", async (req, res) => {
     try {
-        const profileName = req.session.user;
+        const profileName = req.params.name;
         const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
-        const authorized = true //await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === profileName;
+        const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === profileName;
 
 
         console.log("profileName: " + req.params.name);
@@ -317,7 +317,7 @@ app.delete("/profiles/:name", async (req, res) => {
                 name: profileName
             });
 
-            // if the profile was owning a channel, pass it to a mod; if there's no mods, reset the channel to null values
+            // if the profile was owning a channel, pass it to a mod; if there are no mods, reset the channel to null values
             const channels_owned = await collection_channels.find({
                 $or: [{
                         owner: profileName
@@ -412,7 +412,7 @@ app.delete("/profiles/:name", async (req, res) => {
 });
 
 async function deleteSquealById(squealId) {
-    fetch("http://localhost:8000/squeals/" + squealId, {
+    fetch("/squeals/" + squealId, {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json"
@@ -439,9 +439,8 @@ app.post("/profiles/:name", async (req, res) => {
         const profileName = req.params.name;
         const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
         const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === profileName;
-        const SMMAuthorized = await isSMMAuthorized(req.session.user, profileName);
 
-        if (!authorized && !adminAuthorized && !SMMAuthorized) {
+        if (!authorized && !adminAuthorized) {
             res.status(401).json({
                 message: "Unauthorized"
             });
@@ -716,10 +715,9 @@ app.put("/profiles/:name/following_channels/", async (req, res) => {
     try {
         const profileName = req.params.name;
         const channelName = req.body.channel_name;
-        const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user);
-        const SMMAuthorized = await isSMMAuthorized(req.session.user, profileName);
+        const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.params.name === req.session.user;
 
-        if (!authorized && !SMMAuthorized) {
+        if (!authorized) {
             res.status(401).json({
                 message: "Unauthorized"
             });
@@ -879,16 +877,13 @@ app.get("/profiles/:name/propic", async (req, res) => {
 });
 
 
-
 //* PUT
 // cambia la propic del profilo con nome name
 // caricando un file nel database nel campo propic (req.file)
-
-//TODO ADD AUTHORIZATION
 app.put('/profiles/:name/propic', upload.single('file'), async (req, res) => {
     try {
-        const authorized = true;
-        const SMMAuthorized = await isSMMAuthorized(req.session.user, req.params.name);
+        const authorized = await isAuthorizedOrHigher(req.params.name, typeOfProfile.user) && req.session.user === req.params.name;
+        const SMMAuthorized = await isSMMAuthorized(req.session.user, req.params.name) && await isAuthorizedOrHigher(req.params.name, typeOfProfile.user);
 
         if (!authorized && !SMMAuthorized) {
             res.status(401).json({ message: 'Unauthorized' });
@@ -921,47 +916,16 @@ app.put('/profiles/:name/propic', upload.single('file'), async (req, res) => {
 });
 
 
-    /*
-    upload(req, res, async (err) => {
-        if (err) {
-            res.status(500).json({
-                message: err.message
-            });
-        } else {
-            if (req.file == undefined) {
-                res.status(400).json({
-                    message: 'No file selected'
-                });
-            } else if (!req.file.mimetype.startsWith('image/')) {
-                res.status(400).json({
-                    message: 'File is not an image'
-                });
-            } else {
-                // Resize the image to 512x512
-                const outputPath = __dirname + 'images/' + req.file.filename;
-                await sharp(req.file.path)
-                    .resize(512, 512)
-                    .toFile(outputPath);
-
-                res.status(200).json({
-                    message: 'File uploaded and resized successfully',
-                    fileName: req.file.filename
-                });
-            }
-        }
-    });*/
-
 //* DELETE
 // rimuove la propic del profilo con nome name
 // ritorna 404 se non esiste
 // ritorna 401 se non sei autorizzato
-
 app.delete("/profiles/:name/propic", async (req, res) => {
     try {
         const profileName = req.params.name;
         const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
         const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === profileName;
-        const SMMAuthorized = await isSMMAuthorized(req.session.user, profileName);
+        const SMMAuthorized = await isSMMAuthorized(req.session.user, profileName) && await isAuthorizedOrHigher(req.session.user, typeOfProfile.user);
 
         if (!authorized && !adminAuthorized && !SMMAuthorized) {
             res.status(401).json({

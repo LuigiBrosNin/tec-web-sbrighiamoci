@@ -106,7 +106,7 @@ app.get("/squeals/", async (req, res) => {
                     search.is_private = true;
                     //search.author = req.params.author;
                 }
-                else if (await req.session.user === req.params.receiver || (isSMMAuthorized(req.session.user, req.params.receiver) && isAuthorizedOrHigher(req.params.receiver, typeOfProfile.user))){
+                else if (req.session.user === req.params.receiver || (await isSMMAuthorized(req.session.user, req.params.receiver) && await isAuthorizedOrHigher(req.params.receiver, typeOfProfile.user))){
                     search.is_private = true;
                     //search.receiver = req.params.receiver;
                 }
@@ -199,12 +199,14 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
     extended: true
 }), async (req, res) => {
     try {
-        // console.log('Request Body:', req.body);
-
         const reqBody = JSON.parse(req.body.json);
 
         const media = req.file;
-        const location = req.body.location;
+        const location = reqBody.location;
+
+        if(reqBody.author == null){
+            reqBody.author = req.session.user;
+        }
 
         const requiredFields = [
             "author",
@@ -224,10 +226,11 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
         // If all required fields are present, continue with the insertion
 
 
+        const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
         const authorized = await isAuthorizedOrHigher(reqBody["author"], typeOfProfile.user) && req.session.user === reqBody["author"];
         const SMMAuthorized = await isSMMAuthorized(req.session.user, reqBody["author"]) && await isAuthorizedOrHigher(reqBody["author"], typeOfProfile.user);
 
-        if (!authorized && !SMMAuthorized) {
+        if (!authorized && !SMMAuthorized && !adminAuthorized) {
             res.status(401).json({
                 message: "you must be logged in to add a squeal"
             });
@@ -245,6 +248,13 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
         if (channel === null && (reqBody.is_private == false || reqBody.is_private == "false" || reqBody.is_private == undefined)) {
             res.status(400).json({
                 message: "receiver must be an existing channel"
+            });
+            return;
+        }
+
+        if(channel.type != "private" && !adminAuthorized){
+            res.status(401).json({
+                message: "you are not authorized to post on this channel"
             });
             return;
         }
@@ -368,7 +378,7 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
         let g, s, m;
 
         // if the author is an admin, don't subtract the credit
-        if (await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin) || newSqueal.is_private == true) {
+        if (adminAuthorized || newSqueal.is_private == true) {
             console.log("admin");
             g = profile_author.credit[0];
             s = profile_author.credit[1];
@@ -456,6 +466,7 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
         });
 
         if(channel_receiver != null && channel_receiver != "") {
+            // TODO: login with squealertecnician
             // add the squeal to the channel's squeals_list
             fetch("https://site222326.tw.cs.unibo.it/channels/" + channel_receiver.name + "/squeals_list", {
                 method: "PUT",
@@ -475,12 +486,12 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
             });
         }
 
-        console.log('Documento inserito con successo: ', result.insertedId + '\n' + JSON.stringify(newSqueal));
+        console.log('Squeal successfully uploaded: ', result.insertedId + '\n' + JSON.stringify(newSqueal));
         res.status(200).send(JSON.stringify({
             message: "squeal added successfully with db id:" + result.insertedId
         }));
     } catch (error) {
-        console.error('Errore durante l inserimento del documento: ', error);
+        console.error('Error during squeal upload: ', error);
         res.status(500).send(JSON.stringify({
             message: error.message
         }));
@@ -718,7 +729,8 @@ app.get("/chat/", async (req, res) => {
 /* -------------------------------------------------------------------------- */
 
 //* POST
-// ritorna gli squeal di squeal dal database
+// dato l'array di squeal id squealList ritorna un array di squeal
+// NON ritorna squeal privati
 // campo da dare nel body: squealList
 // SUPPORTA QUERY DI PAGINAZIONE
 // node sucks, can't use /squeals/list so here we are...
@@ -800,6 +812,7 @@ app.post("/squeals_list/", async (req, res) => {
 
 // * GET
 // ritorna lo squeal con id = id ricevuto come parametro
+// non funziona per gli smm
 app.get("/squeals/:id", async (req, res) => {
     try {
         const squealId = req.params.id;
@@ -1153,7 +1166,8 @@ app.get("/squeals/:id/media", async (req, res) => {
 
         // fetching the squeal with the given id
         const squeal = await collection_squeals.findOne({
-            id: squealId
+            id: squealId,
+            is_private: false
         });
 
         // if the squeal is not found, return 404
@@ -1430,8 +1444,15 @@ app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
             reaction_ratio = "neg_popolarity_ratio";
         }
 
+        if(req.body.user == null){
+            req.body.user = req.session.user;
+        }
+
+        const authorized = await isAuthorizedOrHigher(req.body.user, typeOfProfile.user) && req.session.user == req.body.user;
+        let SMMAuthorized = await isSMMAuthorized(req.session.user, req.body.user) && await isAuthorizedOrHigher(req.body.user, typeOfProfile.user);
+
         // check if the user is logged in
-        if (await isAuthorizedOrHigher(req.session.user, typeOfProfile.user)) { // TODO: add SMM authorization
+        if (!authorized && !isSMMAuthorized) { // TODO: add SMM authorization
             res.status(401).json({
                 message: "you must be logged in to react to a squeal"
             });
@@ -1454,13 +1475,13 @@ app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
 
         // if the squeal is found, update its reaction list
         // if the user is already in the list, remove it
-        if (squeal[reactions].includes(req.session.user)) {
-            squeal[reactions].splice(squeal[reactions].indexOf(req.session.user), 1);
+        if (squeal[reactions].includes(req.body.user)) {
+            squeal[reactions].splice(squeal[reactions].indexOf(req.body.user), 1);
             squeal[reaction_num] -= 1;
             squeal[reaction_ratio] = squeal[reaction_num] / squeal.impressions;
             console.log("User removed from the list");
         } else { // if the user is not in the list, add it
-            squeal[reactions].push(req.session.user);
+            squeal[reactions].push(req.body.user);
             squeal[reaction_num] += 1;
             squeal[reaction_ratio] = squeal[reaction_num] / squeal.impressions;
             console.log("User added to the list");

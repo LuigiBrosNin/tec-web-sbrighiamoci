@@ -20,7 +20,8 @@ const {
   mongoClient,
   CM,
   importPic,
-  exportPic
+  exportPic,
+  automationsCollection
 } = require("./const.js");
 const multer = require('multer');
 const upload = multer({
@@ -139,14 +140,19 @@ app.get("/channels/:name", async (req, res) => {
 
 //* PUT
 // creates a new channel with the specified name
-// body parameters: bio, user (will be the owner) (users)
+// body parameters: bio, user (will be the owner, optional, if not specified the owner becames req.session.user) (users)
 // body parameters: type (only admins)
 app.put("/channels/:name", async (req, res) => {
   try {
     const channelName = req.params.name;
-    const authorized = isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === req.body.user;
-    const adminAuthorized = isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
-    const SMMAuthorized = isSMMAuthorized(req.session.user, req.body.user);
+
+    if(req.body.user == null){
+      req.body.user = req.session.user;
+    }
+
+    const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === req.body.user;
+    const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
+    const SMMAuthorized = await isSMMAuthorized(req.session.user, req.body.user) && await isAuthorizedOrHigher(req.session.user, typeOfProfile.user);
 
     if (!authorized && !SMMAuthorized) {
       res.status(401).json({
@@ -213,8 +219,14 @@ app.put("/channels/:name", async (req, res) => {
 app.post("/channels/:name", async (req, res) => {
   try {
     const channelName = req.params.name;
-    const authorized = isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === req.body.user;
-    const SMMAuthorized = isSMMAuthorized(req.session.user, req.body.user);
+
+    if(req.body.user == null){
+      req.body.user = req.session.user;
+    }
+
+    const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
+    const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === req.body.user;
+    const SMMAuthorized = await isSMMAuthorized(req.session.user, req.body.user) && await isAuthorizedOrHigher(req.body.user, typeOfProfile.user);
 
     const bio = req.body.bio;
 
@@ -225,7 +237,7 @@ app.post("/channels/:name", async (req, res) => {
       return;
     }
 
-    if (!authorized && !SMMAuthorized) {
+    if (!authorized && !SMMAuthorized && !adminAuthorized) {
       res.status(401).json({
         message: "Not authorized to modify this channel."
       });
@@ -297,14 +309,23 @@ app.post("/channels/:name", async (req, res) => {
 app.delete("/channels/:name", async (req, res) => {
   try {
     const channelName = req.params.name;
-    const authorized = true //TODO ADD AUTHORIZATION
+
+    if(req.body.user == null){
+      req.body.user = req.session.user;
+    }
+
+    const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
+    const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === req.body.user;
+    const SMMAuthorized = await isSMMAuthorized(req.session.user, req.body.user) && await isAuthorizedOrHigher(req.body.user, typeOfProfile.user);
 
     await mongoClient.connect();
     const channel = await collection_channels.findOne({
       name: channelName
     });
 
-    if (!authorized && channel.owner !== req.session.user) {
+    // Check if the user is not authorized, this expression is false if:
+    // the user is authorized or SMMAuthorized, and the user is the owner of the channel, or the user has admin authorization.
+    if (!(((authorized || SMMAuthorized) && channel.owner === req.body.user) || adminAuthorized)) {
       res.status(401).json({
         message: "Not authorized to delete this channel."
       });
@@ -357,9 +378,9 @@ app.delete("/channels/:name", async (req, res) => {
 // return the number of subscribers of a channel
 app.get("/channels/:name/subscribers_num", async (req, res) => {
   try {
-    const channelName = req.params.name
+    const channelName = req.params.name;
 
-    await mongoClient.connect()
+    await mongoClient.connect();
     const channel = await collection_channels.findOne({
       name: channelName
     })
@@ -371,7 +392,7 @@ app.get("/channels/:name/subscribers_num", async (req, res) => {
       return;
     }
 
-    res.status(200).json(channel.subscribers_num)
+    res.status(200).json(channel.subscribers_num);
 
   } catch (error) {
     res.status(500).json({
@@ -388,7 +409,6 @@ app.get("/channels/:name/subscribers_num", async (req, res) => {
 
 //* GET
 // returns the list of the subscribers of the channel
-
 app.get("/channels/:name/subscribers_list", async (req, res) => {
   try {
     // initializing the start and end index in case they are not specified
@@ -396,10 +416,10 @@ app.get("/channels/:name/subscribers_list", async (req, res) => {
     let endIndex = 10;
 
     // check if the parameters are valid
-    if (req.query.startindex !== undefined && req.query.startindex !== NaN) {
+    if (req.query.startindex != null && req.query.startindex !== NaN) {
       startIndex = parseInt(req.query.startindex);
     }
-    if (req.query.endindex !== undefined && req.query.endindex !== NaN) {
+    if (req.query.endindex != null && req.query.endindex !== NaN) {
       endIndex = parseInt(req.query.endindex);
     }
     if (startIndex > endIndex) {
@@ -434,110 +454,6 @@ app.get("/channels/:name/subscribers_list", async (req, res) => {
   }
 });
 
-/* USELESS AND REDUNDANT
-//* PUT
-// add a subscriber to the channel, or remove it if already subscribed
-app.put("/channels/:name/subscribers_list", async (req, res) => {
-  try {
-    let authorized = true; //TODO add authorization
-
-    if (!authorized) {
-      res.status(401).json({
-        message: "Not authorized to modify this channel's subscriber list"
-      });
-      return;
-    }
-
-    const req_user = req.session.user; //! non testato con login, fonte di potenziali errori
-    const channelName = req.params.name;
-
-    // retrieve user and channel
-    await mongoClient.connect();
-
-    const user = await collection_profiles.findOne({
-      name: req_user
-    })
-    if (user === null || user.is_deleted) {
-      res.status(404).json({
-        message: "User not found."
-      });
-      return;
-    }
-
-    const channel = await collection_channels.findOne({
-      name: channelName
-    })
-
-    if (channel.is_deleted || channel === null) {
-      res.status(404).json({
-        message: "The channel does not exist."
-      });
-      return;
-    }
-
-    // find out if the user is already subscribed
-    const subscribersList = channel.subscribers_list;
-    let subscribed = false;
-    for (const reply of subscribersList) {
-      if (reply === user.name) {
-        subscribed = true;
-        break;
-      }
-    }
-
-    // if the user is already subscribed, remove follow from channel (update both lists: on profile and channel)
-    // if not subscribed, add follow 
-    if (subscribed) {
-
-      await collection_channels.updateOne({
-        name: channel.name
-      }, {
-        $pull: {
-          subscribers_list: user.name
-        },
-        $inc: {
-          subscribers_num: -1
-        }
-      });
-
-      await collection_profiles.updateOne({
-        name: user.name
-      }, {
-        $pull: {
-          following_list: channel.name
-        }
-      });
-      res.status(200).json({
-        message: "User unsubscribed successfully."
-      })
-    } else {
-      await collection_channels.updateOne({
-        name: channel.name
-      }, {
-        $addToSet: {
-          subscribers_list: user.name
-        },
-        $inc: {
-          subscribers_num: 1
-        }
-      });
-      await collection_profiles.updateOne({
-        name: user.name
-      }, {
-        $addToSet: {
-          following_list: channel.name
-        }
-      });
-      res.status(200).json({
-        message: "User subscribed successfully."
-      })
-    }
-  } catch (error) {
-    res.status(500).json({
-      message: error.message
-    });
-  }
-});*/
 
 /* -------------------------------------------------------------------------- */
 /*                         /CHANNELS/:NAME/MOD_LIST                           */
@@ -550,7 +466,14 @@ app.put("/channels/:name/subscribers_list", async (req, res) => {
 app.put("/channels/:name/mod_list", async (req, res) => {
   try {
     const channelName = req.params.name;
-    const authorized = true //TODO ADD AUTHORIZATION
+
+    if(req.body.user == null){
+      req.body.user = req.session.user;
+    }
+
+    const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
+    const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === req.body.user;
+    const SMMAuthorized = await isSMMAuthorized(req.session.user, req.body.user) && await isAuthorizedOrHigher(req.body.user, typeOfProfile.user);
 
     const channel = await collection_channels.findOne({
       name: channelName
@@ -570,7 +493,7 @@ app.put("/channels/:name/mod_list", async (req, res) => {
       return;
     }
 
-    if (!authorized) {
+    if (!(((authorized || SMMAuthorized) && channel.owner === req.body.user) || adminAuthorized)) {
       res.status(401).json({
         message: "not authorized to modify this channel's mod_list"
       });
@@ -619,12 +542,18 @@ app.put("/channels/:name/mod_list", async (req, res) => {
 
 //* DELETE
 // removes a moderator from the channel
-// body parameters: mod_name (string)
-//TODO ADD AUTHORIZATION (ADMIN OR OWNER)
+// body parameters: mod_name (string), user (optional, the user that the SMM is working for)
 app.delete("/channels/:name/mod_list", async (req, res) => {
   try {
     const channelName = req.params.name;
-    const authorized = true //TODO ADD AUTHORIZATION
+    
+    if(req.body.user == null){
+      req.body.user = req.session.user;
+    }
+
+    const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
+    const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === req.body.user;
+    const SMMAuthorized = await isSMMAuthorized(req.session.user, req.body.user) && await isAuthorizedOrHigher(req.body.user, typeOfProfile.user);
 
     const channel = await collection_channels.findOne({
       name: channelName
@@ -637,7 +566,7 @@ app.delete("/channels/:name/mod_list", async (req, res) => {
       return;
     }
 
-    if (!authorized) {
+    if (!(((authorized || SMMAuthorized) && channel.owner === req.body.user) || adminAuthorized)) {
       res.status(401).json({
         message: "not authorized to modify this channel's mod_list"
       });
@@ -733,8 +662,7 @@ app.get("/channels/:name/squeals_list", async (req, res) => {
 app.put("/channels/:name/squeals_list", async (req, res) => {
   try {
     const name = req.params.name;
-    const authorized = true //TODO ADD AUTHORIZATION
-    const adminAuthorized = true //TODO ADD AUTHORIZATION
+    const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
 
     console.log("enter channel put " + req.body.squeal_id);
 
@@ -742,24 +670,16 @@ app.put("/channels/:name/squeals_list", async (req, res) => {
       name: name
     });
 
-    if (channel.is_deleted || channel === null) {
+    if (channel.is_deleted || channel == null) {
       res.status(404).json({
         message: "Channel not found."
       });
-      console.log("channel not found");
       return;
     }
 
-    if (!authorized) {
+    if (!adminAuthorized) {
       res.status(401).json({
         message: "not authorized to modify this channel's squeals_list"
-      });
-      return;
-    }
-
-    if (!adminAuthorized && (channel.type === "required" || channel.type === "privileged")) {
-      res.status(401).json({
-        message: "not authorized to modify this channel's squeals_list: not an admin"
       });
       return;
     }
@@ -768,11 +688,10 @@ app.put("/channels/:name/squeals_list", async (req, res) => {
       id: req.body.squeal_id
     });
 
-    if (squeal === null) {
+    if (squeal == null) {
       res.status(404).json({
         message: "squeal not found"
       });
-      console.log("squeal not found");
       return;
     }
 
@@ -801,20 +720,27 @@ app.put("/channels/:name/squeals_list", async (req, res) => {
 
 //* DELETE
 // removes a squeal from the channel
-// body parameters: squeal_id (string)
-//TODO ADD AUTHORIZATION (ADMIN OR OWNER OR MOD)
+// body parameters: squeal_id (string), user (optional)
+// the user must be ADMIN OR OWNER OR MOD
 app.delete("/channels/:name/squeals_list", async (req, res) => {
   try {
     const name = req.params.name;
-    const authorized = true //TODO ADD AUTHORIZATION
+
+    if(req.body.user == null){
+      req.body.user = req.session.user;
+    }
+    
+    const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
+    const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === req.body.user;
+    const SMMAuthorized = await isSMMAuthorized(req.session.user, req.body.user) && await isAuthorizedOrHigher(req.body.user, typeOfProfile.user);
 
     const channel = await collection_channels.findOne({
       name: name
     });
 
-    if (!authorized) {
-      res.status(401).json({
-        message: "not authorized to modify this channel's squeals_list"
+    if (channel == null) {
+      res.status(404).json({
+        message: "channel not found"
       });
       return;
     }
@@ -823,14 +749,21 @@ app.delete("/channels/:name/squeals_list", async (req, res) => {
       id: req.body.squeal_id
     });
 
-    if (squeal === null) {
+    if (squeal == null) {
       res.status(404).json({
         message: "squeal not found"
       });
       return;
     }
 
-    const updated_list = channel.mod_list.filter(mod => mod !== req.body.mod_name);
+    if (!(adminAuthorized || ((authorized || SMMAuthorized) && (req.body.user == channel.owner || channel.mod_list.includes(req.body.user))))) {
+      res.status(401).json({
+        message: "not authorized to modify this channel's squeals_list"
+      });
+      return;
+    }
+
+    const updated_list = channel.squeal_list.filter(squeal => squeal !== req.body.squeal_id);
 
     await mongoClient.connect();
     const result = await collection_channels.updateOne({
@@ -894,13 +827,18 @@ app.get("/channels/:name/propic", async (req, res) => {
 //* PUT
 // sets the propic of the channel
 // body parameters: user, propic (file)
-//TODO ADD AUTHORIZATION (ADMIN OR OWNER)
+// the user must be ADMIN OR OWNER OR MOD
 app.put("/channels/:name/propic", upload.single('file'), async (req, res) => {
   try {
     const channelName = req.params.name;
-    const authorized = true //TODO ADD AUTHORIZATION
-    const SMMAuthorized = isSMMAuthorized(req.session.user, req.body.user);
-
+    
+    if(req.body.user == null){
+      req.body.user = req.session.user;
+    }
+    
+    const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
+    const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === req.body.user;
+    const SMMAuthorized = await isSMMAuthorized(req.session.user, req.body.user) && await isAuthorizedOrHigher(req.body.user, typeOfProfile.user);
 
     const channel = await collection_channels.findOne({
       name: channelName
@@ -913,29 +851,9 @@ app.put("/channels/:name/propic", upload.single('file'), async (req, res) => {
       return;
     }
 
-    if (!authorized && !SMMAuthorized) {
+    if (!(adminAuthorized || ((authorized || SMMAuthorized) && (req.body.user == channel.owner || channel.mod_list.includes(req.body.user))))) {
       res.status(401).json({
-        message: "not authorized to modify this channel's propic (not valid user)"
-      });
-      return;
-    }
-
-    let mod_auth = false;
-
-    for (const mod of channel.mod_list) {
-      if (mod === req.body.user) {
-        mod_auth = true;
-        break;
-      }
-    }
-
-    if (channel.owner == req.body.user) {
-      mod_auth = true;
-    }
-
-    if (!mod_auth) {
-      res.status(401).json({
-        message: "not authorized to modify this channel's propic (not valid mod)"
+        message: "not authorized to modify this channel's propic"
       });
       return;
     }
@@ -967,8 +885,14 @@ app.put("/channels/:name/propic", upload.single('file'), async (req, res) => {
 app.delete("/channels/:name/propic", async (req, res) => {
   try {
     const channelName = req.params.name;
-    const authorized = true //TODO ADD AUTHORIZATION
-    const SMMAuthorized = isSMMAuthorized(req.session.user, req.body.user);
+    
+    if(req.body.user == null){
+      req.body.user = req.session.user;
+    }
+    
+    const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
+    const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === req.body.user;
+    const SMMAuthorized = await isSMMAuthorized(req.session.user, req.body.user) && await isAuthorizedOrHigher(req.body.user, typeOfProfile.user);
 
     const channel = await collection_channels.findOne({
       name: channelName
@@ -981,29 +905,9 @@ app.delete("/channels/:name/propic", async (req, res) => {
       return;
     }
 
-    if (!authorized && !SMMAuthorized) {
+    if (!(adminAuthorized || ((authorized || SMMAuthorized) && (req.body.user == channel.owner || channel.mod_list.includes(req.body.user))))) {
       res.status(401).json({
         message: "not authorized to modify this channel's propic"
-      });
-      return;
-    }
-
-    let mod_auth = false;
-
-    for (const mod of channel.mod_list) {
-      if (mod == req.body.user) {
-        mod_auth = true;
-        break;
-      }
-    }
-
-    if (channel.owner == req.body.user) {
-      mod_auth = true;
-    }
-
-    if (!mod_auth) {
-      res.status(401).json({
-        message: "not authorized to modify this channel's propic (not valid mod)"
       });
       return;
     }
