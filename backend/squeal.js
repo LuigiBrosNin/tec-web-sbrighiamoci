@@ -18,7 +18,8 @@ const {
     mongoClient,
     CM,
     importPic,
-    exportPic
+    exportPic,
+    deletePic
 } = require("./const.js");
 
 // connecting to the database
@@ -905,6 +906,10 @@ app.delete("/squeals/:id", async (req, res) => {
             return;
         }
 
+        if (squeal.media != "" && squeal.media != null) {
+            deletePic(squeal.media_id);
+        }
+
         const SMMAuthorized = isSMMAuthorized(req.session.user, squeal.author) && isAuthorizedOrHigher(squeal.author, typeOfProfile.user);
 
         // if the user is not authorized to delete the squeal, return 401
@@ -1178,7 +1183,14 @@ app.get("/squeals/:id/media", async (req, res) => {
             return;
         }
 
-        await exportPic(squeal.media, res);
+        if (squeal.media == "" || squeal.media == null) {
+            res.status(404).json({
+                message: "squeal does not have a media"
+            });
+            return;
+        }
+
+        await exportPic(squeal.media_id, res);
 
     } catch (error) {
         res.status(500).json({

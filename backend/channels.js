@@ -21,6 +21,7 @@ const {
   CM,
   importPic,
   exportPic,
+  deletePic,
   automationsCollection
 } = require("./const.js");
 const multer = require('multer');
@@ -815,7 +816,14 @@ app.get("/channels/:name/propic", async (req, res) => {
       return;
     }
 
-    exportPic(channel.propic, res);
+    if(channel.media_id == null || channel.media_id == ""){
+      res.status(200).json({
+        message: "propic not found"
+      });
+      return;
+    }
+
+    exportPic(channel.media_id, res);
 
   } catch (error) {
     res.status(500).json({
@@ -913,11 +921,17 @@ app.delete("/channels/:name/propic", async (req, res) => {
     }
 
     await mongoClient.connect();
+
+    deletePic(channel.media_id);
+
     const result = await collection_channels.updateOne({
       name: channelName
     }, {
       $set: {
-        propic: null
+        propic: "https://site222326.tw.cs.unibo.it/images/logoSquealer.svg"
+      },
+      $unset: {
+        media_id: ""
       }
     });
 

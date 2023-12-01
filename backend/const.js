@@ -63,7 +63,8 @@ async function importPic(pic, collection, name) {
                     id: name
                 }, {
                     $set: {
-                        media: uploadStream.id
+                        media: `site222326.tw.cs.unibo.it/squeals/${name}/media`,
+                        media_id: uploadStream.id
                     }
                 });
             } else {
@@ -71,7 +72,8 @@ async function importPic(pic, collection, name) {
                     name: name
                 }, {
                     $set: {
-                        propic: uploadStream.id
+                        propic: `site222326.tw.cs.unibo.it/${collection.collectionName.toLowerCase()}/${name}/propic`,
+                        media_id: uploadStream.id
                     }
                 });
             }
@@ -108,6 +110,27 @@ async function exportPic(pic, res) {
     }
 }
 
+async function deletePic(fileId) {
+    try {
+        mongoClient.connect();
+        const bucket = new GridFSBucket(database);
+        const objectId = new ObjectId(fileId); // Convert string to ObjectId
+
+        bucket.delete(objectId, (error) => {
+            if (error) {
+                console.error('Error deleting file: ', error);
+                return false;
+            }
+
+            console.log('File deleted successfully');
+            return true;
+        });
+    } catch (error) {
+        console.error('Error: ', error);
+        return false;
+    }
+}
+
 module.exports = {
     dbName,
     squealCollection,
@@ -119,5 +142,6 @@ module.exports = {
     CREDIT_LIMITS,
     CM,
     importPic,
-    exportPic
+    exportPic,
+    deletePic,
 };

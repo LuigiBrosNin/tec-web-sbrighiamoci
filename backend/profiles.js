@@ -27,7 +27,8 @@ const {
     mongoClient,
     CREDIT_LIMITS,
     importPic,
-    exportPic
+    exportPic,
+    deletePic
 } = require("./const.js");
 
 // connecting to the database
@@ -867,7 +868,14 @@ app.get("/profiles/:name/propic", async (req, res) => {
             return;
         }
 
-        exportPic(profile.propic, res);
+        if (profile.propic == null || profile.propic === "") {
+            res.status(404).json({
+                message: "Propic not found."
+            });
+            return;
+        }
+
+        exportPic(profile.media_id, res);
 
     } catch (error) {
         res.status(500).json({
@@ -946,11 +954,16 @@ app.delete("/profiles/:name/propic", async (req, res) => {
             return;
         }
 
+        deletePic(profile.media_id);
+
         const result = await collection_profiles.updateOne({
             name: profileName
         }, {
             $set: {
-                propic: null
+                propic: "https://site222326.tw.cs.unibo.it/images/user-default.svg"
+            },
+            $unset: {
+                media_id: ""
             }
         });
         res.status(200).json({
