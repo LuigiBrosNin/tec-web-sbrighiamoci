@@ -225,7 +225,7 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
 
 
         const authorized = await isAuthorizedOrHigher(reqBody["author"], typeOfProfile.user) && req.session.user === reqBody["author"];
-        const SMMAuthorized = true;//await isSMMAuthorized(req.session.user, reqBody["author"]) && await isAuthorizedOrHigher(reqBody["author"], typeOfProfile.user);
+        const SMMAuthorized = await isSMMAuthorized(req.session.user, reqBody["author"]) && await isAuthorizedOrHigher(reqBody["author"], typeOfProfile.user);
 
         if (!authorized && !SMMAuthorized) {
             res.status(401).json({
@@ -674,9 +674,8 @@ app.get("/chat/", async (req, res) => {
             });
             return;
         }
-
-        //! RIMETTERE QUANDO LA FEATURE è COMPLETATA E TESTARE DA DEPLOYED
-        /*
+        
+        
         // if the profile is private and the user is not authorized to view it, return 401
         if (!(await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin) || (await isSMMAuthorized(req.session.user, logged_user) && isAuthorizedOrHigher(logged_user, typeOfProfile.user)) || logged_user == req.session.user)) {
             res.status(401).json({
@@ -684,7 +683,7 @@ app.get("/chat/", async (req, res) => {
             });
             return;
         }
-        */
+        
 
         //retrieve the squeals that belong to the chat
         const chat = await database.collection(squealCollection).find({

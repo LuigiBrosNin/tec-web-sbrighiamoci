@@ -1,37 +1,41 @@
 <script setup>
-    const props = defineProps(['id', 'squeal_json']);
+  const props = defineProps(['id', 'squeal_json']);
 </script>
 
 <!------------------------------- HTML ---------------------------------->
 
 <template>
 
-  <!-- search area -->
+  <!-- search user area -->
   <div class="searchArea container d-flex justify-content-center">
-    <div class="col-sm-6 mx-auto my-2">
-      <div class="col-sm-6 mx-auto">
-        <div class="form-group d-flex">
-          <img v-if="propic" :src="propic" alt="Profile Pic" class="profile-pic" />
-          <input v-model="search_user" type="text" placeholder="Search profiles..." class="form-control searchProfileTextbox"/>
-          <button @click="fetchMsgs" class="searchBtn "> Search </button>
-          <button  v-if="merged_msgs.length > 0" @click="fetchMsgs" class="searchBtn "> Load more </button>
+      <div class="col-sm-6 mx-auto my-2">
+        <div class="col-sm-6 mx-auto">
+          <div class="form-group d-flex align-items-center">
+
+            <div class="d-block">
+              <img v-if="propic" :src="propic" alt="Profile Pic" class="profilePic"/>
+            </div>
+
+            <input v-model="search_user" type="text" placeholder="Search profiles..." class="form-control searchProfileTextbox" @keypress.enter="fetchChat"/>
+            <button @click="fetchChat" class="searchBtn "> Search </button>
+            <button  v-if="chat.length > 0" @click="loadMore" class="searchBtn "> More </button>
+          </div>
         </div>
       </div>
-    </div>
   </div>
 
-  <!-- messages area -->
+  <!-- chat area -->
   <div class="chatBox container mx-0 mx-auto">
     <div class="chatInner">
-      <div :class="getMessageClass(message.author)" v-for="(message, index) in merged_msgs" :key="index">
+      <div :class="getMessageClass(message.author)" v-for="(message, index) in chat" :key="index">
         {{ message.text }}  
       </div>
     </div>
   </div>
 
-  <!-- Invio nuovo messaggio -->
+  <!-- send message area -->
   <div class="messageInput container d-flex justify-content-center">
-    <input v-model="newMsgText" type="text" placeholder="Scrivi il tuo messaggio..." class="form-control" />
+    <input v-model="new_msg_text" type="text" placeholder="Scrivi il tuo messaggio..." class="form-control" @keypress.enter="sendMessage"/>
     <button @click="sendMessage" class="btn btn-primary"> Invia </button>
   </div>
 
@@ -46,139 +50,131 @@ import axios from "axios";
 export default {
   data() {   
     return {
-      search_user: "", 
-      friend: '',
-      newMsgText: '',
+      search_user: '', 
+      prev_search_user: '', 
+      new_msg_text: '',
+      chat: [],
+      start_index: 0,
+      end_index: 9,
       propic: null,
-
-      merged_msgs: [],
-      user_date : 0,     // data ultimo msg utente
-      friend_date : 0,
-      user_index : 0,    // indici da usare nella query
-      friend_index : 0,
-      msgs_to_fetch : 5,   // numero di messaggi da fetchare ad ogni "load more" e al caricamento iniziale
     };
   },
+
+  mounted() {
+    setInterval(this.newMsgAvailable, 1000);
+  },
+
   methods: {
-    async fetchMsgs() {
-      this.friend = this.search_user;
+    async fetchChat() {
+        
+        // recupero utente e amico
+        const usr = this.$user
+        const friend = this.search_user
 
-      let fetched_msgs = 0  // contatore dei messaggi già fetchati 
-      let no_more_msgs = false
-      
-      // recupero ultimo msg di ciascuno 
-      let user_msgs   = await fetch(`https://site222326.tw.cs.unibo.it/squeals/?author=${this.$user}&is_private=true&reply_to=${this.friend}&startindex=${this.user_index}&endindex=${this.user_index}`); 
-      let friend_msgs = await fetch(`https://site222326.tw.cs.unibo.it/squeals/?author=${this.friend}&is_private=true&reply_to=${this.$user}&startindex=${this.friend_index}&endindex=${this.friend_index}`); 
-      user_msgs   = await user_msgs.json()
-      friend_msgs = await friend_msgs.json()
-      let tmp_msgs = user_msgs.concat(friend_msgs)
+        this.prev_search_user = this.search_user
 
-      // capisco se ci sono messaggi rimanenti da entrambe, una o nessuna delle due parti
-      if (user_msgs.length === 1 && friend_msgs.length === 1) {
-        this.user_date = user_msgs[0].date
-        this.friend_date = friend_msgs[0].date
-        fetched_msgs = 2
-        this.user_index += 1
-        this.friend_index += 1
-      }
-      else if (user_msgs.length === 1) {
-        this.user_date = -1
-        fetched_msgs = 1
-        this.friend_index += 1
-      }
-      else if (friend_msgs.length === 1) {
-        this.friend_date = -1
-        fetched_msgs = 1
-        this.user_index += 1
-      }
-      else {
-        no_more_msgs = true
-      }
+        // recupero profile pic
+        let tmp_propic = await fetch(`https://site222326.tw.cs.unibo.it/profiles/${friend}/propic`);
 
-      // se ci sono ancora messaggi, vado a recuperarli
-      if (no_more_msgs == false) {
-        this.merged_msgs = this.merged_msgs.concat(tmp_msgs);
-        let new_msg = []
-        let counter = 0
-
-        while ((fetched_msgs < this.msgs_to_fetch || this.user_date > this.friend_date) && (this.friend_date !== -1 && this.user_date !== -1)) {
-
-          if (this.user_date > this.friend_date) {
-            new_msg = await fetch(`https://site222326.tw.cs.unibo.it/squeals/?author=${this.$user}&is_private=true&reply_to=${this.friend}&startindex=${this.user_index}&endindex=${this.user_index}`);
-            new_msg = await new_msg.json()
-
-            if (new_msg.length === 0) { this.user_date = -1 }
-            else {
-              this.user_date = new_msg[0].date
-              fetched_msgs += 1
-              this.user_index += 1
-              this.merged_msgs = this.merged_msgs.concat(new_msg)
-            }
-          }
-          else {
-            new_msg = await fetch(`https://site222326.tw.cs.unibo.it/squeals/?author=${this.friend}&is_private=true&reply_to=${this.$user}&startindex=${this.friend_index}&endindex=${this.friend_index}`);
-            new_msg = await new_msg.json()
-
-            if (new_msg.length === 0) { this.friend_date = -1 }
-            else {
-              this.friend_date = new_msg[0].date
-              fetched_msgs += 1
-              this.friend_index += 1
-              this.merged_msgs = this.merged_msgs.concat(new_msg)
-            }
-
-            while (this.user_date < this.friend_date) {
-              new_msg = await fetch(`https://site222326.tw.cs.unibo.it/squeals/?author=${this.friend}&is_private=true&reply_to=${this.$user}&startindex=${this.friend_index}&endindex=${this.friend_index}`);
-              new_msg = await new_msg.json()
-
-              if (new_msg.length === 0) { this.friend_date = -1 }
-              else {
-                this.friend_date = new_msg[0].date
-                fetched_msgs += 1
-                this.friend_index += 1
-                this.merged_msgs = this.merged_msgs.concat(new_msg)
-              }
-            }
-          }
+        if (tmp_propic.ok) {   // risposta 200
+          this.propic = tmp_propic.url;
         }
-        this.merged_msgs.sort((a, b) => a.date - b.date);
-      }
+        else if (tmp_propic.status === 404) {
+          this.propic = "https://site222326.tw.cs.unibo.it/images/user-default.svg";
+        }
+        else {
+          console.error("Errore durante il recupero della propic:", tmp_propic.status);
+        }
+
+        // resetto indici
+        this.start_index = 0
+        this.end_index = 9
+
+        // fetch della chat tra utente e amico
+        this.chat = await fetch(`https://site222326.tw.cs.unibo.it/chat/?user1=${usr}&user2=${friend}&startindex=${this.start_index}&endindex=${this.end_index}`);
+        this.chat = await this.chat.json();
+
+        // inverto messaggi fetchati
+        this.chat = this.chat.reverse();
+
+        // aggiorno gli indici e li preparo per il "load more"
+        this.start_index += 10
+        this.end_index += 10     
+    },
+
+    async loadMore() {
+      const usr = this.$user
+      const friend = this.search_user
+
+      // fetch della chat tra utente e amico
+      let new_msgs = await fetch(`https://site222326.tw.cs.unibo.it/chat/?user1=${usr}&user2=${friend}&startindex=${this.start_index}&endindex=${this.end_index}`);
+      new_msgs = await new_msgs.json();
+
+      // inverto messaggi fetchati
+      new_msgs = new_msgs.reverse();
+
+      // li metto in testa ai messaggi già presenti
+      this.chat = [...new_msgs, ...this.chat];
+
+      // aggiorno gli indici
+      this.start_index += 10
+      this.end_index += 10
     },
 
     async sendMessage() {
+
       const newMessage = {
         author: this.$user,
-        text: this.newMsgText,
-        receiver: this.friend,
+        text: this.new_msg_text,
+        receiver: this.search_user,
         is_private: true,
       }
 
-      const formData = new FormData()
-      formData.append("json", JSON.stringify(newMessage))
-      
+      const formData = new FormData();
+      formData.append("json", JSON.stringify(newMessage));
+
+      // invio il messaggio e poi lo recupero per metterlo in chat
       try {
-        // all'invio del msg "azzero" chat e rifaccio fetch in modo da avere anche ultimo msg
-
-        this.user_date = 0;     
-        this.friend_date = 0;
-        this.user_index = 0;   
-        this.friend_index = 0;
-        this.merged_msgs = [];
-
-        await axios
-          .put(`https://site222326.tw.cs.unibo.it/squeals/`, formData);
-          await this.fetchMsgs();  // dopo l'invio ricarica la chat
+        await axios.put(`https://site222326.tw.cs.unibo.it/squeals/`, formData); 
+        const response = await fetch(`https://site222326.tw.cs.unibo.it/chat/?user1=${this.$user}&user2=${this.search_user}&startindex=${0}&endindex=${0}`);
+        
+        if (response.ok) {
+          const new_msg = await response.json();
+          this.chat.push(new_msg[0]);
+          this.new_msg_text = '';
+        }
+        else {
+          console.error("Errore durante il recupero del nuovo messaggio:", response.statusText);
+        }
       } catch (error) {
-        console.error("Error during sending the message:", error.message);
+        console.error("Errore durante l'invio del messaggio:", error.message);
       }
     },
+
+    async newMsgAvailable() {
+      if (this.chat.length != 0) { // controllo extra altrimenti accedendo al campo .id va in errore
+
+        const usr = this.$user
+        const friend = this.prev_search_user
+
+        // recupero ultimo msg della chat nel db, se non corrisponde a quello presente nel frontend aggiorno la chat
+        let last_msg_db = await fetch(`https://site222326.tw.cs.unibo.it/chat/?user1=${usr}&user2=${friend}&startindex=${0}&endindex=${0}`);
+        last_msg_db = await last_msg_db.json();
+
+        if (last_msg_db[0].id != this.chat[this.chat.length - 1].id) {
+          this.chat.push(last_msg_db[0]);
+        }
+      }
+    },
+
     getMessageClass(author) {
       return {
         'message': true,
         'sent-message': author === this.$user,
-        'received-message': author === this.friend,
+        'received-message': author === this.search_user,
       };
     }
+
   }
 }
 </script>
@@ -197,23 +193,28 @@ export default {
 
   .searchBtn {
     background-color: #0d6efd;
-    margin-left: 30px;
+    margin-left: 10px;
     color: white;
     border-radius: 5px;
     border: none;
   }
   .searchBtn:hover {
-  background-color: #0066ff;
-}
+    background-color: #0066ff;
+  }
 
   .center-button {
     display: flex;
     justify-content: center;
     align-items: center;
   }
+
+  .profilePic {
+    width: 50px;
+    height: 50px;
+  }
   
   .chatBox {
-    max-height: 60vh; 
+    max-height: 65vh; 
     flex-direction: column;
     display: flex;
     justify-content: flex-end;
@@ -252,7 +253,7 @@ export default {
     position: fixed;
     justify-content: center; 
     bottom: 5vh;
-    width: 100%;
+    width: 80%;
     padding: 10px;    
     margin-bottom: 10px;
   }
