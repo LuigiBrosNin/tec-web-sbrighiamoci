@@ -6,7 +6,7 @@
 
 <template>
 
-  <!-- search area -->
+  <!-- search user area -->
   <div class="searchArea container d-flex justify-content-center">
       <div class="col-sm-6 mx-auto my-2">
         <div class="col-sm-6 mx-auto">
@@ -24,7 +24,7 @@
       </div>
   </div>
 
-  <!-- messages area -->
+  <!-- chat area -->
   <div class="chatBox container mx-0 mx-auto">
     <div class="chatInner">
       <div :class="getMessageClass(message.author)" v-for="(message, index) in chat" :key="index">
@@ -33,7 +33,7 @@
     </div>
   </div>
 
-  <!-- Invio nuovo messaggio -->
+  <!-- send message area -->
   <div class="messageInput container d-flex justify-content-center">
     <input v-model="new_msg_text" type="text" placeholder="Scrivi il tuo messaggio..." class="form-control" @keypress.enter="sendMessage"/>
     <button @click="sendMessage" class="btn btn-primary"> Invia </button>
@@ -61,15 +61,11 @@ export default {
   },
 
   mounted() {
-    setInterval(this.msgAvailable2, 1000);
+    setInterval(this.newMsgAvailable, 1000);
   },
 
   methods: {
     async fetchChat() {
-
-      // casi in cui devo ricaricare chat: 
-      // chat vuota, nuovi msg disponibili, ho cercato una nuova persona
-      //if (this.chat.length == 0  || this.newUserSearched() || this.newMsgAvailable()){
         
         // recupero utente e amico
         const usr = this.$user
@@ -103,13 +99,7 @@ export default {
 
         // aggiorno gli indici e li preparo per il "load more"
         this.start_index += 10
-        this.end_index += 10
-      //}
-      //else {
-      //  console.log("suca la mink");
-      //}
-      
-      
+        this.end_index += 10     
     },
 
     async loadMore() {
@@ -132,11 +122,6 @@ export default {
     },
 
     async sendMessage() {
-
-      // RIMETTERE RIGA 228 DI SQUEAL.JS, E ANCHE IL CONTROLLO A RIGA 678
-      // RIMETTERE RIGA 228 DI SQUEAL.JS, E ANCHE IL CONTROLLO A RIGA 678
-      // RIMETTERE RIGA 228 DI SQUEAL.JS, E ANCHE IL CONTROLLO A RIGA 678
-      // RIMETTERE RIGA 228 DI SQUEAL.JS, E ANCHE IL CONTROLLO A RIGA 678
 
       const newMessage = {
         author: this.$user,
@@ -167,35 +152,6 @@ export default {
     },
 
     async newMsgAvailable() {
-
-      if (this.chat.length != 0) { // controllo extra altrimenti accedendo al campo .id va in errore
-
-        const usr = this.$user
-        const friend = this.search_user
-
-        // recupero ultimo msg della chat nel db, se non corrisponde a quello presente nel frontend aggiorno la chat
-        let last_msg_db = await fetch(`https://site222326.tw.cs.unibo.it/chat/?user1=${usr}&user2=${friend}&startindex=${0}&endindex=${0}`);
-        last_msg_db = await last_msg_db.json();
-
-        if (last_msg_db[0].id != this.chat[this.chat.length - 1].id) {
-          return true;
-        }
-        else { return false; }
-      }
-      else { return true; }
-    },
-
-    async newUserSearched() {
-      console.log(this.prev_search_user, ", ", this.search_user);
-      if (this.prev_search_user != this.search_user) {
-        console.log("newUserSearched: TRUE");
-        return true;
-      }
-      console.log("newUserSearched: FALSE");
-      return false;
-    },
-
-    async msgAvailable2() {
       if (this.chat.length != 0) { // controllo extra altrimenti accedendo al campo .id va in errore
 
         const usr = this.$user
@@ -206,7 +162,7 @@ export default {
         last_msg_db = await last_msg_db.json();
 
         if (last_msg_db[0].id != this.chat[this.chat.length - 1].id) {
-          this.fetchChat();
+          this.chat.push(last_msg_db[0]);
         }
       }
     },
@@ -243,8 +199,8 @@ export default {
     border: none;
   }
   .searchBtn:hover {
-  background-color: #0066ff;
-}
+    background-color: #0066ff;
+  }
 
   .center-button {
     display: flex;
