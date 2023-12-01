@@ -61,7 +61,7 @@ export default {
   },
 
   mounted() {
-    setInterval(this.msgAvailable2, 5000);
+    setInterval(this.msgAvailable2, 1000);
   },
 
   methods: {
