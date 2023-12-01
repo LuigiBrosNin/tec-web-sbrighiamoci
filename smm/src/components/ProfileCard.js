@@ -29,7 +29,7 @@ export class ProfileCard extends Component {
                     <div className="col-12">
                         <div className="card-body">
                             <h5 className="card-title">
-                                Current: {this.props.profile.name}
+                                {this.props.profile.name}
                             </h5>
                             <div className="d-flex flex-column">
                                 <p className="card-text">

@@ -34,6 +34,8 @@ export class AccountSelector extends Component {
     console.log("selected account: " + event.target.value)
     if (event.target.value === '') {
       this.setState({ selectedAccount: this.smm_account });
+      globalState.$selectedAccount = this.smm_account;
+      this.props.onAccountChange(this.smm_account);
       return;
     }
 
@@ -47,6 +49,7 @@ export class AccountSelector extends Component {
         }
         globalState.$selectedAccount = currentAccount;
         this.setState({ selectedAccount: currentAccount });
+        this.props.onAccountChange(currentAccount);
       })
   }
 
