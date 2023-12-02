@@ -20,7 +20,7 @@ const props = defineProps(['id', 'squeal_json']);
 
         <!-- leaflet map -->
         <div v-show="hasLocation()" id="mapcontainer">
-            <div :id="'map' + squeal_id" style="height: 20em"></div>
+            <div :id="'map' + squeal_id" style="height: 200px"></div>
         </div>
 
         <p> {{ date }} </p>
@@ -135,6 +135,7 @@ export default {
                 L.marker([this.location.latitude, this.location.longitude], {
                     icon: customIcon,
                 }).addTo(map);
+                return map;
             }
         },
     },
@@ -144,9 +145,17 @@ export default {
         } else if (this.squeal_json != null) {
             this.populate(this.squeal_json);
         }
+
+
     },
-    mounted(){
-        this.showMap();
+    mounted() {
+        let createdMap = this.showMap();
+        const resizeObserver = new ResizeObserver((entries) => { // this is necessary in order to make the map function properly, otherwise it will believe its div is too small and will not load correctly
+            if(createdMap != null){
+                createdMap.invalidateSize();
+            }
+        });
+        resizeObserver.observe(document.getElementById("map" + this.squeal_id));
     }
 }
 </script>
