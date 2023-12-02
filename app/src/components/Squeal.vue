@@ -55,7 +55,7 @@ import "leaflet/dist/leaflet.css";
 export default {
     data() {
         return {
-            isValid: true, // isValid becomes false if the fetch fails
+            isValid: false, // isValid becomes true if the squeal is correctly loaded
             squeal_id: "",
             author: "",
             authorProfilePicUrl: "",
@@ -83,8 +83,6 @@ export default {
             if (fetched.status == 200) {
                 fetched = await fetched.json();
                 this.populate(fetched);
-            } else {
-                this.isValid = false;
             }
 
         },
@@ -112,13 +110,14 @@ export default {
             this.isPrivate = squealJson.is_private;
 
             console.log("propic: " + this.authorProfilePicUrl);
+            this.isValid = true;
         },
         hasLocation() {
             return (this.location != null && this.location != "" && !(JSON.stringify(this.location) === "{}"));
         },
-        showMap() {
+        showMap(divName) {
             if (this.hasLocation()) {
-                const map = L.map("map" + this.squeal_id).setView(
+                const map = L.map(divName).setView(
                     [this.location.latitude, this.location.longitude],
                     13
                 );
@@ -149,15 +148,37 @@ export default {
 
     },
     mounted() {
-        let createdMap = this.showMap();
-        const resizeObserver = new ResizeObserver((entries) => { // this is necessary in order to make the map function properly, otherwise it will believe its div is too small and will not load correctly
-            if(createdMap != null){
-                createdMap.invalidateSize();
+
+    },
+    watch: {
+        isValid(valid) {
+            if (valid) {
+                initMap(this);
+
+                function initMap(component) {
+                    setTimeout( // busy waiting until the dom is fully loaded
+                        function () {
+                            let div = document.getElementById("map" + component.squeal_id);
+                            if (div != null) {
+                                let createdMap = component.showMap(div);
+                                const resizeObserver = new ResizeObserver((entries) => { // this is necessary in order to make the map function properly, otherwise it will believe its div is too small and will not load correctly
+                                    if (createdMap != null) {
+                                        createdMap.invalidateSize();
+                                    }
+                                });
+                                resizeObserver.observe(div);
+                            }
+                            else {
+                                initMap();
+                            }
+                        }, 500);
+
+                }
             }
-        });
-        resizeObserver.observe(document.getElementById("map" + this.squeal_id));
+        }
     }
 }
+
 </script>
 
 <style scoped>

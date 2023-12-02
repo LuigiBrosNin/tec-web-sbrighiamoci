@@ -8,10 +8,7 @@ const props = defineProps(["id", "profile_json"]);
   <div class="container profile_container">
     <div class="row profile_main_data">
       <div class="col-sm-4">
-        <img
-          class="img-fluid rounded-circle profile_img"
-          :src="profilePicUrl"
-        />
+        <img class="img-fluid rounded-circle profile_img" :src="profilePicUrl" />
       </div>
       <div class="col-sm-8">
         <h2 class="profile_name">@{{ name }}</h2>
@@ -39,7 +36,7 @@ const props = defineProps(["id", "profile_json"]);
             </div>
           </div>
         </div>
-        <FollowButton id="this.id"></FollowButton>
+        <!-- <FollowButton id="this.id"></FollowButton> -->
       </div>
     </div>
     <div class="row">
@@ -48,80 +45,37 @@ const props = defineProps(["id", "profile_json"]);
       </div>
     </div>
 
-    <ul
-      class="nav nav-pills mb-3 flex-column flex-sm-row"
-      id="pills-tab"
-      role="tablist"
-    >
+    <ul class="nav nav-pills mb-3 flex-column flex-sm-row" id="pills-tab" role="tablist">
       <li class="nav-item flex-sm-fill" role="presentation">
-        <button
-          class="nav-link active"
-          id="pills-squeals-tab"
-          data-bs-toggle="pill"
-          data-bs-target="#pills-squeals"
-          type="button"
-          role="tab"
-          aria-controls="pills-squeals"
-          aria-selected="true"
-        >
+        <button class="nav-link active" id="pills-squeals-tab" data-bs-toggle="pill" data-bs-target="#pills-squeals"
+          type="button" role="tab" aria-controls="pills-squeals" aria-selected="true">
           Squeals
         </button>
       </li>
       <li class="nav-item flex-sm-fill text-sm-center" role="presentation">
-        <button
-          class="nav-link"
-          id="pills-followers-tab"
-          data-bs-toggle="pill"
-          data-bs-target="#pills-followers"
-          type="button"
-          role="tab"
-          aria-controls="pills-followers"
-          aria-selected="false"
-        >
+        <button class="nav-link" id="pills-followers-tab" data-bs-toggle="pill" data-bs-target="#pills-followers"
+          type="button" role="tab" aria-controls="pills-followers" aria-selected="false">
           Followers
         </button>
       </li>
       <li class="nav-item flex-sm-fill text-sm-center" role="presentation">
-        <button
-          class="nav-link"
-          id="pills-following-tab"
-          data-bs-toggle="pill"
-          data-bs-target="#pills-following"
-          type="button"
-          role="tab"
-          aria-controls="pills-following"
-          aria-selected="false"
-        >
+        <button class="nav-link" id="pills-following-tab" data-bs-toggle="pill" data-bs-target="#pills-following"
+          type="button" role="tab" aria-controls="pills-following" aria-selected="false">
           Following
         </button>
       </li>
     </ul>
 
     <div class="tab-content" id="pills-tabContent">
-      <div
-        class="tab-pane fade show active"
-        id="pills-squeals"
-        role="tabpanel"
-        aria-labelledby="pills-squeals-tab"
-      >
+      <div class="tab-pane fade show active" id="pills-squeals" role="tabpanel" aria-labelledby="pills-squeals-tab">
         <div v-if="squealsList.length > 0">
           <Squeal v-for="sq in squealsList" :id="sq"></Squeal>
         </div>
       </div>
-      <div
-        class="tab-pane fade"
-        id="pills-followers"
-        role="tabpanel"
-        aria-labelledby="pills-followers-tab"
-      >
+      <div class="tab-pane fade" id="pills-followers" role="tabpanel" aria-labelledby="pills-followers-tab">
         ...
       </div>
-      <div
-        class="tab-pane fade"
-        id="pills-following"
-        role="tabpanel"
-        aria-labelledby="pills-following-tab"
-      >
+      <div class="tab-pane fade" id="pills-following" role="tabpanel" aria-labelledby="pills-following-tab">
         ...
       </div>
     </div>
