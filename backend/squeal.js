@@ -739,6 +739,13 @@ app.post("/squeals_list/", async (req, res) => {
     try {
         const squealList = req.body.squealList;
 
+        if (squealList == null || squealList == []) {
+            res.status(400).json({
+                message: "squealList is required and has to be valid"
+            });
+            return;
+        }
+
         // initializing the start and end index in case they are not specified
         let startIndex = 0;
         let endIndex = 10;

@@ -45,6 +45,7 @@ function App() {
         .then(res => {
           const account = res.data;
           setSmmAccount(account);
+          setSelectedAccount(account);
 
           if (account.account_type !== "smm") {
             switch (account.account_type) {
@@ -86,11 +87,14 @@ function App() {
 
           <main role="main" className="col-md-9 ml-sm-auto col-lg-10 px-4">
             <Routes>
-              <Route path="/new" element={<NewPost selectedAccount={selectedAccount}/>} />
-              <Route path="/profile" element={<ProfileInsights selectedAccount={selectedAccount}/>} />
-              <Route path="/squeals" element={<SquealsInsights selectedAccount={selectedAccount}/>} />
-              <Route path="/messages" element={<Messages selectedAccount={selectedAccount}/>} />
-              <Route path="/shop" element={<Shop selectedAccount={selectedAccount}/>} />
+              <Route path="smm/new" element={<NewPost selectedAccount={selectedAccount}/>} />
+              <Route path="smm/profile" element={<ProfileInsights selectedAccount={selectedAccount}/>} />
+              <Route path="smm/squeals" element={<SquealsInsights selectedAccount={selectedAccount}/>} />
+              <Route path="smm/messages" element={<Messages selectedAccount={selectedAccount}/>} />
+              <Route path="smm/shop" element={<Shop selectedAccount={selectedAccount}/>} />
+
+              <Route path="smm/squeals/*" element={<h1>Soon</h1>} />
+              <Route path="smm/profile/*" element={<h1>Soon pt 2</h1>} />
             </Routes>
           </main>
         </div>
