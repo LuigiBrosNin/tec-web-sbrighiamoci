@@ -1,40 +1,42 @@
 <script setup>
-    const props = defineProps(['id', 'squeal_json']);
+const props = defineProps(['id', 'squeal_json']);
 </script>
 
 <template>
     <div class="squeal_container" v-if="isValid && !isPrivate">
         <p> §{{ channel }} </p> <!-- TODO add router link to channel -->
-        <div v-if='replyTo != null && replyTo != ""' >
+        <div v-if='replyTo != null && replyTo != ""'>
             <p>Reply to: {{ replyTo }}</p>
         </div>
 
         <div class="profile_data">
-            <img class="profile_img" :src="authorProfilePicUrl"/>
+            <img class="profile_img" :src="authorProfilePicUrl" />
             <RouterLink :to="`/profile/${author}`" class="profile_name"> @{{ author }}</RouterLink>
         </div>
 
         <p class="squeal_body"> {{ body }} </p>
-        <img class="squeal_media" v-if='media != null && media != ""' :src="`https://site222326.tw.cs.unibo.it/squeals/${squeal_id}/media`">
+        <img class="squeal_media" v-if='media != null && media != ""'
+            :src="`https://site222326.tw.cs.unibo.it/squeals/${squeal_id}/media`">
 
         <!-- leaflet map -->
-        <div v-if='location != null && location != ""' id="mapid">
-            <!--TODO ADD MAP-->
+        <div v-show="hasLocation()" id="mapcontainer">
+            <div :id="'map' + squeal_id" style="height: 20em"></div>
         </div>
 
         <p> {{ date }} </p>
 
         <div class="interaction_data">
             <button class="interaction_button">
-                <img class="interaction_img" src="https://site222326.tw.cs.unibo.it/icons/face-smile-svgrepo-com.svg"/>
+                <img class="interaction_img" src="https://site222326.tw.cs.unibo.it/icons/face-smile-svgrepo-com.svg" />
                 <p>{{ positiveReactions }}</p>
             </button>
             <button class="interaction_button">
-                <img class="interaction_img" src="https://site222326.tw.cs.unibo.it/icons/face-frown-svgrepo-com.svg"/>
+                <img class="interaction_img" src="https://site222326.tw.cs.unibo.it/icons/face-frown-svgrepo-com.svg" />
                 <p>{{ negativeReactions }}</p>
             </button>
             <button class="interaction_button">
-                <img class="interaction_img" src="https://site222326.tw.cs.unibo.it/icons/message-circle-dots-svgrepo-com.svg"/>
+                <img class="interaction_img"
+                    src="https://site222326.tw.cs.unibo.it/icons/message-circle-dots-svgrepo-com.svg" />
                 <p>{{ replies }}</p>
             </button>
         </div>
@@ -44,7 +46,6 @@
     <div class="squeal_container" v-else>
         <p>Squeal not found</p>
     </div>
-
 </template>
 
 <script>
@@ -79,13 +80,13 @@ export default {
                     "Access-Control-Allow-Origin": "*"
                 }
             });
-            if(fetched.status == 200){
+            if (fetched.status == 200) {
                 fetched = await fetched.json();
                 this.populate(fetched);
             } else {
                 this.isValid = false;
             }
-            
+
         },
         populate(squealJson) {
             this.author = squealJson.author;
@@ -93,7 +94,7 @@ export default {
             //this.authorProfilePicUrl = `https://site222326.tw.cs.unibo.it/profiles/${this.author}/propic`;
             this.authorProfilePicUrl = squealJson.author_propic;
             // if propic returns null, use a default one
-            if(this.authorProfilePicUrl == null || this.authorProfilePicUrl == "") {
+            if (this.authorProfilePicUrl == null || this.authorProfilePicUrl == "") {
                 this.authorProfilePicUrl = "https://site222326.tw.cs.unibo.it/images/user-default.svg";
             } else {
                 this.authorProfilePicUrl = `https://site222326.tw.cs.unibo.it/profiles/${this.author}/propic`
@@ -111,16 +112,41 @@ export default {
             this.isPrivate = squealJson.is_private;
 
             console.log("propic: " + this.authorProfilePicUrl);
-        
-
-        }
+        },
+        hasLocation() {
+            return (this.location != null && this.location != "" && !(JSON.stringify(this.location) === "{}"));
+        },
+        showMap() {
+            if (this.hasLocation()) {
+                const map = L.map("map" + this.squeal_id).setView(
+                    [this.location.latitude, this.location.longitude],
+                    13
+                );
+                L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                    maxZoom: 19,
+                }).addTo(map);
+                // Create a new icon
+                const customIcon = L.icon({
+                    iconUrl: "https://site222326.tw.cs.unibo.it/icons/squealer_marker.png",
+                    iconSize: [38, 38], // size of the icon
+                    iconAnchor: [19, 38], // point of the icon which will correspond to marker's location
+                    popupAnchor: [-3, -76], // point from which the popup should open relative to the iconAnchor
+                });
+                L.marker([this.location.latitude, this.location.longitude], {
+                    icon: customIcon,
+                }).addTo(map);
+            }
+        },
     },
-    created() {
-        if(this.id != null) {
-            this.fetchSqueal(this.id);
-        } else if(this.squeal_json != null) {
+    async created() {
+        if (this.id != null) {
+            await this.fetchSqueal(this.id);
+        } else if (this.squeal_json != null) {
             this.populate(this.squeal_json);
         }
+    },
+    mounted(){
+        this.showMap();
     }
 }
 </script>
