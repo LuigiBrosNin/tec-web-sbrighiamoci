@@ -49,7 +49,7 @@ export class SquealsInsights extends Component {
         {this.state.squeals.map(squeal => (
           <Squeal key={squeal.id} squeal={squeal} />
         ))}
-        <button onClick={this.getSqueals}>Load More</button>
+        <button className='btn btn-primary mt-2' onClick={this.getSqueals}>Load More</button>
       </div>
     );
   }
