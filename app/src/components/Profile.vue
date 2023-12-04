@@ -36,7 +36,7 @@ const props = defineProps(["id", "profile_json"]);
             </div>
           </div>
         </div>
-        <!-- <FollowButton id="this.id"></FollowButton> -->
+        <FollowButton :id="this.id"></FollowButton>
       </div>
     </div>
     <div class="row">
