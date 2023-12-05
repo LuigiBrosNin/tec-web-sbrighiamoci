@@ -33,7 +33,7 @@ export default {
       followersList = await followersList.json();
       
       if(this.$user != null){
-        return followersList.contains(this.$user);
+        return followersList.includes(this.$user);
       }
     },
     async changeFollowStatus(){
