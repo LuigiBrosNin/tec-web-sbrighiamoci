@@ -1,29 +1,18 @@
 <script setup>
-  const props = defineProps(['id', 'squeal_json']);
+  import MessagesSearchBar from "@/components/MessagesSearchBar.vue";
+  import ProfileCard from "@/components/ProfileCard.vue"
+  
+  const props = defineProps(['id']);
 </script>
 
 <!------------------------------- HTML ---------------------------------->
 
 <template>
 
-  <!-- search user area -->
-  <div class="searchArea container d-flex justify-content-center">
-      <div class="col-sm-6 mx-auto my-2">
-        <div class="col-sm-6 mx-auto">
-          <div class="form-group d-flex align-items-center">
-
-            <div class="d-block">
-              <img v-if="propic" :src="propic" alt="Profile Pic" class="profilePic"/>
-            </div>
-
-            <input v-model="search_user" type="text" placeholder="Search profiles..." class="form-control searchProfileTextbox" @keypress.enter="fetchChat"/>
-            <button @click="fetchChat" class="searchBtn "> Search </button>
-            <button  v-if="chat.length > 0" @click="loadMore" class="searchBtn "> More </button>
-          </div>
-        </div>
-      </div>
-  </div>
-
+  <MessagesSearchBar></MessagesSearchBar>
+  <button v-if="chat.length > 0" @click="loadMore" class="searchBtn "> More </button>
+  <ProfileCard :id="id"></ProfileCard>
+  
   <!-- chat area -->
   <div class="chatBox container mx-0 mx-auto">
     <div class="chatInner">
@@ -50,8 +39,6 @@ import axios from "axios";
 export default {
   data() {   
     return {
-      search_user: '', 
-      prev_search_user: '', 
       new_msg_text: '',
       chat: [],
       start_index: 0,
@@ -61,6 +48,7 @@ export default {
   },
 
   mounted() {
+    this.fetchChat();
     setInterval(this.newMsgAvailable, 1000);
   },
 
@@ -68,10 +56,8 @@ export default {
     async fetchChat() {
         
         // recupero utente e amico
-        const usr = this.$user
-        const friend = this.search_user
-
-        this.prev_search_user = this.search_user
+        const usr = this.$user;
+        const friend = this.id;
 
         // recupero profile pic
         let tmp_propic = await fetch(`https://site222326.tw.cs.unibo.it/profiles/${friend}/propic`);
@@ -87,8 +73,8 @@ export default {
         }
 
         // resetto indici
-        this.start_index = 0
-        this.end_index = 9
+        this.start_index = 0;
+        this.end_index = 9;
 
         // fetch della chat tra utente e amico
         this.chat = await fetch(`https://site222326.tw.cs.unibo.it/chat/?user1=${usr}&user2=${friend}&startindex=${this.start_index}&endindex=${this.end_index}`);
@@ -104,7 +90,7 @@ export default {
 
     async loadMore() {
       const usr = this.$user
-      const friend = this.search_user
+      const friend = this.id
 
       // fetch della chat tra utente e amico
       let new_msgs = await fetch(`https://site222326.tw.cs.unibo.it/chat/?user1=${usr}&user2=${friend}&startindex=${this.start_index}&endindex=${this.end_index}`);
@@ -126,7 +112,7 @@ export default {
       const newMessage = {
         author: this.$user,
         text: this.new_msg_text,
-        receiver: this.search_user,
+        receiver: this.id,
         is_private: true,
       }
 
@@ -136,7 +122,7 @@ export default {
       // invio il messaggio e poi lo recupero per metterlo in chat
       try {
         await axios.put(`https://site222326.tw.cs.unibo.it/squeals/`, formData); 
-        const response = await fetch(`https://site222326.tw.cs.unibo.it/chat/?user1=${this.$user}&user2=${this.search_user}&startindex=${0}&endindex=${0}`);
+        const response = await fetch(`https://site222326.tw.cs.unibo.it/chat/?user1=${this.$user}&user2=${this.id}&startindex=${0}&endindex=${0}`);
         
         if (response.ok) {
           const new_msg = await response.json();
@@ -155,7 +141,7 @@ export default {
       if (this.chat.length != 0) { // controllo extra altrimenti accedendo al campo .id va in errore
 
         const usr = this.$user
-        const friend = this.prev_search_user
+        const friend = this.id
 
         // recupero ultimo msg della chat nel db, se non corrisponde a quello presente nel frontend aggiorno la chat
         let last_msg_db = await fetch(`https://site222326.tw.cs.unibo.it/chat/?user1=${usr}&user2=${friend}&startindex=${0}&endindex=${0}`);
@@ -171,11 +157,11 @@ export default {
       return {
         'message': true,
         'sent-message': author === this.$user,
-        'received-message': author === this.search_user,
+        'received-message': author === this.id,
       };
     }
 
-  }
+  },
 }
 </script>
 

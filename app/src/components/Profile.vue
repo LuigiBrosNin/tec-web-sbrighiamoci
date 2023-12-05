@@ -37,6 +37,7 @@ const props = defineProps(["id", "profile_json"]);
           </div>
         </div>
         <FollowButton :id="id"></FollowButton>
+        <RouterLink :to="`/messages/${id}`" class="message_button">Chat</RouterLink>
       </div>
     </div>
     <div class="row">
@@ -174,5 +175,19 @@ export default {
   height: 16em;
   border-radius: 50%;
   margin: 0.5em;
+}
+
+.message_button {
+  margin: 1em;
+  padding: 0.5em;
+  border-radius: 1.2em;
+  border-style: none;
+  background-color: #085c84;
+  font-weight: bold;
+  display: block;
+  width: -webkit-fill-available;
+  text-align: center;
+  color:white;
+  text-decoration: none;
 }
 </style>

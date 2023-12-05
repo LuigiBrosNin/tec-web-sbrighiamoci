@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import SearchView from '../views/SearchView.vue'
 import ChannelsView from '../views/ChannelsView.vue'
 import MessagesView from '../views/MessagesView.vue'
+import MessagesSearchBar from '../components/MessagesSearchBar.vue'
 import ProfileView from '../views/ProfileView.vue'
 import ProfileSettingsView from '../views/ProfileSettingsView.vue'
 import SquealPutView from '../views/SquealPutView.vue'
@@ -29,9 +30,15 @@ const router = createRouter({
       component: SearchChannelsView,
     },
     {
-      path: '/messages',
+      path: '/messages/',
+      name: 'SearchMessages',
+      component: MessagesSearchBar,
+    },
+    {
+      path: '/messages/:id',
       name: 'messages',
-      component: MessagesView
+      component: MessagesView,
+      props: true
     },
     {
       path: '/profile/:id',
