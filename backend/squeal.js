@@ -92,22 +92,22 @@ app.get("/squeals/", async (req, res) => {
 
         // check if the user is authorized to access private messages
         if (req.query.is_private === "true" || req.query.is_private === true) {
-            if(await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)) {
+            if (await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)) {
                 search.is_private = true;
             }
-            else if(await isAuthorizedOrHigher(req.session.user, typeOfProfile.user)){
-                if(req.params.author == null && req.params.receiver == null) {
+            else if (await isAuthorizedOrHigher(req.session.user, typeOfProfile.user)) {
+                if (req.params.author == null && req.params.receiver == null) {
                     search.is_private = true;
                     search.$or = [
-                        {author: req.session.user},
-                        {receiver: req.session.user}
+                        { author: req.session.user },
+                        { receiver: req.session.user }
                     ]
                 }
-                else if(req.session.user === req.params.author || (await isSMMAuthorized(req.session.user, req.params.author) && await isAuthorizedOrHigher(req.params.author, typeOfProfile.user))){
+                else if (req.session.user === req.params.author || (await isSMMAuthorized(req.session.user, req.params.author) && await isAuthorizedOrHigher(req.params.author, typeOfProfile.user))) {
                     search.is_private = true;
                     //search.author = req.params.author;
                 }
-                else if (req.session.user === req.params.receiver || (await isSMMAuthorized(req.session.user, req.params.receiver) && await isAuthorizedOrHigher(req.params.receiver, typeOfProfile.user))){
+                else if (req.session.user === req.params.receiver || (await isSMMAuthorized(req.session.user, req.params.receiver) && await isAuthorizedOrHigher(req.params.receiver, typeOfProfile.user))) {
                     search.is_private = true;
                     //search.receiver = req.params.receiver;
                 }
@@ -205,7 +205,7 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
         const media = req.file;
         const location = reqBody.location;
 
-        if(reqBody.author == null){
+        if (reqBody.author == null) {
             reqBody.author = req.session.user;
         }
 
@@ -234,28 +234,6 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
         if (!authorized && !SMMAuthorized && !adminAuthorized) {
             res.status(401).json({
                 message: "you must be logged in to add a squeal"
-            });
-            return;
-        }
-
-
-        //check reveiver validity (has to be a channel)
-        const channel = await collection_channels.findOne({
-            name: reqBody.receiver
-        });
-
-
-        // if not a private msg, channel must exist
-        if (channel === null && (reqBody.is_private == false || reqBody.is_private == "false" || reqBody.is_private == undefined)) {
-            res.status(400).json({
-                message: "receiver must be an existing channel"
-            });
-            return;
-        }
-
-        if(channel.type != "private" && !adminAuthorized){
-            res.status(401).json({
-                message: "you are not authorized to post on this channel"
             });
             return;
         }
@@ -353,6 +331,14 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
                 });
                 return;
             }
+
+            if (channel_receiver.type != "private" && !adminAuthorized) {
+                res.status(401).json({
+                    message: "you are not authorized to post on this channel"
+                });
+                return;
+            }
+            
         }
 
         console.log("author credit\navailable: g: " + profile_author.credit[0] + " s: " + profile_author.credit[1] + " m: " + profile_author.credit[2] + ")\nrequired: " + char_cost);
@@ -466,7 +452,7 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
             name: newSqueal.receiver
         });
 
-        if(channel_receiver != null && channel_receiver != "") {
+        if (channel_receiver != null && channel_receiver != "") {
             // TODO: login with squealertecnician
             // add the squeal to the channel's squeals_list
             fetch("https://site222326.tw.cs.unibo.it/channels/" + channel_receiver.name + "/squeals_list", {
@@ -548,13 +534,13 @@ app.get("/feed/", async (req, res) => {
         // if the profile is not found, return only required squeals
         if (feed_user == null || feed_user == "") {
             const feed = await database.collection(squealCollection).find({
-                    receiver: {
-                        $in: required_channels_names
-                    },
-                    is_private: false
-                }).sort({
-                    date: -1
-                }) // ordered inverse chronological order
+                receiver: {
+                    $in: required_channels_names
+                },
+                is_private: false
+            }).sort({
+                date: -1
+            }) // ordered inverse chronological order
                 .skip(startIndex) // starting from startIndex
                 .limit(endIndex - startIndex + 1) // returns endIndex squeals
                 .toArray(); // returns the squeals as an array
@@ -574,35 +560,35 @@ app.get("/feed/", async (req, res) => {
         });
 
 
-        if(profile == null || profile.is_deleted == true) {
+        if (profile == null || profile.is_deleted == true) {
             res.status(400).json({
                 message: "profile does not exist"
             });
             return;
         }
 
-        console.log('following_channels:'+ profile.following_channels +"\nfollowing_list: " + profile.following_list);
+        console.log('following_channels:' + profile.following_channels + "\nfollowing_list: " + profile.following_list);
 
         // get the list of followed profiles and channels
         const feed = await database.collection(squealCollection).find({
             $or: [{
-                    receiver: {
-                        $in: profile.following_channels
-                    }
-                },
-                {
-                    receiver: {
-                        $in: required_channels_names
-                    }
-                },
-                {
-                    author: {
-                        $in: profile.following_list
-                    }
+                receiver: {
+                    $in: profile.following_channels
                 }
+            },
+            {
+                receiver: {
+                    $in: required_channels_names
+                }
+            },
+            {
+                author: {
+                    $in: profile.following_list
+                }
+            }
             ],
             is_private: false
-        }).sort({date: -1}) // ordered chronological order
+        }).sort({ date: -1 }) // ordered chronological order
             .skip(startIndex) // starting from startIndex
             .limit(endIndex - startIndex + 1) // returns endIndex squeals
             .toArray(); // returns the squeals as an array
@@ -686,7 +672,7 @@ app.get("/chat/", async (req, res) => {
             });
             return;
         }
-        
+
         /*
         // if the profile is private and the user is not authorized to view it, return 401
         if (!(await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin) || (await isSMMAuthorized(req.session.user, logged_user) && isAuthorizedOrHigher(logged_user, typeOfProfile.user)) || logged_user == req.session.user)) {
@@ -696,16 +682,16 @@ app.get("/chat/", async (req, res) => {
             return;
         }
         */
-        
+
 
         //retrieve the squeals that belong to the chat
         const chat = await database.collection(squealCollection).find({
             $or: [{
-                    $and: [{ author: logged_user }, { receiver: chat_user }]
-                },
-                {
-                    $and: [{ author: chat_user }, { receiver: logged_user }]
-                }
+                $and: [{ author: logged_user }, { receiver: chat_user }]
+            },
+            {
+                $and: [{ author: chat_user }, { receiver: logged_user }]
+            }
             ]
         }).sort({
             date: -1
@@ -713,7 +699,7 @@ app.get("/chat/", async (req, res) => {
             .skip(startIndex) // starting from startIndex
             .limit(endIndex - startIndex + 1) // returns endIndex squeals
             .toArray(); // returns the squeals as an array
-        
+
         res.status(200).json(chat); // returns the squeals
     }
     catch (error) {
@@ -840,18 +826,18 @@ app.get("/squeals/:id", async (req, res) => {
         });
 
         // if the squeal is not found, check if a private one with that id exists and if the user can see it
-        if(squeal == null){
-            if(adminAuthorized) {
+        if (squeal == null) {
+            if (adminAuthorized) {
                 squeal = await collection_squeals.findOne({
                     id: squealId
                 });
-            } else if(authorized){
+            } else if (authorized) {
                 squeal = await collection_squeals.findOne({
                     id: squealId,
                     is_private: true,
                     $or: [
-                        {author: req.session.user},
-                        {receiver: req.session.user}
+                        { author: req.session.user },
+                        { receiver: req.session.user }
                     ]
                 });
             }
@@ -866,7 +852,7 @@ app.get("/squeals/:id", async (req, res) => {
         }
 
         // if the squeal is private, check if the user is authorized to view it
-        if(squeal.is_private == true && (squeal.author != req.session.user || squeal.receiver != req.session.user)) {
+        if (squeal.is_private == true && (squeal.author != req.session.user || squeal.receiver != req.session.user)) {
             res.status(401).json({
                 message: "you are not authorized to view this squeal"
             });
@@ -1464,7 +1450,7 @@ app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
             reaction_ratio = "neg_popolarity_ratio";
         }
 
-        if(req.body.user == null){
+        if (req.body.user == null) {
             req.body.user = req.session.user;
         }
 
