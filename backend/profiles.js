@@ -553,7 +553,7 @@ app.get("/profiles/:name/followersnumber", async (req, res) => {
 // ritorna la lista dei followers del profilo con nome name
 // ritorna 404 se il profilo non esiste
 app.get("/profiles/:name/followers", async (req, res) => {
-    try {
+    /*try {
         const profileName = req.params.name;
 
         await mongoClient.connect();
@@ -574,6 +574,47 @@ app.get("/profiles/:name/followers", async (req, res) => {
         res.status(500).json({
             message: error.message
         });
+    }*/
+
+    // --------------------------------------------------
+
+    // TODO controllare se funziona
+    // TODO aggiungere supporto agli indici
+    try {
+        const profileName = req.params.name;
+
+        // initializing the start and end index in case they are not specified
+        let startIndex = 0;
+        let endIndex = 10;
+        // check if the parameters are valid
+        if (req.query.startindex !== undefined && !isNaN(req.query.startindex)) {
+            startIndex = parseInt(req.query.startindex);
+        }
+        if (req.query.endindex !== undefined && !isNaN(req.query.endindex)) {
+            endIndex = parseInt(req.query.endindex);
+        }
+        // check if the parameters are valid
+        if (startIndex > endIndex) {
+            res.status(400).json({
+                message: "startIndex must be less than endIndex"
+            });
+            return;
+        }
+
+        // recupero il profilo e controllo se esiste
+        await mongoClient.connect();
+        const profile = await collection_profiles.findOne({ name: profileName });
+
+        if (profile.is_deleted || profile === null) {
+            res.status(404).json({ message: "Profile not found." });
+            return;
+        }
+
+        const followers = profile.followers_list.slice(startIndex, endIndex);
+        res.status(200).json(followers);
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
     }
 });
 
@@ -682,7 +723,7 @@ app.put("/profiles/:name/followers/", async (req, res) => {
 // ritorna la lista dei canali seguiti dal profilo con nome name
 // ritorna 404 se il profilo non esiste
 app.get("/profiles/:name/following_channels", async (req, res) => {
-    try {
+    /*try {
         const profileName = req.params.name;
 
         await mongoClient.connect();
@@ -703,6 +744,47 @@ app.get("/profiles/:name/following_channels", async (req, res) => {
         res.status(500).json({
             message: error.message
         });
+    }*/
+
+    //---------------------------------------------------------
+
+    // TODO controllare se è giusto
+    // TODO aggiungere supporto agli indici 
+    try {
+        const profileName = req.params.name;
+
+        // initializing the start and end index in case they are not specified
+        let startIndex = 0;
+        let endIndex = 10;
+        // check if the parameters are valid
+        if (req.query.startindex !== undefined && !isNaN(req.query.startindex)) {
+            startIndex = parseInt(req.query.startindex);
+        }
+        if (req.query.endindex !== undefined && !isNaN(req.query.endindex)) {
+            endIndex = parseInt(req.query.endindex);
+        }
+        // check if the parameters are valid
+        if (startIndex > endIndex) {
+            res.status(400).json({
+                message: "startIndex must be less than endIndex"
+            });
+            return;
+        }
+
+        // recupero il profilo e controllo se esiste
+        await mongoClient.connect();
+        const profile = await collection_profiles.findOne({ name: profileName });
+
+        if (profile.is_deleted || profile === null) {
+            res.status(404).json({ message: "Profile not found." });
+            return;
+        }
+
+        const followers = profile.following_channels.slice(startIndex, endIndex);
+        res.status(200).json(followers);
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
     }
 });
 
