@@ -51,7 +51,7 @@ Header {
 }
 
 #NewSquealButton {
-  z-index: 10;
+  z-index: 99999;
   position: absolute;
   bottom: 0;
   right: 0;

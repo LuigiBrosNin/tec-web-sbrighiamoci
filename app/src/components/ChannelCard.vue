@@ -1,29 +1,31 @@
 <script setup>
-    const props = defineProps(["id", "channel_json"]);
+const props = defineProps(["id", "channel_json"]);
 </script>
 
 <template>
-    <div class="row no-gutters">
-            <div class="col-md-4 d-flex justify-content-center align-items-center">
-                <img :src="profilePicUrl" class="card-img channel_img" alt="Profile Picture">
-            </div>
-            <div class="col-md-8">
-                <div class="card-body">
-                    <h5 class="card-title">
-                        <a :href="`https://site222326.tw.cs.unibo.it/app/channels/${name}`"
-                            class="text-decoration-none">{{ name }}</a>
-                    </h5>
-                    <p class="card-text">{{ bio }}</p>
-                    <p class="card-text"><small class="text-muted">Owner: {{ owner }}</small></p>
-                    <p class="card-text"><small class="text-muted">Subscribers: {{ numberOfSubscribers }}</small></p>
-                </div>
-            </div>
+  <div class="card m-3">
+    <div class="d-flex">
+      <div class="col-md-4 d-flex justify-content-center align-items-center">
+        <img :src="profilePicUrl" class="card-img channel_img" alt="Profile Picture">
+      </div>
+      <div class="col-md-8">
+        <div class="card-body">
+          <h5 class="card-title">
+            <a :href="`https://site222326.tw.cs.unibo.it/app/channels/${name}`" class="text-decoration-none">{{ name
+            }}</a>
+          </h5>
+          <p class="card-text">{{ bio }}</p>
+          <p class="card-text"><small class="text-muted">Owner: {{ owner }}</small></p>
+          <p class="card-text"><small class="text-muted">Subscribers: {{ numberOfSubscribers }}</small></p>
         </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
-export default{
-    data() {
+export default {
+  data() {
     return {
       name: "",
       owner: "",
@@ -83,9 +85,9 @@ export default{
 
 <style scoped>
 .channel_img {
-    width: 16em;
-    height: 16em;
-    border-radius: 50%;
-    margin: 0.5em;
+  width: 16em;
+  height: 16em;
+  border-radius: 50%;
+  margin: 0.5em;
 }
 </style>

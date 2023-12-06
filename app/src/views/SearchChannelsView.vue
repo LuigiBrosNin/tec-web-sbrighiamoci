@@ -62,7 +62,7 @@
     </div>
 
     <!-- for function that defines every channel in the feed object-->
-    <div v-for="channel in feed" :key="feedVersion" class="card mt-3">
+    <div v-for="channel in feed" :key="feedVersion">
         <ChannelCard :channel_json="channel"></ChannelCard>
     </div>
 
