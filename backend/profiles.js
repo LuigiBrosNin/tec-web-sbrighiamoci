@@ -581,6 +581,7 @@ app.get("/profiles/:name/followers", async (req, res) => {
     // TODO controllare se funziona
     // TODO aggiungere supporto agli indici
     try {
+        console.log("yoyo debuggo");
         const profileName = req.params.name;
 
         // initializing the start and end index in case they are not specified
