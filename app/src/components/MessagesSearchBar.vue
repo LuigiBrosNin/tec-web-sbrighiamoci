@@ -5,8 +5,8 @@ import router from '@/router/index.js'
 <template>
   <!-- search user area -->
   <div class="container d-flex justify-content-center">
-    <div class="col-sm-6 mx-auto my-2">
-      <div class="col-sm-6 mx-auto">
+    <div class="col-sm-8 mx-auto my-2">
+      <div class="col-sm-8 mx-auto">
         <div class="form-group d-flex align-items-center">
 
           <input v-model="search_user" type="text" placeholder="Search profiles..."
