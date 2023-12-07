@@ -95,6 +95,7 @@ export default {
       squealsList: [],
       followersList: [],
       followingList: [],
+      channelFollowingList: [],
       accountType: "normal",
       extraCredit: 0,
       numberOfSqueals: 0,
@@ -135,6 +136,7 @@ export default {
       this.squealsList = profileJson.squeals_list;
       this.followersList = profileJson.followers_list;
       this.followingList = profileJson.following_list;
+      this.channelFollowingList = profileJson.following_channels;
       this.accountType = profileJson.account_type;
       this.extraCredit = profileJson.extra_credit;
       this.numberOfSqueals = profileJson.squeals_num;
