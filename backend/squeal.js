@@ -720,6 +720,7 @@ app.get("/chat/", async (req, res) => {
 // campo da dare nel body: squealList
 // SUPPORTA QUERY DI PAGINAZIONE
 // node sucks, can't use /squeals/list so here we are...
+app.use(bodyParser.json());
 app.post("/squeals_list/", async (req, res) => {
     try {
         const squealList = req.body.squealList;
