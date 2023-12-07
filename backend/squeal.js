@@ -724,7 +724,7 @@ app.post("/squeals_list/", async (req, res) => {
     try {
         const squealList = req.body.squealList;
 
-        if (squealList == null || squealList == []) {
+        if (squealList == null || squealList.length === 0) {
             res.status(400).json({
                 message: "squealList is required and has to be valid"
             });
