@@ -10,13 +10,13 @@ const props = defineProps(['id']);
 <template>
   <div v-if="isValid" class="messagesViewContainer">
     <div class="searchArea">
-      <MessagesSearchBar></MessagesSearchBar>
+      <RouterLink to="/messages" class="goBackBtn"> &lt Go back</RouterLink>
       <ProfileCard :id="id"></ProfileCard>
     </div>
 
     <!-- chat area -->
     <div class="chatBox container mx-0 mx-auto">
-      <button v-if="chat.length > 0" @click="loadMore" class="loadMoreBtn"> Load more </button>
+      <button v-if="chat.lenth > 0" @click="loadMore" class="loadMoreBtn"> Load more </button>
       <div class="chatInner">
         <div :class="getMessageClass(message.author)" v-for="(message, index) in chat" :key="index">
           {{ message.text }}
@@ -32,7 +32,7 @@ const props = defineProps(['id']);
     </div>
   </div>
   <div v-else>
-    <p>This user does not exist</p>
+    <p>You are not logged in or this user does not exist</p>
     <RouterLink to="/messages">Go back</RouterLink>
   </div>
 </template>
@@ -58,7 +58,7 @@ export default {
   },
 
   async mounted() {
-    this.isValid = await this.checkForValidUser();
+    this.isValid = await this.checkForValidUsers();
     if(this.isValid){
       this.fetchChat();
       this.updateInterval = setInterval(this.newMsgAvailable, 1000);
@@ -177,7 +177,7 @@ export default {
           },
         }
       );
-      return fetched.status == 200;
+      return fetched.status == 200 && this.$user != null;
     },
   }
 }
@@ -208,6 +208,22 @@ export default {
 
 .loadMoreBtn:hover {
   background-color: #0066ff;
+}
+
+.goBackBtn {
+  background-color: #ff8900ff;
+  display: block;
+  width: fit-content;
+  margin: 1em;
+  padding: 0.5em;
+  color: white;
+  border-radius: 5px;
+  border: none;
+  text-decoration: none;
+}
+
+.goBackBtn:hover {
+  background-color: #c06700;
 }
 
 .center-button {
