@@ -673,7 +673,6 @@ app.get("/chat/", async (req, res) => {
             return;
         }
 
-        /*
         // if the profile is private and the user is not authorized to view it, return 401
         if (!(await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin) || (await isSMMAuthorized(req.session.user, logged_user) && isAuthorizedOrHigher(logged_user, typeOfProfile.user)) || logged_user == req.session.user)) {
             res.status(401).json({
@@ -681,7 +680,6 @@ app.get("/chat/", async (req, res) => {
             });
             return;
         }
-        */
 
 
         //retrieve the squeals that belong to the chat

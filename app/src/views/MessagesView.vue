@@ -1,33 +1,40 @@
 <script setup>
-  import MessagesSearchBar from "@/components/MessagesSearchBar.vue";
-  import ProfileCard from "@/components/ProfileCard.vue"
-  
-  const props = defineProps(['id']);
+import MessagesSearchBar from "@/components/MessagesSearchBar.vue";
+import ProfileCard from "@/components/ProfileCard.vue"
+
+const props = defineProps(['id']);
 </script>
 
 <!------------------------------- HTML ---------------------------------->
 
 <template>
+  <div v-if="isValid" class="messagesViewContainer">
+    <div class="searchArea">
+      <MessagesSearchBar></MessagesSearchBar>
+      <ProfileCard :id="id"></ProfileCard>
+    </div>
 
-  <MessagesSearchBar></MessagesSearchBar>
-  <button v-if="chat.length > 0" @click="loadMore" class="searchBtn "> More </button>
-  <ProfileCard :id="id"></ProfileCard>
-  
-  <!-- chat area -->
-  <div class="chatBox container mx-0 mx-auto">
-    <div class="chatInner">
-      <div :class="getMessageClass(message.author)" v-for="(message, index) in chat" :key="index">
-        {{ message.text }}  
+    <!-- chat area -->
+    <div class="chatBox container mx-0 mx-auto">
+      <button v-if="chat.length > 0" @click="loadMore" class="loadMoreBtn"> Load more </button>
+      <div class="chatInner">
+        <div :class="getMessageClass(message.author)" v-for="(message, index) in chat" :key="index">
+          {{ message.text }}
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- send message area -->
-  <div class="messageInput container d-flex justify-content-center">
-    <input v-model="new_msg_text" type="text" placeholder="Scrivi il tuo messaggio..." class="form-control" @keypress.enter="sendMessage"/>
-    <button @click="sendMessage" class="btn btn-primary"> Invia </button>
+    <!-- send message area -->
+    <div class="messageInput d-flex justify-content-center">
+      <input v-model="new_msg_text" type="text" placeholder="Write your message..." class="form-control"
+        @keypress.enter="sendMessage" />
+      <button @click="sendMessage" class="btn btn-primary"> Send </button>
+    </div>
   </div>
-
+  <div v-else>
+    <p>This user does not exist</p>
+    <RouterLink to="/messages">Go back</RouterLink>
+  </div>
 </template>
 
 
@@ -37,55 +44,53 @@
 import axios from "axios";
 
 export default {
-  data() {   
+  data() {
     return {
       new_msg_text: '',
       chat: [],
       start_index: 0,
       end_index: 9,
       propic: null,
+
+      isValid: false,
+      updateInterval: undefined
     };
   },
 
-  mounted() {
-    this.fetchChat();
-    setInterval(this.newMsgAvailable, 1000);
+  async mounted() {
+    this.isValid = await this.checkForValidUser();
+    if(this.isValid){
+      this.fetchChat();
+      this.updateInterval = setInterval(this.newMsgAvailable, 1000);
+    }
+  },
+  unmounted() {
+    if (this.updateInterval != null) {
+      clearInterval(this.updateInterval);
+    }
   },
 
   methods: {
     async fetchChat() {
-        
-        // recupero utente e amico
-        const usr = this.$user;
-        const friend = this.id;
 
-        // recupero profile pic
-        let tmp_propic = await fetch(`https://site222326.tw.cs.unibo.it/profiles/${friend}/propic`);
+      // recupero utente e amico
+      const usr = this.$user;
+      const friend = this.id;
 
-        if (tmp_propic.ok) {   // risposta 200
-          this.propic = tmp_propic.url;
-        }
-        else if (tmp_propic.status === 404) {
-          this.propic = "https://site222326.tw.cs.unibo.it/images/user-default.svg";
-        }
-        else {
-          console.error("Errore durante il recupero della propic:", tmp_propic.status);
-        }
+      // resetto indici
+      this.start_index = 0;
+      this.end_index = 9;
 
-        // resetto indici
-        this.start_index = 0;
-        this.end_index = 9;
+      // fetch della chat tra utente e amico
+      this.chat = await fetch(`https://site222326.tw.cs.unibo.it/chat/?user1=${usr}&user2=${friend}&startindex=${this.start_index}&endindex=${this.end_index}`);
+      this.chat = await this.chat.json();
 
-        // fetch della chat tra utente e amico
-        this.chat = await fetch(`https://site222326.tw.cs.unibo.it/chat/?user1=${usr}&user2=${friend}&startindex=${this.start_index}&endindex=${this.end_index}`);
-        this.chat = await this.chat.json();
+      // inverto messaggi fetchati
+      this.chat = this.chat.reverse();
 
-        // inverto messaggi fetchati
-        this.chat = this.chat.reverse();
-
-        // aggiorno gli indici e li preparo per il "load more"
-        this.start_index += 10
-        this.end_index += 10     
+      // aggiorno gli indici e li preparo per il "load more"
+      this.start_index += 10
+      this.end_index += 10
     },
 
     async loadMore() {
@@ -121,9 +126,9 @@ export default {
 
       // invio il messaggio e poi lo recupero per metterlo in chat
       try {
-        await axios.put(`https://site222326.tw.cs.unibo.it/squeals/`, formData); 
+        await axios.put(`https://site222326.tw.cs.unibo.it/squeals/`, formData);
         const response = await fetch(`https://site222326.tw.cs.unibo.it/chat/?user1=${this.$user}&user2=${this.id}&startindex=${0}&endindex=${0}`);
-        
+
         if (response.ok) {
           const new_msg = await response.json();
           this.chat.push(new_msg[0]);
@@ -159,100 +164,97 @@ export default {
         'sent-message': author === this.$user,
         'received-message': author === this.id,
       };
-    }
+    },
 
-  },
+    async checkForValidUser() {
+      let fetched = await fetch(
+        `https://site222326.tw.cs.unibo.it/profiles/${this.id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            "Access-Control-Allow-Origin": "*",
+          },
+        }
+      );
+      return fetched.status == 200;
+    },
+  }
 }
 </script>
 
 
 <!--------------------------------- CSS ----------------------------------->
 <style scoped>
-  .searchArea {
-    height: 15vh;
-    position: fixed;
-  }
+.messagesViewContainer {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
 
-  .searchProfileTextbox {
-    width: 25vh;
-  }
+.searchArea {
+  background-color: #ccc;
+  border-radius: 0 0 1em 1em;
+}
 
-  .searchBtn {
-    background-color: #0d6efd;
-    margin-left: 10px;
-    color: white;
-    border-radius: 5px;
-    border: none;
-  }
-  .searchBtn:hover {
-    background-color: #0066ff;
-  }
+.loadMoreBtn {
+  background-color: #0d6efd;
+  margin: 1em;
+  padding: 0.2em;
+  color: white;
+  border-radius: 5px;
+  border: none;
+}
 
-  .center-button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+.loadMoreBtn:hover {
+  background-color: #0066ff;
+}
 
-  .profilePic {
-    width: 50px;
-    height: 50px;
-  }
-  
-  .chatBox {
-    max-height: 65vh; 
-    flex-direction: column;
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 10vh;
-    margin-bottom: 10vh;
-  }
+.center-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-  .chatInner {
-    overflow-y: scroll; 
-    max-height: 60vh; 
-  }
+.chatBox {
+  flex-direction: column;
+  display: flex;
+  flex-grow: 1;
+  overflow-y: scroll;
+}
 
-  .message {
-    max-width: 70%;
-    padding: 10px;
-    margin: 10px;
-    border-radius: 8px;
-    font-size: 14px;
-  }
+.message {
+  max-width: 70%;
+  padding: 10px;
+  margin: 10px;
+  border-radius: 8px;
+  font-size: 14px;
+}
 
-  .sent-message {
-    background-color: #ff8900ff;
-    color: white;
-    align-self: flex-end;
-    margin-left: auto;
-  }
+.sent-message {
+  background-color: #ff8900ff;
+  color: white;
+  align-self: flex-end;
+  margin-left: auto;
+}
 
-  .received-message {
-    background-color: #ababab;
-    color: #333;
-    align-self: flex-start;
-  }
+.received-message {
+  background-color: #ababab;
+  color: #333;
+  align-self: flex-start;
+}
 
-  .messageInput {
-    display: flex;
-    position: fixed;
-    justify-content: center; 
-    bottom: 5vh;
-    width: 80%;
-    padding: 10px;    
-    margin-bottom: 10px;
-  }
+.messageInput {
+  z-index: 100000;
+  display: flex;
+  justify-content: center;
+  padding: 1.3em;
+  margin: 0.2em;
+  background-color: #fff;
+  border-radius: 1em;
+}
 
-  .messageInput input {
-    margin-right: 10px; 
-  }
-
-  .profile-pic {
-    width: 50px; 
-    height: 50px;   
-    border-radius: 50%; 
-    object-fit: cover; 
-  }
-
+.messageInput input {
+  margin-right: 0.7em;
+}
 </style>

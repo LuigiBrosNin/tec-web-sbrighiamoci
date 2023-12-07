@@ -125,8 +125,8 @@ export default {
 
 <style scoped>
 .profile_img {
-  width: 16em;
-  height: 16em;
+  width: 10em;
+  height: 10em;
   border-radius: 50%;
   margin: 0.5em;
 }
