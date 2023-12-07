@@ -720,13 +720,11 @@ app.get("/chat/", async (req, res) => {
 // campo da dare nel body: squealList
 // SUPPORTA QUERY DI PAGINAZIONE
 // node sucks, can't use /squeals/list so here we are...
-app.use(bodyParser.json());
 app.post("/squeals_list/", async (req, res) => {
     try {
         const squealList = req.body.squealList;
 
         console.log('Squeal List:', squealList)
-        console.log('Squeal List Length bool:', squealList.length === 0)
 
         if (squealList == null || squealList.length === 0) {
             res.status(400).json({
@@ -771,19 +769,19 @@ app.post("/squeals_list/", async (req, res) => {
             });
 
             // squeal found
-            if (found_squeal !== null) {
+            if (found_squeal != null) {
                 // if we didn't reach the start index, skip the found squeal
                 if (index < startIndex) {
                     index++;
-                    continue;
+                } else {
+                    // if we reached the start index, add the squeal to the list
+                    squeals.push(found_squeal);
+                    index++;
                 }
-                // if we reached the start index, add the squeal to the list
-                squeals.push(found_squeal);
-                index++;
             }
         }
 
-        if (squeals.length === 0) {
+        if (squeals.length == 0) {
             res.status(404).json({
                 message: "no squeals found"
             });
