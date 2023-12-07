@@ -166,7 +166,7 @@ export default {
       };
     },
 
-    async checkForValidUser() {
+    async checkForValidUsers() {
       let fetched = await fetch(
         `https://site222326.tw.cs.unibo.it/profiles/${this.id}`,
         {
