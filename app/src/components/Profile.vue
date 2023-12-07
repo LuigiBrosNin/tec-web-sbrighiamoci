@@ -1,7 +1,8 @@
 <script setup>
-import Squeal from "@/components/Squeal.vue";
-import FollowButton from "@/components/FollowButton.vue";
-const props = defineProps(["id", "profile_json"]);
+  import Squeal from "@/components/Squeal.vue";
+  import FollowButton from "@/components/FollowButton.vue";
+  import ProfileCard from "@/components/ProfileCard.vue"
+  const props = defineProps(["id", "profile_json"]);
 </script>
 
 <template>
@@ -55,30 +56,66 @@ const props = defineProps(["id", "profile_json"]);
       </li>
       <li class="nav-item flex-sm-fill text-sm-center" role="presentation">
         <button class="nav-link" id="pills-followers-tab" data-bs-toggle="pill" data-bs-target="#pills-followers"
-          type="button" role="tab" aria-controls="pills-followers" aria-selected="false">
+          type="button" role="tab" aria-controls="pills-followers" aria-selected="false" @click="fetchFollowers">
           Followers
         </button>
       </li>
       <li class="nav-item flex-sm-fill text-sm-center" role="presentation">
         <button class="nav-link" id="pills-following-tab" data-bs-toggle="pill" data-bs-target="#pills-following"
-          type="button" role="tab" aria-controls="pills-following" aria-selected="false">
+          type="button" role="tab" aria-controls="pills-following" aria-selected="false" @click="fetchFollowing">
           Following
+        </button>
+      </li>
+      <li class="nav-item flex-sm-fill text-sm-center" role="presentation">
+        <button class="nav-link" id="pills-following-tab" data-bs-toggle="pill" data-bs-target="#pills-channels"
+          type="button" role="tab" aria-controls="pills-following" aria-selected="false" @click="fetchChannels">
+          Channels
         </button>
       </li>
     </ul>
 
     <div class="tab-content" id="pills-tabContent">
+
+      <!-- Squeals Cards -->
       <div class="tab-pane fade show active" id="pills-squeals" role="tabpanel" aria-labelledby="pills-squeals-tab">
         <div v-if="squealsList.length > 0">
-          <Squeal v-for="sq in squealsList" :id="sq"></Squeal>
+          <!-- <Squeal v-for="sq in squealsList" :id="sq"></Squeal>  -->
         </div>
       </div>
+
+      <!-- Followers Cards -->
       <div class="tab-pane fade" id="pills-followers" role="tabpanel" aria-labelledby="pills-followers-tab">
-        ...
+        <div v-for="follower in tmpFollowersList" :key="follower">
+          <ProfileCard :id="follower"></ProfileCard>
+        </div>
+        <div class="loadMoreContainer">
+          <div v-if="tmpFollowersList.length < 1"> No more profiles. </div>
+          <button @click="loadMoreFollowers" class="btn btn-primary loadMoreBtn"> Load more </button>
+        </div>
       </div>
+
+      <!-- Following Cards -->
       <div class="tab-pane fade" id="pills-following" role="tabpanel" aria-labelledby="pills-following-tab">
-        ...
+        <div v-for="follower in tmpFollowingList" :key="follower">
+          <ProfileCard :id="follower"></ProfileCard>
+        </div>
+        <div class="loadMoreContainer">
+          <div v-if="tmpFollowingList.length < 1"> No more profiles. </div>
+          <button @click="loadMoreFollowing" class="btn btn-primary loadMoreBtn"> Load more </button>
+        </div>
       </div>
+
+      <!-- Channels Cards -->
+      <div class="tab-pane fade" id="pills-following" role="tabpanel" aria-labelledby="pills-following-tab">
+        <div v-for="channel in tmpChannelsList" :key="channel">
+          <ChannelCard :id="channel"></ChannelCard>
+        </div>
+        <div class="loadMoreContainer">
+          <div v-if="tmpChannelsList.length < 1"> No more channels. </div>
+          <button @click="loadMoreChannels" class="btn btn-primary loadMoreBtn"> Load more </button>
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
@@ -101,6 +138,13 @@ export default {
       numberOfSqueals: 0,
       isBanned: false,
       bannedUntil: -1,
+
+      /* WIP ALEX */
+      tmpFollowersList: [],
+      tmpFollowingList: [],
+      tmpChannelsList: [],
+      loadMoreIndex: 0,
+      pageDim: 2,  // dimensione di una "pagina" da caricare
     };
   },
   methods: {
@@ -118,6 +162,7 @@ export default {
       fetched = await fetched.json();
       this.populate(fetched);
     },
+
     populate(profileJson) {
       this.name = profileJson.name;
       this.profilePicUrl = profileJson.propic;
@@ -141,12 +186,43 @@ export default {
       this.extraCredit = profileJson.extra_credit;
       this.numberOfSqueals = profileJson.squeals_num;
       this.isBanned = profileJson.is_banned;
-      this.bannedUntil = profileJson.banned_until;
+      this.bannedUntil = profileJson.banned_until;  
     },
+    
     goToSettings() {
       window.location.href = `https://site222326.tw.cs.unibo.it/app/profile/${this.name}/settings`;
     },
+    
+    // --------- WIP ALEX -----------
+    fetchFollowers() {
+      this.loadMoreIndex = 0;
+      this.tmpFollowersList = this.followersList.slice(this.loadMoreIndex, this.loadMoreIndex + this.pageDim);
+    },
+    loadMoreFollowers() {
+      this.loadMoreIndex += this.pageDim;
+      this.tmpFollowersList = this.followersList.slice(this.loadMoreIndex, this.loadMoreIndex + this.pageDim);
+    },
+
+    fetchFollowing() {
+      this.loadMoreIndex = 0;
+      this.tmpFollowingList = this.followingList.slice(this.loadMoreIndex, this.loadMoreIndex + this.pageDim);
+    },
+    loadMoreFollowing() {
+      this.loadMoreIndex += this.pageDim;
+      this.tmpFollowingList = this.followingList.slice(this.loadMoreIndex, this.loadMoreIndex + this.pageDim);
+    },
+
+    fetchChannels() {
+      this.loadMoreIndex = 0;
+      this.tmpChannelsList = this.channelFollowingList.slice(this.loadMoreIndex, this.loadMoreIndex + this.pageDim);
+    },
+    loadMoreChannels() {
+      this.loadMoreIndex += this.pageDim;
+      this.tmpChannelsList = this.channelFollowingList.slice(this.loadMoreIndex, this.loadMoreIndex + this.pageDim);
+    }
+    // --------- WIP ALEX -----------
   },
+
   created() {
     if (this.id != null) {
       this.fetchProfile(this.id);
@@ -191,5 +267,14 @@ export default {
   text-align: center;
   color:white;
   text-decoration: none;
+}
+
+
+
+.loadMoreContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 </style>
