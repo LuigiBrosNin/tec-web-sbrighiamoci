@@ -725,6 +725,7 @@ app.post("/squeals_list/", async (req, res) => {
         const squealList = req.body.squealList;
 
         console.log('Squeal List:', squealList)
+        
 
         if (squealList == null || squealList.length === 0) {
             res.status(400).json({
