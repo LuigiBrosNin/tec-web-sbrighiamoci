@@ -54,23 +54,23 @@ export class Squeal extends Component {
           </div>
 
           <div className="profile_data">
-            <img className="profile_img" />
+            <img className="profile_img" src={this.props.selectedAccount.propic}/>
             <RouterLink to={"smm/profile/" + this.props.squeal.author} className="profile_name"> @{this.props.squeal.author}</RouterLink>
           </div>
 
-          <p className="squeal_body"> {this.props.squeal.body} </p>
+          <p className="squeal_body"> {this.props.squeal.text} </p>
 
           {this.props.squeal.media != null ? <img className="squeal_media" src={this.props.squeal.media} /> : null}
 
           {this.props.squeal.location != null ?
 
             <div id="mapcontainer">
-              <div id={'map' + this.props.squeal.id} style="height: 200px"></div>
+              <div id={'map' + this.props.squeal.id} style={{height: 200 +'px'}}></div>
             </div>
 
             : null}
 
-          <p> {this.props.squeal.date} </p>
+          <p> {new Date(this.props.squeal.date).toUTCString()} </p>
 
           <div className="interaction_data">
             <button className="interaction_button">
