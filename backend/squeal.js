@@ -738,10 +738,10 @@ app.post("/squeals_list/", async (req, res) => {
         let startIndex = 0;
         let endIndex = 10;
         // check if the parameters are valid
-        if (req.query.startindex !== undefined && !isNaN(req.query.startindex)) {
+        if (req.query.startindex != null && !isNaN(req.query.startindex)) {
             startIndex = parseInt(req.query.startindex);
         }
-        if (req.query.endindex !== undefined && !isNaN(req.query.endindex)) {
+        if (req.query.endindex != null && !isNaN(req.query.endindex)) {
             endIndex = parseInt(req.query.endindex);
         }
         // check if the parameters are valid
@@ -756,6 +756,8 @@ app.post("/squeals_list/", async (req, res) => {
         let index = 0;
 
         console.log('Squeal List:', squealList)
+        console.log('Start Index:', startIndex);
+        console.log('End Index:', endIndex);
 
         await mongoClient.connect();
         for (const squeal of squealList) {
@@ -773,9 +775,11 @@ app.post("/squeals_list/", async (req, res) => {
             if (found_squeal != null) {
                 // if we didn't reach the start index, skip the found squeal
                 if (index < startIndex) {
+                    console.log("skipping squeal: " + found_squeal.id, "index: " + index)
                     index++;
                 } else {
                     // if we reached the start index, add the squeal to the list
+                    console.log("adding squeal: " + found_squeal.id, "index: " + index)
                     squeals.push(found_squeal);
                     index++;
                 }
