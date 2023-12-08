@@ -26,7 +26,7 @@ const props = defineProps(['id', 'squeal_json']);
         <p> {{ date }} </p>
 
         <div class="interaction_data">
-            <button class="interaction_button">
+            <button :class="'interaction_button' + ' ' + (($user != null && positiveReactionsList.includes($user)) ? 'active_button' : '')" @click="addOrRemovePositiveReation">
                 <img class="interaction_img" src="https://site222326.tw.cs.unibo.it/icons/face-smile-svgrepo-com.svg" />
                 <p>{{ positiveReactions }}</p>
             </button>
@@ -65,7 +65,9 @@ export default {
             body: "",
             media: "",
             positiveReactions: 0,
+            positiveReactionsList: [],
             negativeReactions: 0,
+            negativeReactionsList: [],
             replies: 0,
             location: {},
             isPrivate: false, // just a for a redundant check, it should never be true
@@ -104,7 +106,9 @@ export default {
             this.body = squealJson.text;
             this.media = squealJson.media;
             this.positiveReactions = squealJson.positive_reactions;
+            this.positiveReactionsList = squealJson.positive_reactions_list;
             this.negativeReactions = squealJson.negative_reactions;
+            this.negativeReactionsList = squealJson.negative_reactions_list;
             this.replies = squealJson.replies_num;
             this.location = squealJson.location;
             this.isPrivate = squealJson.is_private;
@@ -137,6 +141,49 @@ export default {
                 return map;
             }
         },
+        async registerImpression() {
+            await fetch(
+                `https://site222326.tw.cs.unibo.it/squeals/${this.squeal_id}/impressions`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-type": "application/json; charset=UTF-8",
+                        "Access-Control-Allow-Origin": "*",
+                    },
+                }
+            );
+        },
+        async addOrRemovePositiveReation() {
+            if ($user != null) {
+                await fetch(
+                    `https://site222326.tw.cs.unibo.it/squeals/${this.squeal_id}/positive_reactions_list`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-type": "application/json; charset=UTF-8",
+                            "Access-Control-Allow-Origin": "*",
+                        },
+                    }
+                );
+
+                let positiveUsers = await fetch(
+                    `https://site222326.tw.cs.unibo.it/squeals/${this.squeal_id}/positive_reactions_list`,
+                    {
+                        method: "GET",
+                        headers: {
+                            "Content-type": "application/json; charset=UTF-8",
+                            "Access-Control-Allow-Origin": "*",
+                        },
+                    }
+                );
+
+                this.positiveReactionsList = await positiveUsers.json();
+                this.positiveReactions = this.positiveReactionsList.length;
+            }
+            else {
+                window.location.replace("https://site222326.tw.cs.unibo.it/login");
+            }
+        }
     },
     async created() {
         if (this.id != null) {
@@ -145,7 +192,7 @@ export default {
             this.populate(this.squeal_json);
         }
 
-
+        this.registerImpression();
     },
     mounted() {
 

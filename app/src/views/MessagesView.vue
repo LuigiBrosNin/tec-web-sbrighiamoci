@@ -1,5 +1,4 @@
 <script setup>
-import MessagesSearchBar from "@/components/MessagesSearchBar.vue";
 import ProfileCard from "@/components/ProfileCard.vue"
 
 const props = defineProps(['id']);
