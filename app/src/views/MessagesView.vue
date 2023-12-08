@@ -16,7 +16,7 @@ const props = defineProps(['id']);
 
     <!-- chat area -->
     <div class="chatBox container mx-0 mx-auto">
-      <button v-if="chat.lenth > 0" @click="loadMore" class="loadMoreBtn"> Load more </button>
+      <button v-if="chat.length > 0" @click="loadMore" class="loadMoreBtn"> Load more </button>
       <div class="chatInner">
         <div :class="getMessageClass(message.author)" v-for="(message, index) in chat" :key="index">
           {{ message.text }}
