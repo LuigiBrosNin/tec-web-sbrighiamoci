@@ -1,4 +1,8 @@
 <template>
+  <p>aaaaaa {{ $route.query.replyto }}</p>
+  <p>{{ $route.query.text }}</p>
+  <p>{{ $route.query.receiver }}</p>
+
   <div class="squeal_container">
     <form @submit.prevent="submitForm" class="mt-5">
       <div class="input-group mb-3">

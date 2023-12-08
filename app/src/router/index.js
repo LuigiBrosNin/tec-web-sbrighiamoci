@@ -61,7 +61,8 @@ const router = createRouter({
     {
       path: '/squealPut',
       name: 'squealPut',
-      component: SquealPutView
+      component: SquealPutView,
+      query: {replyto: "", text: "", receiver: ""}
     },
     {
       path: '/search',
