@@ -7,7 +7,8 @@ export class SquealsInsights extends Component {
     this.state = {
       squeals: [],
       startIndex: 0,
-      endIndex: 10
+      endIndex: 10,
+      more_squeals: true
     };
     this.getSqueals = this.getSqueals.bind(this);
 
@@ -19,7 +20,7 @@ export class SquealsInsights extends Component {
     if(this.props.selectedAccount == null){
       return;
     }
-    this.getSqueals();
+    //this.getSqueals();
   }
 
   getSqueals() {
@@ -34,19 +35,30 @@ export class SquealsInsights extends Component {
 
     console.log("body: " + body);
 
-    fetch(`https://site222326.tw.cs.unibo.it/squeals_list?startindex${this.state.startIndex}&endindex=${this.state.endIndex}`, {
+    fetch(`https://site222326.tw.cs.unibo.it/squeals_list/?startindex=${this.state.startIndex}&endindex=${this.state.endIndex}`, {
       method: "POST",
       headers: {
         'Content-Type': 'application/json',
     },
       body: body,
     })
-      .then(response => response.json())
+      .then(response => {
+        //check if the response is ok
+        if (response.ok) {
+          return response.json();
+        } else {
+          return false
+        }})
       .then(data => {
         console.log(data);
-        if (data == null) {
+
+        if (!data) {
+          this.setState({
+            more_squeals: false
+          });
           return;
         }
+
         this.setState(prevState => ({
           squeals: [...prevState.squeals, ...data],
           startIndex: prevState.startIndex + 10,
@@ -67,7 +79,7 @@ export class SquealsInsights extends Component {
         {this.state.squeals.map(squeal => (
           <Squeal key={squeal.id} squeal={squeal} selectedAccount={this.props.selectedAccount} />
         ))}
-        <button className='btn btn-primary mt-2' onClick={this.getSqueals}>Load More</button>
+         {this.state.more_squeals ? <button className='btn btn-primary mt-2' onClick={this.getSqueals}>Load More</button> : <p>no more squeals to load for this account.</p>}
       </div>
     );
   }
