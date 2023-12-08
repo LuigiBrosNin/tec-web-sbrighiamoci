@@ -20,7 +20,24 @@ export class SquealsInsights extends Component {
     if(this.props.selectedAccount == null){
       return;
     }
-    //this.getSqueals();
+    this.getSqueals();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.selectedAccount !== prevProps.selectedAccount) {
+      if(this.props.selectedAccount == null){
+        return;
+      }
+      
+      this.setState({
+        squeals: [],
+        startIndex: 0,
+        endIndex: 10,
+        more_squeals: true
+      }, () => {
+        this.getSqueals();
+      });
+    }
   }
 
   getSqueals() {

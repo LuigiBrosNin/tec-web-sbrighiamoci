@@ -18,6 +18,8 @@ export class Squeal extends Component {
     this.showMap('map' + this.props.squeal.id)
   }
 
+  
+
   hasLocation() {
     return (this.props.squeal.location != null && this.props.squeal.location != "" && !(JSON.stringify(this.props.squeal.location) === "{}"));
   }
@@ -60,9 +62,9 @@ export class Squeal extends Component {
 
           <p className="squeal_body"> {this.props.squeal.text} </p>
 
-          {this.props.squeal.media != null ? <img className="squeal_media" src={this.props.squeal.media} /> : null}
+          {this.props.squeal.media != null &&  this.props.squeal.media != "" ? <img className="squeal_media" src={this.props.squeal.media} /> : null}
 
-          {this.props.squeal.location != null ?
+          { this.hasLocation() ?
 
             <div id="mapcontainer">
               <div id={'map' + this.props.squeal.id} style={{height: 200 +'px'}}></div>

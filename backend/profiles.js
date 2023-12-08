@@ -1403,3 +1403,68 @@ app.delete("/profiles/:name/smm", async (req, res) => {
         });
     }
 });
+
+/* -------------------------------------------------------------------------- */
+/*                            /PROFILES/:NAME/SHOP                            */
+/*                                    POST                                    */
+/* -------------------------------------------------------------------------- */
+
+//* POST
+// chiama squealerTechnician per effettuare l'acquisto richiesto
+// ritorna 404 se non esiste
+// ritorna 401 se non sei autorizzato
+// body: credit, credit_limits
+app.post("/profiles/:name/shop", async (req, res) => {
+    try {
+        const profileName = req.params.name;
+        const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === profileName;
+        const SMMauthorized = await isSMMAuthorized(req.session.user, profileName) && await isAuthorizedOrHigher(req.session.user, typeOfProfile.user);
+
+        if (!authorized && !SMMauthorized) {
+            res.status(401).json({
+                message: "Unauthorized"
+            });
+            return;
+        }
+
+        const credit = req.body.credit;
+        const credit_limits = req.body.credit_limits;
+
+        if (credit == undefined || credit_limits == undefined) {
+            res.status(400).json({
+                message: "Missing parameters"
+            });
+            return;
+        }
+
+        // process payment (real)
+
+        const authData = {
+            // Provide authentication data
+            username: "SquealerTechnician",
+            password: "tecpw"
+        };
+
+        await axios.post('https://site222326.tw.cs.unibo.it/login', authData);
+
+        await axios.post('https://site222326.tw.cs.unibo.it/profiles/' + profileName, {
+            credit: credit,
+            credit_limits: credit_limits
+        }).then(resPost => {
+            if(resPost.status == 200) {
+                res.status(200).json({
+                    message: "Purchase successful"
+                });
+            } else {
+                res.status(400).json({
+                    message: "Something went wrong :("
+                });
+            }
+        })
+
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+});

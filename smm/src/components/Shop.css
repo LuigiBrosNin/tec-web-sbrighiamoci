@@ -1,0 +1,6 @@
+.my_square_image {
+    width: 5rem !important;
+    height: 5rem !important;
+    object-fit: cover;
+    border-radius: 5px;
+}
