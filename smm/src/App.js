@@ -28,8 +28,8 @@ export const globalState = {
 // globally defining the smm user
 globalState.$user = await fetch("https://site222326.tw.cs.unibo.it/user-check", { method: "GET" });
 globalState.$user = await globalState.$user.json();
-//globalState.$user = globalState.$user.user || null
-globalState.$user = "SMMTest";
+globalState.$user = globalState.$user.user || null
+//globalState.$user = "SMMTest";
 console.log("current user: " + globalState.$user);
 
 
