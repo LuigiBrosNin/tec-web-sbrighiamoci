@@ -26,7 +26,7 @@ const props = defineProps(['id', 'squeal_json']);
         <p> {{ date }} </p>
 
         <div class="interaction_data">
-            <button :class="'interaction_button' + ' ' + (($user != null && positiveReactionsList.includes($user)) ? 'active_button' : '')" @click="addOrRemovePositiveReation">
+            <button :class="'interaction_button' + ' ' + ((this.$user != null && positiveReactionsList.includes(this.$user)) ? 'active_button' : '')" @click="addOrRemovePositiveReation">
                 <img class="interaction_img" src="https://site222326.tw.cs.unibo.it/icons/face-smile-svgrepo-com.svg" />
                 <p>{{ positiveReactions }}</p>
             </button>
@@ -154,7 +154,7 @@ export default {
             );
         },
         async addOrRemovePositiveReation() {
-            if ($user != null) {
+            if (this.$user != null) {
                 await fetch(
                     `https://site222326.tw.cs.unibo.it/squeals/${this.squeal_id}/positive_reactions_list`,
                     {
