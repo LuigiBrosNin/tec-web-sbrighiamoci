@@ -26,18 +26,18 @@ const props = defineProps(['id', 'squeal_json']);
         <p> {{ date }} </p>
 
         <div class="interaction_data">
-            <button :class="'interaction_button' + ' ' + (($user != null  && positiveReactionsList.includes($user)) ? 'active_button' : '')" @click="addOrRemovePositiveReation">
+            <button :class="'interaction_button' + ' ' + (($user != null  && positiveReactionsList.includes($user)) ? 'active_button' : '')" @click="addOrRemovePositiveReaction">
                 <img class="interaction_img" src="https://site222326.tw.cs.unibo.it/icons/face-smile-svgrepo-com.svg" />
-                <p>{{ positiveReactions }}</p>
+                <p class="interaction_counter">{{ positiveReactions }}</p>
             </button>
-            <button class="interaction_button">
+            <button :class="'interaction_button' + ' ' + (($user != null  && negativeReactionsList.includes($user)) ? 'active_button' : '')" @click="addOrRemoveNegativeReaction">
                 <img class="interaction_img" src="https://site222326.tw.cs.unibo.it/icons/face-frown-svgrepo-com.svg" />
-                <p>{{ negativeReactions }}</p>
+                <p class="interaction_counter">{{ negativeReactions }}</p>
             </button>
             <button class="interaction_button">
                 <img class="interaction_img"
                     src="https://site222326.tw.cs.unibo.it/icons/message-circle-dots-svgrepo-com.svg" />
-                <p>{{ replies }}</p>
+                <p class="interaction_counter">{{ replies }}</p>
             </button>
         </div>
 
@@ -153,7 +153,7 @@ export default {
                 }
             );
         },
-        async addOrRemovePositiveReation() {
+        async addOrRemovePositiveReaction() {
             if (this.$user != null) {
                 await fetch(
                     `https://site222326.tw.cs.unibo.it/squeals/${this.squeal_id}/positive_reactions_list`,
@@ -179,6 +179,37 @@ export default {
 
                 this.positiveReactionsList = await positiveUsers.json();
                 this.positiveReactions = this.positiveReactionsList.length;
+            }
+            else {
+                window.location.replace("https://site222326.tw.cs.unibo.it/login");
+            }
+        },
+        async addOrRemoveNegativeReaction() {
+            if (this.$user != null) {
+                await fetch(
+                    `https://site222326.tw.cs.unibo.it/squeals/${this.squeal_id}/negative_reactions_list`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-type": "application/json; charset=UTF-8",
+                            "Access-Control-Allow-Origin": "*",
+                        },
+                    }
+                );
+
+                let negativeUsers = await fetch(
+                    `https://site222326.tw.cs.unibo.it/squeals/${this.squeal_id}/negative_reactions_list`,
+                    {
+                        method: "GET",
+                        headers: {
+                            "Content-type": "application/json; charset=UTF-8",
+                            "Access-Control-Allow-Origin": "*",
+                        },
+                    }
+                );
+
+                this.negativeReactionsList = await negativeUsers.json();
+                this.negativeReactions = this.negativeReactionsList.length;
             }
             else {
                 window.location.replace("https://site222326.tw.cs.unibo.it/login");
@@ -286,5 +317,13 @@ export default {
 
 .interaction_img {
     width: 1.7em;
+}
+
+.interaction_counter {
+    margin: 0px;
+}
+
+.active_button{
+    filter: invert(74%) sepia(40%) saturate(7450%) hue-rotate(360deg) brightness(102%) contrast(104%);
 }
 </style>
