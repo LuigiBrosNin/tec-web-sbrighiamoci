@@ -1,42 +1,23 @@
 <template>
-  <p>aaaaaa {{ $route.query.replyto }}</p>
-  <p>{{ $route.query.text }}</p>
-  <p>{{ $route.query.receiver }}</p>
-
   <div class="squeal_container">
     <form @submit.prevent="submitForm" class="mt-5">
       <div class="input-group mb-3">
         <span class="input-group-text" id="basic-addon1">§</span>
-        <input
-          type="text"
-          id="receiver"
-          placeholder="Select a channel to squeal to"
-          v-model="receiver"
-          required
-          class="form-control"
-        />
+        <input type="text" id="receiver" placeholder="Select a channel to squeal to" v-model="receiver" required
+          class="form-control" />
       </div>
       <div class="profile_data">
         <img class="profile_img" :src="propic" />
         <RouterLink :to="`/profile/${$user}`" class="profile_name">
-          @{{ $user }}</RouterLink
-        >
+          @{{ $user }}</RouterLink>
       </div>
       <div class="form-group">
         <label for="text">Text:</label>
-        <textarea
-          id="text"
-          v-model="text"
-          required
-          class="form-control"
-        ></textarea>
+        <textarea id="text" v-model="text" required class="form-control"></textarea>
         <div>
           <div class="credits-container">
-            <span
-              v-for="(credit, index) in temp_credits"
-              :key="credit.id"
-              :class="{ positive: credit > 0, negative: credit <= 0 }"
-            >
+            <span v-for="(credit, index) in temp_credits" :key="credit.id"
+              :class="{ positive: credit > 0, negative: credit <= 0 }">
               {{ creditLabels[index] }}: {{ credit }}&nbsp;&nbsp;
             </span>
             <span v-if="Math.min(...Object.values(temp_credits)) < 0">
@@ -61,15 +42,11 @@
             <button @click="getGeolocation" class="btn btn-info">
               Include Geolocation in your Squeal
             </button>
-            <button
-              v-if="location"
-              @click="
-                {
-                  location = null;
-                }
-              "
-              class="btn btn-warning"
-            >
+            <button v-if="location" @click="
+                            {
+              location = null;
+            }
+              " class="btn btn-warning">
               X
             </button>
             <p v-if="location">
@@ -85,25 +62,14 @@
           <!-- Media form group goes here -->
           <div class="form-group">
             <label for="media" class="form-label">Media:</label>
-            <input
-              type="file"
-              id="media"
-              @change="handleFileUpload"
-              accept="image/*"
-              class="form-control"
-            />
+            <input type="file" id="media" @change="handleFileUpload" accept="image/*" class="form-control" />
             <button v-if="media" @click="media = null" class="btn btn-danger">
               X
             </button>
           </div>
           <div v-if="media">
             <p>Uploaded file:</p>
-            <img
-              v-if="mediaUrl"
-              :src="mediaUrl"
-              alt="uploaded file"
-              style="max-width: 50vw; max-height: 50vh"
-            />
+            <img v-if="mediaUrl" :src="mediaUrl" alt="uploaded file" style="max-width: 50vw; max-height: 50vh" />
           </div>
           <p v-else>No file selected</p>
         </div>
@@ -111,18 +77,9 @@
       <!-- TODO REMOVE WHEN WE IMPLEMENT AUTOMATIC REPLIES-->
       <div class="form-group">
         <label for="reply_to">Reply To:</label>
-        <input
-          type="text"
-          id="reply_to"
-          v-model="reply_to"
-          class="form-control"
-        />
+        <input type="text" id="reply_to" v-model="reply_to" class="form-control" />
       </div>
-      <button
-        type="submit"
-        class="btn btn-primary"
-        style="background-color: #ff8900; color: white"
-      >
+      <button type="submit" class="btn btn-primary" style="background-color: #ff8900; color: white">
         Submit
       </button>
     </form>
@@ -156,12 +113,6 @@ export default {
     // retrieve credits
     const profile = this.$user;
 
-    if(this.$route.query.replyto){
-      this.reply_to = this.$route.query.replyto;
-      this.receiver = this.$route.query.receiver;
-      this.text = this.$route.query.text;
-    }
-
     axios
       .get("https://site222326.tw.cs.unibo.it/profiles/" + profile)
       .then((response) => {
@@ -176,6 +127,20 @@ export default {
           this.propic = `https://site222326.tw.cs.unibo.it/profiles/${profile}/propic`;
         }
         console.log("credits: ", this.credits);
+
+        // update credits on screen
+        if (this.$route.query.replyto)
+          this.reply_to = this.$route.query.replyto;
+
+        if (this.$route.query.receiver)
+          this.receiver = this.$route.query.receiver;
+          
+        if (this.$route.query.text) {
+          this.text = this.$route.query.text;
+          this.updateCreditsOnScreen(this.text);
+        }
+         
+
       })
       .catch((error) => {
         console.log(error);
@@ -297,15 +262,21 @@ export default {
 }
 
 .form-group {
-  margin-bottom: 20px; /* Add spacing between form groups */
+  margin-bottom: 20px;
+  /* Add spacing between form groups */
 }
 
 .form-group button {
-  background-color: #ff8900; /* Change button color */
-  color: white; /* Change button text color */
-  margin-top: 10px; /* Add spacing above the button */
-  display: block; /* Make the button a block element */
-  margin-left: auto; /* Center the button */
+  background-color: #ff8900;
+  /* Change button color */
+  color: white;
+  /* Change button text color */
+  margin-top: 10px;
+  /* Add spacing above the button */
+  display: block;
+  /* Make the button a block element */
+  margin-left: auto;
+  /* Center the button */
   margin-right: auto;
 }
 
@@ -314,6 +285,7 @@ button[type="submit"] {
   margin-left: auto;
   margin-right: auto;
 }
+
 .credits-container {
   display: flex;
   justify-content: space-between;
