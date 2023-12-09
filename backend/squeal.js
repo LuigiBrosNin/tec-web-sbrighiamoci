@@ -1385,6 +1385,7 @@ app.get("/squeals/:id/:reaction_list", async (req, res) => {
 //* POST
 // aggiunge un utente alla lista di reazioni positive/negative dello squeal con id = id ricevuto come parametro
 // se l'utente è già presente nella lista, lo rimuove
+// se l'utente apppartiene alla lista opposta, lo rimuove da quella e lo aggiunge a questa
 // aggiunge un' impressione allo squeal con id = id ricevuto come parametro se la lista ricevuta è "impressions"
 app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
     try {
@@ -1445,14 +1446,25 @@ app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
         let reaction_num;
         let reaction_ratio;
 
+        let opposite_reaction_list;
+        let opposite_reaction_num;
+        let opposite_reaction_ratio;
+
         // assign the correct variables for updating the correct lists
         if (reactions == "positive_reactions_list") {
             reaction_num = "positive_reactions";
             reaction_ratio = "pos_popolarity_ratio";
+            opposite_reaction_list = "negative_reactions_list";
+            opposite_reaction_num = "negative_reactions";
+            opposite_reaction_ratio = "neg_popolarity_ratio";
         }
         if (reactions == "negative_reactions_list") {
             reaction_num = "negative_reactions";
             reaction_ratio = "neg_popolarity_ratio";
+            opposite_reaction_list = "positive_reactions_list";
+            opposite_reaction_num = "positive_reactions";
+            opposite_reaction_ratio = "pos_popolarity_ratio";
+
         }
 
         if (req.body.user == null) {
@@ -1495,7 +1507,15 @@ app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
             squeal[reactions].push(req.body.user);
             squeal[reaction_num] += 1;
             squeal[reaction_ratio] = squeal[reaction_num] / squeal.impressions;
-            console.log("User added to the list");
+
+            // if the user is in the opposite list, remove it
+            if (squeal[opposite_reaction_list].includes(req.body.user)) {
+                squeal[opposite_reaction_list].splice(squeal[opposite_reaction_list].indexOf(req.body.user), 1);
+                squeal[opposite_reaction_num] -= 1;
+                squeal[opposite_reaction_ratio] = squeal[opposite_reaction_num] / squeal.impressions;
+            }
+
+            console.log("User added to the list, opposite reaction removed");
 
         }
 
