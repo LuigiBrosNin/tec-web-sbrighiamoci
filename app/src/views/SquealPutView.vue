@@ -156,6 +156,12 @@ export default {
     // retrieve credits
     const profile = this.$user;
 
+    if(this.$route.query.replyto){
+      this.reply_to = this.$route.query.replyto;
+      this.receiver = this.$route.query.receiver;
+      this.text = this.$route.query.text;
+    }
+
     axios
       .get("https://site222326.tw.cs.unibo.it/profiles/" + profile)
       .then((response) => {
