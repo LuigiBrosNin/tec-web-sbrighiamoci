@@ -21,6 +21,9 @@ export class Navbar extends Component {
           <li className="nav-item">
             <Link className="nav-link" to="smm/shop">Shop</Link>
           </li>
+          <li className="nav-item">
+            <a className="nav-link" href="https://site222326.tw.cs.unibo.it/app/">To App</a>
+          </li>
         </ul>
       </div>
     )

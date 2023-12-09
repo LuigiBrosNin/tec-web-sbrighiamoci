@@ -1427,15 +1427,35 @@ app.post("/profiles/:name/shop", async (req, res) => {
             return;
         }
 
-        const credit = req.body.credit;
-        const credit_limits = req.body.credit_limits;
+        mongoClient.connect();
+        const profile = await collection_profiles.findOne({
+            name: profileName
+        });
 
-        if (credit == undefined || credit_limits == undefined) {
+        if (profile.is_deleted || profile == null) {
+            res.status(404).json({
+                message: "Profile not found."
+            });
+            return;
+        }
+
+        if ( req.body.credit == undefined ||  req.body.credit_limits == undefined) {
             res.status(400).json({
                 message: "Missing parameters"
             });
             return;
         }
+
+        const credit = {
+            g: req.body.credit + profile.credit.g,
+            s: req.body.credit + profile.credit.s,
+            m: req.body.credit + profile.credit.m
+            };
+        const credit_limits = {
+            g: req.body.credit_limits + profile.credit_limits.g,
+            s: req.body.credit_limits + profile.credit_limits.s,
+            m: req.body.credit_limits + profile.credit_limits.m
+            };
 
         // process payment (real)
 

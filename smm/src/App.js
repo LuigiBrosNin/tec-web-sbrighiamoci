@@ -6,7 +6,8 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import Header from './components/Header';
 import Navbar from './components/Navbar';
 import AccountSelector from './components/AccountSelector';
-import ProfileCard from './components/ProfileCard';
+// import ProfileCard from './components/ProfileCard';
+import MiniProfileCard from './components/MiniProfileCard';
 
 // main components
 import NewPost from './components/NewPost';
@@ -28,8 +29,8 @@ export const globalState = {
 // globally defining the smm user
 globalState.$user = await fetch("https://site222326.tw.cs.unibo.it/user-check", { method: "GET" });
 globalState.$user = await globalState.$user.json();
-globalState.$user = globalState.$user.user || null
-//globalState.$user = "SMMTest";
+//globalState.$user = globalState.$user.user || null
+globalState.$user = "SMMTest";
 console.log("current user: " + globalState.$user);
 
 
@@ -82,7 +83,9 @@ function App() {
           <nav className="col-md-2 d-none d-md-block bg-light sidebar">
             {<AccountSelector onAccountChange={handleSelectedAccountChange}/>}
             <Navbar />
-            {smm_account ? <ProfileCard profile={smm_account} /> : <p>Loading...</p>}
+            {smm_account ? 
+            <MiniProfileCard profile={smm_account} />             
+            : <p>Loading...</p>}
           </nav>
 
           <main role="main" className="col-md-9 ml-sm-auto col-lg-10 px-4">
