@@ -90,7 +90,7 @@ export class Squeal extends Component {
             </button>
           </div>
 
-          <RouterLink to={"smm/squeal/" + this.props.squeal.id}>Insights</RouterLink>
+          <RouterLink to={this.props.squeal.id}>Insights</RouterLink>
 
         </div>
       )

@@ -8,6 +8,7 @@ import Navbar from './components/Navbar';
 import AccountSelector from './components/AccountSelector';
 // import ProfileCard from './components/ProfileCard';
 import MiniProfileCard from './components/MiniProfileCard';
+import SquealInsight from './components/SquealInsight.js';
 
 // main components
 import NewPost from './components/NewPost';
@@ -97,8 +98,8 @@ function App() {
               <Route path="smm/messages" element={<Messages selectedAccount={selectedAccount}/>} />
               <Route path="smm/shop" element={<Shop selectedAccount={selectedAccount}/>} />
 
-              <Route path="smm/squeals/*" element={<h1>Soon</h1>} />
-              <Route path="smm/profile/*" element={<h1>Soon pt 2</h1>} />
+              <Route path="/smm/squeals/:id" element={<SquealInsight />} />
+              <Route path="smm/profile/:id" element={<h1>Soon pt 2</h1>} />
             </Routes>
           </main>
         </div>
