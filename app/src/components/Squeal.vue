@@ -234,10 +234,10 @@ export default {
                 }
             );
             if(channel.status == 200){
-                channel = channel.json();
-                canBeDeleted = this.$user != null && (this.$user == author || this.$user == channel.owner || channel.mod_list.includes(this.$user));
+                channel = await channel.json();
+                this.canBeDeleted = (this.$user != null) && (this.$user == this.author || this.$user == channel.owner || channel.mod_list.includes(this.$user));
             } else {
-                canBeDeleted = false;
+                this.canBeDeleted = false;
             }
 
         },
@@ -259,6 +259,7 @@ export default {
         } else if (this.squeal_json != null) {
             this.populate(this.squeal_json);
         }
+        this.canUserDeleteIt();
 
         this.registerImpression();
     },
