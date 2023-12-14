@@ -154,6 +154,9 @@ export default {
         if (response.status === 200) {
           console.log("cerco canale: ", this.search_channel_name)
           console.log("response: ", response)
+
+          this.show_inputs = true;
+          
         }
         else {
           alert("Canale non trovato.");
