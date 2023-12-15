@@ -10,6 +10,7 @@ import SquealPutView from '../views/SquealPutView.vue'
 import SquealInfoView from '../views/SquealInfoView.vue'
 import SearchChannelsView from '../views/SearchChannelsView.vue'
 import SearchProfilesView from '../views/SearchProfilesView.vue'
+import ChannelCreateView from '../views/ChannelCreateView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -68,6 +69,11 @@ const router = createRouter({
       path: '/search',
       name: 'searchView',
       component: SearchView
+    },
+    {
+      path: '/channelCreate',
+      name: 'channelCreate',
+      component: ChannelCreateView
     },
   ]
 })

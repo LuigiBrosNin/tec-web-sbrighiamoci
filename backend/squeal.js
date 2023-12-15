@@ -352,7 +352,7 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
             });
             return;
         } // check if the authos has enough credit 
-        else if (newSqueal.is_private == false && (profile_author.credit[0] < char_cost || profile_author.credit[1] < char_cost || profile_author.credit[2] < char_cost) && !isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)) {
+        else if (newSqueal.is_private == false && (profile_author.credit[0] < char_cost || profile_author.credit[1] < char_cost || profile_author.credit[2] < char_cost) && !(await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin))) {
             res.status(400).json({
                 message: "author does not have enough credit. available (g: " + profile_author.credit[0] + " s: " + profile_author.credit[1] + " m: " + profile_author.credit[2] + ") required: " + char_cost
             });
@@ -658,7 +658,7 @@ app.get("/chat/", async (req, res) => {
         });
 
         // if the profile is not found, return 404
-        if (!(isAuthorizedOrHigher(chat_profile, typeOfProfile.user)) || chat_profile.is_deleted == true) {
+        if (!(await isAuthorizedOrHigher(chat_profile, typeOfProfile.user)) || chat_profile.is_deleted == true) {
             res.status(404).json({
                 message: "chat profile does not exist"
             });
@@ -666,7 +666,7 @@ app.get("/chat/", async (req, res) => {
         }
 
         // if the profile is not found, return 404
-        if (!(isAuthorizedOrHigher(logged_profile, typeOfProfile.user)) || logged_profile.is_deleted == true) {
+        if (!(await isAuthorizedOrHigher(logged_profile, typeOfProfile.user)) || logged_profile.is_deleted == true) {
             res.status(404).json({
                 message: "logged profile does not exist"
             });
@@ -674,7 +674,7 @@ app.get("/chat/", async (req, res) => {
         }
 
         // if the profile is private and the user is not authorized to view it, return 401
-        if (!(await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin) || (await isSMMAuthorized(req.session.user, logged_user) && isAuthorizedOrHigher(logged_user, typeOfProfile.user)) || logged_user == req.session.user)) {
+        if (!(await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin) || (await isSMMAuthorized(req.session.user, logged_user) && await isAuthorizedOrHigher(logged_user, typeOfProfile.user)) || logged_user == req.session.user)) {
             res.status(401).json({
                 message: "you are not authorized to view this profile"
             });
@@ -817,8 +817,8 @@ app.get("/squeals/:id", async (req, res) => {
     try {
         const squealId = req.params.id;
 
-        const authorized = isAuthorizedOrHigher(req.session.id, typeOfProfile.user);
-        const adminAuthorized = isAuthorizedOrHigher(req.session.id, typeOfProfile.admin);
+        const authorized = await isAuthorizedOrHigher(req.session.id, typeOfProfile.user);
+        const adminAuthorized = await isAuthorizedOrHigher(req.session.id, typeOfProfile.admin);
 
         let squeal = null;
 
@@ -878,7 +878,7 @@ app.get("/squeals/:id", async (req, res) => {
 
 app.delete("/squeals/:id", async (req, res) => {
     try {
-        const authorized = isAuthorizedOrHigher(req.session.user, typeOfProfile.user);
+        const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user);
 
 
         // check if the user has logged in
@@ -909,7 +909,7 @@ app.delete("/squeals/:id", async (req, res) => {
             deletePic(squeal.media_id);
         }
 
-        const SMMAuthorized = isSMMAuthorized(req.session.user, squeal.author) && isAuthorizedOrHigher(squeal.author, typeOfProfile.user);
+        const SMMAuthorized = await isSMMAuthorized(req.session.user, squeal.author) && await isAuthorizedOrHigher(squeal.author, typeOfProfile.user);
 
         // if the user is not authorized to delete the squeal, return 401
         if (squeal.author !== req.session.user && !SMMAuthorized) {
@@ -1253,11 +1253,11 @@ app.get("/squeals/:id/replies/", async (req, res) => {
         let startIndex = 0;
         let endIndex = 10;
         // check if the parameters are valid
-        if (req.query.startIndex !== undefined && !isNaN(req.query.startindex)) {
-            startIndex = parseInt(req.query.startindex);
+        if (req.query.startIndex != null && !isNaN(req.query.startIndex)) {
+            startIndex = parseInt(req.query.startIndex);
         }
-        if (req.query.endindex !== undefined && !isNaN(req.query.endindex)) {
-            endIndex = parseInt(req.query.endindex);
+        if (req.query.endIndex !== undefined && !isNaN(req.query.endIndex)) {
+            endIndex = parseInt(req.query.endIndex);
         }
         // check if the parameters are valid
         if (startIndex > endIndex) {
@@ -1475,7 +1475,7 @@ app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
         let SMMAuthorized = await isSMMAuthorized(req.session.user, req.body.user) && await isAuthorizedOrHigher(req.body.user, typeOfProfile.user);
 
         // check if the user is logged in
-        if (!authorized && !isSMMAuthorized) { // TODO: add SMM authorization
+        if (!authorized && !SMMAuthorized) { // TODO: add SMM authorization
             res.status(401).json({
                 message: "you must be logged in to react to a squeal"
             });

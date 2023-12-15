@@ -139,7 +139,6 @@ export default {
       isBanned: false,
       bannedUntil: -1,
 
-      /* WIP ALEX */
       tmpFollowersList: [],
       tmpFollowingList: [],
       tmpChannelsList: [],
@@ -193,14 +192,17 @@ export default {
       window.location.href = `https://site222326.tw.cs.unibo.it/app/profile/${this.name}/settings`;
     },
     
-    // --------- WIP ALEX -----------
     fetchFollowers() {
       this.loadMoreIndex = 0;
       this.tmpFollowersList = this.followersList.slice(this.loadMoreIndex, this.loadMoreIndex + this.pageDim);
     },
     loadMoreFollowers() {
       this.loadMoreIndex += this.pageDim;
-      this.tmpFollowersList = this.followersList.slice(this.loadMoreIndex, this.loadMoreIndex + this.pageDim);
+      const newProfiles = this.followersList.slice(this.loadMoreIndex, this.loadMoreIndex + this.pageDim);
+      if (newProfiles.length == 0) {
+        alert("No more profiles to load.");
+      }
+      this.tmpFollowersList.push(...newProfiles);
     },
 
     fetchFollowing() {
@@ -209,7 +211,11 @@ export default {
     },
     loadMoreFollowing() {
       this.loadMoreIndex += this.pageDim;
-      this.tmpFollowingList = this.followingList.slice(this.loadMoreIndex, this.loadMoreIndex + this.pageDim);
+      const newProfiles = this.followingList.slice(this.loadMoreIndex, this.loadMoreIndex + this.pageDim);
+      if (newProfiles.length == 0) {
+        alert("No more profiles to load.");
+      }
+      this.tmpFollowingList.push(...newProfiles);
     },
 
     fetchChannels() {
@@ -218,9 +224,12 @@ export default {
     },
     loadMoreChannels() {
       this.loadMoreIndex += this.pageDim;
-      this.tmpChannelsList = this.channelFollowingList.slice(this.loadMoreIndex, this.loadMoreIndex + this.pageDim);
+      const newChannels = this.channelFollowingList.slice(this.loadMoreIndex, this.loadMoreIndex + this.pageDim);
+      if (newChannels.length == 0) {
+        alert("No more channels to load.");
+      }
+      this.tmpChannelsList.push(...newChannels);
     }
-    // --------- WIP ALEX -----------
   },
 
   created() {
@@ -268,8 +277,6 @@ export default {
   color:white;
   text-decoration: none;
 }
-
-
 
 .loadMoreContainer {
   display: flex;

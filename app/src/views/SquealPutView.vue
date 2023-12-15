@@ -59,7 +59,7 @@
         </div>
 
         <div class="col">
-          <!-- Media form group goes here -->
+           Media form group goes here 
           <div class="form-group">
             <label for="media" class="form-label">Media:</label>
             <input type="file" id="media" @change="handleFileUpload" accept="image/*" class="form-control" />
@@ -73,8 +73,9 @@
           </div>
           <p v-else>No file selected</p>
         </div>
-      </div>
+      </div> 
       <!-- TODO REMOVE WHEN WE IMPLEMENT AUTOMATIC REPLIES-->
+      
       <div class="form-group">
         <label for="reply_to">Reply To:</label>
         <input type="text" id="reply_to" v-model="reply_to" class="form-control" />
@@ -317,3 +318,4 @@ button[type="submit"] {
   font-size: 1.3em;
 }
 </style>
+

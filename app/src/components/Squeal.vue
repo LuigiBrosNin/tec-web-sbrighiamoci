@@ -4,7 +4,7 @@ const props = defineProps(['id', 'squeal_json']);
 
 <template>
     <div class="squeal_container" v-if="isValid && !isPrivate">
-        <p> §{{ channel }} </p> <!-- TODO add router link to channel -->
+        <RouterLink :to="`/channels/${channel}`"> §{{ channel }} </RouterLink>
         <div v-if='replyTo != null && replyTo != ""'>
             <p>Reply to: {{ replyTo }}</p>
         </div>
@@ -26,22 +26,31 @@ const props = defineProps(['id', 'squeal_json']);
         <p> {{ date }} </p>
 
         <div class="interaction_data">
-            <button :class="'interaction_button' + ' ' + (($user != null  && positiveReactionsList.includes($user)) ? 'active_button' : '')" @click="addOrRemovePositiveReaction">
+            <button
+                :class="'interaction_button' + ' ' + (($user != null && positiveReactionsList.includes($user)) ? 'active_button' : '')"
+                @click="addOrRemovePositiveReaction">
                 <img class="interaction_img" src="https://site222326.tw.cs.unibo.it/icons/face-smile-svgrepo-com.svg" />
                 <p class="interaction_counter">{{ positiveReactions }}</p>
             </button>
-            <button :class="'interaction_button' + ' ' + (($user != null  && negativeReactionsList.includes($user)) ? 'active_button' : '')" @click="addOrRemoveNegativeReaction">
+            <button
+                :class="'interaction_button' + ' ' + (($user != null && negativeReactionsList.includes($user)) ? 'active_button' : '')"
+                @click="addOrRemoveNegativeReaction">
                 <img class="interaction_img" src="https://site222326.tw.cs.unibo.it/icons/face-frown-svgrepo-com.svg" />
                 <p class="interaction_counter">{{ negativeReactions }}</p>
             </button>
-            <button class="interaction_button">
+            <RouterLink class="interaction_button" :to="`/squealPut/?replyto=${squeal_id}&receiver=${channel}`">
                 <img class="interaction_img"
                     src="https://site222326.tw.cs.unibo.it/icons/message-circle-dots-svgrepo-com.svg" />
                 <p class="interaction_counter">{{ replies }}</p>
-            </button>
+            </RouterLink>
         </div>
 
-        <RouterLink :to="`/squeal/${squeal_id}`">Comments</RouterLink>
+        <RouterLink :to="`/squeal/${squeal_id}`">More info</RouterLink>
+
+        <button v-if="canBeDeleted" class="delete_btn" @click="askToDelete">
+            <img class="delete_img" src="https://site222326.tw.cs.unibo.it/icons/trash-svgrepo-com.svg" />
+        </button>
+
     </div>
     <div class="squeal_container" v-else>
         <p>Squeal not found</p>
@@ -71,6 +80,8 @@ export default {
             replies: 0,
             location: {},
             isPrivate: false, // just a for a redundant check, it should never be true
+
+            canBeDeleted: false
         }
     },
     methods: {
@@ -214,6 +225,40 @@ export default {
             else {
                 window.location.replace("https://site222326.tw.cs.unibo.it/login");
             }
+        },
+        async canUserDeleteIt() {
+            let channel = await fetch(
+                `https://site222326.tw.cs.unibo.it/channels/${this.channel}`,
+                {
+                    method: "GET",
+                }
+            );
+            if (channel.status == 200) {
+                channel = await channel.json();
+                this.canBeDeleted = (this.$user != null) && (this.$user == this.author || this.$user == channel.owner || channel.mod_list.includes(this.$user));
+            } else {
+                this.canBeDeleted = false;
+            }
+
+        },
+        askToDelete() {
+            if (confirm("Are you sure you want to delete this squeal? This action can't be undone") == true) {
+                this.deleteSqueal();
+            } else {
+                // do nothing
+            }
+
+        },
+        async deleteSqueal() {
+            let res = await fetch(
+                `https://site222326.tw.cs.unibo.it/squeals/${this.squeal_id}`,
+                {
+                    method: "DELETE",
+                }
+            );
+            if (res.status == 200) {
+                this.isValid = false;
+            }
         }
     },
     async created() {
@@ -222,6 +267,7 @@ export default {
         } else if (this.squeal_json != null) {
             this.populate(this.squeal_json);
         }
+        this.canUserDeleteIt();
 
         this.registerImpression();
     },
@@ -268,6 +314,7 @@ export default {
     border-color: #616161;
     margin: 0.5em 2em 0.5em 2em;
     padding: 1em;
+    position: relative;
 }
 
 .profile_data {
@@ -313,6 +360,7 @@ export default {
     background-color: transparent;
     border-style: none;
     font-size: 1.1em;
+    text-decoration: none;
 }
 
 .interaction_img {
@@ -321,9 +369,26 @@ export default {
 
 .interaction_counter {
     margin: 0px;
+    color: #000;
 }
 
-.active_button{
+.active_button {
     filter: invert(74%) sepia(40%) saturate(7450%) hue-rotate(360deg) brightness(102%) contrast(104%);
+}
+
+
+.delete_btn {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    border-radius: 50%;
+    border-style: none;
+    background-color: #ffffff00;
+    margin: 0.75em;
+}
+
+.delete_img {
+    width: 2em;
+    filter: invert(17%) sepia(87%) saturate(7277%) hue-rotate(359deg) brightness(109%) contrast(118%);
 }
 </style>
