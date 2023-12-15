@@ -1,8 +1,14 @@
 <template>
 
+  <!-- Pulsanti di commutazione -->
+  <div class="d-flex justify-content-center my-3">
+    <button @click="showCreateSection" class="btn mx-2" :class="{ 'orange_btn': activeSection === 'create', 'btn-secondary': activeSection !== 'create' }">Create Channel</button>
+    <button @click="showModifySection" class="btn mx-2" :class="{ 'orange_btn': activeSection === 'modify', 'btn-secondary': activeSection !== 'modify' }">Modify Channel</button>
+  </div>
+
   <!-------------------- CREAZIONE CANALE --------------------->
-  <div class="squeal_container">
-    <form @submit.prevent="submitFormCreate" class="mt-5">
+  <div v-if="activeSection === 'create'" class="squeal_container">
+    <form @submit.prevent="createChannel" class="mt-5">
 
       <!-- Titolo -->
       <h3 class="title"> Create your channel </h3>
@@ -18,13 +24,13 @@
       </div>
 
       <!-- Submit -->
-      <button type="submit" class="btn btn-primary d-block mx-auto" style="background-color: #ff8900; color: white"> Submit </button>
+      <button type="submit" class="btn btn-primary d-block mx-auto orange_btn"> Submit </button>
 
     </form>
   </div>
 
   <!-------------------- MODIFICA CANALE --------------------->
-  <div class="squeal_container">
+  <div v-if="activeSection === 'modify'" class="squeal_container">
     <form @submit.prevent="submitFormModify" class="mt-5">
 
       <!-- Titolo -->
@@ -33,8 +39,9 @@
       <!-- Ricerca canale -->
       <div class="input-group mb-3 flex-column">
         <div class="mb-3">
+          <label for="modsInput"> Channel name: </label>
           <input type="text" placeholder="Search a channel..." v-model="search_channel_name" class="form-control mb-3" />
-          <button @click="searchChannel" class="btn btn-primary d-block mx-auto" style="background-color: #ff8900; color: white"> Search </button>
+          <button @click="searchChannel" class="btn btn-primary d-block mx-auto orange_btn"> Search </button>
         </div>
       </div>
 
@@ -43,33 +50,38 @@
 
         <!-- Bio -->
         <div class="mb-3">
+          <label for="channelType"> Bio: </label>
           <input type="text" placeholder="Write a new bio..." v-model="bio" required class="form-control" />
         </div>
         
         <!-- Tipo -->
-        <label for="channelType">Tipo di canale:</label>
-        <select v-model="channel_type" id="channelType" name="channelType" class="form-select">
+        <label for="channelType"> Channel type: </label>
+        <select v-model="channel_type" id="channelType" name="channelType" class="form-select mb-3">
           <option value="privileged">  Privileged   </option>
           <option value="private">     Private      </option>
           <option value="required">    Required     </option>
         </select>
 
         <!-- Mods -->
-        <div>
-          <label for="nameInput">Inserisci il nome:</label>
-          <input v-model="current_mod" type="text" id="nameInput" />
+        <div v-if="show_inputs">
+          <div class="mb-3">
+            <label for="modsInput"> Add un mod: </label>
+            <div class="input-group">
+              <input v-model="mods" type="text" id="modsInput" class="form-control" />
+              <button @click.prevent="addMod" class="btn btn-primary"> Aggiungi </button>
+            </div>
+          </div>
 
-          <button @click.prevent="addMod">Aggiungi Nome</button>
-        </div>
-
-        <div v-if="mods.length > 0">
-          <h2>Nomi inseriti:</h2>
-          <ul>
-            <li v-for="(name, index) in mods" :key="index">{{ name }}</li>
-          </ul>
+          <div v-if="mods.length > 0">
+            <h2> Mod attuali: </h2>
+            <ul class="list-group mb-3">
+              <li v-for="(name, index) in mods" :key="index" class="list-group-item">{{ name }}</li>
+            </ul>
+          </div>
         </div>
 
         <!-- Propic -->
+        <!--
         <div class="input-group mb-3">
           <div class="custom-file">
             <input type="file" class="form-control" id="inputGroupFile01" @change="handleFileUpload" accept="image/*" />
@@ -80,26 +92,14 @@
               <button v-else class="btn btn-danger" @click="removePic">Remove current propic</button>
             </div>
           </div>
-          
+        -->
+
           <!-- Submit -->
-        <button type="submit" class="btn btn-primary" style="background-color: #ff8900; color: white"> Submit </button>
+        <button type="submit" class="btn btn-primary orange_btn"> Submit </button>
       </div>
 
     </form>
   </div>
-
-<!-- 
-
-	- dare un nome al canale (se esiste già o è esistito negare permesso)
-	- dare il nome dell'owner (profilo che lo sta creando?)
-	- scegliere tipo di canale (tre opzioni: privileged, private, required )
-	- dare i nomi dei mods
-	- impostare una propic
-	- scrivere una bio
-	- inizializzare numero followers
-
- -->
-
 </template>
 
 <script>
@@ -110,12 +110,13 @@ import "leaflet/dist/leaflet.css";
 export default {
   data() {
     return {
+      activeSection: 'create', // Valore predefinito per la sezione attiva
       new_channel_name: "",
       new_bio: "",
       channel_type: "",
       bio: "",
-      mods: [],
-      current_mod: "",
+      mods: ["toni", "bepi"],
+      mod_to_add: "",
       max_bio_length: 150,
       show_inputs: false,
       search_channel_name: "",
@@ -127,10 +128,9 @@ export default {
   },
   methods: {
 
-    async submitFormCreate() {
+    async createChannel() {
       try {
         if (this.new_bio.length <= this.max_bio_length) {
-          console.log("Creo canale con nome: ", this.new_channel_name);
           const response = await axios.put(`https://site222326.tw.cs.unibo.it/channels/${this.new_channel_name}`, { bio: this.new_bio } );
           if (response.status === 409) {
             alert("Channel name already taken, choose a different one.");
@@ -139,6 +139,7 @@ export default {
             alert("Channel succesfully created!");
           }
           else {
+            alert("Something did not work, try later!");
             console.error("Unexpected response status: ", response.status);
           }
         }
@@ -153,44 +154,38 @@ export default {
       try {
         const response = await axios.get(`https://site222326.tw.cs.unibo.it/channels/${this.search_channel_name}`);
         if (response.status === 200) {
-          console.log("cerco canale: ", this.search_channel_name)
-          console.log("response: ", response)
-
           this.show_inputs = true;
-          console.log("bio: ", response.data.bio);
-          
+          this.bio = response.data.bio;
+          this.channel_type = response.data.type;
+          //this.mods = response.data.mod_list;  
         }
-        else {
-          alert("Canale non trovato.");
-        }
+        else { alert("Canale non trovato."); }
       }
-      catch (error) {
-        console.error("An error occured: ", error);
-      }
+      catch (error) { console.error("An error occured: ", error); }
     },
 
     submitFormModify() {
       return true;
     },
 
-    
-
     addMod() {
       //TODO controllare ad ogni aggiunta di nome se è valido
-      if (this.current_mod.trim() !== '') {
-        this.mods.push(this.current_mod.trim());
-        this.current_mod = ''; 
-      }
+      
+    },
+
+    showCreateSection() {
+      this.activeSection = 'create';
+    },
+    showModifySection() {
+      this.activeSection = 'modify';
     },
 
 
 
 
 
-
-
   ///////////////////////////////////////////////////////////////////////
-    handleFileUpload(event) {
+  /*  handleFileUpload(event) {
       console.log("file uploaded");
       this.file = event.target.files[0];
     },
@@ -224,7 +219,7 @@ export default {
           alert("Upload successful");
           this.profilePicUrl = `https://site222326.tw.cs.unibo.it/profiles/${name_of_profile}/propic`;
         });
-    }
+    }*/
   ///////////////////////////////////////////////////////////////////////
   }
 }
@@ -245,6 +240,16 @@ export default {
   .title {
     text-align: center;
     margin-bottom: 20px; 
+  }
+
+  .orange_btn {
+    background-color: #ff8900; 
+    color: white;
+  }
+
+  .orange_btn_low {
+    background-color: #ffa947; 
+    color: white;
   }
 
 </style>
