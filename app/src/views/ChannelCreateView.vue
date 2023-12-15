@@ -10,10 +10,10 @@
       <!-- Nome e bio -->
       <div class="input-group mb-3 flex-column">
         <div class="mb-3">
-          <input type="text" placeholder="Choose a name for the channel..." v-model="channel_name" required class="form-control" />
+          <input type="text" placeholder="Choose a name for the channel..." v-model="new_channel_name" required class="form-control" />
         </div>
         <div class="mb-3">
-          <input type="text" placeholder="Write a bio..." v-model="bio" class="form-control" />
+          <input type="text" placeholder="Write a bio..." v-model="new_bio" class="form-control" />
         </div>
       </div>
 
@@ -33,13 +33,14 @@
       <!-- Ricerca canale -->
       <div class="input-group mb-3 flex-column">
         <div class="mb-3">
-          <input type="text" placeholder="Search a channel..." v-model="search_channel_name" required class="form-control mb-3" />
+          <input type="text" placeholder="Search a channel..." v-model="search_channel_name" class="form-control mb-3" />
           <button @click="searchChannel" class="btn btn-primary d-block mx-auto" style="background-color: #ff8900; color: white"> Search </button>
         </div>
       </div>
 
       <!-- Sezione di modifica -->
       <div v-if="show_inputs">
+
         <!-- Bio -->
         <div class="mb-3">
           <input type="text" placeholder="Write a new bio..." v-model="bio" required class="form-control" />
@@ -67,7 +68,6 @@
             <li v-for="(name, index) in mods" :key="index">{{ name }}</li>
           </ul>
         </div>
-        
 
         <!-- Propic -->
         <div class="input-group mb-3">
@@ -80,11 +80,11 @@
               <button v-else class="btn btn-danger" @click="removePic">Remove current propic</button>
             </div>
           </div>
-        
           
           <!-- Submit -->
         <button type="submit" class="btn btn-primary" style="background-color: #ff8900; color: white"> Submit </button>
       </div>
+
     </form>
   </div>
 
@@ -110,7 +110,8 @@ import "leaflet/dist/leaflet.css";
 export default {
   data() {
     return {
-      channel_name: "",
+      new_channel_name: "",
+      new_bio: "",
       channel_type: "",
       bio: "",
       mods: [],
@@ -128,9 +129,9 @@ export default {
 
     async submitFormCreate() {
       try {
-        if (this.bio.length <= this.max_bio_length) {
-          console.log("Creo canale con nome: ", this.channel_name);
-          const response = await axios.put(`https://site222326.tw.cs.unibo.it/channels/${this.channel_name}`);
+        if (this.new_bio.length <= this.max_bio_length) {
+          console.log("Creo canale con nome: ", this.new_channel_name);
+          const response = await axios.put(`https://site222326.tw.cs.unibo.it/channels/${this.new_channel_name}`, { bio: this.new_bio } );
           if (response.status === 409) {
             alert("Channel name already taken, choose a different one.");
           }
@@ -156,6 +157,7 @@ export default {
           console.log("response: ", response)
 
           this.show_inputs = true;
+          console.log("bio: ", response.data.bio);
           
         }
         else {
