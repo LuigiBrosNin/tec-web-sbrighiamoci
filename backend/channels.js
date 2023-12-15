@@ -193,7 +193,7 @@ app.put("/channels/:name", async (req, res) => {
     const already_taken = await collection_channels.findOne({
       name: channel.channelName
     })
-    if (already_taken !== null) {
+    if (already_taken != null) {
       res.status(409).json({
         message: "Name already taken."
       });
