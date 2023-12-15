@@ -47,7 +47,7 @@ const props = defineProps(['id', 'squeal_json']);
 
         <RouterLink :to="`/squeal/${squeal_id}`">More info</RouterLink>
 
-        <button v-if="canBeDeleted" class="delete_btn" @click="deleteSqueal">
+        <button v-if="canBeDeleted" class="delete_btn" @click="askToDelete">
             <img class="delete_img" src="https://site222326.tw.cs.unibo.it/icons/trash-svgrepo-com.svg" />
         </button>
 
@@ -233,11 +233,19 @@ export default {
                     method: "GET",
                 }
             );
-            if(channel.status == 200){
+            if (channel.status == 200) {
                 channel = await channel.json();
                 this.canBeDeleted = (this.$user != null) && (this.$user == this.author || this.$user == channel.owner || channel.mod_list.includes(this.$user));
             } else {
                 this.canBeDeleted = false;
+            }
+
+        },
+        askToDelete() {
+            if (confirm("Are you sure you want to delete this squeal? This action can't be undone") == true) {
+                this.deleteSqueal();
+            } else {
+                // do nothing
             }
 
         },
@@ -248,7 +256,7 @@ export default {
                     method: "DELETE",
                 }
             );
-            if(res.status == 200){
+            if (res.status == 200) {
                 this.isValid = false;
             }
         }
