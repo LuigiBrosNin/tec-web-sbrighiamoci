@@ -9,6 +9,7 @@ import AccountSelector from './components/AccountSelector';
 // import ProfileCard from './components/ProfileCard';
 import MiniProfileCard from './components/MiniProfileCard';
 import SquealInsight from './components/SquealInsight.js';
+import SquealPut from './components/SquealPut.js';
 
 // main components
 import NewPost from './components/NewPost';
@@ -92,14 +93,15 @@ function App() {
           <main role="main" className="col-md-9 ml-sm-auto col-lg-10 px-4">
             <Routes>
               <Route path="smm" element={<h1>Click any tab to get started!</h1>} />
-              <Route path="smm/new" element={<NewPost selectedAccount={selectedAccount}/>} />
+              <Route path="smm/squealPut" element={<SquealPut selectedAccount={selectedAccount}/>} />
               <Route path="smm/profile" element={<ProfileInsights selectedAccount={selectedAccount}/>} />
               <Route path="smm/squeals" element={<SquealsInsights selectedAccount={selectedAccount}/>} />
               <Route path="smm/messages" element={<Messages selectedAccount={selectedAccount}/>} />
               <Route path="smm/shop" element={<Shop selectedAccount={selectedAccount}/>} />
 
-              <Route path="/smm/squeals/:id" element={<SquealInsight />} />
+              <Route path="smm/squeals/:id" element={<SquealInsight selectedAccount={selectedAccount}/>} />
               <Route path="smm/profile/:id" element={<h1>Soon pt 2</h1>} />
+
             </Routes>
           </main>
         </div>

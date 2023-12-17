@@ -102,11 +102,13 @@ export class Squeal extends Component {
         }
       );
 
+      const pos = await positiveUsers.json();
+
       this.setState({
         squeal: {
           ...this.state.squeal,
-          positive_reactions_list: await positiveUsers.json(),
-          positive_reactions: positive_reactions_list.length
+          positive_reactions_list: pos,
+          positive_reactions: pos.length
         }
       });
 
@@ -139,11 +141,13 @@ export class Squeal extends Component {
         }
       );
 
+      const neg = await negativeUsers.json();
+
       this.setState({
         squeal: {
           ...this.state.squeal,
-          negative_reactions_list: await negativeUsers.json(),
-          negative_reactions: negative_reactions_list.length
+          negative_reactions_list: neg,
+          negative_reactions: neg.length
         }
       });
 
@@ -174,7 +178,7 @@ export class Squeal extends Component {
 
   }
   askToDelete() {
-    if (confirm("Are you sure you want to delete this squeal? This action can't be undone") == true) {
+    if (window.confirm("Are you sure you want to delete this squeal? This action can't be undone") == true) {
       this.deleteSqueal();
     } else {
       // do nothing
@@ -200,7 +204,7 @@ export class Squeal extends Component {
         this.state.isValid && !this.state.squeal.is_private ?
 
       <div className="squeal_container">
-        <RouterLink to={"/channel/" + this.props.squeal.receiver}>§{this.props.squeal.receiver}</RouterLink>
+        <RouterLink to={"https://site222326.tw.cs.unibo.it/app/channel/" + this.props.squeal.receiver}>§{this.props.squeal.receiver}</RouterLink>
         <div>
           <p>Reply to: {this.props.squeal.replyTo}</p>
         </div>
@@ -226,23 +230,23 @@ export class Squeal extends Component {
 
         <div className="interaction_data">
           <button
-            className={`interaction_button ${user && positiveReactionsList.includes(user) ? 'active_button' : ''}`}
+            className={`interaction_button ${this.props.user && this.props.squeal.positive_reactions_list.includes(this.props.user) ? 'active_button' : ''}`}
             onClick={this.addOrRemovePositiveReaction}
           >
             <img className="interaction_img" src="https://site222326.tw.cs.unibo.it/icons/face-smile-svgrepo-com.svg" />
             <p className="interaction_counter">{this.props.squeal.positive_reactions}</p>
           </button>
           <button
-            className={`interaction_button ${user && negativeReactionsList.includes(user) ? 'active_button' : ''}`}
+            className={`interaction_button ${this.props.user && this.props.squeal.negative_reactions_list.includes(this.props.user) ? 'active_button' : ''}`}
             onClick={this.addOrRemoveNegativeReaction}
           >
             <img className="interaction_img" src="https://site222326.tw.cs.unibo.it/icons/face-frown-svgrepo-com.svg" />
             <p className="interaction_counter">{this.props.squeal.negative_reactions}</p>
           </button>
-          <Link className="interaction_button" to={`/squealPut/?replyto=${squeal_id}&receiver=${channel}`}>
+          <RouterLink className="interaction_button" to={`/smm/squealPut?replyto=${this.props.squeal.id}&receiver=${this.props.squeal.receiver}`}>
             <img className="interaction_img" src="https://site222326.tw.cs.unibo.it/icons/message-circle-dots-svgrepo-com.svg" />
             <p className="interaction_counter">{this.props.squeal.replies}</p>
-          </Link>
+          </RouterLink>
         </div>
 
         <RouterLink to={this.props.squeal.id}>Insights</RouterLink>
@@ -250,7 +254,7 @@ export class Squeal extends Component {
 
         {this.state.canBeDeleted ?
 
-          <button className="delete_btn" onClick={askToDelete}>
+          <button className="delete_btn" onClick={this.askToDelete}>
             <img className="delete_img" src="https://site222326.tw.cs.unibo.it/icons/trash-svgrepo-com.svg" />
           </button>
 

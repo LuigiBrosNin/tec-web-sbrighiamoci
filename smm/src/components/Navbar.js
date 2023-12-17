@@ -7,7 +7,7 @@ export class Navbar extends Component {
       <div className="sidebar-sticky">
         <ul className="nav flex-column">
           <li className="nav-item">
-            <Link className="nav-link active" to="smm/new">New Post</Link>
+            <Link className="nav-link active" to="smm/squealPut">New Post</Link>
           </li>
           <li className="nav-item">
             <Link className="nav-link" to="smm/profile">Profile Insights</Link>
