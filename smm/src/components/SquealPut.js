@@ -47,7 +47,7 @@ export class SquealPut extends Component {
               <div className="profile_data">
                 <img className="profile_img" src={this.state.propic} />
                 <Link to={`/profile/${this.props.user}`} className="profile_name">
-                  @{this.props.user}
+                  @{this.props.selectedAccount.name}
                 </Link>
               </div>
               <div className="form-group">
