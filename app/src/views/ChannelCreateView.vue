@@ -59,7 +59,7 @@
         <!-- Bio -->
         <div class="mb-3">
           <label for="channelType"> Bio: </label>
-          <input type="text" placeholder="Write a new bio..." v-model="bio" required class="form-control" />
+          <input type="text" placeholder="Write a new bio..." v-model="bio" class="form-control" />
         </div>
 
         <!-- Mods -->
@@ -68,7 +68,11 @@
             <label for="modsInput"> Add a mod: </label>
             <div class="input-group">
               <input v-model="mod_to_add" type="text" id="modsInput" class="form-control" />
-              <button @click.prevent="addMod" class="btn btn-primary"> Add </button>
+              <div>
+
+                <button @click="addMod" class="btn btn-primary "> Insert </button>
+                <button @click="removeMod" class="btn btn-danger "> Remove </button>
+              </div>
             </div>
           </div>
 
@@ -169,7 +173,6 @@ export default {
     },
 
     async addMod() {
-      //TODO controllare ad ogni aggiunta di nome se è valido
       const response = await axios.put(`https://site222326.tw.cs.unibo.it/channels/${this.search_channel_name}/mod_list`, { mod_name: this.mod_to_add } );
 
       if (response.status === 400) {
@@ -187,6 +190,26 @@ export default {
         // dopo aver aggiunto un mod, ricarico la lista
         const response = await axios.get(`https://site222326.tw.cs.unibo.it/channels/${this.search_channel_name}`);
         this.mods = response.data.mod_list;
+        this.mod_to_add = "";
+      }
+    },
+
+    async removeMod() {
+      const response = await axios.delete(`https://site222326.tw.cs.unibo.it/channels/${this.search_channel_name}/mod_list`, { mod_name: this.mod_to_add } );
+
+      if (response.status === 404) {
+        alert("Channel or profile not found.")
+      }
+      else if (response.status === 401) {
+        alert("You're not authorized to modify the mods list.")
+      }
+      else if (response.status === 200) {
+        alert("Mod succesfully removed!")
+
+        // dopo aver rimosso un mod, ricarico la lista
+        const response = await axios.get(`https://site222326.tw.cs.unibo.it/channels/${this.search_channel_name}`);
+        this.mods = response.data.mod_list;
+        this.mod_to_add = "";
       }
     },
 
@@ -257,6 +280,10 @@ export default {
   .title {
     text-align: center;
     margin-bottom: 20px; 
+  }
+
+  .btn_dim {
+    width: 5%;
   }
 
   .orange_btn {
