@@ -13,6 +13,14 @@
       <!-- Titolo -->
       <h3 class="title"> Create your channel </h3>
 
+      <!-- Tipo -->
+        <label for="channelType"> Channel type: </label>
+        <select v-model="channel_type" id="channelType" name="channelType" class="form-select mb-3">
+          <option value="privileged">  Privileged   </option>
+          <option value="private">     Private      </option>
+          <option value="required">    Required     </option>
+        </select>
+
       <!-- Nome e bio -->
       <div class="input-group mb-3 flex-column">
         <div class="mb-3">
@@ -31,7 +39,7 @@
 
   <!-------------------- MODIFICA CANALE --------------------->
   <div v-if="activeSection === 'modify'" class="squeal_container">
-    <form @submit.prevent="submitFormModify" class="mt-5">
+    <form @submit.prevent="modifyChannel" class="mt-5">
 
       <!-- Titolo -->
       <h3 class="title"> Modify your channel </h3>
@@ -53,27 +61,19 @@
           <label for="channelType"> Bio: </label>
           <input type="text" placeholder="Write a new bio..." v-model="bio" required class="form-control" />
         </div>
-        
-        <!-- Tipo -->
-        <label for="channelType"> Channel type: </label>
-        <select v-model="channel_type" id="channelType" name="channelType" class="form-select mb-3">
-          <option value="privileged">  Privileged   </option>
-          <option value="private">     Private      </option>
-          <option value="required">    Required     </option>
-        </select>
 
         <!-- Mods -->
         <div v-if="show_inputs">
           <div class="mb-3">
-            <label for="modsInput"> Add un mod: </label>
+            <label for="modsInput"> Add a mod: </label>
             <div class="input-group">
-              <input v-model="mods" type="text" id="modsInput" class="form-control" />
-              <button @click.prevent="addMod" class="btn btn-primary"> Aggiungi </button>
+              <input v-model="mod_to_add" type="text" id="modsInput" class="form-control" />
+              <button @click.prevent="addMod" class="btn btn-primary"> Add </button>
             </div>
           </div>
 
           <div v-if="mods.length > 0">
-            <h2> Mod attuali: </h2>
+            <h2> Actual mods: </h2>
             <ul class="list-group mb-3">
               <li v-for="(name, index) in mods" :key="index" class="list-group-item">{{ name }}</li>
             </ul>
@@ -110,30 +110,29 @@ import "leaflet/dist/leaflet.css";
 export default {
   data() {
     return {
-      activeSection: 'create', // Valore predefinito per la sezione attiva
+      activeSection: 'create',
       new_channel_name: "",
       new_bio: "",
       channel_type: "",
       bio: "",
-      mods: ["toni", "bepi"],
+      mods: [],
       mod_to_add: "",
       max_bio_length: 150,
       show_inputs: false,
       search_channel_name: "",
     };
   },
-  // mounted: function that gets called when page loads
-  mounted() {
-    
-  },
   methods: {
 
     async createChannel() {
       try {
         if (this.new_bio.length <= this.max_bio_length) {
-          const response = await axios.put(`https://site222326.tw.cs.unibo.it/channels/${this.new_channel_name}`, { bio: this.new_bio } );
+          const response = await axios.put(`https://site222326.tw.cs.unibo.it/channels/${this.new_channel_name}`, { bio: this.new_bio, type: this.channel_type } );
           if (response.status === 409) {
             alert("Channel name already taken, choose a different one.");
+          }
+          else if (response.status === 401) {
+            alert("You're not authorized to create this channel.")
           }
           else if (response.status === 200) {
             alert("Channel succesfully created!");
@@ -157,20 +156,38 @@ export default {
           this.show_inputs = true;
           this.bio = response.data.bio;
           this.channel_type = response.data.type;
-          //this.mods = response.data.mod_list;  
+          this.mods = response.data.mod_list;  
         }
         else { alert("Canale non trovato."); }
       }
       catch (error) { console.error("An error occured: ", error); }
     },
 
-    submitFormModify() {
-      return true;
+    async modifyChannel() {
+      // update della bio
+      const response = await axios.post(`https://site222326.tw.cs.unibo.it/channels/${this.search_channel_name}`, { bio: this.bio } );
     },
 
-    addMod() {
+    async addMod() {
       //TODO controllare ad ogni aggiunta di nome se è valido
-      
+      const response = await axios.put(`https://site222326.tw.cs.unibo.it/channels/${this.search_channel_name}/mod_list`, { mod_name: this.mod_to_add } );
+
+      if (response.status === 400) {
+        alert("This mod is already on the list.")
+      }
+      else if (response.status === 404) {
+        alert("Channel or profile not found.")
+      }
+      else if (response.status === 401) {
+        alert("You're not authorized to modify the mods list.")
+      }
+      else if (response.status === 200) {
+        alert("Mod succesfully added!")
+
+        // dopo aver aggiunto un mod, ricarico la lista
+        const response = await axios.get(`https://site222326.tw.cs.unibo.it/channels/${this.search_channel_name}`);
+        this.mods = response.data.mod_list;
+      }
     },
 
     showCreateSection() {
