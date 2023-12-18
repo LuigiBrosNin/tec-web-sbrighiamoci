@@ -1,3 +1,7 @@
+<script setup>
+  import router from '@/router/index.js'
+</script>
+
 <template>
   <div class="squeal_container">
     <form @submit.prevent="submitForm" class="mt-5">
@@ -45,6 +49,7 @@
             <button v-if="location" @click="
                             {
               location = null;
+              if(map != null){ destroyMap() }
             }
               " class="btn btn-warning">
               X
@@ -107,6 +112,8 @@ export default {
       location: null,
       creditLabels: ["daily", "weekly", "monthly"],
       propic: null,
+
+      map: null,
     };
   },
   // mounted: function that gets called when page loads
@@ -176,9 +183,15 @@ export default {
         .put("https://site222326.tw.cs.unibo.it/squeals/", formData)
         .then((response) => {
           console.log(response.data);
+          if(response.status == 200) {
+            //router.push({ path: `/squeal/id` }); //TODO
+          } else {
+            alert("an error has occurred, please try again later");
+          }
         })
         .catch((error) => {
           console.log(error);
+          alert("an error has occurred, please try again later");
         });
     },
     updateCreditsOnScreen(newText) {
@@ -199,13 +212,16 @@ export default {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
           };
-          this.showMap();
+          this.map = this.showMap();
         });
       } else {
         alert("Geolocation is not supported by this browser.");
       }
     },
     showMap() {
+      if(this.map != null){
+        this.destroyMap();
+      }
       const map = L.map("map").setView(
         [this.location.latitude, this.location.longitude],
         13
@@ -223,7 +239,15 @@ export default {
       L.marker([this.location.latitude, this.location.longitude], {
         icon: customIcon,
       }).addTo(map);
+      return map;
     },
+    destroyMap() {
+      this.map.remove();
+      console.log(document);
+      console.log(this.map._container.id);
+      document.getElementById(this.map._container.id).style.setProperty('background-color', '#fff', 'important'); 
+      this.map = null;
+    }
   },
   // watch: listeners
   watch: {
