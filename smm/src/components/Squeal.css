@@ -6,6 +6,7 @@
     border-color: #616161;
     margin: 0.5em 2em 0.5em 2em;
     padding: 1em;
+    position: relative;
 }
 
 .profile_data {
@@ -51,8 +52,34 @@
     background-color: transparent;
     border-style: none;
     font-size: 1.1em;
+    text-decoration: none;
 }
 
 .interaction_img {
     width: 1.7em;
+}
+
+.interaction_counter {
+    margin: 0px;
+    color: #000;
+}
+
+.active_button {
+    filter: invert(74%) sepia(40%) saturate(7450%) hue-rotate(360deg) brightness(102%) contrast(104%);
+}
+
+
+.delete_btn {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    border-radius: 50%;
+    border-style: none;
+    background-color: #ffffff00;
+    margin: 0.75em;
+}
+
+.delete_img {
+    width: 2em;
+    filter: invert(17%) sepia(87%) saturate(7277%) hue-rotate(359deg) brightness(109%) contrast(118%);
 }
