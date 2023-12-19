@@ -59,7 +59,7 @@ async function isSMMAuthorized(smm, user){
     if(userFromDB == null || smmFromDB == null) {
         return false;
     }
-    if(isAuthorizedOrHigher(smm, typeOfProfile.smm) && !userFromDB.is_deleted && !userFromDB.is_banned) {
+    if(!isAuthorizedOrHigher(smm, typeOfProfile.smm) || userFromDB.is_deleted || userFromDB.is_banned) {
         return false;
     }
 
