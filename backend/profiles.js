@@ -440,6 +440,7 @@ app.post("/profiles/:name", async (req, res) => {
         const profileName = req.params.name;
         const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
         const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === profileName;
+        console.log(req.session.user);
 
         if (!authorized && !adminAuthorized) {
             res.status(401).json({
@@ -1419,8 +1420,6 @@ app.post("/profiles/:name/shop", async (req, res) => {
         const profileName = req.params.name;
         const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === profileName;
         const SMMauthorized = await isSMMAuthorized(req.session.user, profileName) && await isAuthorizedOrHigher(req.session.user, typeOfProfile.user);
-        console.log(await isSMMAuthorized(req.session.user, profileName));
-        console.log(await isAuthorizedOrHigher(req.session.user, typeOfProfile.user));
 
         if (!authorized && !SMMauthorized) {
             res.status(401).json({
