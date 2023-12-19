@@ -459,7 +459,7 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
-                    "Cookie": req.headers.cookie
+                    //"Cookie": req.headers.cookie
                 },
                 body: JSON.stringify({
                     squeal_id: newSqueal.id
@@ -475,7 +475,8 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
 
         console.log('Squeal successfully uploaded: ', result.insertedId + '\n' + JSON.stringify(newSqueal));
         res.status(200).send(JSON.stringify({
-            message: "squeal added successfully with db id:" + result.insertedId //TODO: return ids
+            message: "squeal added successfully with db id:" + result.insertedId,
+            squeal_id: newSqueal.id,
         }));
     } catch (error) {
         console.error('Error during squeal upload: ', error);
