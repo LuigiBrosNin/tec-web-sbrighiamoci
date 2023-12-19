@@ -1,3 +1,18 @@
+const axios = require('axios');
+const tough = require('tough-cookie');
+const bodyParser = require('body-parser');
+const {wrapper} = require('axios-cookiejar-support');
+const { CookieJar } = tough;
+
+
+// Create a new cookie jar to store cookies between requests
+const cookieJar = new CookieJar();
+
+// Apply cookie jar support to axios
+wrapper(axios);
+axios.defaults.jar = cookieJar;
+axios.defaults.withCredentials = true;
+
 const {
     app
 } = require("../index.js");
@@ -30,6 +45,12 @@ const {
     exportPic,
     deletePic
 } = require("./const.js");
+
+const authData = {
+    // Provide authentication data
+    username: "SquealerTechnician",
+    password: "tecpw"
+};
 
 // connecting to the database
 mongoClient.connect();
@@ -462,24 +483,26 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
         });
 
         if (channel_receiver != null && channel_receiver != "") {
-            // TODO: login with squealertecnician
+            await axios.post('https://site222326.tw.cs.unibo.it/login', authData);
+
             // add the squeal to the channel's squeals_list
-            fetch("https://site222326.tw.cs.unibo.it/channels/" + channel_receiver.name + "/squeals_list", {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Cookie": req.headers.cookie
-                },
-                body: JSON.stringify({
-                    squeal_id: newSqueal.id
-                })
+            axios.put("https://site222326.tw.cs.unibo.it/channels/" + channel_receiver.name + "/squeals_list", {
+                squeal_id: newSqueal.id
             }).then(response => {
                 if (response.status == 200) {
                     console.log("squeal added to channel");
                 } else {
-                    console.log("respone status: " + response.status);
+                    console.log("response status: " + response.status);
+
+                    axios.delete("https://site222326.tw.cs.unibo.it/squeals/" + newSqueal.id);
+
+                    res.status(500).json({
+                        message: "Error adding squeal to channel: " + response.status
+                    });
+                    return;
                 }
             });
+
         }
 
         console.log('Squeal successfully uploaded: ', result.insertedId + '\n' + JSON.stringify(newSqueal));
