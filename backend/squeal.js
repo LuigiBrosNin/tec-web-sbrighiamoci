@@ -10,6 +10,15 @@ const bodyParser = require('body-parser');
 const multer = require('multer');
 const upload = multer();
 
+const axios = require('axios');
+const tough = require('tough-cookie');
+const {wrapper} = require('axios-cookiejar-support');
+const { CookieJar } = tough;
+const cookieJar = new CookieJar();
+wrapper(axios);
+axios.defaults.jar = cookieJar;
+axios.defaults.withCredentials = true;
+
 const {
     dbName,
     squealCollection,
@@ -459,7 +468,7 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
-                    //"Cookie": req.headers.cookie
+                    "Cookie": req.headers.cookie
                 },
                 body: JSON.stringify({
                     squeal_id: newSqueal.id
