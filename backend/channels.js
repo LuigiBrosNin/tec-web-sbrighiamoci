@@ -588,8 +588,6 @@ app.delete("/channels/:name/mod_list", async (req, res) => {
       return;
     }
 
-
-
     const result = await collection_channels.updateOne({
       name: channelName
     }, {
