@@ -27,6 +27,20 @@
     /* Center the button */
     margin-right: auto;
   }
+
+  .form-group button:hover {
+    background-color: #976022;
+    /* Change button color */
+    color: white;
+    /* Change button text color */
+    margin-top: 10px;
+    /* Add spacing above the button */
+    display: block;
+    /* Make the button a block element */
+    margin-left: auto;
+    /* Center the button */
+    margin-right: auto;
+  }
   
   button[type="submit"] {
     display: block;

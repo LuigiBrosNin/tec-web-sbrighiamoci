@@ -43,10 +43,10 @@
         <div class="col">
           <div class="form-group">
             <label for="location" class="form-label">Location:</label>
-            <button @click="getGeolocation" class="btn btn-info">
+            <button @click.prevent="getGeolocation" class="btn btn-info">
               Include Geolocation in your Squeal
             </button>
-            <button v-if="location" @click="
+            <button v-if="location" @click.prevent="
                             {
               location = null;
               if(map != null){ destroyMap() }
@@ -67,13 +67,13 @@
           <div class="form-group">
             <label for="media" class="form-label">Media:</label>
             <input type="file" id="media" @change="handleFileUpload" accept="image/*" class="form-control" />
-            <button v-if="media" @click="media = null" class="btn btn-danger">
+            <button v-if="media" @click.prevent="media = null" class="btn btn-danger">
               X
             </button>
           </div>
           <div v-if="media">
             <p>Uploaded file:</p>
-            <img v-if="mediaUrl" :src="mediaUrl" alt="uploaded file" style="max-width: 50vw; max-height: 50vh" />
+            <img v-if="mediaUrl" :src="mediaUrl" alt="uploaded file" style="max-width: 30vw; max-height: 30vh" />
           </div>
           <p v-else>No file selected</p>
         </div>

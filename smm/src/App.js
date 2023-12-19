@@ -12,7 +12,7 @@ import SquealInsight from './components/SquealInsight.js';
 
 
 // main components
-import SquealPut from './components/SquealPut.js';
+import { SquealPutHoc } from './components/SquealPutHoc.js';
 import ProfileInsights from './components/ProfileInsights';
 import SquealsInsights from './components/SquealsInsights.js';
 import Messages from './components/Messages';
@@ -32,7 +32,7 @@ export const globalState = {
 globalState.$user = await fetch("https://site222326.tw.cs.unibo.it/user-check", { method: "GET" });
 globalState.$user = await globalState.$user.json();
 //globalState.$user = globalState.$user.user || null
-globalState.$user = "SMMTest";
+globalState.$user = "SMMTest"; //! DEBUG, REMOVE BEFORE RELEASE
 console.log("current user: " + globalState.$user);
 
 
@@ -97,7 +97,7 @@ function App() {
             <main role="main" className="col-md-9 ml-sm-auto col-lg-10 px-4">
               <Routes>
                 <Route path="smm" element={<h1>Click any tab to get started!</h1>} />
-                <Route path="smm/squealPut" element={<SquealPut selectedAccount={selectedAccount} />} />
+                <Route path="smm/squealPut" element={<SquealPutHoc selectedAccount={selectedAccount} />} />
                 <Route path="smm/profile" element={<ProfileInsights selectedAccount={selectedAccount} />} />
                 <Route path="smm/squeals" element={<SquealsInsights selectedAccount={selectedAccount} />} />
                 <Route path="smm/messages" element={<Messages selectedAccount={selectedAccount} />} />
