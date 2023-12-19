@@ -468,6 +468,8 @@ app.put("/channels/:name/mod_list", async (req, res) => {
   try {
     const channelName = req.params.name;
 
+    console.log("req.body", JSON.stringify(req.body));
+
     if(req.body.user == null){
       req.body.user = req.session.user;
     }
