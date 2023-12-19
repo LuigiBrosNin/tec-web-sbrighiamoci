@@ -9,10 +9,10 @@ import AccountSelector from './components/AccountSelector';
 // import ProfileCard from './components/ProfileCard';
 import MiniProfileCard from './components/MiniProfileCard';
 import SquealInsight from './components/SquealInsight.js';
-import SquealPut from './components/SquealPut.js';
+
 
 // main components
-import NewPost from './components/NewPost';
+import SquealPut from './components/SquealPut.js';
 import ProfileInsights from './components/ProfileInsights';
 import SquealsInsights from './components/SquealsInsights.js';
 import Messages from './components/Messages';

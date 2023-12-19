@@ -1447,14 +1447,14 @@ app.post("/profiles/:name/shop", async (req, res) => {
         }
 
         const credit = [
-            req.body.credit + profile.credit.g,
-            req.body.credit + profile.credit.s,
-            req.body.credit + profile.credit.m
+            req.body.credit + profile.credit[0],
+            req.body.credit + profile.credit[1],
+            req.body.credit + profile.credit[2]
         ];
         const credit_limits = [
-            req.body.credit_limits + profile.credit_limits.g,
-            req.body.credit_limits + profile.credit_limits.s,
-            req.body.credit_limits + profile.credit_limits.m
+            req.body.credit_limits + profile.credit_limits[0],
+            req.body.credit_limits + profile.credit_limits[1],
+            req.body.credit_limits + profile.credit_limits[2]
         ];
 
         // process payment (real)

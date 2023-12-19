@@ -31,7 +31,7 @@ export class Shop extends Component {
       .then(res => res.json())
       .then(data => {
         console.log(data);
-        if (data.status == 200) {
+        if (data.message === "Purchase successful") {
           alert("Purchase successful! The page will reload.");
           window.location.reload();
         } else {
@@ -52,7 +52,7 @@ export class Shop extends Component {
         <div className="row">
           <div className="col-md-4">
             <div className="card">
-              <img src="coin1.png" className="card-img-top my_square-image" alt="Product 1" />
+              <img src={process.env.PUBLIC_URL + '/coin1.png'} className="card-img-top my_square-image" alt="Product 1" />
               <div className="card-body">
                 <h5 className="card-title">Tears of free speech</h5>
                 <p className="card-text">+100 credits, +50 credit limits</p>
@@ -62,7 +62,7 @@ export class Shop extends Component {
           </div>
           <div className="col-md-4">
             <div className="card">
-              <img src="coin2.png" className="card-img-top square-image" alt="Product 2" />
+              <img src={process.env.PUBLIC_URL + '/coin2.png'} className="card-img-top square-image" alt="Product 2" />
               <div className="card-body">
                 <h5 className="card-title">Twitter's lament</h5>
                 <p className="card-text">+500 credits, +280 credit limits</p>
@@ -72,7 +72,7 @@ export class Shop extends Component {
           </div>
           <div className="col-md-4">
             <div className="card">
-                <img src="coin3.png" className="card-img-top square-image" alt="Product 3" />
+                <img src={process.env.PUBLIC_URL + '/coin3.png'} className="card-img-top square-image" alt="Product 3" />
                 <div className="card-body">
                 <h5 className="card-title">That's just my opinion</h5>
                 <p className="card-text">+1000 credits, +500 credit limits</p>

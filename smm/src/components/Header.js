@@ -4,10 +4,6 @@ import './Header.css'
 
 export class Header extends Component {
 
-  constructor(props) {
-    super(props);
-  }
-
   componentDidMount() {
     if(this.props.selectedAccount == null){
       return;

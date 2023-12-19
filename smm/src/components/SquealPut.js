@@ -17,6 +17,11 @@ export class SquealPut extends Component {
       }
     
       componentDidMount() {
+
+        if(this.props.selectedAccount == null){
+          return;
+        }
+
         // retrieve credits
         const profile = this.props.selectedAccount.name;
     
@@ -36,6 +41,10 @@ export class SquealPut extends Component {
       }
 
       componentDidUpdate(prevProps) {
+        if (prevProps.selectedAccount == null) {
+          this.componentDidMount();
+          return;
+        }
         if (prevProps.selectedAccount.name !== this.props.selectedAccount.name) {
           this.componentDidMount();
         }
@@ -43,6 +52,7 @@ export class SquealPut extends Component {
     
       render() {
         return (
+          this.props.selectedAccount == null ? null :
           <div className="squeal_container">
             <form onSubmit={this.submitForm} className="mt-5">
               <div className="input-group mb-3">
@@ -51,7 +61,7 @@ export class SquealPut extends Component {
                   className="form-control" onChange={e => this.setState({ receiver: e.target.value })} />
               </div>
               <div className="profile_data">
-                <img className="profile_img" src={this.state.propic} />
+                <img className="profile_img" src={this.state.propic} alt='propic' />
                 <Link to={`/profile/${this.props.user}`} className="profile_name">
                   @{this.props.selectedAccount.name}
                 </Link>
