@@ -671,6 +671,7 @@ app.put("/channels/:name/squeals_list", async (req, res) => {
     const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
 
     console.log("enter channel put " + req.body.squeal_id);
+    console.log("session user: " + req.session.user);
 
     const channel = await collection_channels.findOne({
       name: name
