@@ -440,7 +440,6 @@ app.post("/profiles/:name", async (req, res) => {
         const profileName = req.params.name;
         const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
         const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === profileName;
-        console.log(req.session.user);
 
         if (!authorized && !adminAuthorized) {
             res.status(401).json({
@@ -1477,6 +1476,7 @@ app.post("/profiles/:name/shop", async (req, res) => {
                     message: "Purchase successful"
                 });
             } else {
+                console.log(resPost.status + " " + resPost.data.message);
                 res.status(400).json({
                     message: "Something went wrong :("
                 });
