@@ -34,6 +34,12 @@ export class SquealPut extends Component {
             console.log(error);
           });
       }
+
+      componentDidUpdate(prevProps) {
+        if (prevProps.selectedAccount.name !== this.props.selectedAccount.name) {
+          this.componentDidMount();
+        }
+      }
     
       render() {
         return (

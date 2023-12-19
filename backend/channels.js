@@ -547,6 +547,8 @@ app.put("/channels/:name/mod_list", async (req, res) => {
 app.delete("/channels/:name/mod_list", async (req, res) => {
   try {
     const channelName = req.params.name;
+
+    console.log("req.body", JSON.stringify(req.body));
     
     if(req.body.user == null){
       req.body.user = req.session.user;
@@ -574,7 +576,11 @@ app.delete("/channels/:name/mod_list", async (req, res) => {
       return;
     }
 
+    console.log("mod_name: " + req.body.mod_name);
+
     const updated_list = channel.mod_list.filter(mod => mod != req.body.mod_name);
+
+    console.log("updated list: " + updated_list);
 
     const result = await collection_channels.updateOne({
       name: channelName
@@ -583,13 +589,6 @@ app.delete("/channels/:name/mod_list", async (req, res) => {
         mod_list: updated_list
       }
     });
-
-    if (result.modifiedCount === 0) {
-      res.status(404).json({
-        message: "moderator not in the list"
-      });
-      return;
-    }
 
     res.status(200).json({
       message: "moderator removed"

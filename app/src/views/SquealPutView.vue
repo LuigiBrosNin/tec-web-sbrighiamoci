@@ -64,7 +64,6 @@
         </div>
 
         <div class="col">
-           Media form group goes here 
           <div class="form-group">
             <label for="media" class="form-label">Media:</label>
             <input type="file" id="media" @change="handleFileUpload" accept="image/*" class="form-control" />
