@@ -1471,7 +1471,7 @@ app.post("/profiles/:name/shop", async (req, res) => {
             credit: credit,
             credit_limits: credit_limits
         }).then(resPost => {
-            if(resPost.status == 200) {
+            if(resPost.status == 201) {
                 res.status(200).json({
                     message: "Purchase successful"
                 });
