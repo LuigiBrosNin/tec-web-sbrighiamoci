@@ -1,18 +1,3 @@
-const axios = require('axios');
-const tough = require('tough-cookie');
-const bodyParser = require('body-parser');
-const {wrapper} = require('axios-cookiejar-support');
-const { CookieJar } = tough;
-
-
-// Create a new cookie jar to store cookies between requests
-const cookieJar = new CookieJar();
-
-// Apply cookie jar support to axios
-wrapper(axios);
-axios.defaults.jar = cookieJar;
-axios.defaults.withCredentials = true;
-
 const {
     app
 } = require("../index.js");
