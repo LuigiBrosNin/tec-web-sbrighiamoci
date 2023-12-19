@@ -195,7 +195,8 @@ export default {
     },
 
     async removeMod() {
-      const response = await axios.delete(`https://site222326.tw.cs.unibo.it/channels/${this.search_channel_name}/mod_list`, { mod_name: this.mod_to_add } );
+      console.log("rimuovo mod: ", this.mod_to_add)
+      const response = await axios.delete(`https://site222326.tw.cs.unibo.it/channels/${this.search_channel_name}/mod_list`, { data: { mod_name: this.mod_to_add }});
 
       if (response.status === 404) {
         alert("Channel or profile not found.")
