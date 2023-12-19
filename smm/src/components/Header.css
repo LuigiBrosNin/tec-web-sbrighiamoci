@@ -1,5 +1,8 @@
 .squealer-logo-header {
   height: 8vmin;
   pointer-events: none;
-  padding-right: 2%;
+}
+
+.margin-element {
+  margin-right: 20px;
 }

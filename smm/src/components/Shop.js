@@ -31,7 +31,7 @@ export class Shop extends Component {
       .then(res => res.json())
       .then(data => {
         console.log(data);
-        if (data.success) {
+        if (data.status == 200) {
           alert("Purchase successful! The page will reload.");
           window.location.reload();
         } else {

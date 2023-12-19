@@ -39,6 +39,7 @@ console.log("current user: " + globalState.$user);
 function App() {
   const [smm_account, setSmmAccount] = useState(null);
   const [selectedAccount, setSelectedAccount] = useState(null);
+  const [isSidebarOpen, setSidebarOpen] = useState(true);
 
   useEffect(() => {
     if (globalState.$user == null) {
@@ -77,34 +78,37 @@ function App() {
   return (
     <div className="App">
 
-      <Header />
+      <Header selectedAccount={selectedAccount} />
 
       <div className="container-fluid">
         <Router>
-        <div className="row">
-          <nav className="col-md-2 d-none d-md-block bg-light sidebar">
-            {<AccountSelector onAccountChange={handleSelectedAccountChange}/>}
-            <Navbar />
-            {smm_account ? 
-            <MiniProfileCard profile={smm_account} />             
-            : <p>Loading...</p>}
-          </nav>
+          <div className="row">
+            <button className="d-md-none btn btn-primary" onClick={() => setSidebarOpen(!isSidebarOpen)}>
+              {isSidebarOpen ? 'Hide Sidebar' : 'Show Sidebar'}
+            </button>
+            <nav className={`col-md-2 bg-light sidebar ${isSidebarOpen ? 'd-block' : 'd-none'}`}>
+              <AccountSelector onAccountChange={handleSelectedAccountChange} />
+              <Navbar />
+              {smm_account ?
+                <MiniProfileCard profile={smm_account} />
+                : <p>Loading...</p>}
+            </nav>
 
-          <main role="main" className="col-md-9 ml-sm-auto col-lg-10 px-4">
-            <Routes>
-              <Route path="smm" element={<h1>Click any tab to get started!</h1>} />
-              <Route path="smm/squealPut" element={<SquealPut selectedAccount={selectedAccount}/>} />
-              <Route path="smm/profile" element={<ProfileInsights selectedAccount={selectedAccount}/>} />
-              <Route path="smm/squeals" element={<SquealsInsights selectedAccount={selectedAccount}/>} />
-              <Route path="smm/messages" element={<Messages selectedAccount={selectedAccount}/>} />
-              <Route path="smm/shop" element={<Shop selectedAccount={selectedAccount}/>} />
+            <main role="main" className="col-md-9 ml-sm-auto col-lg-10 px-4">
+              <Routes>
+                <Route path="smm" element={<h1>Click any tab to get started!</h1>} />
+                <Route path="smm/squealPut" element={<SquealPut selectedAccount={selectedAccount} />} />
+                <Route path="smm/profile" element={<ProfileInsights selectedAccount={selectedAccount} />} />
+                <Route path="smm/squeals" element={<SquealsInsights selectedAccount={selectedAccount} />} />
+                <Route path="smm/messages" element={<Messages selectedAccount={selectedAccount} />} />
+                <Route path="smm/shop" element={<Shop selectedAccount={selectedAccount} />} />
 
-              <Route path="smm/squeals/:id" element={<SquealInsight selectedAccount={selectedAccount}/>} />
-              <Route path="smm/profile/:id" element={<h1>Soon pt 2</h1>} />
+                <Route path="smm/squeals/:id" element={<SquealInsight selectedAccount={selectedAccount} />} />
+                <Route path="smm/profile/:id" element={<h1>Soon pt 2</h1>} />
 
-            </Routes>
-          </main>
-        </div>
+              </Routes>
+            </main>
+          </div>
         </Router>
       </div>
     </div>

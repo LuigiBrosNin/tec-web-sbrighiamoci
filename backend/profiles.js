@@ -1446,16 +1446,16 @@ app.post("/profiles/:name/shop", async (req, res) => {
             return;
         }
 
-        const credit = {
-            g: req.body.credit + profile.credit.g,
-            s: req.body.credit + profile.credit.s,
-            m: req.body.credit + profile.credit.m
-            };
-        const credit_limits = {
-            g: req.body.credit_limits + profile.credit_limits.g,
-            s: req.body.credit_limits + profile.credit_limits.s,
-            m: req.body.credit_limits + profile.credit_limits.m
-            };
+        const credit = [
+            req.body.credit + profile.credit.g,
+            req.body.credit + profile.credit.s,
+            req.body.credit + profile.credit.m
+        ];
+        const credit_limits = [
+            req.body.credit_limits + profile.credit_limits.g,
+            req.body.credit_limits + profile.credit_limits.s,
+            req.body.credit_limits + profile.credit_limits.m
+        ];
 
         // process payment (real)
 
