@@ -183,7 +183,8 @@ export default {
         .then((response) => {
           console.log(response.data);
           if(response.status == 200) {
-            //router.push({ path: `/squeal/id` }); //TODO
+            let id = response.data.squeal_id;
+            router.push({ path: `/squeal/${id}` });
           } else {
             alert("an error has occurred, please try again later");
           }
