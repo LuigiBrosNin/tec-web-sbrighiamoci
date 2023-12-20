@@ -1271,7 +1271,7 @@ app.get("/squeals/:id/replies/", async (req, res) => {
         let startIndex = 0;
         let endIndex = 10;
         // check if the parameters are valid
-        if (req.query.startIndex != null && !isNaN(req.query.startindex)) {
+        if (req.query.startindex != null && !isNaN(req.query.startindex)) {
             startIndex = parseInt(req.query.startindex);
         }
         if (req.query.endindex != null && !isNaN(req.query.endindex)) {
