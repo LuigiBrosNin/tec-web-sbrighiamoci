@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import L from 'leaflet';
+import L, { marker } from 'leaflet';
 import "leaflet/dist/leaflet.css";
 
 import "./SquealPut.css"
@@ -23,13 +23,13 @@ export class SquealPut extends Component {
       map_value: 0,
       location: null,
       map: null,
+      marker: null,
       mediaUrl: null,
     };
 
     this.updateCreditsOnScreen = this.updateCreditsOnScreen.bind(this);
     this.getGeolocation = this.getGeolocation.bind(this);
     this.showMap = this.showMap.bind(this);
-    this.destroyMap = this.destroyMap.bind(this);
     this.handleFileUpload = this.handleFileUpload.bind(this);
     this.submitForm = this.submitForm.bind(this);
     this.removeLocation = this.removeLocation.bind(this);
@@ -38,7 +38,7 @@ export class SquealPut extends Component {
   }
 
   removeLocation = () => {
-    this.setState({ location: null, map: null });
+    this.setState({ location: null });
   };
 
   removeMedia = () => {
@@ -56,7 +56,6 @@ export class SquealPut extends Component {
       temp_credits[field] -= this.state.charCount + this.state.media_value + this.state.map_value;
     }
     this.setState({ temp_credits });
-    console.log("credits: ", this.state.temp_credits);
   };
 
   getGeolocation = () => {
@@ -66,7 +65,13 @@ export class SquealPut extends Component {
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
         };
-        this.setState({ location, map: this.showMap(location) });
+        this.setState({ location });
+
+        //move the marker to the new location
+        this.state.map.panTo(new L.LatLng(location.latitude, location.longitude));
+        this.state.map.setZoom(13);
+        this.state.marker.setLatLng(new L.LatLng(location.latitude, location.longitude));
+
       });
     } else {
       alert("Geolocation is not supported by this browser.");
@@ -74,9 +79,6 @@ export class SquealPut extends Component {
   };
 
   showMap = (location) => {
-    if(this.state.map != null){
-      this.destroyMap();
-    }
     const map = L.map("map").setView(
       [location.latitude, location.longitude],
       13
@@ -91,18 +93,19 @@ export class SquealPut extends Component {
       iconAnchor: [19, 38], // point of the icon which will correspond to marker's location
       popupAnchor: [-3, -76], // point from which the popup should open relative to the iconAnchor
     });
-    L.marker([location.latitude, location.longitude], {
+    const marker =L.marker([location.latitude, location.longitude], {
       icon: customIcon,
+      draggable: true,
+      autoPan: true,
     }).addTo(map);
-    return map;
-  };
 
-  destroyMap = () => {
-    this.state.map.remove();
-    console.log(document);
-    console.log(this.state.map._container.id);
-    document.getElementById(this.state.map._container.id).style.setProperty('background-color', '#fff', 'important'); 
-    this.setState({ map: null });
+    // Update the location in the state when the marker is dragged
+    marker.on('dragend', (event) => {
+      const position = marker.getLatLng();
+      this.setState({ location: { latitude: position.lat, longitude: position.lng } });
+    });
+
+    this.setState({ map, marker });
   };
 
   handleFileUpload = (event) => {
@@ -131,7 +134,7 @@ export class SquealPut extends Component {
       .put("https://site222326.tw.cs.unibo.it/squeals/", formData)
       .then((response) => {
         console.log(response.data);
-        if(response.status === 200) {
+        if (response.status === 200) {
           //router.push({ path: `/squeal/id` }); //TODO
         } else {
           alert("an error has occurred, please try again later");
@@ -167,6 +170,8 @@ export class SquealPut extends Component {
       .catch((error) => {
         console.log(error);
       });
+
+      this.showMap({ latitude: 0, longitude: 0 });
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -174,45 +179,45 @@ export class SquealPut extends Component {
       this.componentDidMount();
     }
 
-      // Watch for changes in text
-  if (prevState.text !== this.state.text) {
-    console.log("text changed: ", this.state.text);
-    this.updateCreditsOnScreen(this.state.text);
-  }
-
-  // Watch for changes in media
-  if (prevState.media !== this.state.media) {
-    console.log("media changed: ", this.state.media);
-    if (this.state.media) {
-      this.setState({ media_value: 125 }, () => {
-        console.log("media value: ", this.state.media_value);
-        this.updateCreditsOnScreen(null);
-      });
-    } else {
-      this.setState({ media_value: 0 }, () => {
-        console.log("media value: ", this.state.media_value);
-        this.updateCreditsOnScreen(null);
-      });
-    }
-  }
-
-  // Watch for changes in location
-  if (prevState.location !== this.state.location) {
-    console.log("location changed: ", this.state.location);
-    if (this.state.location) {
-      this.setState({ map_value: 125 }, () => {
-        console.log("map value: ", this.state.map_value);
-        this.updateCreditsOnScreen(null);
-      });
-    } else {
-      this.setState({ map_value: 0 }, () => {
-        console.log("map value: ", this.state.map_value);
-        this.updateCreditsOnScreen(null);
-      });
+    // Watch for changes in text
+    if (prevState.text !== this.state.text) {
+      console.log("text changed: ", this.state.text);
+      this.updateCreditsOnScreen(this.state.text);
     }
 
+    // Watch for changes in media
+    if (prevState.media !== this.state.media) {
+      console.log("media changed: ", this.state.media);
+      if (this.state.media) {
+        this.setState({ media_value: 125 }, () => {
+          console.log("media value: ", this.state.media_value);
+          this.updateCreditsOnScreen(null);
+        });
+      } else {
+        this.setState({ media_value: 0 }, () => {
+          console.log("media value: ", this.state.media_value);
+          this.updateCreditsOnScreen(null);
+        });
+      }
+    }
+
+    // Watch for changes in location
+    if (prevState.location !== this.state.location) {
+      console.log("location changed: ", this.state.location);
+      if (this.state.location) {
+        this.setState({ map_value: 125 }, () => {
+          console.log("map value: ", this.state.map_value);
+          this.updateCreditsOnScreen(null);
+        });
+      } else {
+        this.setState({ map_value: 0 }, () => {
+          console.log("map value: ", this.state.map_value);
+          this.updateCreditsOnScreen(null);
+        });
+      }
+
+    }
   }
-}
 
   render() {
     return (
@@ -232,7 +237,7 @@ export class SquealPut extends Component {
             </div>
             <div className="form-group">
               <label htmlFor="text">Text:</label>
-              <textarea id="text" value={this.state.text} required className="form-control" onChange={e =>{ this.setState({ text: e.target.value }); this.state.text = e.target.value; this.updateCreditsOnScreen(this.state.text) }}></textarea>
+              <textarea id="text" value={this.state.text} required className="form-control" onChange={e => { this.setState({ text: e.target.value }); this.state.text = e.target.value; this.updateCreditsOnScreen(this.state.text) }}></textarea>
               <div>
                 <div className="credits-container">
                   {this.state.temp_credits.map((credit, index) => (
@@ -241,7 +246,7 @@ export class SquealPut extends Component {
                     </span>
                   ))}
                   {Math.min(...Object.values(this.state.temp_credits)) < 0 && (
-                    <button className="btn btn-primary" onClick={(e) => { e.preventDefault(); /* ADD BUY FUNCTION */}}>
+                    <button className="btn btn-primary" onClick={(e) => { e.preventDefault(); /* ADD BUY FUNCTION */ }}>
                       Buy
                       {Math.abs(Math.min(...Object.values(this.state.temp_credits)))} credits
                       for
@@ -255,11 +260,11 @@ export class SquealPut extends Component {
               <div className="col">
                 <div className="form-group">
                   <label htmlFor="location" className="form-label">Location:</label>
-                  <button onClick={(e) => { e.preventDefault(); this.getGeolocation()}} className="btn btn-info">
-                    Include Geolocation in your Squeal
+                  <button onClick={(e) => { e.preventDefault(); this.getGeolocation() }} className="btn btn-info">
+                    Set current location
                   </button>
                   {this.state.location && (
-                    <button onClick={(e) => { e.preventDefault(); this.removeLocation()}} className="btn btn-warning">
+                    <button onClick={(e) => { e.preventDefault(); this.removeLocation() }} className="btn btn-warning">
                       X
                     </button>
                   )}
@@ -268,7 +273,7 @@ export class SquealPut extends Component {
                       ? `Latitude: ${this.state.location.latitude}, Longitude: ${this.state.location.longitude}`
                       : "No Location will be sent"}
                   </p>
-                  <div id="map" style={{ height: this.state.location ? "200px" : "0px" }}></div>
+                  <div id="map" style={{ height: "200px" /*this.state.location ? "200px" : "0px"*/ }}></div>
                 </div>
               </div>
 
@@ -277,7 +282,7 @@ export class SquealPut extends Component {
                   <label htmlFor="media" className="form-label">Media:</label>
                   <input type="file" id="media" onChange={this.handleFileUpload} accept="image/*" className="form-control" />
                   {this.state.media && (
-                    <button onClick={(e) => { e.preventDefault(); this.removeMedia()}} className="btn btn-danger">
+                    <button onClick={(e) => { e.preventDefault(); this.removeMedia() }} className="btn btn-danger">
                       X
                     </button>
                   )}
@@ -298,6 +303,9 @@ export class SquealPut extends Component {
               <label htmlFor="reply_to">Reply To:</label>
               <input type="text" id="reply_to" value={this.state.reply_to} onChange={e => this.setState({ reply_to: e.target.value })} className="form-control" />
             </div>
+            <button type="submit" className="btn btn-primary" style={{ backgroundColor: "#ff8900", color: "white" }}>
+              Submit
+            </button>
           </form>
         </div>
     );
