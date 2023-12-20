@@ -77,7 +77,7 @@ export class AccountSelector extends Component {
     return (
       <div>
         <h6 className="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-          <ProfileCard profile={this.props.selectedAccount} />
+          {this.props.selectedAccount ? <ProfileCard profile={this.props.selectedAccount} /> : null }
         </h6>
         <select className="form-select" aria-label="Default select example" value={this.state.selectedAccount} onChange={this.handleAccountChange}>
           <option value="">Choose an account</option>
