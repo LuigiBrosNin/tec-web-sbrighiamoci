@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link , withRouter } from 'react-router-dom';
 import L, { marker } from 'leaflet';
 import "leaflet/dist/leaflet.css";
 
@@ -135,7 +135,9 @@ export class SquealPut extends Component {
       .then((response) => {
         console.log(response.data);
         if (response.status === 200) {
-          //router.push({ path: `/squeal/id` }); //TODO
+          const id = response.data.squeal_id;
+          this.props.history.push(`/squeal/${id}`);
+
         } else {
           alert("an error has occurred, please try again later");
         }
