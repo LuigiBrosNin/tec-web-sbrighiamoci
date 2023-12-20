@@ -944,13 +944,13 @@ app.delete("/squeals/:id", async (req, res) => {
         // if the squeal does not have replies: remove it's id from the "replies_list" field of the father
         // if it has replies, modify it into a DeletedAccount squeal and update father and sons (reply_to and replies_list)
         if (squeal.replies_num === 0) { // the squeal doesn't have replies
-            if (squeal.reply_to !== undefined && squeal.reply_to != "") { // the squeal was replying to another one
+            if (squeal.reply_to != null && squeal.reply_to != "") { // the squeal was replying to another one
                 let fatherId = squeal.reply_to
                 await collection_squeals.updateOne({
                     id: fatherId
                 }, {
                     $pull: {
-                        replies_list: squealId
+                        replies: squealId
                     },
                     $inc: {
                         replies_num: -1
@@ -1025,7 +1025,7 @@ app.delete("/squeals/:id", async (req, res) => {
             }
 
             // if the squeal has a father, replace the squeal occurrence in the "replies_list"
-            if (squeal.reply_to !== undefined && squeal.reply_to !== "") {
+            if (squeal.reply_to != null && squeal.reply_to !== "") {
                 let fatherId = squeal.reply_to
                 const squealFather = await collection_squeals.findOne({
                     id: fatherId
@@ -1117,23 +1117,23 @@ app.post("/squeals/:id", bodyParser.json(), async (req, res) => {
             let update = {};
 
             for (const field of possibleParams) {
-                if (req.body[field] !== undefined) {
+                if (req.body[field] != null) {
                     update[field] = req.body[field];
                 }
             }
 
             for (const field of possibleIntParams) {
-                if (req.body[field] !== undefined) {
+                if (req.body[field] != null) {
                     update[field] = parseInt(req.body[field]);
                 }
             }
 
-            if (req.body.is_private !== undefined) {
+            if (req.body.is_private != null) {
                 update["is_private"] = req.body.is_private;
             }
 
             // calculating the polarity ratio
-            if (update.positive_reactions !== undefined && update.negative_reactions !== undefined && update.impressions !== undefined && update.impressions !== 0 && update.positive_reactions !== NaN && update.negative_reactions !== NaN && update.impressions !== NaN) {
+            if (update.positive_reactions != null && update.negative_reactions != null && update.impressions != null && update.impressions !== 0 && update.positive_reactions !== NaN && update.negative_reactions !== NaN && update.impressions !== NaN) {
                 update.pos_popolarity_ratio = update.positive_reactions / update.impressions;
                 update.neg_popolarity_ratio = update.negative_reactions / update.impressions;
             }
@@ -1284,7 +1284,6 @@ app.get("/squeals/:id/replies/", async (req, res) => {
             });
             return;
         }
-        console.log("indexes: " + startIndex + " " + endIndex);
 
         // fetching the squeal with the given id
         const main_squeal = await collection_squeals.findOne({
