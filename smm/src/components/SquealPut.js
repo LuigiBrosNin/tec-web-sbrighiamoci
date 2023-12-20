@@ -305,7 +305,7 @@ export class SquealPut extends Component {
               <label htmlFor="reply_to">Reply To:</label>
               <input type="text" id="reply_to" value={this.state.reply_to} onChange={e => this.setState({ reply_to: e.target.value })} className="form-control" />
             </div>
-            <button type="submit" className="btn btn-primary" style={{ backgroundColor: "#ff8900", color: "white" }}>
+            <button type="submit" className="btn btn-primary" style={{ backgroundColor: "#ff8900", color: "white"}} onClick={(e) => {e.preventDefault() }}>
               Submit
             </button>
           </form>
