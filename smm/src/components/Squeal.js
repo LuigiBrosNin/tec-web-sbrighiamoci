@@ -200,6 +200,7 @@ export class Squeal extends Component {
   }
 
   render() {
+    console.log(this.props.squeal.media)
     return (
         this.state.isValid && !this.state.squeal.is_private ?
 
@@ -216,7 +217,7 @@ export class Squeal extends Component {
 
         <p className="squeal_body"> {this.props.squeal.text} </p>
 
-        {this.props.squeal.media != null && this.props.squeal.media != "" ? <img className="squeal_media" src={this.props.squeal.media} /> : null}
+        {this.props.squeal.media != null && this.props.squeal.media != "" ? <img className="squeal_media" src={`https://${this.props.squeal.media}`} /> : null}
 
         {this.hasLocation() ?
 
