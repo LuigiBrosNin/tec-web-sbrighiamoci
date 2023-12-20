@@ -11,9 +11,9 @@ function withQueryParams(Component) {
     const searchParams = new URLSearchParams(location.search);
     const replyto = searchParams.get("replyto");
     const receiver = searchParams.get("receiver");
-    const history = useNavigate();
+    const navigate = useNavigate();
 
-    return <Component {...props} replyto={replyto} receiver={receiver} history={history} />;
+    return <Component {...props} replyto={replyto} receiver={receiver} navigate={navigate} />;
   }
 }
 
