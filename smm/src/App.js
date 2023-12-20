@@ -87,7 +87,7 @@ function App() {
               {isSidebarOpen ? 'Hide Sidebar' : 'Show Sidebar'}
             </button>
             <nav className={`col-md-2 bg-light sidebar ${isSidebarOpen ? 'd-block' : 'd-none'}`}>
-              <AccountSelector onAccountChange={handleSelectedAccountChange} />
+              <AccountSelector onAccountChange={handleSelectedAccountChange} selectedAccount={selectedAccount}/>
               <Navbar />
               {smm_account ?
                 <MiniProfileCard profile={smm_account} />
