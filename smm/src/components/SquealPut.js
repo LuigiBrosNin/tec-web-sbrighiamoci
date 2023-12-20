@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import L from 'leaflet';
 import "leaflet/dist/leaflet.css";
 
+import { globalState } from '../App';
 
 import "./SquealPut.css"
 
@@ -35,7 +36,31 @@ export class SquealPut extends Component {
     this.submitForm = this.submitForm.bind(this);
     this.removeLocation = this.removeLocation.bind(this);
     this.removeMedia = this.removeMedia.bind(this);
+    this.reloadAccount = this.reloadAccount.bind(this);
 
+  }
+
+  reloadAccount(newAccount) {
+    console.log("selected account: " + newAccount)
+    if (newAccount === '') {
+      this.setState({ selectedAccount: this.smm_account });
+      globalState.$selectedAccount = this.smm_account;
+      this.props.onAccountChange(this.smm_account);
+      return;
+    }
+
+    axios.get(`https://site222326.tw.cs.unibo.it/profiles/${newAccount}`)
+      .then(res => {
+        const currentAccount = res.data;
+        if (currentAccount.propic == null) {
+          currentAccount.propic = "https://site222326.tw.cs.unibo.it/images/user-default.svg";
+        } else {
+          currentAccount.propic = "https://site222326.tw.cs.unibo.it/profiles/" + currentAccount.name + "/propic";
+        }
+        globalState.$selectedAccount = currentAccount;
+        this.setState({ selectedAccount: currentAccount });
+        this.props.onAccountChange(currentAccount);
+      })
   }
 
   removeLocation = () => {
@@ -149,6 +174,7 @@ export class SquealPut extends Component {
               console.log(response.data);
               if (response.status === 200) {
                 const id = response.data.squeal_id;
+                this.reloadAccount(this.props.selectedAccount.name);
                 // redirect to the squeal page
                 this.props.navigate(`smm/squeals/${id}`);
               } else {
@@ -184,6 +210,7 @@ export class SquealPut extends Component {
           console.log(response.data);
           if (response.status === 200) {
             const id = response.data.squeal_id;
+            this.reloadAccount(this.props.selectedAccount.name);
             this.props.navigate(`smm/squeals/${id}`);
 
           } else {

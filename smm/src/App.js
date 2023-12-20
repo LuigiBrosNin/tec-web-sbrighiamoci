@@ -97,7 +97,7 @@ function App() {
             <main role="main" className="col-md-9 ml-sm-auto col-lg-10 px-4">
               <Routes>
                 <Route path="smm" element={<h1>Click any tab to get started!</h1>} />
-                <Route path="smm/squealPut" element={<SquealPutHoc selectedAccount={selectedAccount} />} />
+                <Route path="smm/squealPut" element={<SquealPutHoc selectedAccount={selectedAccount} onAccountChange={handleSelectedAccountChange}/>} />
                 <Route path="smm/profile" element={<ProfileInsights selectedAccount={selectedAccount} />} />
                 <Route path="smm/squeals" element={<SquealsInsights selectedAccount={selectedAccount} />} />
                 <Route path="smm/messages" element={<Messages selectedAccount={selectedAccount} />} />
