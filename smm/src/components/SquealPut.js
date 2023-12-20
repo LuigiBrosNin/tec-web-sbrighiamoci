@@ -149,8 +149,8 @@ export class SquealPut extends Component {
               console.log(response.data);
               if (response.status === 200) {
                 const id = response.data.squeal_id;
+                // redirect to the squeal page
                 this.props.history.push(`/squeal/${id}`);
-
               } else {
                 alert("an error has occurred, please try again later");
               }

@@ -1,5 +1,5 @@
 import React from 'react'
-import { useLocation, useHistory } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import SquealPut from './SquealPut.js';
 
 
@@ -11,7 +11,7 @@ function withQueryParams(Component) {
     const searchParams = new URLSearchParams(location.search);
     const replyto = searchParams.get("replyto");
     const receiver = searchParams.get("receiver");
-    const history = useHistory();
+    const history = useNavigate();
 
     return <Component {...props} replyto={replyto} receiver={receiver} history={history} />;
   }
