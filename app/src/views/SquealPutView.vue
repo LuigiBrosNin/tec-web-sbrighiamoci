@@ -1,5 +1,5 @@
 <script setup>
-  import router from '@/router/index.js'
+import router from '@/router/index.js'
 </script>
 
 <template>
@@ -47,9 +47,9 @@
               Include Geolocation in your Squeal
             </button>
             <button v-if="location" @click.prevent="
-                            {
+                                                                {
               location = null;
-              if(map != null){ destroyMap() }
+              if (map != null) { destroyMap() }
             }
               " class="btn btn-warning">
               X
@@ -77,12 +77,28 @@
           </div>
           <p v-else>No file selected</p>
         </div>
-      </div> 
+      </div>
       <!-- TODO REMOVE WHEN WE IMPLEMENT AUTOMATIC REPLIES-->
-      
+
       <div class="form-group">
         <label for="reply_to">Reply To:</label>
         <input type="text" id="reply_to" v-model="reply_to" class="form-control" />
+
+        <label for="send_for_loop">Automatic post?</label>
+        <input type="checkbox" id="send_for_loop" v-model="send_for_loop" />
+      </div>
+
+      <div v-if="send_for_loop">
+        <div class="form-group">
+          <label for="times">Repeat n times:</label>
+          <input type="number" id="times" v-model="times" />
+        </div>
+
+        <div class="form-group">
+          <label for="delay">Delay (in minutes):</label>
+          <input type="number" id="delay" v-model="delay" />
+        </div>
+
       </div>
       <button type="submit" class="btn btn-primary" style="background-color: #ff8900; color: white">
         Submit
@@ -111,8 +127,13 @@ export default {
       location: null,
       creditLabels: ["daily", "weekly", "monthly"],
       propic: null,
+      delay: 1,
+      times: -1,
 
       map: null,
+      is_looping,
+      timeoutId,
+      send_for_loop: false,
     };
   },
   // mounted: function that gets called when page loads
@@ -141,12 +162,12 @@ export default {
 
         if (this.$route.query.receiver)
           this.receiver = this.$route.query.receiver;
-          
+
         if (this.$route.query.text) {
           this.text = this.$route.query.text;
           this.updateCreditsOnScreen(this.text);
         }
-         
+
 
       })
       .catch((error) => {
@@ -177,12 +198,18 @@ export default {
       formData.append("file", this.media);
 
       console.log("sending body: ", formData);
+
+      if (this.send_for_loop) {
+        this.loopPost(formData, this.delay, this.times);
+        return;
+      }
+
       // Send formData to server using axios or fetch
       axios
         .put("https://site222326.tw.cs.unibo.it/squeals/", formData)
         .then((response) => {
           console.log(response.data);
-          if(response.status == 200) {
+          if (response.status == 200) {
             let id = response.data.squeal_id;
             router.push({ path: `/squeal/${id}` });
           } else {
@@ -219,7 +246,7 @@ export default {
       }
     },
     showMap() {
-      if(this.map != null){
+      if (this.map != null) {
         this.destroyMap();
       }
       const map = L.map("map").setView(
@@ -245,8 +272,76 @@ export default {
       this.map.remove();
       console.log(document);
       console.log(this.map._container.id);
-      document.getElementById(this.map._container.id).style.setProperty('background-color', '#fff', 'important'); 
+      document.getElementById(this.map._container.id).style.setProperty('background-color', '#fff', 'important');
       this.map = null;
+    },
+    async loopPost(formData, delay, times) {
+      if (this.is_looping) {
+        this.stopLoop();
+        console.log("previous loop stopped")
+      }
+
+      // wait until the loop is stopped
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      this.is_looping = true;
+
+      // time = -1 -> infinite loop (sorta)
+      if (times == -1) {
+        times = 99999
+      }
+
+      // turn delay in mins
+      delay = delay * 1000 * 60;
+
+      let jsonBody = JSON.parse(formData.json);
+
+      for (let i = 0; i < times; i++) {
+        try {
+          // update location
+          if (jsonBody.location && navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position) => {
+              jsonBody.location = {
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+              };
+            });
+          } else {
+            alert("Geolocation is not supported by this browser.");
+          }
+
+          // update text
+          jsonBody.text = "automatic post " + (i + 1) + " " + jsonBody.text;
+
+          formData.append("json", JSON.stringify(jsonBody));
+
+          console.log("sending body: ", formData);
+          // Send formData to server using axios or fetch
+          const response = await axios.put("https://site222326.tw.cs.unibo.it/squeals/", formData)
+
+          console.log(response.data);
+          if (response.status == 200) {
+            let id = response.data.squeal_id;
+            router.push({ path: `/squeal/${id}` });
+          } else {
+            break;
+          }
+
+          // wait for delay
+          await new Promise((resolve) => this.timeoutId = setTimeout(resolve, delay));
+          if (!this.is_looping) {
+            break;
+          }
+        } catch (error) {
+          console.log(error);
+          break;
+        }
+      }
+      this.is_looping = false;
+    },
+    stopLoop() {
+      this.is_looping = false;
+      clearTimeout(this.timeoutId);
     }
   },
   // watch: listeners

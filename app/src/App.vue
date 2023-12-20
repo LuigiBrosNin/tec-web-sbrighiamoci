@@ -63,7 +63,7 @@ Header {
     flex-direction: column-reverse;
   }
 
-  #NewSquealButton{
+  #NewSquealButton {
     bottom: 2em;
   }
 }
