@@ -253,7 +253,7 @@ app.put("/profiles/:name", async (req, res) => {
             is_banned: false,
             banned_until: null,
             is_deleted: false,
-            propic: null,
+            propic: "https://site222326.tw.cs.unibo.it/images/user-default.svg",
         };
         console.log(JSON.stringify(profile))
         
