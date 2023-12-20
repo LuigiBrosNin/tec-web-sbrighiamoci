@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import L from 'leaflet';
 import "leaflet/dist/leaflet.css";
 
+
 import "./SquealPut.css"
 
 export class SquealPut extends Component {
