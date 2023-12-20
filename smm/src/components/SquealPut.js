@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import axios from 'axios';
-import { Link , withRouter } from 'react-router-dom';
-import L, { marker } from 'leaflet';
+import { Link } from 'react-router-dom';
+import L from 'leaflet';
 import "leaflet/dist/leaflet.css";
 
 import "./SquealPut.css"
@@ -93,7 +93,7 @@ export class SquealPut extends Component {
       iconAnchor: [19, 38], // point of the icon which will correspond to marker's location
       popupAnchor: [-3, -76], // point from which the popup should open relative to the iconAnchor
     });
-    const marker =L.marker([location.latitude, location.longitude], {
+    const marker = L.marker([location.latitude, location.longitude], {
       icon: customIcon,
       draggable: true,
       autoPan: true,
@@ -116,36 +116,84 @@ export class SquealPut extends Component {
   };
 
   submitForm = () => {
-    const jsonBody = {
-      author: this.props.selectedAccount.name,
-      text: this.state.text,
-      receiver: this.state.receiver,
-      reply_to: this.state.reply_to,
-      is_private: false,
-      location: this.state.location,
-    };
-    const formData = new FormData();
-    formData.append("json", JSON.stringify(jsonBody));
-    formData.append("file", this.state.media);
 
-    console.log("sending body: ", formData);
-    // Send formData to server using axios or fetch
-    axios
-      .put("https://site222326.tw.cs.unibo.it/squeals/", formData)
-      .then((response) => {
+    if (Math.min(...Object.values(this.state.temp_credits)) < 0) {
+      axios.put("https://site222326.tw.cs.unibo.it/profiles/" + this.props.selectedAccount.name + "/shop", {
+        credit: [
+          this.state.temp_credits[0] < 0 ? Math.abs(this.state.temp_credits[0]) : 0,
+          this.state.temp_credits[1] < 0 ? Math.abs(this.state.temp_credits[1]) : 0,
+          this.state.temp_credits[2] < 0 ? Math.abs(this.state.temp_credits[2]) : 0,
+        ],
+        credit_limits: [0, 0, 0],
+      }).then((response) => {
         console.log(response.data);
         if (response.status === 200) {
-          const id = response.data.squeal_id;
-          // this.props.history.push(`/squeal/${id}`);
+          const jsonBody = {
+            author: this.props.selectedAccount.name,
+            text: this.state.text,
+            receiver: this.state.receiver,
+            reply_to: this.state.reply_to,
+            is_private: false,
+            location: this.state.location,
+          };
+          const formData = new FormData();
+          formData.append("json", JSON.stringify(jsonBody));
+          formData.append("file", this.state.media);
 
+          console.log("sending body: ", formData);
+          // Send formData to server using axios or fetch
+          axios
+            .put("https://site222326.tw.cs.unibo.it/squeals/", formData)
+            .then((response) => {
+              console.log(response.data);
+              if (response.status === 200) {
+                const id = response.data.squeal_id;
+                // this.props.history.push(`/squeal/${id}`);
+
+              } else {
+                alert("an error has occurred, please try again later");
+              }
+            })
+            .catch((error) => {
+              console.log(error);
+              alert("an error has occurred, please try again later");
+            });
         } else {
           alert("an error has occurred, please try again later");
         }
       })
-      .catch((error) => {
-        console.log(error);
-        alert("an error has occurred, please try again later");
-      });
+    } else {
+      const jsonBody = {
+        author: this.props.selectedAccount.name,
+        text: this.state.text,
+        receiver: this.state.receiver,
+        reply_to: this.state.reply_to,
+        is_private: false,
+        location: this.state.location,
+      };
+      const formData = new FormData();
+      formData.append("json", JSON.stringify(jsonBody));
+      formData.append("file", this.state.media);
+
+      console.log("sending body: ", formData);
+      // Send formData to server using axios or fetch
+      axios
+        .put("https://site222326.tw.cs.unibo.it/squeals/", formData)
+        .then((response) => {
+          console.log(response.data);
+          if (response.status === 200) {
+            const id = response.data.squeal_id;
+            // this.props.history.push(`/squeal/${id}`);
+
+          } else {
+            alert("an error has occurred, please try again later");
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          alert("an error has occurred, please try again later");
+        });
+    }
   };
 
   componentDidMount() {
@@ -173,7 +221,7 @@ export class SquealPut extends Component {
         console.log(error);
       });
 
-      this.showMap({ latitude: 0, longitude: 0 });
+    this.showMap({ latitude: 0, longitude: 0 });
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -247,14 +295,6 @@ export class SquealPut extends Component {
                       {this.state.creditLabels[index]}: {credit}&nbsp;&nbsp;
                     </span>
                   ))}
-                  {Math.min(...Object.values(this.state.temp_credits)) < 0 && (
-                    <button className="btn btn-primary" onClick={(e) => { e.preventDefault(); /* ADD BUY FUNCTION */ }}>
-                      Buy
-                      {Math.abs(Math.min(...Object.values(this.state.temp_credits)))} credits
-                      for
-                      {(Math.abs(Math.min(...Object.values(this.state.temp_credits))) * 0.01).toFixed(2)}€
-                    </button>
-                  )}
                 </div>
               </div>
             </div>
@@ -305,9 +345,17 @@ export class SquealPut extends Component {
               <label htmlFor="reply_to">Reply To:</label>
               <input type="text" id="reply_to" value={this.state.reply_to} onChange={e => this.setState({ reply_to: e.target.value })} className="form-control" />
             </div>
-            <button type="submit" className="btn btn-primary" style={{ backgroundColor: "#ff8900", color: "white"}}>
-              Submit
-            </button>
+            {Math.min(...Object.values(this.state.temp_credits)) < 0 ? (
+              <button type="submit" className="btn btn-primary" style={{ backgroundColor: "#ff8900", color: "white" }} onClick={(e) => { e.preventDefault() }}>
+                Buy {Math.abs(Math.min(...Object.values(this.state.temp_credits)))} credits
+                for {(Math.abs(Math.min(...Object.values(this.state.temp_credits))) * 0.01).toFixed(2)}€
+                and submit
+              </button>
+            ) :
+              (<button type="submit" className="btn btn-primary" style={{ backgroundColor: "#ff8900", color: "white" }}>
+                Submit
+              </button>)
+            }
           </form>
         </div>
     );

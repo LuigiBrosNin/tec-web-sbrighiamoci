@@ -200,7 +200,6 @@ export class Squeal extends Component {
   }
 
   render() {
-    console.log(this.props.squeal.media)
     return (
         this.state.isValid && !this.state.squeal.is_private ?
 

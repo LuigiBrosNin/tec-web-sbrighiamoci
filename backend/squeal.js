@@ -923,10 +923,6 @@ app.delete("/squeals/:id", async (req, res) => {
             return;
         }
 
-        if (squeal.media != "" && squeal.media != null) {
-            deletePic(squeal.media_id);
-        }
-
         const SMMAuthorized = await isSMMAuthorized(req.session.user, squeal.author) && await isAuthorizedOrHigher(squeal.author, typeOfProfile.user);
 
         // if the user is not authorized to delete the squeal, return 401
@@ -935,6 +931,10 @@ app.delete("/squeals/:id", async (req, res) => {
                 message: "you are not authorized to delete this squeal"
             });
             return;
+        }
+
+        if (squeal.media != "" && squeal.media != null) {
+            deletePic(squeal.media_id);
         }
 
         const channel = await collection_channels.findOne({
