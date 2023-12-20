@@ -34,10 +34,10 @@ const props = defineProps(['id']);
         <div class="tab-content" id="pills-tabContent">
             <div class="tab-pane fade show active" id="pills-replies" role="tabpanel" aria-labelledby="pills-replies-tab">
                 <p v-if="replies.length == 0" class="no_items_message">There are no items to show</p>
-                <div v-for="squealID in loadedReplies">
-                    <Squeal :id="squealID"></Squeal>
+                <div v-for="squeal in replies">
+                    <Squeal :squeal_json="squeal"></Squeal>
                 </div>
-                <button v-if="loadedReplies.length < replies.length" @click="loadMoreReplies"
+                <button v-if="!allRepliesLoaded" @click="loadMoreReplies"
                     class="btn btn-primary justify-content-center loadMoreBtn"> Load more </button>
             </div>
             <div class="tab-pane fade" id="pills-positive-reactions" role="tabpanel"
@@ -68,7 +68,7 @@ export default {
         return {
             numberOfItemsToLoad: 5,
             replies: [],
-            loadedReplies: [],
+            allRepliesLoaded: false,
             positiveReactions: [],
             loadedPositiveReactions: [],
             negativeReactions: [],
@@ -77,16 +77,19 @@ export default {
     },
     methods: {
         async fetchReplies() {
-            let replies = await fetch(
-                `https://site222326.tw.cs.unibo.it/squeals/${this.id}/replies`,
+            let newReplies = await fetch(
+                `https://site222326.tw.cs.unibo.it/squeals/${this.id}/replies/?startindex=${this.replies.length}&endindex=${this.replies.length + this.numberOfItemsToLoad}`,
                 {
                     method: "GET"
                 }
             );
 
-            if (replies.status == 200) {
-                replies = await replies.json();
-                this.replies = replies;
+            if (newReplies.status == 200) {
+                newReplies = await newReplies.json();
+                if(newReplies.length == 0){
+                    this.allRepliesLoaded = true;
+                }
+                this.replies = this.replies.concat(newReplies);
             }
         },
         async fetchPositiveReactions() {
@@ -116,8 +119,7 @@ export default {
             }
         },
         loadMoreReplies() {
-            let newReplies = this.replies.slice(this.loadedReplies.length, this.loadedReplies.length + this.numberOfItemsToLoad);
-            this.loadedReplies = this.loadedReplies.concat(newReplies);
+            this.fetchReplies();
         },
         loadMorePositiveReactions() {
             let newReactions = this.positiveReactions.slice(this.loadedPositiveReactions.length, this.loadedPositiveReactions.length + this.numberOfItemsToLoad);

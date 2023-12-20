@@ -6,7 +6,9 @@ const props = defineProps(['id', 'squeal_json']);
     <div class="squeal_container" v-if="isValid && !isPrivate">
         <RouterLink :to="`/channels/${channel}`"> §{{ channel }} </RouterLink>
         <div v-if='replyTo != null && replyTo != ""'>
-            <p>Reply to: {{ replyTo }}</p>
+            <p>Reply to: 
+                <RouterLink :to="`/squeal/${replyTo}`">{{ replyTo }}</RouterLink>
+            </p>
         </div>
 
         <div class="profile_data">
