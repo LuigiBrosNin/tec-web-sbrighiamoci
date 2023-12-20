@@ -225,7 +225,7 @@ export class SquealPut extends Component {
     return (
       this.props.selectedAccount == null ? null :
         <div className="squeal_container">
-          <form onSubmit={this.submitForm} className="mt-5">
+          <form onSubmit={(e) => { e.preventDefault(); this.submitForm(); }} className="mt-5">
             <div className="input-group mb-3">
               <span className="input-group-text" id="basic-addon1">§</span>
               <input type="text" id="receiver" placeholder="Select a channel to squeal to" value={this.state.receiver} required
@@ -305,7 +305,7 @@ export class SquealPut extends Component {
               <label htmlFor="reply_to">Reply To:</label>
               <input type="text" id="reply_to" value={this.state.reply_to} onChange={e => this.setState({ reply_to: e.target.value })} className="form-control" />
             </div>
-            <button type="submit" className="btn btn-primary" style={{ backgroundColor: "#ff8900", color: "white"}} onClick={(e) => {e.preventDefault() }}>
+            <button type="submit" className="btn btn-primary" style={{ backgroundColor: "#ff8900", color: "white"}}>
               Submit
             </button>
           </form>
