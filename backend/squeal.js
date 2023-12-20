@@ -1284,6 +1284,7 @@ app.get("/squeals/:id/replies/", async (req, res) => {
             });
             return;
         }
+        console.log("indexes: " + startIndex + " " + endIndex);
 
         // fetching the squeal with the given id
         const main_squeal = await collection_squeals.findOne({
