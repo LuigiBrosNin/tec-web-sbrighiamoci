@@ -1271,11 +1271,11 @@ app.get("/squeals/:id/replies/", async (req, res) => {
         let startIndex = 0;
         let endIndex = 10;
         // check if the parameters are valid
-        if (req.query.startIndex != null && !isNaN(req.query.startIndex)) {
-            startIndex = parseInt(req.query.startIndex);
+        if (req.query.startIndex != null && !isNaN(req.query.startindex)) {
+            startIndex = parseInt(req.query.startindex);
         }
-        if (req.query.endIndex !== undefined && !isNaN(req.query.endIndex)) {
-            endIndex = parseInt(req.query.endIndex);
+        if (req.query.endindex != null && !isNaN(req.query.endindex)) {
+            endIndex = parseInt(req.query.endindex);
         }
         // check if the parameters are valid
         if (startIndex > endIndex) {
