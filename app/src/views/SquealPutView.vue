@@ -294,7 +294,7 @@ export default {
       // turn delay in mins
       delay = delay * 1000 * 60;
 
-      let jsonBody = JSON.parse(formData.json);
+      let jsonBody = JSON.parse(formData.get('json'));
 
       /*
       for (let i = 0; i < times; i++) {
