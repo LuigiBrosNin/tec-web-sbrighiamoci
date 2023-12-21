@@ -874,7 +874,7 @@ app.put("/channels/:name/propic", upload.single('file'), async (req, res) => {
 
     const pic = req.body.propic;
 
-    if (!importPic(pic, channelName, collection_channels)) {
+    if (!importPic(pic, collection_channels, channelName)) {
       res.status(500).json({
         message: "Error uploading the propic."
       });
