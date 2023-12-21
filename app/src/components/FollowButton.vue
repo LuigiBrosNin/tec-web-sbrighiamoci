@@ -3,7 +3,7 @@ const props = defineProps(["id"]);
 </script>
 
 <template>
-  <div v-if="$user">
+  <div v-if="$user != id">
     <button class="follow_button" @click="changeFollowStatus()">
       <span class="follow" v-if="!followed">Follow</span>
       <span class="unfollow" v-else>Unfollow</span>
@@ -65,7 +65,8 @@ export default {
   border-style: none;
   background-color: #ff8900ff;
   font-weight: bold;
-  width: -webkit-fill-available;
+  display: block;
+  width: calc(100% - 2em); /* 100% - the margin */
 }
 
 .follow{

@@ -1,12 +1,13 @@
 <script setup>
-  import Squeal from "@/components/Squeal.vue";
-  import FollowButton from "@/components/FollowButton.vue";
-  import ProfileCard from "@/components/ProfileCard.vue"
-  const props = defineProps(["id", "profile_json"]);
+import Squeal from "@/components/Squeal.vue";
+import FollowButton from "@/components/FollowButton.vue";
+import ProfileCard from "@/components/ProfileCard.vue"
+import { addAbortListener } from "stream";
+const props = defineProps(["id", "profile_json"]);
 </script>
 
 <template>
-  <div class="container profile_container">
+  <div v-if="isValid" class="container profile_container">
     <div class="row profile_main_data">
       <div class="col-sm-4">
         <img class="img-fluid rounded-circle profile_img" :src="profilePicUrl" />
@@ -14,9 +15,8 @@
       <div class="col-sm-8">
         <h2 class="profile_name">@{{ name }}</h2>
         <p class="profile_type">{{ accountType }}</p>
-        <button v-if="$user === name" class="btn btn-primary" @click="goToSettings">Settings</button>
         <div class="card">
-          <div class="card-header" style="background-color: #ff8900;">Remaining Credits</div>
+          <div class="card-header">Remaining Credits</div>
           <div class="card-body">
             <div class="row credits_info">
               <div class="col">
@@ -46,6 +46,10 @@
         <p>{{ bio }}</p>
       </div>
     </div>
+
+    <button v-if="$user === name" class="settings_btn" @click="goToSettings">
+      <img class="settings_img" src="https://site222326.tw.cs.unibo.it/icons/gear-svgrepo-com.svg" />
+    </button>
 
     <ul class="nav nav-pills mb-3 flex-column flex-sm-row" id="pills-tab" role="tablist">
       <li class="nav-item flex-sm-fill" role="presentation">
@@ -79,7 +83,14 @@
       <!-- Squeals Cards -->
       <div class="tab-pane fade show active" id="pills-squeals" role="tabpanel" aria-labelledby="pills-squeals-tab">
         <div v-if="squealsList.length > 0">
-          <!-- <Squeal v-for="sq in squealsList" :id="sq"></Squeal>  -->
+          <Squeal v-for="sq in validSquealsList" :squeal_json="sq"></Squeal>
+        </div>
+        <div class="loadMoreContainer">
+          <button v-if="!allSquealsLoaded" @click="fetchMoreSqueals" class="btn btn-primary loadMoreBtn"> Load more
+          </button>
+          <div v-else-if="squealsList.length <= 0">
+            There are no squeals to show.
+          </div>
         </div>
       </div>
 
@@ -90,7 +101,8 @@
         </div>
         <div class="loadMoreContainer">
           <div v-if="tmpFollowersList.length < 1"> No more profiles. </div>
-          <button @click="loadMoreFollowers" class="btn btn-primary loadMoreBtn"> Load more </button>
+          <button v-if="!allFollowersLoaded" @click="loadMoreFollowers" class="btn btn-primary loadMoreBtn"> Load more
+          </button>
         </div>
       </div>
 
@@ -101,7 +113,8 @@
         </div>
         <div class="loadMoreContainer">
           <div v-if="tmpFollowingList.length < 1"> No more profiles. </div>
-          <button @click="loadMoreFollowing" class="btn btn-primary loadMoreBtn"> Load more </button>
+          <button v-if="!allFollowingLoaded" @click="loadMoreFollowing" class="btn btn-primary loadMoreBtn"> Load more
+          </button>
         </div>
       </div>
 
@@ -112,12 +125,14 @@
         </div>
         <div class="loadMoreContainer">
           <div v-if="tmpChannelsList.length < 1"> No more channels. </div>
-          <button @click="loadMoreChannels" class="btn btn-primary loadMoreBtn"> Load more </button>
+          <button v-if="!allChannelsLoaded" @click="loadMoreChannels" class="btn btn-primary loadMoreBtn"> Load more
+          </button>
         </div>
       </div>
 
     </div>
   </div>
+  <div v-else> Profile not found </div>
 </template>
 
 <script>
@@ -139,9 +154,16 @@ export default {
       isBanned: false,
       bannedUntil: -1,
 
+      isValid: false,
+
+      validSquealsList: [],
+      allSquealsLoaded: false,
       tmpFollowersList: [],
+      allFollowersLoaded: false,
       tmpFollowingList: [],
+      allFollowingLoaded: false,
       tmpChannelsList: [],
+      allChannelsLoaded: false,
       loadMoreIndex: 0,
       pageDim: 2,  // dimensione di una "pagina" da caricare
     };
@@ -185,13 +207,30 @@ export default {
       this.extraCredit = profileJson.extra_credit;
       this.numberOfSqueals = profileJson.squeals_num;
       this.isBanned = profileJson.is_banned;
-      this.bannedUntil = profileJson.banned_until;  
+      this.bannedUntil = profileJson.banned_until;
+
+      this.isValid = true;
     },
-    
+
     goToSettings() {
       window.location.href = `https://site222326.tw.cs.unibo.it/app/profile/${this.name}/settings`;
     },
-    
+
+    async fetchMoreSqueals() {
+      let fetched = await fetch(
+        `https://site222326.tw.cs.unibo.it/squeals/?author=${this.name}&startindex=${this.validSquealsList.length}&endindex=${this.validSquealsList.length + this.pageDim}`,
+        {
+          method: "GET",
+        }
+      );
+      if (fetched.status == 200) {
+        fetched = await fetched.json();
+        if (fetched.length <= 0) {
+          this.allSquealsLoaded = true;
+        }
+        this.validSquealsList = this.validSquealsList.concat(fetched);
+      }
+    },
     fetchFollowers() {
       this.loadMoreIndex = 0;
       this.tmpFollowersList = this.followersList.slice(this.loadMoreIndex, this.loadMoreIndex + this.pageDim);
@@ -200,7 +239,7 @@ export default {
       this.loadMoreIndex += this.pageDim;
       const newProfiles = this.followersList.slice(this.loadMoreIndex, this.loadMoreIndex + this.pageDim);
       if (newProfiles.length == 0) {
-        alert("No more profiles to load.");
+        this.allFollowersLoaded = true;
       }
       this.tmpFollowersList.push(...newProfiles);
     },
@@ -213,7 +252,7 @@ export default {
       this.loadMoreIndex += this.pageDim;
       const newProfiles = this.followingList.slice(this.loadMoreIndex, this.loadMoreIndex + this.pageDim);
       if (newProfiles.length == 0) {
-        alert("No more profiles to load.");
+        this.allFollowingLoaded = true;
       }
       this.tmpFollowingList.push(...newProfiles);
     },
@@ -226,19 +265,28 @@ export default {
       this.loadMoreIndex += this.pageDim;
       const newChannels = this.channelFollowingList.slice(this.loadMoreIndex, this.loadMoreIndex + this.pageDim);
       if (newChannels.length == 0) {
-        alert("No more channels to load.");
+        this.allChannelsLoaded = true;
       }
       this.tmpChannelsList.push(...newChannels);
     }
   },
 
-  created() {
+  async created() {
     if (this.id != null) {
-      this.fetchProfile(this.id);
+      await this.fetchProfile(this.id);
     } else if (this.profile_json != null) {
-      this.populate(this.profile_json);
+      await this.populate(this.profile_json);
     }
+    this.fetchMoreSqueals();
   },
+  watch: {
+    id(newId) { //the router don't really reload the component if you switch between /profile/user1 and /profile/user2, so we force it.
+      this.$router.go(this.$router.currentRoute);
+    },
+    profile_json(newProfile) {
+      this.$router.go(this.$router.currentRoute);
+    }
+  }
 };
 </script>
 
@@ -250,6 +298,9 @@ export default {
   border-radius: 1em;
   border-color: #616161;
   margin: 0.5em 1em 0.5em 1em;
+  display: block;
+  width: auto;
+  max-width: none;
   padding: 1em;
 }
 
@@ -264,6 +315,24 @@ export default {
   margin: 0.5em;
 }
 
+.settings_btn {
+  position: absolute;
+  right: 0;
+  top: 0;
+  margin: 1em;
+  background-color: #ffffff00;
+  border-style: none;
+}
+
+.settings_img {
+  width: 3em;
+  filter: invert(60%) sepia(0%) saturate(326%) hue-rotate(315deg) brightness(95%) contrast(91%);
+}
+
+.card-header {
+  background-color: #ff8900;
+}
+
 .message_button {
   margin: 1em;
   padding: 0.5em;
@@ -272,9 +341,9 @@ export default {
   background-color: #085c84;
   font-weight: bold;
   display: block;
-  width: -webkit-fill-available;
+  width: auto;
   text-align: center;
-  color:white;
+  color: white;
   text-decoration: none;
 }
 
