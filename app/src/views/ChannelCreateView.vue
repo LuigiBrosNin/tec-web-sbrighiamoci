@@ -39,7 +39,7 @@
 
   <!-------------------- MODIFICA CANALE --------------------->
   <div v-if="activeSection === 'modify'" class="squeal_container">
-    <!-- <form class="mt-5"> -->
+
       <!-- Titolo -->
       <h3 class="title"> Modify your channel </h3>
 
@@ -48,7 +48,7 @@
         <div class="mb-3">
           <label for="modsInput"> Channel name: </label>
           <input type="text" placeholder="Search a channel..." v-model="search_channel_name" class="form-control mb-3" />
-          <button @click="searchChannel" class="btn btn-primary d-block mx-auto orange_btn"> Search </button>
+          <button @click="searchChannel" class="btn d-block mx-auto orange_btn"> Search </button>
         </div>
       </div>
 
@@ -56,10 +56,12 @@
       <div v-if="show_inputs">
 
         <!-- Bio -->
-        <div class="mb-3">
-          <label for="channelType"> Bio: </label>
-          <input type="text" placeholder="Write a new bio..." v-model="bio" class="form-control" />
-          <button @click="updateBio" class="btn orange_btn "> Update </button>
+        <div class="input-group mb-3 flex-column">
+          <div class="mb-3">
+            <label for="channelType"> Bio: </label>
+            <input type="text" placeholder="Write a new bio..." v-model="bio" class="form-control mb-3" />
+            <button @click="updateBio" class="btn d-block mx-auto orange_btn"> Update Bio </button>
+          </div>
         </div>
         
         <!-- Mods -->
@@ -77,7 +79,7 @@
           <div v-if="mods.length > 0">
             <h2> Actual mods: </h2>
             <ul class="list-group mb-3">
-              <li v-for="(name, index) in mods" :key="index" class="list-group-item">{{ name }}
+              <li v-for="(name, index) in mods" :key="index" class="list-group-item d-flex justify-content-between align-items-center">{{ name }}
                 <button @click="removeMod(index)" class="btn btn-danger "> Remove </button> 
               </li>
             </ul>
@@ -85,7 +87,7 @@
         </div>
 
         <!-- Propic -->
-        <!--
+        
         <div class="input-group mb-3">
           <div class="custom-file">
             <input type="file" class="form-control" id="inputGroupFile01" @change="handleFileUpload" accept="image/*" />
@@ -96,13 +98,8 @@
               <button v-else class="btn btn-danger" @click="removePic">Remove current propic</button>
             </div>
           </div>
-        -->
-
-          <!-- Submit 
-        <button type="submit" class="btn btn-primary orange_btn"> Submit </button> -->
+        
       </div>
-
-    <!-- </form> -->
   </div>
 </template>
 
@@ -124,6 +121,7 @@ export default {
       max_bio_length: 150,
       show_inputs: false,
       search_channel_name: "",
+      file: null,
     };
   },
   methods: {
@@ -236,19 +234,18 @@ export default {
 
 
 
-  ///////////////////////////////////////////////////////////////////////
-  /*  handleFileUpload(event) {
+
+    handleFileUpload(event) {
       console.log("file uploaded");
       this.file = event.target.files[0];
     },
 
     uploadFile() {
       const formData = new FormData();
-      const name_of_profile = this.$user;
       formData.append("file", this.file);
       axios
         .put(
-          `https://site222326.tw.cs.unibo.it/profiles/${name_of_profile}/propic`,
+          `https://site222326.tw.cs.unibo.it/channels/${this.search_channel_name}/propic`,
           formData,
           {
             headers: {
@@ -269,10 +266,25 @@ export default {
           console.log(response.data);
           // notify the user that the upload was successful
           alert("Upload successful");
-          this.profilePicUrl = `https://site222326.tw.cs.unibo.it/profiles/${name_of_profile}/propic`;
+          this.profilePicUrl = `https://site222326.tw.cs.unibo.it/channels/${this.search_channel_name}/propic`;
         });
-    }*/
-  ///////////////////////////////////////////////////////////////////////
+    }, 
+
+    removePic() {
+      const name_of_profile = this.$user;
+      axios
+        .delete(
+          `https://site222326.tw.cs.unibo.it/channels/${this.search_channel_name}/propic`
+        )
+        .then((response) => {
+          console.log(response.data);
+          // notify the user that the upload was successful
+          alert("Profile picture removed");
+          profilePicUrl =
+            "https://site222326.tw.cs.unibo.it/images/user-default.svg";
+        });
+    },
+  
   }
 }
 </script>
