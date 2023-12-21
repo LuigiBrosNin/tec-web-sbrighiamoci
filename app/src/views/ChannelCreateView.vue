@@ -132,6 +132,10 @@ export default {
   },
   methods: {
 
+// TODO
+// TODO   fare una copia del nome del canale cercato
+// TODO
+
     async createChannel() {
       try {
         if (this.new_bio.length <= this.max_bio_length) {
@@ -259,6 +263,10 @@ export default {
     uploadFile() {
       const formData = new FormData();
       formData.append("file", this.file);
+
+      console.log("FORMDATA: ", formData)
+      console.log("CHANNELNAME: ", this.search_channel_name)
+
       axios
         .put(
           `https://site222326.tw.cs.unibo.it/channels/${this.search_channel_name}/propic`,
