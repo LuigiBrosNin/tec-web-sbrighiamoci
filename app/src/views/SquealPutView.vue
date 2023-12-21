@@ -323,7 +323,7 @@ export default {
           // update text
           jsonBody.text = "automatic post " + (i + 1) + " " + jsonBody.text;
 
-          formData.append("json", JSON.stringify(jsonBody));
+          formData.set("json", JSON.stringify(jsonBody));
 
           console.log("sending body: ", formData);
           // Send formData to server using axios or fetch
