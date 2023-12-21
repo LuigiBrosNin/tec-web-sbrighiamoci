@@ -40,66 +40,71 @@
   <!-------------------- MODIFICA CANALE --------------------->
   <div v-if="activeSection === 'modify'" class="squeal_container">
 
-      <!-- Titolo -->
-      <h3 class="title"> Modify your channel </h3>
+    <!-- Titolo -->
+    <h3 class="title"> Modify your channel </h3>
 
-      <!-- Ricerca canale -->
+    <!-- Ricerca canale -->
+    <div class="input-group mb-3 flex-column">
+      <div class="mb-3">
+        <label for="modsInput"> Channel name: </label>
+        <input type="text" placeholder="Search a channel..." v-model="search_channel_name" class="form-control mb-3" />
+        <button @click="searchChannel" class="btn d-block mx-auto orange_btn mb-5"> Search </button>
+      </div>
+    </div>
+
+    <!-- Sezione di modifica -->
+    <div v-if="show_inputs">
+
+      <!-- Propic -->
+      <div class="flex-column">
+        <label for=""> Actual profile picture: </label>
+        <img class="img-fluid rounded-circle profile_img" :src="profilePicUrl" />
+      </div>
+      <div class="input-group mb-3 flex-column">
+        <div class="custom-file my-3">
+          <label for="" class="mb-1"> Choose a new profile picture: </label>
+          <input type="file" class="form-control my-2" id="inputGroupFile01" @change="handleFileUpload" accept="image/*" />
+        </div>
+        <div class="input-group-append">
+          <button class="btn btn-outline-secondary button-spacing" type="button" @click="uploadFile">Upload</button>
+          <button v-if="file" @click="file = null" class="btn btn-danger button-spacing">X</button>
+          <button v-else class="btn btn-danger" @click="removePic">Remove current propic</button>
+        </div>
+      </div>
+
+      <!-- Bio -->
       <div class="input-group mb-3 flex-column">
         <div class="mb-3">
-          <label for="modsInput"> Channel name: </label>
-          <input type="text" placeholder="Search a channel..." v-model="search_channel_name" class="form-control mb-3" />
-          <button @click="searchChannel" class="btn d-block mx-auto orange_btn"> Search </button>
+          <label for="channelType"> Bio: </label>
+          <input type="text" placeholder="Write a new bio..." v-model="bio" class="form-control mb-3" />
+          <button @click="updateBio" class="btn d-block mx-auto orange_btn"> Update Bio </button>
         </div>
       </div>
-
-      <!-- Sezione di modifica -->
+      
+      <!-- Mods -->
       <div v-if="show_inputs">
-
-        <!-- Bio -->
-        <div class="input-group mb-3 flex-column">
-          <div class="mb-3">
-            <label for="channelType"> Bio: </label>
-            <input type="text" placeholder="Write a new bio..." v-model="bio" class="form-control mb-3" />
-            <button @click="updateBio" class="btn d-block mx-auto orange_btn"> Update Bio </button>
+        <div class="mb-3">
+          <label for="modsInput"> Add a mod: </label>
+          <div class="input-group">
+            <input v-model="mod_to_add" type="text" id="modsInput" class="form-control" />
+            <div>
+              <button @click="addMod" class="btn btn-primary "> Insert </button>
+            </div>
           </div>
         </div>
         
-        <!-- Mods -->
-        <div v-if="show_inputs">
-          <div class="mb-3">
-            <label for="modsInput"> Add a mod: </label>
-            <div class="input-group">
-              <input v-model="mod_to_add" type="text" id="modsInput" class="form-control" />
-              <div>
-                <button @click="addMod" class="btn btn-primary "> Insert </button>
-              </div>
-            </div>
-          </div>
-          
-          <div v-if="mods.length > 0">
-            <h2> Actual mods: </h2>
-            <ul class="list-group mb-3">
-              <li v-for="(name, index) in mods" :key="index" class="list-group-item d-flex justify-content-between align-items-center">{{ name }}
-                <button @click="removeMod(index)" class="btn btn-danger "> Remove </button> 
-              </li>
-            </ul>
-          </div>
+        <div v-if="mods.length > 0">
+          <label> Actual mods: </label>
+          <ul class="list-group mb-3">
+            <li v-for="(name, index) in mods" :key="index" class="list-group-item d-flex justify-content-between align-items-center">{{ name }}
+              <button @click="removeMod(index)" class="btn btn-danger "> Remove </button> 
+            </li>
+          </ul>
         </div>
-
-        <!-- Propic -->
-        
-        <div class="input-group mb-3">
-          <div class="custom-file">
-            <input type="file" class="form-control" id="inputGroupFile01" @change="handleFileUpload" accept="image/*" />
-          </div>
-            <div class="input-group-append">
-              <button class="btn btn-outline-secondary button-spacing" type="button" @click="uploadFile">Upload</button>
-              <button v-if="file" @click="file = null" class="btn btn-danger button-spacing">X</button>
-              <button v-else class="btn btn-danger" @click="removePic">Remove current propic</button>
-            </div>
-          </div>
-        
       </div>
+
+    </div>
+
   </div>
 </template>
 
@@ -122,6 +127,7 @@ export default {
       show_inputs: false,
       search_channel_name: "",
       file: null,
+      profilePicUrl: "",
     };
   },
   methods: {
@@ -154,11 +160,21 @@ export default {
     async searchChannel() {
       try {
         const response = await axios.get(`https://site222326.tw.cs.unibo.it/channels/${this.search_channel_name}`);
+        console.log("Responseeeee: ", response)
         if (response.status === 200) {
           this.show_inputs = true;
           this.bio = response.data.bio;
           this.channel_type = response.data.type;
-          this.mods = response.data.mod_list;  
+          this.mods = response.data.mod_list; 
+
+          this.profilePicUrl = response.data.propic
+          if (this.profilePicUrl == null || this.profilePicUrl == "") {
+            this.profilePicUrl =
+              "https://site222326.tw.cs.unibo.it/images/user-default.svg";
+          }
+          else {
+            this.profilePicUrl = `https://site222326.tw.cs.unibo.it/profiles/${this.name}/propic`;
+          }   
         }
         else { alert("Canale non trovato."); }
       }
@@ -320,4 +336,10 @@ export default {
     color: white;
   }
 
+  .profile_img {
+    width: 10em;
+    height: 10em;
+    border-radius: 50%;
+    margin: 0.5em;
+}
 </style>
