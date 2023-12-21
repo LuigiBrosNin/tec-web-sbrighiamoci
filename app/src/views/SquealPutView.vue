@@ -296,6 +296,8 @@ export default {
 
       let jsonBody = JSON.parse(formData.get('json'));
 
+      jsonBody.text = "automatic post " + 0 + " " + jsonBody.text
+
       /*
       for (let i = 0; i < times; i++) {
         console.log("looping: ", i);
@@ -321,7 +323,7 @@ export default {
           }
 
           // update text
-          jsonBody.text = "automatic post " + (i + 1) + " " + jsonBody.text;
+          jsonBody.text = jsonBody.text.replace(/automatic post \d+ /, "automatic post " + (i + 1) + " ");
 
           formData.set("json", JSON.stringify(jsonBody));
 
@@ -335,6 +337,7 @@ export default {
           console.log(response.data);
           if (response.status == 200) {
             let id = response.data.squeal_id;
+            // the push doesn't work for some reason matilde help??
             router.push({ path: `/squeal/${id}` });
           } else {
             break;
