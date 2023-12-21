@@ -82,6 +82,7 @@ async function importPic(pic, collection, name) {
         return true;
     } catch (e) {
         console.log(e);
+        return false;
     }
 }
 
