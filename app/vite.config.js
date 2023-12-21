@@ -11,6 +11,7 @@ export default defineConfig({
   //root: "vite/",
   plugins: [
     vue(),
+    /*
     viteStaticCopy({
       targets: [
         {
@@ -19,6 +20,7 @@ export default defineConfig({
         },
       ],
     }),
+    */
   ],
   resolve: {
     alias: {
@@ -28,12 +30,14 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: {
-        app: './vite/index.html',
+        //app: './vite/index.html',
+        app: './index.html',
       },
     },
   },
   server: {
-    open: './vite/index.html',
+    //open: './vite/index.html',
+    open: './index.html',
     fs: {
       allow: ['../node_modules/leaflet', './']
     }
