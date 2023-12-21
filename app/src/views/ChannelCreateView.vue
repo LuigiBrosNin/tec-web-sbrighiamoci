@@ -39,8 +39,7 @@
 
   <!-------------------- MODIFICA CANALE --------------------->
   <div v-if="activeSection === 'modify'" class="squeal_container">
-    <form @submit.prevent="modifyChannel" class="mt-5">
-
+    <!-- <form class="mt-5"> -->
       <!-- Titolo -->
       <h3 class="title"> Modify your channel </h3>
 
@@ -60,8 +59,9 @@
         <div class="mb-3">
           <label for="channelType"> Bio: </label>
           <input type="text" placeholder="Write a new bio..." v-model="bio" class="form-control" />
+          <button @click="updateBio" class="btn orange_btn "> Update </button>
         </div>
-
+        
         <!-- Mods -->
         <div v-if="show_inputs">
           <div class="mb-3">
@@ -69,17 +69,17 @@
             <div class="input-group">
               <input v-model="mod_to_add" type="text" id="modsInput" class="form-control" />
               <div>
-
                 <button @click="addMod" class="btn btn-primary "> Insert </button>
-                <button @click="removeMod" class="btn btn-danger "> Remove </button>
               </div>
             </div>
           </div>
-
+          
           <div v-if="mods.length > 0">
             <h2> Actual mods: </h2>
             <ul class="list-group mb-3">
-              <li v-for="(name, index) in mods" :key="index" class="list-group-item">{{ name }}</li>
+              <li v-for="(name, index) in mods" :key="index" class="list-group-item">{{ name }}
+                <button @click="removeMod(index)" class="btn btn-danger "> Remove </button> 
+              </li>
             </ul>
           </div>
         </div>
@@ -98,11 +98,11 @@
           </div>
         -->
 
-          <!-- Submit -->
-        <button type="submit" class="btn btn-primary orange_btn"> Submit </button>
+          <!-- Submit 
+        <button type="submit" class="btn btn-primary orange_btn"> Submit </button> -->
       </div>
 
-    </form>
+    <!-- </form> -->
   </div>
 </template>
 
@@ -167,9 +167,18 @@ export default {
       catch (error) { console.error("An error occured: ", error); }
     },
 
-    async modifyChannel() {
-      // update della bio
-      const response = await axios.post(`https://site222326.tw.cs.unibo.it/channels/${this.search_channel_name}`, { bio: this.bio } );
+    async updateBio() {
+      const response = await axios.post(`https://site222326.tw.cs.unibo.it/channels/${this.search_channel_name}`, { bio: this.bio });
+
+      if (response.status === 401) {
+        alert("You're not authorized to modify this channel.")
+      }
+      else if (response.status === 404) {
+        alert("Channel not found.")
+      }
+      else if (response.status === 200) {
+        alert("Channel updated succesfully!")
+      }
     },
 
     async addMod() {
@@ -194,9 +203,11 @@ export default {
       }
     },
 
-    async removeMod() {
-      console.log("rimuovo mod: ", this.mod_to_add)
-      const response = await axios.delete(`https://site222326.tw.cs.unibo.it/channels/${this.search_channel_name}/mod_list`, { data: { mod_name: this.mod_to_add }});
+    async removeMod(index) {
+      //console.log("rimuovo mod: ", this.mod_to_add)
+      const mod_to_remove = this.mods.splice(index, 1)
+      console.log("rimuovo mod: ", mod_to_remove)
+      const response = await axios.delete(`https://site222326.tw.cs.unibo.it/channels/${this.search_channel_name}/mod_list`, { data: { mod_name: mod_to_remove }});
 
       if (response.status === 404) {
         alert("Channel or profile not found.")
