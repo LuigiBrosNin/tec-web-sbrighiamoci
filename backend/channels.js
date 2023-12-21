@@ -174,7 +174,7 @@ app.put("/channels/:name", async (req, res) => {
       propic: null,
       bio: req.body.bio,
       is_deleted: false,
-      propic: null
+      propic: "https://site222326.tw.cs.unibo.it/images/logoSquealer.svg"
     };
 
     // only admins can create privileged or required channels
