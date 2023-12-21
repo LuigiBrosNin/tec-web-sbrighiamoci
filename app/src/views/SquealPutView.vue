@@ -1,5 +1,5 @@
 <script setup>
-import router from '@/router/index.js'
+import router from "@/router/index.js";
 </script>
 
 <template>
@@ -47,9 +47,11 @@ import router from '@/router/index.js'
               Include Geolocation in your Squeal
             </button>
             <button v-if="location" @click.prevent="
-                                                                {
+                        {
               location = null;
-              if (map != null) { destroyMap() }
+              if (map != null) {
+                destroyMap();
+              }
             }
               " class="btn btn-warning">
               X
@@ -78,27 +80,28 @@ import router from '@/router/index.js'
           <p v-else>No file selected</p>
         </div>
       </div>
-      <!-- TODO REMOVE WHEN WE IMPLEMENT AUTOMATIC REPLIES-->
+
 
       <div class="form-group">
-        <label for="reply_to">Reply To:</label>
+        <label for="reply_to" class="form-label">Reply To:</label>
         <input type="text" id="reply_to" v-model="reply_to" class="form-control" />
 
-        <label for="send_for_loop">Automatic post?</label>
-        <input type="checkbox" id="send_for_loop" v-model="send_for_loop" />
+        <div class="form-check mt-3">
+          <label for="send_for_loop" class="form-label">Looping post?</label>
+          <input type="checkbox" id="send_for_loop" v-model="send_for_loop" class="form-check-input" />
+        </div>
       </div>
 
       <div v-if="send_for_loop">
         <div class="form-group">
-          <label for="times">Repeat n times:</label>
-          <input type="number" id="times" v-model="times" />
+          <label for="times" class="form-label">Number of posts (set negative for endless posts):</label>
+          <input type="number" id="times" v-model="times" class="form-control" />
         </div>
 
         <div class="form-group">
-          <label for="delay">Delay (in minutes):</label>
-          <input type="number" id="delay" v-model="delay" />
+          <label for="delay" class="form-label">Delay (in minutes):</label>
+          <input type="number" id="delay" v-model="delay" class="form-control" />
         </div>
-
       </div>
       <button type="submit" class="btn btn-primary" style="background-color: #ff8900; color: white">
         Submit
@@ -131,8 +134,6 @@ export default {
       times: -1,
 
       map: null,
-      is_looping,
-      timeoutId,
       send_for_loop: false,
     };
   },
@@ -167,8 +168,6 @@ export default {
           this.text = this.$route.query.text;
           this.updateCreditsOnScreen(this.text);
         }
-
-
       })
       .catch((error) => {
         console.log(error);
@@ -272,29 +271,40 @@ export default {
       this.map.remove();
       console.log(document);
       console.log(this.map._container.id);
-      document.getElementById(this.map._container.id).style.setProperty('background-color', '#fff', 'important');
+      document
+        .getElementById(this.map._container.id)
+        .style.setProperty("background-color", "#fff", "important");
       this.map = null;
     },
     async loopPost(formData, delay, times) {
-      if (this.is_looping) {
+      if (this.$global.is_looping) {
         this.stopLoop();
-        console.log("previous loop stopped")
+        console.log("previous loop stopped");
+        // wait until the loop is stopped
+        await new Promise((resolve) => setTimeout(resolve, 500));
       }
 
-      // wait until the loop is stopped
-      await new Promise((resolve) => setTimeout(resolve, 100));
-
-      this.is_looping = true;
+      this.$global.is_looping = true;
 
       // time = -1 -> infinite loop (sorta)
       if (times == -1) {
-        times = 99999
+        times = 99999;
       }
 
       // turn delay in mins
       delay = delay * 1000 * 60;
 
       let jsonBody = JSON.parse(formData.json);
+
+      /*
+      for (let i = 0; i < times; i++) {
+        console.log("looping: ", i);
+        // wait for delay
+        await new Promise(
+          (resolve) => (this.$global.timeout_id = setTimeout(resolve, delay))
+        );
+      }
+      */
 
       for (let i = 0; i < times; i++) {
         try {
@@ -317,7 +327,10 @@ export default {
 
           console.log("sending body: ", formData);
           // Send formData to server using axios or fetch
-          const response = await axios.put("https://site222326.tw.cs.unibo.it/squeals/", formData)
+          const response = await axios.put(
+            "https://site222326.tw.cs.unibo.it/squeals/",
+            formData
+          );
 
           console.log(response.data);
           if (response.status == 200) {
@@ -328,8 +341,10 @@ export default {
           }
 
           // wait for delay
-          await new Promise((resolve) => this.timeoutId = setTimeout(resolve, delay));
-          if (!this.is_looping) {
+          await new Promise(
+            (resolve) => (this.$global.timeout_id = setTimeout(resolve, delay))
+          );
+          if (!this.$global.is_looping) {
             break;
           }
         } catch (error) {
@@ -337,12 +352,13 @@ export default {
           break;
         }
       }
-      this.is_looping = false;
+
+      this.$global.is_looping = false;
     },
     stopLoop() {
-      this.is_looping = false;
-      clearTimeout(this.timeoutId);
-    }
+      this.$global.is_looping = false;
+      clearTimeout(this.$global.timeout_id);
+    },
   },
   // watch: listeners
   watch: {
@@ -437,4 +453,3 @@ button[type="submit"] {
   font-size: 1.3em;
 }
 </style>
-
