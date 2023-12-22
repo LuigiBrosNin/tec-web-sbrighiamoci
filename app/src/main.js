@@ -16,7 +16,8 @@ app.use(router);
 let user = await fetch("https://site222326.tw.cs.unibo.it/user-check", { method: "GET"});
 user = await user.json();
 app.config.globalProperties.$user = (user.user || null);
-app.config.globalProperties.$user = "Premium1Test";
+//app.config.globalProperties.$user = "Premium1Test";
+
 app.config.globalProperties.$global = reactive({ is_looping: false, timeout_id: null });
 
 
