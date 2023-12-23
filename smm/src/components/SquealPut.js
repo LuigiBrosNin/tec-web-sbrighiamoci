@@ -27,6 +27,10 @@ export class SquealPut extends Component {
       map: null,
       marker: null,
       mediaUrl: null,
+
+      send_for_loop: false,
+      times: 0,
+      delay: 0,
     };
 
     this.updateCreditsOnScreen = this.updateCreditsOnScreen.bind(this);
@@ -37,6 +41,7 @@ export class SquealPut extends Component {
     this.removeLocation = this.removeLocation.bind(this);
     this.removeMedia = this.removeMedia.bind(this);
     this.reloadAccount = this.reloadAccount.bind(this);
+    this.loopPost = this.loopPost.bind(this);
 
   }
 
@@ -141,6 +146,80 @@ export class SquealPut extends Component {
     this.setState({ media: file, mediaUrl: fileUrl });
   };
 
+  loopPost = async (formData, delay, times) => {
+    if (this.props.loopObject.is_looping) {
+      this.props.loopObject.stopLoop();
+      console.log("previous loop stopped");
+      // wait until the loop is stopped
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    }
+
+    this.props.loopObject.setLooping(true);
+
+    // time = negative -> infinite loop (sorta)
+    if (times < 0) {
+      times = 99999;
+    }
+
+    // turn delay in mins
+    delay = delay * 1000 * 60;
+
+    let jsonBody = JSON.parse(formData.get('json'));
+
+    jsonBody.text = "automatic post " + 0 + " " + jsonBody.text
+
+    for (let i = 0; i < times; i++) {
+      try {
+        // update location
+        if (jsonBody.location && navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition((position) => {
+            jsonBody.location = {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            };
+          });
+        } else {
+          alert("Geolocation is not supported by this browser.");
+        }
+
+        // update text
+        jsonBody.text = jsonBody.text.replace(/automatic post \d+ /, "automatic post " + (i + 1) + " ");
+
+        formData.set("json", JSON.stringify(jsonBody));
+
+        console.log("sending body: ", formData);
+        // Send formData to server using axios or fetch
+        const response = await axios.put(
+          "https://site222326.tw.cs.unibo.it/squeals/",
+          formData
+        );
+
+        console.log(response.data);
+        if (response.status == 200) {
+          let id = response.data.squeal_id;
+          // change page into published squeal
+          this.props.navigate(`smm/squeals/${id}`);
+        } else {
+          break;
+        }
+
+        // wait for delay
+        await new Promise(
+          (resolve) => (this.props.loopObject.setTimeout_id(setTimeout(resolve, delay)))
+        );
+        if (!this.props.loopObject.is_looping) {
+          break;
+        }
+      } catch (error) {
+        console.log(error);
+        break;
+      }
+    }
+
+    // set looping to false
+    this.props.loopObject.setLooping(false);
+  }
+
   submitForm = () => {
 
     if (Math.min(...Object.values(this.state.temp_credits)) < 0) {
@@ -154,6 +233,7 @@ export class SquealPut extends Component {
       }).then((response) => {
         console.log(response.data);
         if (response.status === 200) {
+
           const jsonBody = {
             author: this.props.selectedAccount.name,
             text: this.state.text,
@@ -167,6 +247,12 @@ export class SquealPut extends Component {
           formData.append("file", this.state.media);
 
           console.log("sending body: ", formData);
+
+          if (this.state.send_for_loop) {
+            this.loopPost(formData, this.delay, this.times);
+            return;
+          }
+
           // Send formData to server using axios or fetch
           axios
             .put("https://site222326.tw.cs.unibo.it/squeals/", formData)
@@ -203,6 +289,12 @@ export class SquealPut extends Component {
       formData.append("file", this.state.media);
 
       console.log("sending body: ", formData);
+
+      if (this.state.send_for_loop) {
+        this.loopPost(formData, this.delay, this.times);
+        return;
+      }
+
       // Send formData to server using axios or fetch
       axios
         .put("https://site222326.tw.cs.unibo.it/squeals/", formData)
@@ -370,8 +462,27 @@ export class SquealPut extends Component {
             </div>
 
             <div className="form-group">
-              <label htmlFor="reply_to">Reply To:</label>
+            <label htmlFor="reply_to">Reply To:</label>
               <input type="text" id="reply_to" value={this.state.reply_to} onChange={e => this.setState({ reply_to: e.target.value })} className="form-control" />
+
+              <div className="form-check mt-3">
+                <label htmlFor="send_for_loop" className="form-label">Looping post?</label>
+                <input type="checkbox" id="send_for_loop" checked={this.state.send_for_loop} onChange={e => this.setState({ send_for_loop: e.target.value })} className="form-check-input" />
+              </div>
+
+              {this.state.send_for_loop && (
+                <div>
+                  <div className="form-group">
+                    <label htmlFor="times" className="form-label">Number of posts (set negative for endless posts):</label>
+                    <input type="number" id="times" value={this.state.times} onChange={e => this.setState({ times: e.target.value })} className="form-control" />
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="delay" className="form-label">Delay (in minutes):</label>
+                    <input type="number" id="delay" value={this.state.delay} onChange={e => this.setState({ delay: e.target.value })} className="form-control" />
+                  </div>
+                </div>
+              )}
             </div>
             {Math.min(...Object.values(this.state.temp_credits)) < 0 ? (
               <button type="submit" className="btn btn-primary" style={{ backgroundColor: "#ff8900", color: "white" }} onClick={(e) => { e.preventDefault() }}>

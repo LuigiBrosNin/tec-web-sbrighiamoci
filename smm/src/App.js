@@ -40,6 +40,8 @@ function App() {
   const [smm_account, setSmmAccount] = useState(null);
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [isSidebarOpen, setSidebarOpen] = useState(true);
+  const [is_looping, setLooping] = useState(false);
+  const [timeout_id, setTimeout_id] = useState(null);
 
   useEffect(() => {
     if (globalState.$user == null) {
@@ -69,6 +71,16 @@ function App() {
     }
   }, []);
 
+  const stopLoop = () => {
+    setLooping(false);
+    clearTimeout(timeout_id);
+  }
+
+  const loopObject = {
+    stopLoop: stopLoop,
+    setLooping: setLooping,
+    setTimeout_id: setTimeout_id
+  }
 
   const handleSelectedAccountChange = (newAccount) => {
     console.log('Selected account has changed:', newAccount);
@@ -78,7 +90,7 @@ function App() {
   return (
     <div className="App">
 
-      <Header selectedAccount={selectedAccount} />
+      <Header selectedAccount={selectedAccount} loopObject={loopObject}/>
 
       <div className="container-fluid">
         <Router>
@@ -97,7 +109,7 @@ function App() {
             <main role="main" className="col-md-9 ml-sm-auto col-lg-10 px-4">
               <Routes>
                 <Route path="smm" element={<h1>Click any tab to get started!</h1>} />
-                <Route path="smm/squealPut" element={<SquealPutHoc selectedAccount={selectedAccount} onAccountChange={handleSelectedAccountChange}/>} />
+                <Route path="smm/squealPut" element={<SquealPutHoc selectedAccount={selectedAccount} onAccountChange={handleSelectedAccountChange} loopObject={loopObject}/>} />
                 <Route path="smm/profile" element={<ProfileInsights selectedAccount={selectedAccount} />} />
                 <Route path="smm/squeals" element={<SquealsInsights selectedAccount={selectedAccount} />} />
                 <Route path="smm/messages" element={<Messages selectedAccount={selectedAccount} />} />

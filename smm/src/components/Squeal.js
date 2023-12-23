@@ -25,6 +25,7 @@ export class Squeal extends Component {
     this.canUserDeleteIt = this.canUserDeleteIt.bind(this);
     this.askToDelete = this.askToDelete.bind(this);
     this.deleteSqueal = this.deleteSqueal.bind(this);
+    this.parseText = this.parseText.bind(this);
   }
 
   componentDidMount() {
@@ -32,11 +33,40 @@ export class Squeal extends Component {
       return;
     }
 
+    this.setState({
+      squeal: {
+        ...this.state.squeal,
+        text: this.parseText(this.state.squeal.text)
+      }
+    });
+
     this.showMap('map' + this.state.squeal.id)
 
     this.canUserDeleteIt();
 
     this.registerImpression();
+  }
+
+  parseText(text) {
+    let parsedText = text.split(/(\ |\,|\.|\;|\:|\?|\!)/g);
+    let newText = "";
+    for (const index in parsedText) {
+      const word = parsedText[index];
+      if (word.length > 0) {
+        let firstChar = word[0];
+        console.log(firstChar);
+        if (firstChar == "#") {
+          newText = newText.concat('<a href="">' + word + '</a>');
+        } else if (firstChar == "@") {
+          newText = newText.concat('<a href="/profile/' + word.slice(1) + '">' + word + '</a>');
+        } else if (firstChar == "§") {
+          newText = newText.concat('<a href="/channel/' + word.slice(1) + '">' + word + '</a>');
+        } else {
+          newText = newText.concat(word);
+        }
+      }
+    }
+    return newText;
   }
 
   hasLocation() {
@@ -165,7 +195,7 @@ export class Squeal extends Component {
     );
     if (channel.status == 200) {
       channel = await channel.json();
-      
+
       const canBeDeleted = (this.state.user != null) && (this.state.user == this.state.squeal.author || this.state.user == channel.owner || channel.mod_list.includes(this.state.user));
       this.setState({
         canBeDeleted: canBeDeleted
@@ -201,68 +231,68 @@ export class Squeal extends Component {
 
   render() {
     return (
-        this.state.isValid && !this.state.squeal.is_private ?
+      this.state.isValid && !this.state.squeal.is_private ?
 
-      <div className="squeal_container">
-        <RouterLink to={"https://site222326.tw.cs.unibo.it/app/channel/" + this.props.squeal.receiver}>§{this.props.squeal.receiver}</RouterLink>
-        <div>
-          <p>Reply to: {this.props.squeal.replyTo}</p>
-        </div>
-
-        <div className="profile_data">
-          <img className="profile_img" src={`https://${this.props.selectedAccount.propic}`} />
-          <RouterLink to={"smm/profile/" + this.props.squeal.author} className="profile_name"> @{this.props.squeal.author}</RouterLink>
-        </div>
-
-        <p className="squeal_body"> {this.props.squeal.text} </p>
-
-        {this.props.squeal.media != null && this.props.squeal.media != "" ? <img className="squeal_media" src={`https://${this.props.squeal.media}`} /> : null}
-
-        {this.hasLocation() ?
-
-          <div id="mapcontainer">
-            <div id={'map' + this.props.squeal.id} style={{ height: 200 + 'px' }}></div>
+        <div className="squeal_container">
+          <RouterLink to={"https://site222326.tw.cs.unibo.it/app/channel/" + this.props.squeal.receiver}>§{this.props.squeal.receiver}</RouterLink>
+          <div>
+            <p>Reply to: {this.props.squeal.replyTo}</p>
           </div>
 
-          : null}
+          <div className="profile_data">
+            <img className="profile_img" src={`https://${this.props.selectedAccount.propic}`} />
+            <RouterLink to={"smm/profile/" + this.props.squeal.author} className="profile_name"> @{this.props.squeal.author}</RouterLink>
+          </div>
 
-        <p> {new Date(this.props.squeal.date).toUTCString()} </p>
+          <p className="squeal_body"> {this.state.squeal.text} </p>
 
-        <div className="interaction_data">
-          <button
-            className={`interaction_button ${this.props.user && this.props.squeal.positive_reactions_list.includes(this.props.user) ? 'active_button' : ''}`}
-            onClick={this.addOrRemovePositiveReaction}
-          >
-            <img className="interaction_img" src="https://site222326.tw.cs.unibo.it/icons/face-smile-svgrepo-com.svg" />
-            <p className="interaction_counter">{this.props.squeal.positive_reactions}</p>
-          </button>
-          <button
-            className={`interaction_button ${this.props.user && this.props.squeal.negative_reactions_list.includes(this.props.user) ? 'active_button' : ''}`}
-            onClick={this.addOrRemoveNegativeReaction}
-          >
-            <img className="interaction_img" src="https://site222326.tw.cs.unibo.it/icons/face-frown-svgrepo-com.svg" />
-            <p className="interaction_counter">{this.props.squeal.negative_reactions}</p>
-          </button>
-          <RouterLink className="interaction_button" to={`/smm/squealPut?replyto=${this.props.squeal.id}&receiver=${this.props.squeal.receiver}`}>
-            <img className="interaction_img" src="https://site222326.tw.cs.unibo.it/icons/message-circle-dots-svgrepo-com.svg" />
-            <p className="interaction_counter">{this.props.squeal.replies}</p>
-          </RouterLink>
+          {this.props.squeal.media != null && this.props.squeal.media != "" ? <img className="squeal_media" src={`https://${this.props.squeal.media}`} /> : null}
+
+          {this.hasLocation() ?
+
+            <div id="mapcontainer">
+              <div id={'map' + this.props.squeal.id} style={{ height: 200 + 'px' }}></div>
+            </div>
+
+            : null}
+
+          <p> {new Date(this.props.squeal.date).toUTCString()} </p>
+
+          <div className="interaction_data">
+            <button
+              className={`interaction_button ${this.props.user && this.state.squeal.positive_reactions_list.includes(this.props.user) ? 'active_button' : ''}`}
+              onClick={this.addOrRemovePositiveReaction}
+            >
+              <img className="interaction_img" src="https://site222326.tw.cs.unibo.it/icons/face-smile-svgrepo-com.svg" />
+              <p className="interaction_counter">{this.state.squeal.positive_reactions}</p>
+            </button>
+            <button
+              className={`interaction_button ${this.props.user && this.state.squeal.negative_reactions_list.includes(this.props.user) ? 'active_button' : ''}`}
+              onClick={this.addOrRemoveNegativeReaction}
+            >
+              <img className="interaction_img" src="https://site222326.tw.cs.unibo.it/icons/face-frown-svgrepo-com.svg" />
+              <p className="interaction_counter">{this.state.squeal.negative_reactions}</p>
+            </button>
+            <RouterLink className="interaction_button" to={`/smm/squealPut?replyto=${this.props.squeal.id}&receiver=${this.props.squeal.receiver}`}>
+              <img className="interaction_img" src="https://site222326.tw.cs.unibo.it/icons/message-circle-dots-svgrepo-com.svg" />
+              <p className="interaction_counter">{this.state.squeal.replies}</p>
+            </RouterLink>
+          </div>
+
+          <RouterLink to={this.props.squeal.id}>Insights</RouterLink>
+
+
+          {this.state.canBeDeleted ?
+
+            <button className="delete_btn" onClick={this.askToDelete}>
+              <img className="delete_img" src="https://site222326.tw.cs.unibo.it/icons/trash-svgrepo-com.svg" />
+            </button>
+
+            : null}
+
         </div>
 
-        <RouterLink to={this.props.squeal.id}>Insights</RouterLink>
-
-
-        {this.state.canBeDeleted ?
-
-          <button className="delete_btn" onClick={this.askToDelete}>
-            <img className="delete_img" src="https://site222326.tw.cs.unibo.it/icons/trash-svgrepo-com.svg" />
-          </button>
-
-          : null}
-
-      </div> 
-      
-      : null
+        : null
     )
   }
 }

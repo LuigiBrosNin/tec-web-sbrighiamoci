@@ -286,8 +286,8 @@ export default {
 
       this.$global.is_looping = true;
 
-      // time = -1 -> infinite loop (sorta)
-      if (times == -1) {
+      // time = negative -> infinite loop (sorta)
+      if (times < 0) {
         times = 99999;
       }
 
