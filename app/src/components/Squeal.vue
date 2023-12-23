@@ -4,7 +4,7 @@ const props = defineProps(['id', 'squeal_json']);
 
 <template>
     <div class="squeal_container" v-if="isValid && !isPrivate">
-        <RouterLink :to="`/channels/${channel}`"> §{{ channel }} </RouterLink>
+        <RouterLink :to="`/channel/${channel}`"> §{{ channel }} </RouterLink>
         <div v-if='replyTo != null && replyTo != ""'>
             <p>Reply to: 
                 <RouterLink :to="`/squeal/${replyTo}`">{{ replyTo }}</RouterLink>
@@ -16,7 +16,7 @@ const props = defineProps(['id', 'squeal_json']);
             <RouterLink :to="`/profile/${author}`" class="profile_name"> @{{ author }}</RouterLink>
         </div>
 
-        <p class="squeal_body"> {{ body }} </p>
+        <p class="squeal_body" v-html="body"></p>
         <img class="squeal_media" v-if='media != null && media != ""'
             :src="`https://site222326.tw.cs.unibo.it/squeals/${squeal_id}/media`">
 
@@ -116,7 +116,7 @@ export default {
             this.channel = squealJson.receiver;
             this.replyTo = squealJson.reply_to;
             this.date = new Date(squealJson.date);
-            this.body = squealJson.text;
+            this.body = this.parseText(squealJson.text);
             this.media = squealJson.media;
             this.positiveReactions = squealJson.positive_reactions;
             this.positiveReactionsList = squealJson.positive_reactions_list;
@@ -128,6 +128,27 @@ export default {
 
             console.log("propic: " + this.authorProfilePicUrl);
             this.isValid = true;
+        },
+        parseText(text){
+            let parsedText = text.split(/(\ |\,|\.|\;|\:|\?|\!)/g);
+            let newText = "";
+            for(const index in parsedText){
+                const word = parsedText[index];
+                if(word.length > 0){
+                    let firstChar = word[0];
+                    console.log(firstChar);
+                    if(firstChar == "#"){
+                        newText = newText.concat('<a href="">' + word + '</a>');
+                    } else if(firstChar == "@"){
+                        newText = newText.concat('<a href="/profile/' + word.slice(1) + '">' + word + '</a>');
+                    } else if(firstChar == "§"){
+                        newText = newText.concat('<a href="/channel/' + word.slice(1) + '">' + word + '</a>');
+                    } else {
+                        newText = newText.concat(word);
+                    }
+                }
+            }
+            return newText;
         },
         hasLocation() {
             return (this.location != null && this.location != "" && !(JSON.stringify(this.location) === "{}"));
