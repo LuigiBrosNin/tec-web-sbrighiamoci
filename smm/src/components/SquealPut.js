@@ -161,6 +161,10 @@ export class SquealPut extends Component {
       times = 99999;
     }
 
+    if (delay < 0) {
+      delay = 1;
+    }
+
     // turn delay in mins
     delay = delay * 1000 * 60;
 
@@ -249,7 +253,7 @@ export class SquealPut extends Component {
           console.log("sending body: ", formData);
 
           if (this.state.send_for_loop) {
-            this.loopPost(formData, this.delay, this.times);
+            this.loopPost(formData, this.state.delay, this.state.times);
             return;
           }
 

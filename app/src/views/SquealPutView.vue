@@ -47,7 +47,7 @@ import router from "@/router/index.js";
               Include Geolocation in your Squeal
             </button>
             <button v-if="location" @click.prevent="
-                        {
+                                    {
               location = null;
               if (map != null) {
                 destroyMap();
@@ -289,6 +289,10 @@ export default {
       // time = negative -> infinite loop (sorta)
       if (times < 0) {
         times = 99999;
+      }
+
+      if (delay < 0) {
+        delay = 1;
       }
 
       // turn delay in mins
