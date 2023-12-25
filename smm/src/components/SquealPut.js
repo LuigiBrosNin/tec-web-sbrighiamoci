@@ -161,7 +161,7 @@ export class SquealPut extends Component {
       times = 99999;
     }
 
-    if (delay < 0) {
+    if (delay <= 0) {
       delay = 1;
     }
 
