@@ -1418,7 +1418,7 @@ app.delete("/profiles/:name/smm", async (req, res) => {
 app.post("/profiles/:name/shop", async (req, res) => {
     try {
         const profileName = req.params.name;
-        const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === profileName;
+        const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.premium) && req.session.user === profileName;
         const SMMauthorized = await isSMMAuthorized(req.session.user, profileName) && await isAuthorizedOrHigher(req.session.user, typeOfProfile.user);
 
         if (!authorized && !SMMauthorized) {
