@@ -1413,7 +1413,7 @@ app.delete("/profiles/:name/smm", async (req, res) => {
 // chiama squealerTechnician per effettuare l'acquisto richiesto
 // ritorna 404 se non esiste
 // ritorna 401 se non sei autorizzato
-// body: credit, credit_limits
+// body: credit
 app.post("/profiles/:name/shop", async (req, res) => {
     try {
         const profileName = req.params.name;
@@ -1439,7 +1439,7 @@ app.post("/profiles/:name/shop", async (req, res) => {
             return;
         }
 
-        if ( req.body.credit == undefined ||  req.body.credit_limits == undefined) {
+        if ( req.body.credit == undefined) {
             res.status(400).json({
                 message: "Missing parameters"
             });
@@ -1451,11 +1451,7 @@ app.post("/profiles/:name/shop", async (req, res) => {
             req.body.credit + profile.credit[1],
             req.body.credit + profile.credit[2]
         ];
-        const credit_limits = [
-            req.body.credit_limits + profile.credit_limits[0],
-            req.body.credit_limits + profile.credit_limits[1],
-            req.body.credit_limits + profile.credit_limits[2]
-        ];
+
 
         // process payment (real)
 
@@ -1468,8 +1464,7 @@ app.post("/profiles/:name/shop", async (req, res) => {
         await axios.post('https://site222326.tw.cs.unibo.it/login', authData);
 
         await axios.post('https://site222326.tw.cs.unibo.it/profiles/' + profileName, {
-            credit: credit,
-            credit_limits: credit_limits
+            credit: credit
         }).then(resPost => {
             if(resPost.status == 201) {
                 res.status(200).json({

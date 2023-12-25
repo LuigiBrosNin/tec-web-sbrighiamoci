@@ -55,7 +55,7 @@ export class Shop extends Component {
               <img src={process.env.PUBLIC_URL + '/coin1.png'} className="card-img-top my_square-image" alt="Product 1" />
               <div className="card-body">
                 <h5 className="card-title">Tears of free speech</h5>
-                <p className="card-text">+100 credits, +50 credit limits</p>
+                <p className="card-text">+100 credits</p>
                 <button className="btn btn-primary" onClick={() => this.makePurchase(100,50)}>Buy for 1.99-</button>
               </div>
             </div>
@@ -65,7 +65,7 @@ export class Shop extends Component {
               <img src={process.env.PUBLIC_URL + '/coin2.png'} className="card-img-top square-image" alt="Product 2" />
               <div className="card-body">
                 <h5 className="card-title">Twitter's lament</h5>
-                <p className="card-text">+500 credits, +280 credit limits</p>
+                <p className="card-text">+500 credits</p>
                 <button className="btn btn-primary" onClick={() => this.makePurchase(500,280)}>Buy for 4.99-</button>
               </div>
             </div>
@@ -75,7 +75,7 @@ export class Shop extends Component {
                 <img src={process.env.PUBLIC_URL + '/coin3.png'} className="card-img-top square-image" alt="Product 3" />
                 <div className="card-body">
                 <h5 className="card-title">That's just my opinion</h5>
-                <p className="card-text">+1000 credits, +500 credit limits</p>
+                <p className="card-text">+1000 credits</p>
                 <button className="btn btn-primary" onClick={() => this.makePurchase(1000,500)}>Buy for 9.99-</button>
               </div>
             </div>
