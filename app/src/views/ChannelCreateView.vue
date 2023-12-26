@@ -172,12 +172,16 @@ export default {
           this.mods = response.data.mod_list; 
 
           this.profilePicUrl = response.data.propic
+
+          //TODO  questa cosa della propic non funziona piu'
           if (this.profilePicUrl == null || this.profilePicUrl == "") {
+            console.log("La propic è null.")
             this.profilePicUrl =
               "https://site222326.tw.cs.unibo.it/images/user-default.svg";
           }
           else {
-            this.profilePicUrl = `https://site222326.tw.cs.unibo.it/profiles/${this.search_channel_name}/propic`;
+            console.log("La propic esiste.")
+            this.profilePicUrl = `https://site222326.tw.cs.unibo.it/channels/${this.search_channel_name}/propic`;
           }   
         }
         else { alert("Canale non trovato."); }
