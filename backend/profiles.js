@@ -15,6 +15,7 @@ const {
 } = require("../index.js");
 const {
     typeOfProfile,
+    isAuthorized,
     isAuthorizedOrHigher,
     isSMMAuthorized
 } = require("./loginUtils.js");
@@ -1417,7 +1418,7 @@ app.delete("/profiles/:name/smm", async (req, res) => {
 app.post("/profiles/:name/shop", async (req, res) => {
     try {
         const profileName = req.params.name;
-        const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === profileName;
+        const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.premium) && req.session.user === profileName;
         const SMMauthorized = await isSMMAuthorized(req.session.user, profileName) && await isAuthorizedOrHigher(req.session.user, typeOfProfile.user);
 
         if (!authorized && !SMMauthorized) {
@@ -1482,5 +1483,105 @@ app.post("/profiles/:name/shop", async (req, res) => {
         res.status(500).json({
             message: error.message
         });
+    }
+});
+
+//* PUT
+// aggiunge uno squeal al database, nel caso il profilo non abbia sufficiente credito prima acquista 
+// quello necessario e poi procedere a pubblicare lo squeal
+// Body, lo stesso della put a /squeals/:
+// required: author, text, receiver, is_private
+// optional: media, reply_to
+app.put("/profiles/:name/shopandpost", async (req, res) => {
+    try {
+        const profileName = req.params.name;
+        const reqBody = JSON.parse(req.body.json);
+
+        const authorized = await isAuthorized(req.session.user, typeOfProfile.user) && req.session.user === profileName; // only a user can access this page, premium and smm can use /profiles/:name/shop
+        const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
+        
+        if (!authorized && !adminAuthorized) {
+            res.status(401).json({
+                message: "Unauthorized"
+            });
+            return;
+        }
+
+        let charCost = reqBody.text.length;
+        if (reqBody.media != null) {
+            charCost += 125;
+        }
+        if (reqBody.location != null && reqBody.location != {}) {
+            charCost += 125;
+        }
+
+        mongoClient.connect();
+        const profile = await collection_profiles.findOne({
+            name: profileName
+        });
+
+        // credit check
+        if(profile.credit[0] <= 0 || profile.credit[1] <= 0 || profile.credit[2] <= 0){
+            res.status(400).send(JSON.stringify({
+                message: "you cannot create squeal, not even paying, if your credit is zero"
+            }));
+            return;
+        }
+
+        let usedDailyCredit = profile.credit[0] - charCost;
+        let usedWeeklyCredit = profile.credit[1] - charCost;
+        let usedMonthlyCredit = profile.credit[2] - charCost;
+
+        let charToBuy = Math.min(usedDailyCredit, usedWeeklyCredit, usedMonthlyCredit);
+        if(charToBuy > 0){
+            charToBuy = 0;
+        } else { // if the user don't have enough credits, buy it
+            charToBuy = - charToBuy;
+            let buyRes = await fetch(`/profiles/${profileName}/shop`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Cookie": req.headers.cookie
+                },
+                body: JSON.stringify({
+                    credit: charToBuy
+                })
+            });
+            if(buyRes.status != 200) {
+                res.status(500).send(JSON.stringify({
+                    message: "error during character purchase"
+                }));
+                return;
+            }
+        }
+
+        // publish squeal
+        let response = await fetch(`/squeals`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Cookie": req.headers.cookie
+            },
+            body: JSON.stringify(reqBody)
+        });
+        if(response.status == 200){
+            const resBody = JSON.parse(response.body.json);
+            res.status(200).send(JSON.stringify({
+                message: "squeal added successfully with db id:" + resBody.squeal_id + ", character purchased: " + charToBuy,
+                squeal_id: resBody.squeal_id,
+            }));
+        }
+        else {
+            res.status(500).send(JSON.stringify({
+                message: "error during squeal upload"
+            }));
+            return;
+        }
+    }
+    catch (error) {
+        console.error('Error during character purchase or squeal upload: ', error);
+        res.status(500).send(JSON.stringify({
+            message: error.message
+        }));
     }
 });
