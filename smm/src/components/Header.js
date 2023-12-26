@@ -29,7 +29,7 @@ export class Header extends Component {
                 <strong>Posting automatic squeals!</strong>
               </div>
               <div className="mr-3">
-                <button className="btn btn-danger" onClick={this.props.loopObject.stopLoop()}>Stop</button>
+                <button className="btn btn-danger" onClick={() => this.props.loopObject.stopLoop()}>Stop</button>
               </div>
             </div>
           </div> : null}

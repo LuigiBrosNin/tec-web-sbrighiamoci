@@ -41,7 +41,6 @@ export class SquealPut extends Component {
     this.removeLocation = this.removeLocation.bind(this);
     this.removeMedia = this.removeMedia.bind(this);
     this.reloadAccount = this.reloadAccount.bind(this);
-    this.loopPost = this.loopPost.bind(this);
 
   }
 
@@ -146,76 +145,6 @@ export class SquealPut extends Component {
     this.setState({ media: file, mediaUrl: fileUrl });
   };
 
-  loopPost = async (formData, delay, times) => {
-    if (this.props.loopObject.is_looping) {
-      this.props.loopObject.stopLoop();
-      console.log("previous loop stopped");
-      // wait until the loop is stopped
-      await new Promise((resolve) => setTimeout(resolve, 500));
-    }
-
-    this.props.loopObject.setLooping(true);
-
-    // time = negative -> infinite loop (sorta)
-    if (times < 0) {
-      times = 99999;
-    }
-
-    if (delay <= 0) {
-      delay = 1;
-    }
-
-    // turn delay in mins
-    delay = delay * 1000 * 10//60;
-
-    let jsonBody = JSON.parse(formData.get('json'));
-
-    jsonBody.text = "automatic post " + 0 + " " + jsonBody.text
-
-    console.log("json body: ", jsonBody, " delay: ", delay, " times: ", times)
-
-    for (let i = 0; i < times; i++) {
-      console.log("looping post " + (i + 1) + " of " + times);
-      try {
-
-        // update text
-        jsonBody.text = jsonBody.text.replace(/automatic post \d+ /, "automatic post " + (i + 1) + " ");
-
-        formData.set("json", JSON.stringify(jsonBody));
-
-        console.log("sending body: ", formData);
-        // Send formData to server using axios or fetch
-        const response = await axios.put(
-          "https://site222326.tw.cs.unibo.it/squeals/",
-          formData
-        );
-
-        console.log(response.data);
-        if (response.status == 200) {
-          let id = response.data.squeal_id;
-          // change page into published squeal
-          this.props.navigate(`smm/squeals/${id}`);
-        } else {
-          break;
-        }
-
-        // wait for delay
-        await new Promise(
-          (resolve) => (this.props.loopObject.setTimeout_id(setTimeout(resolve, delay)))
-        );
-        if (!this.props.loopObject.is_looping) {
-          break;
-        }
-      } catch (error) {
-        console.log(error);
-        break;
-      }
-    }
-
-    // set looping to false
-    this.props.loopObject.setLooping(false);
-  }
-
   submitForm = () => {
 
     if (Math.min(...Object.values(this.state.temp_credits)) < 0) {
@@ -246,7 +175,7 @@ export class SquealPut extends Component {
 
           if (this.state.send_for_loop) {
             console.log("looping post");
-            this.loopPost(formData, this.state.delay, this.state.times);
+            this.props.loopObject.loopPost(formData, this.state.delay, this.state.times);
             return;
           }
 
@@ -289,7 +218,7 @@ export class SquealPut extends Component {
 
       if (this.state.send_for_loop) {
         console.log("looping post");
-        this.loopPost(formData, this.state.delay, this.state.times);
+        this.props.loopObject.loopPost(formData, this.state.delay, this.state.times);
         return;
       }
 

@@ -1,5 +1,5 @@
 import './App.css';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { BrowserRouter as Router } from 'react-router-dom';
 
@@ -72,14 +72,106 @@ function App() {
   }, []);
 
   const stopLoop = () => {
+    console.log("stopping loop")
     setLooping(false);
     clearTimeout(timeout_id);
   }
 
+  const isLoopingRef = useRef(is_looping);
+
+  useEffect(() => {
+    isLoopingRef.current = is_looping;
+  }, [is_looping]);
+
+
+  const waitForLooping = () => {
+    return new Promise(resolve => {
+      const checkLooping = () => {
+        if (isLoopingRef.current) {
+          resolve();
+        } else {
+          setTimeout(checkLooping, 100); // check every 100ms
+        }
+      };
+      checkLooping();
+    });
+  };
+
+  const loopPost = async (formData, delay, times) => {
+    if (is_looping) {
+      stopLoop();
+      // wait until the loop is stopped
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    }
+
+    setLooping(true);
+
+    await waitForLooping();
+
+    // time = negative -> infinite loop (sorta)
+    if (times < 0) {
+      times = 99999;
+    }
+
+    if (delay <= 0) {
+      delay = 1;
+    }
+
+    // turn delay in mins
+    delay = delay * 1000 * 60;
+
+    let jsonBody = JSON.parse(formData.get('json'));
+
+    jsonBody.text = "automatic post " + 0 + " " + jsonBody.text
+
+    for (let i = 0; i < times; i++) {
+      console.log("looping post " + (i + 1) + " of " + times);
+      try {
+
+        // update text
+        jsonBody.text = jsonBody.text.replace(/automatic post \d+ /, "automatic post " + (i + 1) + " ");
+
+        formData.set("json", JSON.stringify(jsonBody));
+
+        console.log("sending body: ", formData);
+        // Send formData to server using axios or fetch
+        const response = await axios.put(
+          "https://site222326.tw.cs.unibo.it/squeals/",
+          formData
+        );
+
+        console.log(response.data);
+        if (response.status == 200) {
+          let id = response.data.squeal_id;
+          // change page into published squeal
+          this.props.navigate(`smm/squeals/${id}`);
+        } else {
+          break;
+        }
+
+        // wait for delay
+        await new Promise(
+          (resolve) => (setTimeout_id(setTimeout(resolve, delay)))
+        );
+        if (!isLoopingRef.current) {
+          break;
+        }
+      } catch (error) {
+        console.log(error);
+        break;
+      }
+    }
+
+    // set looping to false
+    setLooping(false);
+  }
+
   const loopObject = {
     stopLoop: stopLoop,
+    is_looping: is_looping,
     setLooping: setLooping,
-    setTimeout_id: setTimeout_id
+    setTimeout_id: setTimeout_id,
+    loopPost: loopPost
   }
 
   const handleSelectedAccountChange = (newAccount) => {
@@ -90,7 +182,7 @@ function App() {
   return (
     <div className="App">
 
-      <Header selectedAccount={selectedAccount} loopObject={loopObject}/>
+      <Header selectedAccount={selectedAccount} loopObject={loopObject} />
 
       <div className="container-fluid">
         <Router>
@@ -99,7 +191,7 @@ function App() {
               {isSidebarOpen ? 'Hide Sidebar' : 'Show Sidebar'}
             </button>
             <nav className={`col-md-2 bg-light sidebar ${isSidebarOpen ? 'd-block' : 'd-none'}`}>
-              <AccountSelector onAccountChange={handleSelectedAccountChange} selectedAccount={selectedAccount}/>
+              <AccountSelector onAccountChange={handleSelectedAccountChange} selectedAccount={selectedAccount} />
               <Navbar />
               {smm_account ?
                 <MiniProfileCard profile={smm_account} />
@@ -109,7 +201,7 @@ function App() {
             <main role="main" className="col-md-9 ml-sm-auto col-lg-10 px-4">
               <Routes>
                 <Route path="smm" element={<h1>Click any tab to get started!</h1>} />
-                <Route path="smm/squealPut" element={<SquealPutHoc selectedAccount={selectedAccount} onAccountChange={handleSelectedAccountChange} loopObject={loopObject}/>} />
+                <Route path="smm/squealPut" element={<SquealPutHoc selectedAccount={selectedAccount} onAccountChange={handleSelectedAccountChange} loopObject={loopObject} />} />
                 <Route path="smm/profile" element={<ProfileInsights selectedAccount={selectedAccount} />} />
                 <Route path="smm/squeals" element={<SquealsInsights selectedAccount={selectedAccount} />} />
                 <Route path="smm/messages" element={<Messages selectedAccount={selectedAccount} />} />
