@@ -177,7 +177,7 @@ export default {
               "https://site222326.tw.cs.unibo.it/images/user-default.svg";
           }
           else {
-            this.profilePicUrl = `https://site222326.tw.cs.unibo.it/profiles/${this.name}/propic`;
+            this.profilePicUrl = `https://site222326.tw.cs.unibo.it/profiles/${this.search_channel_name}/propic`;
           }   
         }
         else { alert("Canale non trovato."); }
