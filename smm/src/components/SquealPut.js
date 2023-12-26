@@ -166,25 +166,17 @@ export class SquealPut extends Component {
     }
 
     // turn delay in mins
-    delay = delay * 1000 * 60;
+    delay = delay * 1000 * 10//60;
 
     let jsonBody = JSON.parse(formData.get('json'));
 
     jsonBody.text = "automatic post " + 0 + " " + jsonBody.text
 
+    console.log("json body: ", jsonBody, " delay: ", delay, " times: ", times)
+
     for (let i = 0; i < times; i++) {
+      console.log("looping post " + (i + 1) + " of " + times);
       try {
-        // update location
-        if (jsonBody.location && navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition((position) => {
-            jsonBody.location = {
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-            };
-          });
-        } else {
-          alert("Geolocation is not supported by this browser.");
-        }
 
         // update text
         jsonBody.text = jsonBody.text.replace(/automatic post \d+ /, "automatic post " + (i + 1) + " ");
@@ -253,6 +245,7 @@ export class SquealPut extends Component {
           console.log("sending body: ", formData);
 
           if (this.state.send_for_loop) {
+            console.log("looping post");
             this.loopPost(formData, this.state.delay, this.state.times);
             return;
           }
@@ -295,7 +288,8 @@ export class SquealPut extends Component {
       console.log("sending body: ", formData);
 
       if (this.state.send_for_loop) {
-        this.loopPost(formData, this.delay, this.times);
+        console.log("looping post");
+        this.loopPost(formData, this.state.delay, this.state.times);
         return;
       }
 
@@ -471,7 +465,7 @@ export class SquealPut extends Component {
 
               <div className="form-check mt-3">
                 <label htmlFor="send_for_loop" className="form-label">Looping post?</label>
-                <input type="checkbox" id="send_for_loop" checked={this.state.send_for_loop} onChange={e => this.setState({ send_for_loop: e.target.value })} className="form-check-input" />
+                <input type="checkbox" id="send_for_loop" onChange={e => this.setState({ send_for_loop: e.target.checked })} className="form-check-input" />
               </div>
 
               {this.state.send_for_loop && (
