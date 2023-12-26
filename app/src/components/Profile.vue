@@ -2,6 +2,7 @@
 import Squeal from "@/components/Squeal.vue";
 import FollowButton from "@/components/FollowButton.vue";
 import ProfileCard from "@/components/ProfileCard.vue"
+import ChannelCard from "@/components/ChannelCard.vue"
 import { addAbortListener } from "stream";
 const props = defineProps(["id", "profile_json"]);
 </script>
@@ -109,7 +110,7 @@ const props = defineProps(["id", "profile_json"]);
       <!-- Following Cards -->
       <div class="tab-pane fade" id="pills-following" role="tabpanel" aria-labelledby="pills-following-tab">
         <div v-for="follower in tmpFollowingList" :key="follower">
-          <ProfileCard :id="follower"></ProfileCard>
+          <ProfileCard :id="follower"></ProfileCard> 
         </div>
         <div class="loadMoreContainer">
           <div v-if="tmpFollowingList.length < 1"> No more profiles. </div>
@@ -119,9 +120,9 @@ const props = defineProps(["id", "profile_json"]);
       </div>
 
       <!-- Channels Cards -->
-      <div class="tab-pane fade" id="pills-following" role="tabpanel" aria-labelledby="pills-following-tab">
+      <div class="tab-pane fade" id="pills-channels" role="tabpanel" aria-labelledby="pills-channels-tab">
         <div v-for="channel in tmpChannelsList" :key="channel">
-          <ChannelCard :id="channel"></ChannelCard>
+          <ChannelCard :id="channel"></ChannelCard> 
         </div>
         <div class="loadMoreContainer">
           <div v-if="tmpChannelsList.length < 1"> No more channels. </div>
