@@ -28,7 +28,7 @@ if (currentUrl.startsWith(adminPrefix)) {
 }
 
 
-window.addEventListener("pushstate", (event) => {
+window.addEventListener("popstate", (event) => {
     console.log(
       `location: ${document.location}, state: ${JSON.stringify(event.state)}`,
     );
