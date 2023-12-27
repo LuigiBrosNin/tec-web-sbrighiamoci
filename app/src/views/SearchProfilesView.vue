@@ -137,9 +137,39 @@ export default {
         },
     },
     async mounted() {
-        const response = await fetch(
-            `https://site222326.tw.cs.unibo.it/profiles/?startindex=${this.startIndex}&endindex=${this.endIndex}`
-        );
+
+        //initialize query field from $query
+        if (this.$route.query.name) {
+            this.query.name = this.$route.query.name;
+        }
+        if (this.$route.query.bio) {
+            this.query.bio = this.$route.query.bio;
+        }
+        if (this.$route.query.credit) {
+            this.query.credit = this.$route.query.credit;
+        }
+        if (this.$route.query.credit_type) {
+            this.query.credit_type = this.$route.query.credit_type;
+        }
+        if (this.$route.query.credit_limits) {
+            this.query.credit_limits = this.$route.query.credit_limits;
+        }
+        if (this.$route.query.credit_limits_type) {
+            this.query.credit_limits_type = this.$route.query.credit_limits_type;
+        }
+        if (this.$route.query.squeals_num) {
+            this.query.squeals_num = this.$route.query.squeals_num;
+        }
+        if (this.$route.query.followers_num) {
+            this.query.followers_num = this.$route.query.followers_num;
+        }
+        if (this.$route.query.banned_until) {
+            this.query.banned_until = this.$route.query.banned_until;
+        }
+
+        this.updateValidQuery();
+        const response = await fetch(this.getFetchUri(0));
+        
         // assigns the json to the feed variable
         this.feed = await response.json();
         this.feedVersion++;

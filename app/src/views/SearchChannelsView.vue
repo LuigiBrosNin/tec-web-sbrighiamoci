@@ -111,9 +111,15 @@ export default {
         },
     },
     async mounted() {
-        const response = await fetch(
-            `https://site222326.tw.cs.unibo.it/channels/?startindex=${this.startIndex}&endindex=${this.endIndex}`
-        );
+
+        //initialize query field from $query
+        if(this.$route.query.name != null) this.query.name = this.$route.query.name;
+        if(this.$route.query.owner != null) this.query.owner = this.$route.query.owner;
+        if(this.$route.query.type != null) this.query.type = this.$route.query.type;
+        if(this.$route.query.subscribers_num != null) this.query.subscribers_num = this.$route.query.subscribers_num;
+        
+        this.updateValidQuery();
+        const response = await fetch(this.getFetchUri(0));
         // assigns the json to the feed variable
         this.feed = await response.json();
         this.feedVersion++;

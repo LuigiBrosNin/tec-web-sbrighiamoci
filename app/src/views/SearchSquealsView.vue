@@ -17,20 +17,11 @@ import Squeal from "@/components/Squeal.vue";
         is_private (boolean)
     -->
 
-  <button
-    class="btn btn-primary mb-3 col-12 d-flex justify-content-center"
-    style="background-color: #206f91"
-    type="button"
-    data-bs-toggle="collapse"
-    data-bs-target="#formSection"
-    aria-expanded="true"
-    aria-controls="formSection"
-  >
-    <img
-      alt="Button image"
-      class="icon not_selected button-image"
-      src="https://site222326.tw.cs.unibo.it/icons/search-alt-1-svgrepo-com.svg"
-    />
+  <button class="btn btn-primary mb-3 col-12 d-flex justify-content-center" style="background-color: #206f91"
+    type="button" data-bs-toggle="collapse" data-bs-target="#formSection" aria-expanded="true"
+    aria-controls="formSection">
+    <img alt="Button image" class="icon not_selected button-image"
+      src="https://site222326.tw.cs.unibo.it/icons/search-alt-1-svgrepo-com.svg" />
     Toggle Search Options
   </button>
   <div id="formSection" class="collapse show">
@@ -39,17 +30,10 @@ import Squeal from "@/components/Squeal.vue";
         <form @submit.prevent="submitForm" class="row g-3">
           <div class="col-md-3">
             <label for="author" class="form-label fw-bold mb-2">Author</label>
-            <input
-              type="text"
-              class="form-control"
-              v-model="query.author"
-              placeholder="Author"
-            />
+            <input type="text" class="form-control" v-model="query.author" placeholder="Author" />
           </div>
           <div class="col-md-3">
-            <label for="popularity" class="form-label fw-bold mb-2"
-              >Popularity</label
-            >
+            <label for="popularity" class="form-label fw-bold mb-2">Popularity</label>
             <select class="form-control" v-model="query.popularity">
               <option disabled value="">Select popularity</option>
               <option value="isPopular">Populars</option>
@@ -58,101 +42,43 @@ import Squeal from "@/components/Squeal.vue";
             </select>
           </div>
           <div class="col-md-3">
-            <label for="start_date" class="form-label fw-bold mb-2"
-              >Older date</label
-            >
-            <input
-              type="date"
-              class="form-control"
-              v-model="query.start_date"
-              placeholder="Start Date"
-            />
+            <label for="start_date" class="form-label fw-bold mb-2">Older date</label>
+            <input type="date" class="form-control" v-model="query.start_date" placeholder="Start Date" />
           </div>
           <div class="col-md-3">
-            <label for="end_date" class="form-label fw-bold mb-2"
-              >Newer date</label
-            >
-            <input
-              type="date"
-              class="form-control"
-              v-model="query.end_date"
-              placeholder="End Date"
-            />
+            <label for="end_date" class="form-label fw-bold mb-2">Newer date</label>
+            <input type="date" class="form-control" v-model="query.end_date" placeholder="End Date" />
           </div>
           <div class="col-md-3">
-            <label for="positiveReactions" class="form-label fw-bold mb-2"
-              >N° of Positive Reactions</label
-            >
-            <input
-              type="number"
-              class="form-control"
-              v-model="query.positiveReactions"
-              placeholder="Positive Reactions"
-            />
+            <label for="positiveReactions" class="form-label fw-bold mb-2">N° of Positive Reactions</label>
+            <input type="number" class="form-control" v-model="query.positiveReactions"
+              placeholder="Positive Reactions" />
           </div>
           <div class="col-md-3">
-            <label for="negativeReactions" class="form-label fw-bold mb-2"
-              >N° of Negative Reactions</label
-            >
-            <input
-              type="number"
-              class="form-control"
-              v-model="query.negativeReactions"
-              placeholder="Negative Reactions"
-            />
+            <label for="negativeReactions" class="form-label fw-bold mb-2">N° of Negative Reactions</label>
+            <input type="number" class="form-control" v-model="query.negativeReactions"
+              placeholder="Negative Reactions" />
           </div>
           <div class="col-md-3">
-            <label for="impressions" class="form-label fw-bold mb-2"
-              >N° of Impressions</label
-            >
-            <input
-              type="number"
-              class="form-control"
-              v-model="query.impressions"
-              placeholder="Impressions"
-            />
+            <label for="impressions" class="form-label fw-bold mb-2">N° of Impressions</label>
+            <input type="number" class="form-control" v-model="query.impressions" placeholder="Impressions" />
           </div>
           <div class="col-md-3">
-            <label for="receiver" class="form-label fw-bold mb-2"
-              >Channel</label
-            >
-            <input
-              type="text"
-              class="form-control"
-              v-model="query.receiver"
-              placeholder="Receiver"
-            />
+            <label for="receiver" class="form-label fw-bold mb-2">Channel</label>
+            <input type="text" class="form-control" v-model="query.receiver" placeholder="Receiver" />
           </div>
           <div class="col-md-3">
-            <label for="keyword" class="form-label fw-bold mb-2"
-              >Keywords</label
-            >
-            <input
-              type="text"
-              class="form-control"
-              v-model="query.keyword"
-              placeholder="Keyword"
-            />
+            <label for="keyword" class="form-label fw-bold mb-2">Keywords</label>
+            <input type="text" class="form-control" v-model="query.keyword" placeholder="Keyword" />
             <small class="form-text text-muted">*separated by commas</small>
           </div>
           <div class="col-md-3">
-            <label for="mentions" class="form-label fw-bold mb-2"
-              >Mentions</label
-            >
-            <input
-              type="text"
-              class="form-control"
-              v-model="query.mentions"
-              placeholder="Mentions"
-            />
+            <label for="mentions" class="form-label fw-bold mb-2">Mentions</label>
+            <input type="text" class="form-control" v-model="query.mentions" placeholder="Mentions" />
             <small class="form-text text-muted">*separated by commas</small>
           </div>
           <div class="col-12 d-flex justify-content-center">
-            <button
-              type="submit"
-              class="btn"
-              :style="{ backgroundColor: '#ff8900' }"
-            >
+            <button type="submit" class="btn" :style="{ backgroundColor: '#ff8900' }">
               Submit
             </button>
           </div>
@@ -163,49 +89,29 @@ import Squeal from "@/components/Squeal.vue";
 
   <!-- buttons to change page -->
   <div class="d-flex justify-content-center align-items-center my-3">
-    <button
-      class="btn custom-btn mr-2"
-      :class="{ 'btn-disabled': isPrevDisabled }"
-      @click="loadPrev()"
-      :disabled="isPrevDisabled"
-    >
+    <button class="btn custom-btn mr-2" :class="{ 'btn-disabled': isPrevDisabled }" @click="loadPrev()"
+      :disabled="isPrevDisabled">
       Load previous page
     </button>
     <span class="mx-3">Page: {{ currentPage }}</span>
-    <button
-      class="btn custom-btn ml-2"
-      :class="{ 'btn-disabled': nextPageIsEmpty }"
-      @click="loadNext()"
-      :disabled="nextPageIsEmpty"
-    >
+    <button class="btn custom-btn ml-2" :class="{ 'btn-disabled': nextPageIsEmpty }" @click="loadNext()"
+      :disabled="nextPageIsEmpty">
       Load next page
     </button>
   </div>
 
   <!-- for function that defines every squeal in the feed object-->
-  <Squeal
-    v-for="squeal in feed"
-    :squeal_json="squeal"
-    :key="feedVersion"
-  ></Squeal>
+  <Squeal v-for="squeal in feed" :squeal_json="squeal" :key="feedVersion"></Squeal>
 
   <!-- buttons to change page -->
   <div class="d-flex justify-content-center align-items-center my-3">
-    <button
-      class="btn custom-btn mr-2"
-      :class="{ 'btn-disabled': isPrevDisabled }"
-      @click="loadPrev()"
-      :disabled="isPrevDisabled"
-    >
+    <button class="btn custom-btn mr-2" :class="{ 'btn-disabled': isPrevDisabled }" @click="loadPrev()"
+      :disabled="isPrevDisabled">
       Load previous page
     </button>
     <span class="mx-3">Page: {{ currentPage }}</span>
-    <button
-      class="btn custom-btn ml-2"
-      :class="{ 'btn-disabled': nextPageIsEmpty }"
-      @click="loadNext()"
-      :disabled="nextPageIsEmpty"
-    >
+    <button class="btn custom-btn ml-2" :class="{ 'btn-disabled': nextPageIsEmpty }" @click="loadNext()"
+      :disabled="nextPageIsEmpty">
       Load next page
     </button>
   </div>
@@ -256,9 +162,42 @@ export default {
     },
   },
   async mounted() {
-    const response = await fetch(
-      `https://site222326.tw.cs.unibo.it/squeals/?startindex=${this.startIndex}&endindex=${this.endIndex}`
-    );
+
+    //initialize query field from $query
+    if (this.$route.query.author != null) {
+      this.query.author = this.$route.query.author;
+    }
+    if (this.$route.query.popularity != null) {
+      this.query.popularity = this.$route.query.popularity;
+    }
+    if (this.$route.query.start_date != null) {
+      this.query.start_date = this.$route.query.start_date;
+    }
+    if (this.$route.query.end_date != null) {
+      this.query.end_date = this.$route.query.end_date;
+    }
+    if (this.$route.query.positive_reactions != null) {
+      this.query.positive_reactions = this.$route.query.positive_reactions;
+    }
+    if (this.$route.query.negative_reactions != null) {
+      this.query.negative_reactions = this.$route.query.negative_reactions;
+    }
+    if (this.$route.query.impressions != null) {
+      this.query.impressions = this.$route.query.impressions;
+    }
+    if (this.$route.query.receiver != null) {
+      this.query.receiver = this.$route.query.receiver;
+    }
+    if (this.$route.query.keyword != null) {
+      this.query.keyword = this.$route.query.keyword;
+    }
+    if (this.$route.query.mentions != null) {
+      this.query.mentions = this.$route.query.mentions;
+    }
+
+    this.updateValidQuery();
+    const response = await fetch(this.getFetchUri(0));
+
     // assigns the json to the feed variable
     this.feed = await response.json();
     this.feedVersion++;
@@ -269,8 +208,7 @@ export default {
     } else {
       // check if next page is empty for sure
       const response2 = await fetch(
-        `https://site222326.tw.cs.unibo.it/squeals/?startindex=${
-          this.startIndex + 10
+        `https://site222326.tw.cs.unibo.it/squeals/?startindex=${this.startIndex + 10
         }&endindex=${this.endIndex + 10}`
       );
       const feed2 = await response2.json();
@@ -313,9 +251,8 @@ export default {
     },
     getFetchUri(offset) {
       // constructing query omitting empty fields
-      let returnUri = `https://site222326.tw.cs.unibo.it/squeals/?startindex=${
-        this.startIndex + offset
-      }&endindex=${this.endIndex + offset}`;
+      let returnUri = `https://site222326.tw.cs.unibo.it/squeals/?startindex=${this.startIndex + offset
+        }&endindex=${this.endIndex + offset}`;
       for (const field of Object.keys(this.query)) {
         if (
           this.queryToSend[field] != "" &&
@@ -434,8 +371,10 @@ export default {
 }
 
 .button-image {
-  width: 30px; /* Adjust as needed */
-  height: 30px; /* Adjust as needed */
+  width: 30px;
+  /* Adjust as needed */
+  height: 30px;
+  /* Adjust as needed */
   filter: brightness(0%) invert(100%);
 }
 </style>
