@@ -28,10 +28,20 @@ if (currentUrl.startsWith(adminPrefix)) {
     });
 
 
-    
+
     window.history.pushState = function (state, title, url) {
         url = changeUrlFromAppToAdmin(url);
         History.prototype.pushState.apply(history, arguments);
+    }
+
+    window.history.popState = function (state, title, url) {
+        url = changeUrlFromAppToAdmin(url);
+        History.prototype.popState.apply(history, arguments);
+    }
+
+    window.history.replaceState = function (state, title, url) {
+        url = changeUrlFromAppToAdmin(url);
+        History.prototype.replaceState.apply(history, arguments);
     }
 }
 
