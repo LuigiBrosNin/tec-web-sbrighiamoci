@@ -14,6 +14,7 @@ if (currentUrl.startsWith(adminPrefix)) {
     }
 
 
+
     MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
     let observer = new MutationObserver(function (mutations, observer) {     // every time something changes in the DOM, this function is invoked
         replaceAllAppLinks();
@@ -25,16 +26,15 @@ if (currentUrl.startsWith(adminPrefix)) {
         childList: true,
         attributes: true
     });
+
+
+    
+    window.history.pushState = function (state, title, url) {
+        url = changeUrlFromAppToAdmin(url);
+        History.prototype.pushState.apply(history, arguments);
+    }
 }
 
-
-window.addEventListener("popstate", (event) => {
-    console.log(
-      `location: ${document.location}, state: ${JSON.stringify(event.state)}`,
-    );
-    let relativeUrl = currentUrl.slice(appPrefix.length);
-    window.history.replaceState({}, "", adminPrefix + relativeUrl);
-  });
 
 
 
@@ -55,11 +55,20 @@ function replaceAllAppLinks() {
     const anchors = document.getElementsByTagName("a");
     const anchorsArray = Array.from(anchors);
 
-    for(let i = 0; i < anchorsArray.length; i++){
-        if (anchorsArray[i].href.startsWith(appPrefix)){
+    for (let i = 0; i < anchorsArray.length; i++) {
+        if (anchorsArray[i].href.startsWith(appPrefix)) {
             // we need to replace the entire <a> element (and not only the href) in order to make Vue ignore it
             anchorsArray[i].outerHTML = `<a href="${adminPrefix + anchorsArray[i].href.slice(appPrefix.length)}" class="${anchorsArray[i].getAttribute("class")}" id="${anchorsArray[i].id}"> ${anchorsArray[i].innerHTML} </a>`;
         }
     }
-    
+
+}
+
+// if the provided url refers to /app, it is returned the same url that refers to /admin, otherwise the provided url is returned
+function changeUrlFromAppToAdmin(url) {
+    if (url.startsWith(appPrefix)) {
+        let relativeUrl = url.slice(appPrefix.length);
+        url = adminPrefix + relativeUrl;
+    }
+    return url;
 }
