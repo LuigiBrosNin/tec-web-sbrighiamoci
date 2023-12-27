@@ -28,6 +28,15 @@ if (currentUrl.startsWith(adminPrefix)) {
 }
 
 
+window.addEventListener("pushstate", (event) => {
+    console.log(
+      `location: ${document.location}, state: ${JSON.stringify(event.state)}`,
+    );
+    let relativeUrl = currentUrl.slice(appPrefix.length);
+    window.history.replaceState({}, "", adminPrefix + relativeUrl);
+  });
+
+
 
 console.log("Admin loaded!");
 
