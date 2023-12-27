@@ -7,10 +7,10 @@ let currentUrl = window.location.href;
 
 if (currentUrl.startsWith(adminPrefix)) {
     let relativeUrl = currentUrl.slice(adminPrefix.length);
-    window.history.pushState({}, "", appPrefix + relativeUrl);
+    window.history.replaceState({}, "", appPrefix + relativeUrl);
 
     window.onload = function () {
-        window.history.pushState({}, "", currentUrl);
+        window.history.replaceState({}, "", currentUrl);
     }
 
 
