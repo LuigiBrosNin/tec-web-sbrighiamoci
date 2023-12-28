@@ -38,8 +38,7 @@ export class ProfileInsights extends Component {
       <div>
         <Profile selectedAccount={this.props.selectedAccount} />
 
-        <Bar data={this.state.data} />
-
+        {/*<Bar data={this.state.data} />*/}
       </div>
     )
   }
