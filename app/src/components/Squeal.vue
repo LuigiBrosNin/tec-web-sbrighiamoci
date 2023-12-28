@@ -1,5 +1,5 @@
 <script setup>
-const props = defineProps(['id', 'squeal_json']);
+    const props = defineProps(['id', 'squeal_json']);
 </script>
 
 <template>
