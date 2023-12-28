@@ -3,10 +3,10 @@ const props = defineProps(['id', 'squeal_json']);
 </script>
 
 <template>
-    <div class="squeal_container" v-if="isValid && !isPrivate">
+    <div class="squeal_container" v-if="isValid && !isPrivate" :id="squeal_id">
         <RouterLink :to="`/channel/${channel}`"> §{{ channel }} </RouterLink>
         <div v-if='replyTo != null && replyTo != ""'>
-            <p>Reply to: 
+            <p>Reply to:
                 <RouterLink :to="`/squeal/${replyTo}`">{{ replyTo }}</RouterLink>
             </p>
         </div>
@@ -49,9 +49,12 @@ const props = defineProps(['id', 'squeal_json']);
 
         <RouterLink :to="`/squeal/${squeal_id}`">More info</RouterLink>
 
-        <button v-if="canBeDeleted" class="delete_btn" @click="askToDelete">
-            <img class="delete_img" src="https://site222326.tw.cs.unibo.it/icons/trash-svgrepo-com.svg" />
-        </button>
+        <div class="btn_area">
+            <button v-if="canBeDeleted" class="delete_btn" @click="askToDelete">
+                <img class="delete_img" src="https://site222326.tw.cs.unibo.it/icons/trash-svgrepo-com.svg" />
+            </button>
+
+        </div>
 
     </div>
     <div class="squeal_container" v-else>
@@ -129,19 +132,19 @@ export default {
             console.log("propic: " + this.authorProfilePicUrl);
             this.isValid = true;
         },
-        parseText(text){
+        parseText(text) {
             let parsedText = text.split(/(\ |\,|\.|\;|\:|\?|\!)/g);
             let newText = "";
-            for(const index in parsedText){
+            for (const index in parsedText) {
                 const word = parsedText[index];
-                if(word.length > 0){
+                if (word.length > 0) {
                     let firstChar = word[0];
                     console.log(firstChar);
-                    if(firstChar == "#"){
+                    if (firstChar == "#") {
                         newText = newText.concat('<a href="">' + word + '</a>');
-                    } else if(firstChar == "@"){
+                    } else if (firstChar == "@") {
                         newText = newText.concat('<a href="/profile/' + word.slice(1) + '">' + word + '</a>');
-                    } else if(firstChar == "§"){
+                    } else if (firstChar == "§") {
                         newText = newText.concat('<a href="/channel/' + word.slice(1) + '">' + word + '</a>');
                     } else {
                         newText = newText.concat(word);
@@ -399,15 +402,17 @@ export default {
     filter: invert(74%) sepia(40%) saturate(7450%) hue-rotate(360deg) brightness(102%) contrast(104%);
 }
 
-
-.delete_btn {
+.btn_area {
     position: absolute;
     top: 0px;
     right: 0px;
+    margin: 0.75em;
+}
+.delete_btn {
+    
     border-radius: 50%;
     border-style: none;
     background-color: #ffffff00;
-    margin: 0.75em;
 }
 
 .delete_img {
