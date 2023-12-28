@@ -18,6 +18,7 @@ if (currentUrl.startsWith(adminPrefix)) {
     MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
     let observer = new MutationObserver(function (mutations, observer) {     // every time something changes in the DOM, this function is invoked
         replaceAllAppLinks();
+        addEditAndDeleteButtonsToAllSqueals();
 
         console.log("DOM changed", mutations, observer);
     });
