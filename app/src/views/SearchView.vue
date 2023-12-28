@@ -2,7 +2,6 @@
     import SearchChannelsView from "@/views/SearchChannelsView.vue";
     import SearchProfilesView from "@/views/SearchProfilesView.vue";
     import SearchSquealsView from "@/views/SearchSquealsView.vue";
-    import router from "@/router/index.js";
 </script>
 
 <template>

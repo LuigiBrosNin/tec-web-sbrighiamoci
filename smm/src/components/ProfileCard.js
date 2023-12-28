@@ -10,15 +10,6 @@ export class ProfileCard extends Component {
         };
     }
 
-    componentDidMount() {
-        let propic = "https://site222326.tw.cs.unibo.it/images/user-default.svg"
-
-        if (this.props.profile.propic != null) {
-            propic = "https://site222326.tw.cs.unibo.it/profiles/" + this.props.profile.name + "/propic";
-        }
-        this.setState({ propic: propic });
-    }
-
     render() {
         return (
             <div className="card">

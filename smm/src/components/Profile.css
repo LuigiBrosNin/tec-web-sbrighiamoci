@@ -1,0 +1,62 @@
+.profile_container {
+    background-color: #fff;
+    border-style: solid;
+    border-width: thin;
+    border-radius: 1em;
+    border-color: #616161;
+    margin: 0.5em 1em 0.5em 1em;
+    display: block;
+    width: auto;
+    max-width: none;
+    padding: 1em;
+  }
+  
+  .nav-link {
+    margin: auto;
+  }
+  
+  .profile_img {
+    width: 16em;
+    height: 16em;
+    border-radius: 50%;
+    margin: 0.5em;
+  }
+  
+  .settings_btn {
+    position: absolute;
+    right: 0;
+    top: 0;
+    margin: 1em;
+    background-color: #ffffff00;
+    border-style: none;
+  }
+  
+  .settings_img {
+    width: 3em;
+    filter: invert(60%) sepia(0%) saturate(326%) hue-rotate(315deg) brightness(95%) contrast(91%);
+  }
+  
+  .card-header {
+    background-color: #ff8900;
+  }
+  
+  .message_button {
+    margin: 1em;
+    padding: 0.5em;
+    border-radius: 1.2em;
+    border-style: none;
+    background-color: #085c84;
+    font-weight: bold;
+    display: block;
+    width: auto;
+    text-align: center;
+    color: white;
+    text-decoration: none;
+  }
+  
+  .loadMoreContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
