@@ -53,12 +53,12 @@ const router = createRouter({
       component: SquealInfoView,
       props: true
     },
-    /*{
+    {
       path: '/channel/:id',
       name: 'channel',
-      component: ,
+      component: ChannelsView,
       props: true
-    },*/
+    },
     {
       path: '/profile/:id/settings',
       name: 'settings',
