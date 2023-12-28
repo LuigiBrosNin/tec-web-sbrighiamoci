@@ -82,3 +82,10 @@ function changeUrlFromAppToAdmin(url) {
     }
     return url;
 }
+
+function addEditAndDeleteButtonsToAllSqueals() {
+    const squeals = Array.from(document.getElementsByClassName("squeal_container"));
+    for(const squeal in squeals){
+        Array.from(squeal.getElementsByClassName("btn_area"))[0].innerHTML = "btn_area";
+    }
+}
