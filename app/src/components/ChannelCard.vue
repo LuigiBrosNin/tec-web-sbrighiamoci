@@ -14,9 +14,11 @@ const props = defineProps(["id", "channel_json"]);
             <a :href="`https://site222326.tw.cs.unibo.it/app/channels/${name}`" class="text-decoration-none">{{ name
             }}</a>
           </h5>
-          <p class="card-text">{{ bio }}</p>
-          <p class="card-text"><small class="text-muted">Owner: {{ owner }}</small></p>
-          <p class="card-text"><small class="text-muted">Subscribers: {{ numberOfSubscribers }}</small></p>
+          <p class="card-text bio"> {{ bio }}</p>
+          <div class="d-flex justify-content-start">
+            <p class="card-text "><small class="text-muted">Owner: {{ owner }}</small></p>
+            <p class="card-text mx-5"><small class="text-muted">Subscribers: {{ numberOfSubscribers }}</small></p>
+          </div>
         </div>
       </div>
     </div>
@@ -53,6 +55,7 @@ export default {
       );
       fetched = await fetched.json();
       this.populate(fetched);
+      console.log("FETCHED: ", fetched)
     },
     populate(channelJson) {
       this.name = channelJson.name;
@@ -71,6 +74,7 @@ export default {
       this.subscribersList = channelJson.subscribers_list;
       this.numberOfSubscribers = channelJson.subscribers_num;
       this.type = channelJson.type;
+      this.bio = channelJson.bio;
     },
   },
   created() {
@@ -89,5 +93,9 @@ export default {
   height: 10em;
   border-radius: 50%;
   margin: 0.5em;
+}
+
+.bio {
+  font-style: italic;
 }
 </style>
