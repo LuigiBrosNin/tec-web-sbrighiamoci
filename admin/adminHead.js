@@ -103,7 +103,7 @@ function addEditAndDeleteButtonsToAllSqueals() {
 function generateDeleteButton(squeal_id) {
     const deleteButton = document.createElement("button");
     deleteButton.classList.add("admin-squeal-button");
-    deleteButton.setAttribute("onclick", `deleteSqueal(${squeal_id})`);
+    deleteButton.setAttribute("onclick", `deleteSqueal("${squeal_id}")`);
     const img = document.createElement("img");
     img.setAttribute("src", "https://site222326.tw.cs.unibo.it/icons/trash-svgrepo-com.svg");
     img.classList.add("admin-squeal-button-img");
