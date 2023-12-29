@@ -22,7 +22,7 @@ const props = defineProps(["id", "channel_json"]);
             <button class="btn orange_btn" @click="subscribe"> Subscribe </button>
           </div>
           <div v-else>
-            <button class="btn dark_orange_btn" @click="unsubscribe"> Unsubscribe </button>
+            <button class="btn dark_orange_btn" @click="unsub"> Unsubscribe </button>
           </div>
         </div>
       </div>
@@ -88,11 +88,12 @@ export default {
 
     async subscribe() {
       try {
+        console.log("subscribe")
         const response = await axios.put(`https://site222326.tw.cs.unibo.it/channels/${this.name}/subscribers_list`);
         if (response.status === 200) {
           this.isSubscribed = true;
           // ricarico la lista degli iscritti e il numero di iscritti
-          this.refresh()
+          this.refresh();
         }
       }
       catch (error) {
@@ -101,14 +102,14 @@ export default {
     }
   },
 
-  async unsubscribe() {
-    console.log("unsubscribo")
+  async unsub() {
+    console.log("UNsubscribo")
     try {
       const response = await axios.delete(`https://site222326.tw.cs.unibo.it/channels/${this.name}/subscribers_list`);
       if (response.status === 200) {
         this.isSubscribed = false;
         // ricarico la lista degli iscritti e il numero di iscritti
-        this.refresh()
+        this.refresh();
       }
     }
     catch (error) {
