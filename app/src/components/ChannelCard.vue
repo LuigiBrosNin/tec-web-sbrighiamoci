@@ -16,7 +16,7 @@ const props = defineProps(["id", "channel_json"]);
           <p class="card-text bio"> {{ bio }} </p>
           <div class="d-flex justify-content-start">
             <p class="card-text "><small class="text-muted"> Owner: {{ owner }}</small></p>
-            <p class="card-text mx-5"><small class="text-muted"> Subscribers: {{ numberOfSubscribers }} </small></p>
+            <p class="card-text mx-5"><small class="text-muted"> Subscribers: {{ subscribersNum }} </small></p>
           </div>
           <div v-if="!isSubscribed">
             <button class="btn orange_btn" @click="subscribe"> Subscribe </button>
@@ -44,7 +44,7 @@ export default {
       squealsList: [],
       numberOfSqueals: 0,
       subscribersList: [],
-      numberOfSubscribers: 0,
+      subscribersNum: 0,
       type: "normal",
       isSubscribed: false,
     };
@@ -80,7 +80,7 @@ export default {
       this.squealsList = channelJson.squeals_list;
       this.numberOfSqueals = channelJson.squeals_num;
       this.subscribersList = channelJson.subscribers_list;
-      this.numberOfSubscribers = channelJson.subscribers_num;
+      this.subscribersNum = channelJson.subscribers_num;
       this.type = channelJson.type;
       this.bio = channelJson.bio;
       this.isSubscribed = channelJson.subscribers_list.includes(this.$user); // true se user è iscritto
