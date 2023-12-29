@@ -513,6 +513,9 @@ app.put("/channels/:name/subscribers_list", async (req, res) => {
     }, {
       $push: {
         subscribers_list: req.body.user
+      },
+      $inc: {
+        subscribers_num: 1
       }
     });
 
@@ -583,6 +586,9 @@ app.delete("/channels/:name/subscribers_list", async (req, res) => {
     }, {
       $set: {
         subscribers_list: updated_list
+      },
+      $inc: {
+        subscribers_num: -1
       }
     });
 

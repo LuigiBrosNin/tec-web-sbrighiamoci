@@ -18,7 +18,12 @@ const props = defineProps(["id", "channel_json"]);
             <p class="card-text "><small class="text-muted"> Owner: {{ owner }}</small></p>
             <p class="card-text mx-5"><small class="text-muted"> Subscribers: {{ numberOfSubscribers }} </small></p>
           </div>
-          <button class="btn orange_btn" @click="subscribe"> Subscribe </button>
+          <div v-if="!isSubscribed">
+            <button class="btn orange_btn" @click="subscribe"> Subscribe </button>
+          </div>
+          <div v-else>
+            <button class="btn dark_orange_btn" @click="subscribe"> Unsubscribe </button>
+          </div>
         </div>
       </div>
     </div>
@@ -58,7 +63,6 @@ export default {
       );
       fetched = await fetched.json();
       this.populate(fetched);
-      console.log("FETCHED: ", fetched)
     },
 
     populate(channelJson) {
@@ -79,25 +83,49 @@ export default {
       this.numberOfSubscribers = channelJson.subscribers_num;
       this.type = channelJson.type;
       this.bio = channelJson.bio;
-      this.isSubscribed = channelJson.subscribers_list.includes(this.name); // true se user è iscritto
+      this.isSubscribed = channelJson.subscribers_list.includes(this.$user); // true se user è iscritto
     },
 
     async subscribe() {
-      //TODO cambiare bottonoe se sono sicritto o no
-      // ricaricare card quando ho aggiunto utente (rifare fetch)
-      console.log("sucscribe")
-      const response = await axios.put(`https://site222326.tw.cs.unibo.it/channels/${this.new_channel_name}`, { bio: this.new_bio, type: this.channel_type } );
       try {
         const response = await axios.put(`https://site222326.tw.cs.unibo.it/channels/${this.name}/subscribers_list`);
-        console.log('Risposta: ', response.data);
         if (response.status === 200) {
           this.isSubscribed = true;
-          console.log("mi sono iscrito")
+          // ricarico la lista degli iscritti e il numero di iscritti
+          refresh()
         }
       }
       catch (error) {
         console.error('Error during put request: ', error);
       }   
+    }
+  },
+
+  async unsubscribe() {
+    try {
+      const response = await axios.delete(`https://site222326.tw.cs.unibo.it/channels/${this.name}/subscribers_list`);
+      if (response.status === 200) {
+        this.isSubscribed = false;
+        // ricarico la lista degli iscritti e il numero di iscritti
+        refresh()
+      }
+    }
+    catch (error) {
+      console.error('Error during delete request: ', error);
+    }   
+  },
+
+  async refresh() {
+    const sub_resp = await axios.get(`https://site222326.tw.cs.unibo.it/channels/${this.name}/subscribers_list`)
+    sub_resp = await sub_resp.json()
+    if (sub_resp.status === 200) {
+      this.subscribersList = sub_resp.subscribers_list
+    }
+
+    const num_resp = await axios.get(`https://site222326.tw.cs.unibo.it/channels/${this.name}/subscribers_num`)
+    num_resp = await num_resp.json()
+    if (num_resp.status === 200) {
+      this.subscribersNum = num_resp.subscribers_num
     }
   },
 
@@ -125,6 +153,11 @@ export default {
 
 .orange_btn {
 	background-color: #ff8900;
+	color: white;
+}
+
+.dark_orange_btn {
+	background-color: #b66101;
 	color: white;
 }
 </style>
