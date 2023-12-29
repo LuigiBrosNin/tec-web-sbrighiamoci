@@ -22,7 +22,7 @@ const props = defineProps(["id", "channel_json"]);
             <button class="btn orange_btn" @click="subscribe"> Subscribe </button>
           </div>
           <div v-else>
-            <button class="btn dark_orange_btn" @click="subscribe"> Unsubscribe </button>
+            <button class="btn dark_orange_btn" @click="unsubscribe"> Unsubscribe </button>
           </div>
         </div>
       </div>
@@ -92,7 +92,7 @@ export default {
         if (response.status === 200) {
           this.isSubscribed = true;
           // ricarico la lista degli iscritti e il numero di iscritti
-          refresh()
+          this.refresh()
         }
       }
       catch (error) {
