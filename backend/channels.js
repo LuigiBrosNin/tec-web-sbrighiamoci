@@ -405,7 +405,7 @@ app.get("/channels/:name/subscribers_num", async (req, res) => {
 
 /* -------------------------------------------------------------------------- */
 /*                       /CHANNELS/:NAME/SUBSCRIBERS_LIST                     */
-/*                                    GET                                     */
+/*                                    GET, PUT, DELETE                        */
 /* -------------------------------------------------------------------------- */
 
 //* GET
@@ -447,6 +447,148 @@ app.get("/channels/:name/subscribers_list", async (req, res) => {
 
     const subscribers = channel.subscribers_list.slice(startIndex, endIndex + 1);
     res.status(200).json(subscribers);
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+});
+
+//* PUT
+// add a subscriber to the channel
+// body parameters: user (string) (facoltativo)
+app.put("/channels/:name/subscribers_list", async (req, res) => {
+  try {
+    const channelName = req.params.name;
+
+    if (req.body.user == null) {
+      req.body.user = req.session.user;
+    }
+
+    const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
+    const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === req.body.user;
+    const SMMAuthorized = await isSMMAuthorized(req.session.user, req.body.user) && await isAuthorizedOrHigher(req.body.user, typeOfProfile.user);
+
+    const channel = await collection_channels.findOne({
+      name: channelName
+    });
+
+    if (channel.is_deleted || channel === null) {
+      res.status(404).json({
+        message: "Channel not found."
+      });
+      return;
+    }
+
+    if (channel.subscribers_list.includes(req.body.user)) {
+      res.status(400).json({
+        message: "user already in the list"
+      });
+      return;
+    }
+
+    if (!(((authorized || SMMAuthorized)) || adminAuthorized)) {
+      res.status(401).json({
+        message: "not authorized to modify this channel's subscribers list"
+      });
+      return;
+    }
+
+
+    await mongoClient.connect();
+    const profile = await collection_profiles.findOne({
+      name: req.body.user
+    });
+
+    if (profile.is_deleted || profile === null) {
+      res.status(404).json({
+        message: "profile not found."
+      });
+      return;
+    }
+
+    const result = await collection_channels.updateOne({
+      name: channelName
+    }, {
+      $push: {
+        subscribers_list: req.body.user
+      }
+    });
+
+    if (result.modifiedCount === 0) {
+      res.status(404).json({
+        message: "channel not found"
+      });
+      return;
+    }
+
+    res.status(200).json({
+      message: "subscriber added"
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+});
+
+
+//* DELETE
+// removes a moderator from the channel
+// body parameters: user (opzionale)
+app.delete("/channels/:name/subscribers_list", async (req, res) => {
+  try {
+    const channelName = req.params.name;
+
+    if (req.body.user == null) {
+      req.body.user = req.session.user;
+    }
+
+    const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
+    const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === req.body.user;
+    const SMMAuthorized = await isSMMAuthorized(req.session.user, req.body.user) && await isAuthorizedOrHigher(req.body.user, typeOfProfile.user);
+
+    const channel = await collection_channels.findOne({
+      name: channelName
+    });
+
+    if (channel === null) {
+      res.status(404).json({
+        message: "channel not found"
+      });
+      return;
+    }
+
+    if (!(((authorized || SMMAuthorized)) || adminAuthorized)) {
+      res.status(401).json({
+        message: "not authorized to modify this channel's subscribers list"
+      });
+      return;
+    }
+
+    const updated_list = channel.subscribers_list.filter(usr => usr != req.body.user);
+
+    // check if the lists are equal
+    if (updated_list.length === channel.subscribers_list.length) {
+      res.status(400).json({
+        message: "subscriber not found"
+      });
+      return;
+    }
+
+    const result = await collection_channels.updateOne({
+      name: channelName
+    }, {
+      $set: {
+        subscribers_list: updated_list
+      }
+    });
+
+    res.status(200).json({
+      message: "subscriber removed"
+    });
 
   } catch (error) {
     res.status(500).json({
@@ -574,11 +716,7 @@ app.delete("/channels/:name/mod_list", async (req, res) => {
       return;
     }
 
-    console.log("mod_name: " + req.body.mod_name);
-
     const updated_list = channel.mod_list.filter(mod => mod != req.body.mod_name);
-
-    console.log("updated list: " + updated_list);
 
     // check if the lists are equal
     if (updated_list.length === channel.mod_list.length) {

@@ -128,8 +128,6 @@ export default {
             this.replies = squealJson.replies_num;
             this.location = squealJson.location;
             this.isPrivate = squealJson.is_private;
-
-            console.log("propic: " + this.authorProfilePicUrl);
             this.isValid = true;
         },
         parseText(text) {
@@ -139,7 +137,6 @@ export default {
                 const word = parsedText[index];
                 if (word.length > 0) {
                     let firstChar = word[0];
-                    console.log(firstChar);
                     if (firstChar == "#") {
                         newText = newText.concat('<a href="">' + word + '</a>');
                     } else if (firstChar == "@") {

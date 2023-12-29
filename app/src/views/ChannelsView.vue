@@ -5,60 +5,60 @@
 const props = defineProps(['id']);
 </script>
 
-<!-- TODO channelName è sempre fakechannel3
-fare quella cosa chiesta da matilde
-bottone per iscriversi sulla channelc ard
--->
-
 <template>
-	<!-- Pulsanti di commutazione -->
-	<div class="d-flex justify-content-center my-3">
-		<button @click="showSquealSection" class="btn mx-2" :class="{ orange_btn: activeSection === 'squeal', 'btn-secondary': activeSection !== 'squeal', }" >  Squeals  </button>
-		<button @click="showFollowersSection" class="btn mx-2" :class="{ orange_btn: activeSection === 'followers', 'btn-secondary': activeSection !== 'followers', }">  Followers  </button>
-		<button @click="showModsSection" class="btn mx-2" :class="{ orange_btn: activeSection === 'mods', 'btn-secondary': activeSection !== 'mods', }" >  Mods  </button>
-	</div>
-    
-    <!----------- card canale ---------->
-    <ChannelCard :id="channelName"></ChannelCard> 
-    
-	<!-------------------- SEZIONE SQUEAL  --------------------->
-	<div v-if="activeSection === 'squeal'">
-		<div class="tab-pane fade show active" id="pills-squeals" role="tabpanel" aria-labelledby="pills-squeals-tab">
-			<div v-for="squeal in loadedSquealsList" :key="squeal">
-				<Squeal :id="squeal"> </Squeal>
-			</div>
-			<div class="loadMoreContainer text-center">
-				<button v-if="!allSquealsLoaded" @click="loadMoreSqueals" class="btn btn-primary loadMoreBtn">  Load more  </button>
-				<div v-else-if="squealsList.length <= 0">
-					There are no squeals to show.
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<!-------------------- SEZIONE FOLLOWERS  --------------------->
-	<div v-if="activeSection === 'followers'" class="squeal_container">
-
-        <h2 class="text-center"> Subscribers: {{ subscribersNum }}</h2>
-
-		<div v-for="follower in loadedSubscribersList" :key="follower">
-            <ProfileCard :id="follower"></ProfileCard>
+    <div v-if="!isValid">
+        <h3> Channel not found. </h3>
+    </div>
+    <div v-else>
+        <!-- Pulsanti di commutazione -->
+        <div class="d-flex justify-content-center my-3">
+            <button @click="showSquealSection" class="btn mx-2" :class="{ orange_btn: activeSection === 'squeal', 'btn-secondary': activeSection !== 'squeal', }" >  Squeals  </button>
+            <button @click="showFollowersSection" class="btn mx-2" :class="{ orange_btn: activeSection === 'followers', 'btn-secondary': activeSection !== 'followers', }">  Followers  </button>
+            <button @click="showModsSection" class="btn mx-2" :class="{ orange_btn: activeSection === 'mods', 'btn-secondary': activeSection !== 'mods', }" >  Mods  </button>
         </div>
-
-        <div class="loadMoreContainer text-center">
-            <button v-if="!allSubscribersLoaded" @click="loadMoreSubscribers" class="btn btn-primary loadMoreBtn">  Load more  </button>
-        </div>
-	</div>
-
-	<!-------------------- SEZIONE MODS  --------------------->
-	<div v-if="activeSection === 'mods'" class="squeal_container">
-        <h2 class="text-center my-3 text-orange "> OWNER </h2>
-            <ProfileCard :id="owner"></ProfileCard>
-
-        <h2 class="text-center my-5"> MODS </h2>
-            <div v-for="mod in modsList" :key="mod">
-                <ProfileCard :id="mod"></ProfileCard>
+        
+        <!----------- card canale ---------->
+        <ChannelCard :id="channelName"></ChannelCard> 
+        
+        <!-------------------- SEZIONE SQUEAL  --------------------->
+        <div v-if="activeSection === 'squeal'">
+            <div class="tab-pane fade show active" id="pills-squeals" role="tabpanel" aria-labelledby="pills-squeals-tab">
+                <div v-for="squeal in loadedSquealsList" :key="squeal">
+                    <Squeal :id="squeal"> </Squeal>
+                </div>
+                <div class="loadMoreContainer text-center">
+                    <button v-if="!allSquealsLoaded" @click="loadMoreSqueals" class="btn btn-primary loadMoreBtn">  Load more  </button>
+                    <div v-else-if="squealsList.length <= 0">
+                        There are no squeals to show.
+                    </div>
+                </div>
             </div>
+        </div>
+    
+        <!-------------------- SEZIONE FOLLOWERS  --------------------->
+        <div v-if="activeSection === 'followers'" class="squeal_container">
+    
+            <h2 class="text-center"> Subscribers: {{ subscribersNum }} </h2>
+    
+            <div v-for="follower in loadedSubscribersList" :key="follower">
+                <ProfileCard :id="follower"></ProfileCard>
+            </div>
+    
+            <div class="loadMoreContainer text-center">
+                <button v-if="!allSubscribersLoaded" @click="loadMoreSubscribers" class="btn btn-primary loadMoreBtn">  Load more  </button>
+            </div>
+        </div>
+    
+        <!-------------------- SEZIONE MODS  --------------------->
+        <div v-if="activeSection === 'mods'" class="squeal_container">
+            <h2 class="text-center my-3 text-orange "> OWNER </h2>
+                <ProfileCard :id="owner"></ProfileCard>
+    
+            <h2 class="text-center my-5"> MODS </h2>
+                <div v-for="mod in modsList" :key="mod">
+                    <ProfileCard :id="mod"></ProfileCard>
+                </div>
+        </div>
     </div>
 </template>
 
@@ -85,6 +85,7 @@ bottone per iscriversi sulla channelc ard
                 pageDim: 2,
                 loadMoreIndex: 0,
                 loadMoreSubsIndex: 0,
+                isValid: false,
             };
         },
         methods: {
@@ -132,7 +133,7 @@ bottone per iscriversi sulla channelc ard
         },
 
         // alla creazione del componente fetcho tutto il contenuto del canale
-    async created() {
+        async created() {
             let fetched = await fetch(
                 `https://site222326.tw.cs.unibo.it/channels/${this.channelName}`,
                 {
@@ -143,18 +144,21 @@ bottone per iscriversi sulla channelc ard
                     },
                 }
             );
-            fetched = await fetched.json();
 
-            console.log("idd: ",this.idd)
+            if (fetched.status === 200) {
+                fetched = await fetched.json();
 
-            this.owner = fetched.owner;
-            this.modsList = fetched.mod_list;
-            this.subscribersNum = fetched.subscribers_num;
-            this.subscribersList = fetched.subscribers_list;
-            this.squealsList = fetched.squeals_list.reverse();
+                this.owner = fetched.owner;
+                this.modsList = fetched.mod_list;
+                this.subscribersNum = fetched.subscribers_num;
+                this.subscribersList = fetched.subscribers_list;
+                this.squealsList = fetched.squeals_list.reverse();
 
-            this.loadedSquealsList = fetched.squeals_list.slice(this.loadMoreIndex, this.loadMoreIndex + this.pageDim)
-            this.loadedSubscribersList = fetched.subscribers_list.slice(this.loadMoreSubsIndex, this.loadMoreSubsIndex + this.pageDim)
+                this.loadedSquealsList = fetched.squeals_list.slice(this.loadMoreIndex, this.loadMoreIndex + this.pageDim)
+                this.loadedSubscribersList = fetched.subscribers_list.slice(this.loadMoreSubsIndex, this.loadMoreSubsIndex + this.pageDim)
+
+                this.isValid = true;
+            }
         },
     };
 </script>

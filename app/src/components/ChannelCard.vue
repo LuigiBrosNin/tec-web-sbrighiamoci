@@ -13,11 +13,12 @@ const props = defineProps(["id", "channel_json"]);
           <h5 class="card-title">
             <RouterLink :to="`/channel/${name}`"> §{{ name }} </RouterLink>
           </h5>
-          <p class="card-text bio"> {{ bio }}</p>
+          <p class="card-text bio"> {{ bio }} </p>
           <div class="d-flex justify-content-start">
-            <p class="card-text "><small class="text-muted">Owner: {{ owner }}</small></p>
-            <p class="card-text mx-5"><small class="text-muted">Subscribers: {{ numberOfSubscribers }}</small></p>
+            <p class="card-text "><small class="text-muted"> Owner: {{ owner }}</small></p>
+            <p class="card-text mx-5"><small class="text-muted"> Subscribers: {{ numberOfSubscribers }} </small></p>
           </div>
+          <button class="btn orange_btn" @click="subscribe"> Subscribe </button>
         </div>
       </div>
     </div>
@@ -25,6 +26,8 @@ const props = defineProps(["id", "channel_json"]);
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   data() {
     return {
@@ -38,6 +41,7 @@ export default {
       subscribersList: [],
       numberOfSubscribers: 0,
       type: "normal",
+      isSubscribed: false,
     };
   },
   methods: {
@@ -56,6 +60,7 @@ export default {
       this.populate(fetched);
       console.log("FETCHED: ", fetched)
     },
+
     populate(channelJson) {
       this.name = channelJson.name;
       this.owner = channelJson.owner;
@@ -74,8 +79,28 @@ export default {
       this.numberOfSubscribers = channelJson.subscribers_num;
       this.type = channelJson.type;
       this.bio = channelJson.bio;
+      this.isSubscribed = channelJson.subscribers_list.includes(this.name); // true se user è iscritto
     },
+
+    async subscribe() {
+      //TODO cambiare bottonoe se sono sicritto o no
+      // ricaricare card quando ho aggiunto utente (rifare fetch)
+      console.log("sucscribe")
+      const response = await axios.put(`https://site222326.tw.cs.unibo.it/channels/${this.new_channel_name}`, { bio: this.new_bio, type: this.channel_type } );
+      try {
+        const response = await axios.put(`https://site222326.tw.cs.unibo.it/channels/${this.name}/subscribers_list`);
+        console.log('Risposta: ', response.data);
+        if (response.status === 200) {
+          this.isSubscribed = true;
+          console.log("mi sono iscrito")
+        }
+      }
+      catch (error) {
+        console.error('Error during put request: ', error);
+      }   
+    }
   },
+
   created() {
     if (this.id != null) {
       this.fetchChannel(this.id);
@@ -96,5 +121,10 @@ export default {
 
 .bio {
   font-style: italic;
+}
+
+.orange_btn {
+	background-color: #ff8900;
+	color: white;
 }
 </style>
