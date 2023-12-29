@@ -107,7 +107,7 @@ function generateDeleteButton(squeal_id, squealNode) {
     const img = document.createElement("img");
     img.setAttribute("src", "https://site222326.tw.cs.unibo.it/icons/trash-svgrepo-com.svg");
     img.classList.add("admin-squeal-button-img");
-    buttons.appendChild(img);
+    deleteButton.appendChild(img);
     return deleteButton;
 }
 
