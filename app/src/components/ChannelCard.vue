@@ -120,16 +120,14 @@ export default {
       console.log("refrescio")
       const sub_resp = await axios.get(`https://site222326.tw.cs.unibo.it/channels/${this.name}/subscribers_list`)
       console.log("sub_resp: ", sub_resp)
-      sub_resp = await sub_resp.json()
-      console.log("sub_resp json: ", sub_resp)
+
       if (sub_resp.status === 200) {
         this.subscribersList = sub_resp.subscribers_list
       }
       
       const num_resp = await axios.get(`https://site222326.tw.cs.unibo.it/channels/${this.name}/subscribers_num`)
       console.log("sub_resp: ", num_resp)
-      num_resp = await num_resp.json()
-      console.log("sub_resp json: ", num_resp)
+
       if (num_resp.status === 200) {
         this.subscribersNum = num_resp.subscribers_num
       }
