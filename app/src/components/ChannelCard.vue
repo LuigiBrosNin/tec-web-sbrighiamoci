@@ -102,12 +102,13 @@ export default {
   },
 
   async unsubscribe() {
+    console.log("unsubscribo")
     try {
       const response = await axios.delete(`https://site222326.tw.cs.unibo.it/channels/${this.name}/subscribers_list`);
       if (response.status === 200) {
         this.isSubscribed = false;
         // ricarico la lista degli iscritti e il numero di iscritti
-        refresh()
+        this.refresh()
       }
     }
     catch (error) {
@@ -116,6 +117,7 @@ export default {
   },
 
   async refresh() {
+    console.log("refrescio")
     const sub_resp = await axios.get(`https://site222326.tw.cs.unibo.it/channels/${this.name}/subscribers_list`)
     sub_resp = await sub_resp.json()
     if (sub_resp.status === 200) {
