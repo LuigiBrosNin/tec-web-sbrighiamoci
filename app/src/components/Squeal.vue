@@ -265,7 +265,7 @@ export default {
 
         },
         askToDelete() {
-            if (confirm("Are you sure you want to delete this squeal? This action can't be undone") == true) {
+            if (confirm("Are you sure you want to delete this squeal? This action can't be undone") === true) {
                 this.deleteSqueal();
             } else {
                 // do nothing
@@ -406,7 +406,6 @@ export default {
     margin: 0.75em;
 }
 .delete_btn {
-    
     border-radius: 50%;
     border-style: none;
     background-color: #ffffff00;

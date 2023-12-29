@@ -124,6 +124,8 @@ app.get(["/admin/:paths(*)", "/admin"], async (req, res) => {
     $('head').prepend(scriptHead);
     const restoreCSS = '<link rel="stylesheet" href="https://site222326.tw.cs.unibo.it/adminsrc/restoreData.css">'
     $('body').append(restoreCSS);
+    const adminCSS = '<link rel="stylesheet" href="https://site222326.tw.cs.unibo.it/adminsrc/adminCss.css">'
+    $('body').append(adminCSS);
 
     // Get the modified HTML
     const modifiedHTML = $.html();

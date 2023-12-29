@@ -1,0 +1,10 @@
+.admin-squeal-button {
+    border-radius: 50%;
+    border-style: none;
+    background-color: #ffffff00;
+}
+
+.admin-squeal-button-img {
+    width: 2em;
+    filter: invert(17%) sepia(87%) saturate(7277%) hue-rotate(359deg) brightness(109%) contrast(118%);
+}

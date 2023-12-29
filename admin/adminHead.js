@@ -86,7 +86,43 @@ function changeUrlFromAppToAdmin(url) {
 
 function addEditAndDeleteButtonsToAllSqueals() {
     const squeals = Array.from(document.getElementsByClassName("squeal_container"));
-    for(const squeal in squeals){
-        Array.from(squeal.getElementsByClassName("btn_area"))[0].innerHTML = "btn_area";
+    //`<button><img class="delete_img" src="https://site222326.tw.cs.unibo.it/icons/trash-svgrepo-com.svg" /></button> <button><img class="delete_img" src="https://site222326.tw.cs.unibo.it/icons/trash-svgrepo-com.svg" /></button>`;
+    for (const index in squeals) {
+        let buttonArea = Array.from(squeals[index].getElementsByClassName("btn_area"))[0];
+
+        const buttons = document.createElement("div");
+        buttons.appendChild(generateDeleteButton(squeals[index].id, squeals[index]));
+
+        if (!buttonArea.hasChildNodes() || !buttonArea.childNodes[0].isEqualNode(buttons)) {
+            buttonArea.innerHTML = "";
+            buttonArea.appendChild(buttons);
+        }
+    }
+}
+
+function generateDeleteButton(squeal_id, squealNode) {
+    const deleteButton = document.createElement("button");
+    deleteButton.classList.add("admin-squeal-button");
+    deleteButton.setAttribute("onclick", `deleteSqueal(${squeal_id}, ${squealNode})`);
+    const img = document.createElement("img");
+    img.setAttribute("src", "https://site222326.tw.cs.unibo.it/icons/trash-svgrepo-com.svg");
+    img.classList.add("admin-squeal-button-img");
+    buttons.appendChild(img);
+    return deleteButton;
+}
+
+async function deleteSqueal(squeal_id, squealNode) {
+    if (confirm("Are you sure you want to delete this squeal? This action can't be undone") === true) {
+        let res = await fetch(
+            `https://site222326.tw.cs.unibo.it/squeals/${squeal_id}`,
+            {
+                method: "DELETE",
+            }
+        );
+        if (res.status == 200) {
+            squealNode.outerHTML = "";
+        }
+    } else {
+        // do nothing
     }
 }
