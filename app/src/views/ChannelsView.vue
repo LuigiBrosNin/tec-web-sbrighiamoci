@@ -1,57 +1,34 @@
+<script setup>
+    import Squeal from "@/components/Squeal.vue";
+    import ProfileCard from "@/components/ProfileCard.vue"
+    import ChannelCard from "@/components/ChannelCard.vue"
+const props = defineProps(['id']);
+</script>
+
+<!-- TODO channelName è sempre fakechannel3
+fare quella cosa chiesta da matilde
+bottone per iscriversi sulla channelc ard
+-->
+
 <template>
 	<!-- Pulsanti di commutazione -->
 	<div class="d-flex justify-content-center my-3">
-		<button
-			@click="showSquealSection"
-			class="btn mx-2"
-			:class="{
-				orange_btn: activeSection === 'squeal',
-				'btn-secondary': activeSection !== 'squeal',
-			}"
-		>
-			Squeals
-		</button>
-		<button
-			@click="showFollowersSection"
-			class="btn mx-2"
-			:class="{
-				orange_btn: activeSection === 'followers',
-				'btn-secondary': activeSection !== 'followers',
-			}"
-		>
-			Followers
-		</button>
-		<button
-			@click="showModsSection"
-			class="btn mx-2"
-			:class="{
-				orange_btn: activeSection === 'mods',
-				'btn-secondary': activeSection !== 'mods',
-			}"
-		>
-			Mods
-		</button>
+		<button @click="showSquealSection" class="btn mx-2" :class="{ orange_btn: activeSection === 'squeal', 'btn-secondary': activeSection !== 'squeal', }" >  Squeals  </button>
+		<button @click="showFollowersSection" class="btn mx-2" :class="{ orange_btn: activeSection === 'followers', 'btn-secondary': activeSection !== 'followers', }">  Followers  </button>
+		<button @click="showModsSection" class="btn mx-2" :class="{ orange_btn: activeSection === 'mods', 'btn-secondary': activeSection !== 'mods', }" >  Mods  </button>
 	</div>
-
+    
+    <!----------- card canale ---------->
+    <ChannelCard :id="channelName"></ChannelCard> 
+    
 	<!-------------------- SEZIONE SQUEAL  --------------------->
-	<div v-if="activeSection === 'squeal'" class="squeal_container">
-		<div
-			class="tab-pane fade show active"
-			id="pills-squeals"
-			role="tabpanel"
-			aria-labelledby="pills-squeals-tab"
-		>
-			<div v-if="squealsList.length > 0">
-				<Squeal v-for="sq in validSquealsList" :squeal_json="sq"></Squeal>
+	<div v-if="activeSection === 'squeal'">
+		<div class="tab-pane fade show active" id="pills-squeals" role="tabpanel" aria-labelledby="pills-squeals-tab">
+			<div v-for="squeal in loadedSquealsList" :key="squeal">
+				<Squeal :id="squeal"> </Squeal>
 			</div>
-			<div class="loadMoreContainer">
-				<button
-					v-if="!allSquealsLoaded"
-					@click="fetchMoreSqueals"
-					class="btn btn-primary loadMoreBtn"
-				>
-					Load more
-				</button>
+			<div class="loadMoreContainer text-center">
+				<button v-if="!allSquealsLoaded" @click="loadMoreSqueals" class="btn btn-primary loadMoreBtn">  Load more  </button>
 				<div v-else-if="squealsList.length <= 0">
 					There are no squeals to show.
 				</div>
@@ -61,11 +38,28 @@
 
 	<!-------------------- SEZIONE FOLLOWERS  --------------------->
 	<div v-if="activeSection === 'followers'" class="squeal_container">
-		followers
+
+        <h2 class="text-center"> Subscribers: {{ subscribersNum }}</h2>
+
+		<div v-for="follower in loadedSubscribersList" :key="follower">
+            <ProfileCard :id="follower"></ProfileCard>
+        </div>
+
+        <div class="loadMoreContainer text-center">
+            <button v-if="!allSubscribersLoaded" @click="loadMoreSubscribers" class="btn btn-primary loadMoreBtn">  Load more  </button>
+        </div>
 	</div>
 
 	<!-------------------- SEZIONE MODS  --------------------->
-	<div v-if="activeSection === 'mods'" class="squeal_container">mods</div>
+	<div v-if="activeSection === 'mods'" class="squeal_container">
+        <h2 class="text-center my-3 text-orange "> OWNER </h2>
+            <ProfileCard :id="owner"></ProfileCard>
+
+        <h2 class="text-center my-5"> MODS </h2>
+            <div v-for="mod in modsList" :key="mod">
+                <ProfileCard :id="mod"></ProfileCard>
+            </div>
+    </div>
 </template>
 
 <script>
@@ -76,26 +70,26 @@
     export default {
         data() {
             return {
-                channelName: "fakechannel3",
+                idd: this.id,
+                channelName: this.id,
                 activeSection: "squeal",
-                squealsList: [],
+                squealsList: [],         // tutti gli id degli squeal del canale
+                loadedSquealsList: [],   // id degli squeal già caricati 
                 modsList: [],
                 subscribersList: [],
+                loadedSubscribersList: [],
                 subscribersNum: 0,
                 owner: "",
                 allSquealsLoaded: false,
+                allSubscribersLoaded: false,
                 pageDim: 2,
                 loadMoreIndex: 0,
+                loadMoreSubsIndex: 0,
             };
         },
         methods: {
             async fetchMoreSqueals() {
-                let fetched = await fetch(
-                    `https://site222326.tw.cs.unibo.it/channels/${
-                        this.channelName
-                    }/squeals_list?startindex=${this.loadMoreIndex}&endindex=${
-                        this.loadMoreIndex + this.pageDim
-                    }`,
+                let fetched = await fetch(`https://site222326.tw.cs.unibo.it/channels/${this.channelName}/squeals_list?startindex=${this.loadMoreIndex}&endindex=${this.loadMoreIndex + this.pageDim}`,
                     { method: "GET" }
                 );
                 if (fetched.status == 200) {
@@ -107,18 +101,38 @@
                 }
             },
 
-            showSquealSection() {
-                this.activeSection = "squeal";
+            loadMoreSqueals() {
+                this.loadMoreIndex += this.pageDim
+                const newSqueals = this.squealsList.slice(this.loadMoreIndex, this.loadMoreIndex + this.pageDim)
+
+                if (newSqueals.length === 0) {
+                    this.allSquealsLoaded = true;
+                } else {
+                    this.loadedSquealsList = this.loadedSquealsList.concat(newSqueals);
+                }
             },
-            showFollowersSection() {
-                this.activeSection = "followers";
+
+            loadMoreSubscribers() {
+                this.loadMoreSubsIndex += this.pageDim
+                const newSubs = this.subscribersList.slice(this.loadMoreSubsIndex, this.loadMoreSubsIndex + this.pageDim)
+
+                console.log("newSubs: ", newSubs)
+                console.log("newSubs.length: ", newSubs.length)
+
+                if (newSubs.length === 0) {
+                    this.allSubscribersLoaded = true;
+                } else {
+                    this.subscribersList = this.subscribersList.concat(newSubs);
+                }
             },
-            showModsSection() {
-                this.activeSection = "mods";
-            },
+
+            showSquealSection() { this.activeSection = "squeal"; },
+            showFollowersSection() { this.activeSection = "followers"; },
+            showModsSection() { this.activeSection = "mods"; },
         },
 
-        async created() {
+        // alla creazione del componente fetcho tutto il contenuto del canale
+    async created() {
             let fetched = await fetch(
                 `https://site222326.tw.cs.unibo.it/channels/${this.channelName}`,
                 {
@@ -131,13 +145,16 @@
             );
             fetched = await fetched.json();
 
-            console.log("FETCHATO: ", fetched)
+            console.log("idd: ",this.idd)
 
             this.owner = fetched.owner;
-            this.modsList = fetched.mods_list;
+            this.modsList = fetched.mod_list;
             this.subscribersNum = fetched.subscribers_num;
             this.subscribersList = fetched.subscribers_list;
-            this.squealsList = fetched.squeals_list;
+            this.squealsList = fetched.squeals_list.reverse();
+
+            this.loadedSquealsList = fetched.squeals_list.slice(this.loadMoreIndex, this.loadMoreIndex + this.pageDim)
+            this.loadedSubscribersList = fetched.subscribers_list.slice(this.loadMoreSubsIndex, this.loadMoreSubsIndex + this.pageDim)
         },
     };
 </script>
@@ -178,5 +195,9 @@
 	height: 10em;
 	border-radius: 50%;
 	margin: 0.5em;
+}
+
+.text-orange {
+  color: #ff8900;
 }
 </style>

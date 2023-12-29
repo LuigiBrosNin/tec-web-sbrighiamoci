@@ -11,8 +11,7 @@ const props = defineProps(["id", "channel_json"]);
       <div class="col-md-8">
         <div class="card-body">
           <h5 class="card-title">
-            <a :href="`https://site222326.tw.cs.unibo.it/app/channels/${name}`" class="text-decoration-none">{{ name
-            }}</a>
+            <RouterLink :to="`/channel/${name}`"> §{{ name }} </RouterLink>
           </h5>
           <p class="card-text bio"> {{ bio }}</p>
           <div class="d-flex justify-content-start">
