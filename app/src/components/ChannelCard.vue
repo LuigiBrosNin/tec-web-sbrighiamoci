@@ -122,14 +122,14 @@ export default {
       console.log("sub_resp: ", sub_resp)
 
       if (sub_resp.status === 200) {
-        this.subscribersList = sub_resp.subscribers_list
+        this.subscribersList = sub_resp.data
       }
       
       const num_resp = await axios.get(`https://site222326.tw.cs.unibo.it/channels/${this.name}/subscribers_num`)
       console.log("sub_resp: ", num_resp)
 
       if (num_resp.status === 200) {
-        this.subscribersNum = num_resp.subscribers_num
+        this.subscribersNum = num_resp.data
       }
     },
 
