@@ -99,38 +99,40 @@ export default {
       catch (error) {
         console.error('Error during put request: ', error);
       }   
-    }
-  },
+    },
 
-  async unsub() {
-    console.log("UNsubscribo")
-    try {
-      const response = await axios.delete(`https://site222326.tw.cs.unibo.it/channels/${this.name}/subscribers_list`);
-      if (response.status === 200) {
-        this.isSubscribed = false;
-        // ricarico la lista degli iscritti e il numero di iscritti
-        this.refresh();
+    async unsub() {
+      console.log("UNsubscribo")
+      try {
+        const response = await axios.delete(`https://site222326.tw.cs.unibo.it/channels/${this.name}/subscribers_list`);
+        if (response.status === 200) {
+          this.isSubscribed = false;
+          // ricarico la lista degli iscritti e il numero di iscritti
+          this.refresh();
+        }
       }
-    }
-    catch (error) {
-      console.error('Error during delete request: ', error);
-    }   
+      catch (error) {
+        console.error('Error during delete request: ', error);
+      }   
+    },
+  
+    async refresh() {
+      console.log("refrescio")
+      const sub_resp = await axios.get(`https://site222326.tw.cs.unibo.it/channels/${this.name}/subscribers_list`)
+      sub_resp = await sub_resp.json()
+      if (sub_resp.status === 200) {
+        this.subscribersList = sub_resp.subscribers_list
+      }
+  
+      const num_resp = await axios.get(`https://site222326.tw.cs.unibo.it/channels/${this.name}/subscribers_num`)
+      num_resp = await num_resp.json()
+      if (num_resp.status === 200) {
+        this.subscribersNum = num_resp.subscribers_num
+      }
+    },
+
   },
 
-  async refresh() {
-    console.log("refrescio")
-    const sub_resp = await axios.get(`https://site222326.tw.cs.unibo.it/channels/${this.name}/subscribers_list`)
-    sub_resp = await sub_resp.json()
-    if (sub_resp.status === 200) {
-      this.subscribersList = sub_resp.subscribers_list
-    }
-
-    const num_resp = await axios.get(`https://site222326.tw.cs.unibo.it/channels/${this.name}/subscribers_num`)
-    num_resp = await num_resp.json()
-    if (num_resp.status === 200) {
-      this.subscribersNum = num_resp.subscribers_num
-    }
-  },
 
   created() {
     if (this.id != null) {
