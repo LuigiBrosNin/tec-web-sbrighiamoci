@@ -137,6 +137,12 @@ app.get(["/admin/:paths(*)", "/admin"], async (req, res) => {
 })
 app.use("/adminsrc", express.static(path.join(global.rootDir, '/admin/')));
 
+app.get("/admin/adminedit/:type/:id", async (req, res) => {
+  if(req.params.type === "squeal"){
+    res.status(200).sendFile(global.rootDir + '/admin/login.html');
+  }
+})
+
 app.use('/images', express.static(path.join(global.rootDir, 'images/')));
 app.use('/icons', express.static(path.join(global.rootDir, 'icons/')));
 
