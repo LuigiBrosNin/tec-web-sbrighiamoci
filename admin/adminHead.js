@@ -131,7 +131,7 @@ async function deleteSqueal(squeal_id) {
 function generateEditButton(squeal_id) {
     const editButton = document.createElement("button");
     editButton.classList.add("admin-squeal-button");
-    editButton.setAttribute("onclick", `window.location.href("${sitePrefix}/admin/adminedit/squeal/${squeal_id}")`);
+    editButton.setAttribute("onclick", `window.location.href = "${sitePrefix}/admin/adminedit/squeal/${squeal_id}"`);
     const img = document.createElement("img");
     img.setAttribute("src", sitePrefix + "/icons/pen-svgrepo-com.svg");
     img.classList.add("admin-squeal-button-img");
