@@ -86,14 +86,14 @@ function changeUrlFromAppToAdmin(url) {
 
 function addEditAndDeleteButtonsToAllSqueals() {
     const squeals = Array.from(document.getElementsByClassName("squeal_container"));
-    //`<button><img class="delete_img" src="https://site222326.tw.cs.unibo.it/icons/trash-svgrepo-com.svg" /></button> <button><img class="delete_img" src="https://site222326.tw.cs.unibo.it/icons/trash-svgrepo-com.svg" /></button>`;
     for (const index in squeals) {
         let buttonArea = Array.from(squeals[index].getElementsByClassName("btn_area"))[0];
 
         const buttons = document.createElement("div");
         buttons.appendChild(generateDeleteButton(squeals[index].id));
+        buttons.appendChild(generateEditButton(squeals[index].id));
 
-        if (!buttonArea.hasChildNodes() || !buttonArea.childNodes[0].isEqualNode(buttons)) {
+        if (!buttonArea.hasChildNodes() || !buttonArea.childNodes[0].isEqualNode(buttons) || buttonArea.childNodes.length != 1) {
             buttonArea.innerHTML = "";
             buttonArea.appendChild(buttons);
         }
@@ -105,7 +105,7 @@ function generateDeleteButton(squeal_id) {
     deleteButton.classList.add("admin-squeal-button");
     deleteButton.setAttribute("onclick", `deleteSqueal("${squeal_id}")`);
     const img = document.createElement("img");
-    img.setAttribute("src", "https://site222326.tw.cs.unibo.it/icons/trash-svgrepo-com.svg");
+    img.setAttribute("src", sitePrefix + "/icons/trash-svgrepo-com.svg");
     img.classList.add("admin-squeal-button-img");
     deleteButton.appendChild(img);
     return deleteButton;
@@ -114,7 +114,7 @@ function generateDeleteButton(squeal_id) {
 async function deleteSqueal(squeal_id) {
     if (confirm("Are you sure you want to delete this squeal? This action can't be undone") === true) {
         let res = await fetch(
-            `https://site222326.tw.cs.unibo.it/squeals/${squeal_id}`,
+            sitePrefix + `/squeals/${squeal_id}`,
             {
                 method: "DELETE",
             }
@@ -126,4 +126,15 @@ async function deleteSqueal(squeal_id) {
     } else {
         // do nothing
     }
+}
+
+function generateEditButton(squeal_id) {
+    const editButton = document.createElement("button");
+    editButton.classList.add("admin-squeal-button");
+    editButton.setAttribute("onclick", `window.history.replaceState({}, "", "${sitePrefix}/admin/adminedit/squeal/${squeal_id}");`);
+    const img = document.createElement("img");
+    img.setAttribute("src", sitePrefix + "/icons/pen-svgrepo-com.svg");
+    img.classList.add("admin-squeal-button-img");
+    editButton.appendChild(img);
+    return editButton;
 }
