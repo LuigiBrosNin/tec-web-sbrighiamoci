@@ -279,8 +279,9 @@ export class Squeal extends Component {
             </RouterLink>
           </div>
 
-          <RouterLink to={this.props.squeal.id}>Insights</RouterLink>
-
+          {this.props.squeal.author == this.props.selectedAccount.name ?
+          <RouterLink to={'/smm/squeals/' + this.props.squeal.id}>Insights</RouterLink>
+          : null}
 
           {this.state.canBeDeleted ?
 
