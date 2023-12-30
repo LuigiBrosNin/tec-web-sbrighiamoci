@@ -90,8 +90,8 @@ function addEditAndDeleteButtonsToAllSqueals() {
         let buttonArea = Array.from(squeals[index].getElementsByClassName("btn_area"))[0];
 
         const buttons = document.createElement("div");
-        buttons.appendChild(generateDeleteButton(squeals[index].id));
         buttons.appendChild(generateEditButton(squeals[index].id));
+        buttons.appendChild(generateDeleteButton(squeals[index].id));
 
         if (!buttonArea.hasChildNodes() || !buttonArea.childNodes[0].isEqualNode(buttons) || buttonArea.childNodes.length != 1) {
             buttonArea.innerHTML = "";
@@ -131,7 +131,7 @@ async function deleteSqueal(squeal_id) {
 function generateEditButton(squeal_id) {
     const editButton = document.createElement("button");
     editButton.classList.add("admin-squeal-button");
-    editButton.setAttribute("onclick", `window.history.replaceState({}, "", "${sitePrefix}/admin/adminedit/squeal/${squeal_id}");`);
+    editButton.setAttribute("onclick", `window.location.href("${sitePrefix}/admin/adminedit/squeal/${squeal_id}")`);
     const img = document.createElement("img");
     img.setAttribute("src", sitePrefix + "/icons/pen-svgrepo-com.svg");
     img.classList.add("admin-squeal-button-img");
