@@ -23,7 +23,11 @@ const {
 } = require("./loginUtils.js");
 const {
     mongoClient,
-    collection_automations
+    collection_automations,
+    channelCollection,
+    squealCollection,
+    CM,
+    interval
 } = require("./const.js");
 
 const authData = {
@@ -44,10 +48,72 @@ async function putPeriodicalSqueals() {
         await mongoClient.connect();
         const posts = await collection_automations.find({}).toArray();
 
-        for (post of posts) {
+        for (const post of posts) {
             await makeRequest(post);
         }
         console.log("Periodical squeals posted");
+}
+
+async function putControversialPeriodicalSqueals() {
+    try {
+        const channelName = "CONTROVERSIAL";
+
+        // Authenticate and store the session in the cookie jar
+        await axios.post('https://site222326.tw.cs.unibo.it/login', authData);
+        // Once authenticated, the session is stored in the cookie jar for subsequent requests
+        
+        // Make subsequent requests with the established session
+        await mongoClient.connect();
+        const channel = channelCollection.findOne({name: channelName});
+    
+        if(channel == null) {
+            console.log("Channel not found");
+            return;
+        }
+    
+        // retrieve all the Controversial squeals posted in the last interval
+        // a controversial squeal is a squeal that has a positive and negative
+        // polarity ratio greater than the critical mass CM
+        const lastHourSqueals = await squealCollection.find({
+            date: { $gte: (Date.now() - interval) },
+            $and: [
+                { neg_popolarity_ratio: { $gte: CM}},
+                { pos_popolarity_ratio: { $gte: CM}}
+            ]
+        }).toArray();
+    
+        // sort the squeals by number of impressions
+        lastHourSqueals.sort((a, b) => {
+            return b.impressions - a.impressions;
+        });
+    
+        // get the squeal with the most impressions
+        const squealToPost = lastHourSqueals[0];
+    
+        // add the squeal to the channel
+        fetch('https://site222326.tw.cs.unibo.it/channels/' + channelName + '/squeals_list', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: {
+                squeal_id: squealToPost.id
+            }
+        }).then(res => {
+            if (res.status == 200) {
+                console.log("Controversial squeal added to channel");
+            }
+            else {
+                console.log("Error adding controversial squeal to channel");
+            }
+        }).catch(err => {
+            console.log("Error adding controversial squeal to channel: " + err);
+        });
+    }
+    catch (e) {
+        console.log(e);
+    }
+
 }
 
 // Function to make the actual request with the established session
@@ -75,15 +141,17 @@ async function makeRequest(post) {
         const squealData = {
             author: authData.username,
             text: text,
-            media: media,
             receiver: post.channel
         };
+
+        const formData = new FormData();
+        formData.append("json", JSON.stringify(squealData));
     
         // send and log the squeal
         console.log("sending: " + JSON.stringify(squealData));
     
-        const postResponse = await axios.put('https://site222326.tw.cs.unibo.it/squeals', squealData);
-        console.log("response");
+        const postResponse = await axios.put('https://site222326.tw.cs.unibo.it/squeals', formData);
+        console.log("response: " + JSON.stringify(postResponse.data));
     }
     catch (e) {
         console.log(e);
@@ -181,4 +249,4 @@ app.delete('/automaticposts', bodyParser.json(), async (req, res) => {
 })
 
 
-//module.exports = {putPeriodicalSqueals};
+//module.exports = {putPeriodicalSqueals, putControversialPeriodicalSqueals};
