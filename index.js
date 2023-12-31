@@ -173,3 +173,4 @@ require("./backend/automatic_posts.js");
 
 //* periodic function, activate when ready
 //setInterval(putPeriodicalSqueals, interval);
+//setInterval(putControversialPeriodicalSqueals, interval);
