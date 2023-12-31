@@ -1,57 +1,74 @@
 <!DOCTYPE html>
 
 <head>
-
+    <link rel="stylesheet" href="https://site222326.tw.cs.unibo.it/bootstrap/css">
+    </link>
+    <script type="module" src="https://site222326.tw.cs.unibo.it/bootstrap/js"></script>
 </head>
 
 <body>
     <p>admin edit squeal</p>
-    <form>
-        <label for="squeal_id">Squeal id:</label>
-        <input type="text" id="squeal_id" name="squeal_id">
-        
-        <label for="author">Author:</label>
-        <input type="text" id="author" name="author">
-        
-        <label for="isPrivate">Is private:</label>
-        <input type="checkbox" id="isPrivate" name="isPrivate">
-        
-        <label for="replyTo">Reply to:</label>
-        <input type="text" id="replyTo" name="replyTo">
-        
-        <label for="squealText">Text:</label>
-        <input type="text" id="squealText" name="squealText">
-        
-        <label for="receiver">Receiver:</label>
-        <input type="text" id="receiver" name="receiver">
-        
-        <label for="squealDate">Date:</label>
-        <input type="datetime" id="squealDate" name="squealDate">
-        
-        <label for="positiveReactions">Number of positive reactions:</label>
-        <input type="number" id="positiveReactions" name="positiveReactions">
-        
-        <label for="negativeReactions">Number of negative reactions:</label>
-        <input type="number" id="negativeReactions" name="negativeReactions">
-        
-        <label for="replies">Number of replies:</label>
-        <input type="number" id="replies" name="replies">
-        
-        <label for="impressions">Number of impressions:</label>
-        <input type="number" id="impressions" name="impressions">
-        
-        <label for="squealMedia">Media:</label>
-        <input type="file" id="squealMedia" name="squealMedia">
-        
-        <p>Location:</p>
-        <label for="locationLat">Latitude:</label>
-        <input type="number" id="locationLat" name="locationLat">
-        <label for="locationLng">Longitude:</label>
-        <input type="number" id="locationLng" name="locationLng">
+    <form class="mx-5 my-3">
+        <div class="formCard">
+            <label for=" squeal_id" class="form-label">Squeal id:</label>
+            <input type="text" id="squeal_id" name="squeal_id" class="form-control" disabled>
+
+            <label for="author" class="form-label">Author:</label>
+            <input type="text" id="author" name="author" class="form-control" disabled>
+
+            <label for="receiver" class="form-label">Receiver:</label>
+            <input type="text" id="receiver" name="receiver" class="form-control">
+
+            <label for="isPrivate" class="form-label">Is private:</label>
+            <input type="checkbox" id="isPrivate" name="isPrivate" class="form-check-input"> <br />
+
+            <label for="replyTo" class="form-label">Reply to:</label>
+            <input type="text" id="replyTo" name="replyTo" class="form-control">
+
+            <label for="squealText" class="form-label">Text:</label>
+            <input type="text" id="squealText" name="squealText" class="form-control">
+
+            <label for="squealDate" class="form-label">Date:</label>
+            <input type="datetime" id="squealDate" name="squealDate" class="form-control">
+        </div>
+
+        <div class="formCard">
+            <label for="positiveReactions" class="form-label">Number of positive reactions:</label>
+            <input type="number" id="positiveReactions" name="positiveReactions" class="form-control">
+
+            <label for="negativeReactions" class="form-label">Number of negative reactions:</label>
+            <input type="number" id="negativeReactions" name="negativeReactions" class="form-control">
+
+            <label for="replies" class="form-label">Number of replies:</label>
+            <input type="number" id="replies" name="replies" class="form-control">
+
+            <label for="impressions" class="form-label">Number of impressions:</label>
+            <input type="number" id="impressions" name="impressions" class="form-control">
+        </div>
+
+        <div class="formCard">
+            <p class="form-label">Old media:</p>
+            <div class="oldMedia">
+
+            </div>
+
+
+            <label for="squealMedia" class="form-label">New media:</label>
+            <input type="file" id="squealMedia" name="squealMedia" class="form-control">
+        </div>
+
+        <div class="formCard">
+            <p>Location:</p>
+            <label for="locationLat" class="form-label">Latitude:</label>
+            <input type="number" id="locationLat" name="locationLat" class="form-control">
+
+            <label for="locationLng" class="form-label">Longitude:</label>
+            <input type="number" id="locationLng" name="locationLng" class="form-control">
+        </div>
 
         <input type="submit">
-        
-        
     </form>
 </body>
-<script type="module" src="https://site222326.tw.cs.unibo.it/adminsrc/adminEditSqueal.js"></script>
+<link rel="stylesheet" href="adminEdit.css">
+</link>
+<script src="adminEditSqueal.js"></script>
