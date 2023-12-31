@@ -86,12 +86,6 @@ class Profile extends React.Component {
       bannedUntil: profileJson.banned_until,
       isValid: true,
     });
-
-    if (this.state.propic == null || this.state.propic == "") {
-      this.setState({
-        propic: "https://site222326.tw.cs.unibo.it/images/user-default.svg"
-      });
-    }
   }
 
   goToSettings() {
@@ -205,7 +199,7 @@ class Profile extends React.Component {
       <div className="container profile_container">
         <div className="row profile_main_data">
           <div className="col-sm-4">
-            <img className="img-fluid rounded-circle profile_img" src={this.state.propic} />
+            <img className="img-fluid rounded-circle profile_img" src={'https://' + this.state.propic} />
           </div>
           <div className="col-sm-8">
             <h2 className="profile_name">@{this.state.name}</h2>
@@ -232,7 +226,6 @@ class Profile extends React.Component {
                 </div>
               </div>
             </div>
-            <Link to={`/messages/${this.state.id}`} className="message_button">Chat</Link>
           </div>
         </div>
         <div className="row">
@@ -241,75 +234,76 @@ class Profile extends React.Component {
           </div>
         </div>
 
-        <ul className="nav nav-pills mb-3 flex-column flex-sm-row" id="pills-tab" role="tablist">
-          <li className="nav-item flex-sm-fill" role="presentation">
-            <button className="nav-link active" id="pills-squeals-tab" data-bs-toggle="pill" data-bs-target="#pills-squeals"
-              type="button" role="tab" aria-controls="pills-squeals" aria-selected="true">
-              Squeals
-            </button>
-          </li>
-          <li className="nav-item flex-sm-fill text-sm-center" role="presentation">
-            <button className="nav-link" id="pills-followers-tab" data-bs-toggle="pill" data-bs-target="#pills-followers"
-              type="button" role="tab" aria-controls="pills-followers" aria-selected="false" onClick={this.fetchFollowers}>
-              Followers
-            </button>
-          </li>
-          <li className="nav-item flex-sm-fill text-sm-center" role="presentation">
-            <button className="nav-link" id="pills-following-tab" data-bs-toggle="pill" data-bs-target="#pills-following"
-              type="button" role="tab" aria-controls="pills-following" aria-selected="false" onClick={this.fetchFollowing}>
-              Following
-            </button>
-          </li>
-          <li className="nav-item flex-sm-fill text-sm-center" role="presentation">
-            <button className="nav-link" id="pills-following-tab" data-bs-toggle="pill" data-bs-target="#pills-channels"
-              type="button" role="tab" aria-controls="pills-following" aria-selected="false" onClick={this.fetchChannels}>
-              Channels
-            </button>
-          </li>
-        </ul>
-
         <button className='btn btn-warning' onClick={() => this.setState(prevState => ({ showTabContent: !prevState.showTabContent }))}>
           Toggle Tab Content
         </button>
 
         {this.state.showTabContent && (
-        <div className="tab-content" id="pills-tabContent">
-          {/* Squeals Cards */}
-          <div className="tab-pane fade show active" id="pills-squeals" role="tabpanel" aria-labelledby="pills-squeals-tab">
-            {this.state.squealsList.length > 0 && this.state.validSquealsList.map(sq => <Squeal squeal={sq} selectedAccount={this.props.selectedAccount} />)}
-            <div className="loadMoreContainer">
-              {!this.state.allSquealsLoaded && <button onClick={this.fetchMoreSqueals} className="btn btn-primary loadMoreBtn"> Load more</button>}
-              {this.state.allSquealsLoaded && this.state.squealsList.length <= 0 && <div>There are no squeals to show.</div>}
-            </div>
-          </div>
+          <div>
+            <ul className="nav nav-pills mb-3 flex-column flex-sm-row" id="pills-tab" role="tablist">
+              <li className="nav-item flex-sm-fill" role="presentation">
+                <button className="nav-link active" id="pills-squeals-tab" data-bs-toggle="pill" data-bs-target="#pills-squeals"
+                  type="button" role="tab" aria-controls="pills-squeals" aria-selected="true">
+                  Squeals
+                </button>
+              </li>
+              <li className="nav-item flex-sm-fill text-sm-center" role="presentation">
+                <button className="nav-link" id="pills-followers-tab" data-bs-toggle="pill" data-bs-target="#pills-followers"
+                  type="button" role="tab" aria-controls="pills-followers" aria-selected="false" onClick={this.fetchFollowers}>
+                  Followers
+                </button>
+              </li>
+              <li className="nav-item flex-sm-fill text-sm-center" role="presentation">
+                <button className="nav-link" id="pills-following-tab" data-bs-toggle="pill" data-bs-target="#pills-following"
+                  type="button" role="tab" aria-controls="pills-following" aria-selected="false" onClick={this.fetchFollowing}>
+                  Following
+                </button>
+              </li>
+              <li className="nav-item flex-sm-fill text-sm-center" role="presentation">
+                <button className="nav-link" id="pills-following-tab" data-bs-toggle="pill" data-bs-target="#pills-channels"
+                  type="button" role="tab" aria-controls="pills-following" aria-selected="false" onClick={this.fetchChannels}>
+                  Channels
+                </button>
+              </li>
+            </ul>
+            <div className="tab-content" id="pills-tabContent">
+              {/* Squeals Cards */}
+              <div className="tab-pane fade show active" id="pills-squeals" role="tabpanel" aria-labelledby="pills-squeals-tab">
+                {this.state.squealsList.length > 0 && this.state.validSquealsList.map(sq => <Squeal squeal={sq} selectedAccount={this.props.selectedAccount} />)}
+                <div className="loadMoreContainer">
+                  {!this.state.allSquealsLoaded && <button onClick={this.fetchMoreSqueals} className="btn btn-primary loadMoreBtn"> Load more</button>}
+                  {this.state.allSquealsLoaded && this.state.squealsList.length <= 0 && <div>There are no squeals to show.</div>}
+                </div>
+              </div>
 
-          {/* Followers Cards */}
-          <div className="tab-pane fade" id="pills-followers" role="tabpanel" aria-labelledby="pills-followers-tab">
-            {this.state.tmpFollowersList.map(follower => <ProfileCard id={follower} />)}
-            <div className="loadMoreContainer">
-              {this.state.tmpFollowersList.length < 1 && <div> No more profiles. </div>}
-              {!this.state.allFollowersLoaded && <button onClick={() => this.loadMoreFollowers} className="btn btn-primary loadMoreBtn"> Load more</button>}
-            </div>
-          </div>
+              {/* Followers Cards */}
+              <div className="tab-pane fade" id="pills-followers" role="tabpanel" aria-labelledby="pills-followers-tab">
+                {this.state.tmpFollowersList.map(follower => <ProfileCard id={follower} />)}
+                <div className="loadMoreContainer">
+                  {this.state.tmpFollowersList.length < 1 && <div> No more profiles. </div>}
+                  {!this.state.allFollowersLoaded && <button onClick={() => this.loadMoreFollowers} className="btn btn-primary loadMoreBtn"> Load more</button>}
+                </div>
+              </div>
 
-          {/* Following Cards */}
-          <div className="tab-pane fade" id="pills-following" role="tabpanel" aria-labelledby="pills-following-tab">
-            {this.state.tmpFollowingList.map(follower => <ProfileCard id={follower} />)}
-            <div className="loadMoreContainer">
-              {this.state.tmpFollowingList.length < 1 && <div> No more profiles. </div>}
-              {!this.state.allFollowingLoaded && <button onClick={() => this.loadMoreFollowing} className="btn btn-primary loadMoreBtn"> Load more</button>}
-            </div>
-          </div>
+              {/* Following Cards */}
+              <div className="tab-pane fade" id="pills-following" role="tabpanel" aria-labelledby="pills-following-tab">
+                {this.state.tmpFollowingList.map(follower => <ProfileCard id={follower} />)}
+                <div className="loadMoreContainer">
+                  {this.state.tmpFollowingList.length < 1 && <div> No more profiles. </div>}
+                  {!this.state.allFollowingLoaded && <button onClick={() => this.loadMoreFollowing} className="btn btn-primary loadMoreBtn"> Load more</button>}
+                </div>
+              </div>
 
-          {/* Channels Cards */}
-          <div className="tab-pane fade" id="pills-channels" role="tabpanel" aria-labelledby="pills-channels-tab">
-            {this.state.tmpChannelsList.map(channel => <ChannelCard id={channel} />)}
-            <div className="loadMoreContainer">
-              {this.state.tmpChannelsList.length < 1 && <div> No more channels. </div>}
-              {!this.state.allChannelsLoaded && <button onClick={() => this.loadMoreChannels} className="btn btn-primary loadMoreBtn"> Load more</button>}
+              {/* Channels Cards */}
+              <div className="tab-pane fade" id="pills-channels" role="tabpanel" aria-labelledby="pills-channels-tab">
+                {this.state.tmpChannelsList.map(channel => <ChannelCard id={channel} />)}
+                <div className="loadMoreContainer">
+                  {this.state.tmpChannelsList.length < 1 && <div> No more channels. </div>}
+                  {!this.state.allChannelsLoaded && <button onClick={() => this.loadMoreChannels} className="btn btn-primary loadMoreBtn"> Load more</button>}
+                </div>
+              </div>
             </div>
           </div>
-        </div> 
         )}
       </div>
     );

@@ -17,7 +17,7 @@ export class MiniProfileCard extends Component {
                                 {this.props.profile.name}
                             </h5>
                             <p className="card-text">
-                                Squeals: {this.props.profile.squeals_list.length}
+                                Squeals: {this.props.profile.squeals_num}
                             </p>
                         </div>
                     </div>

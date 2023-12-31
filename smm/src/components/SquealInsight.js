@@ -11,16 +11,25 @@ export default function SquealInsight(props) {
   const { id } = useParams();
   const [squeal, setSqueal] = useState(null);
   const [selectedPanel, setSelectedPanel] = useState('insights'); // Added selectedPanel state
+  const [moreReplies, setMoreReplies] = useState(true); // Added moreReplies state
+
+  let startIndex = 0;
+  let endIndex = 10;
 
   const loadReplies = () => {
     //retrieve replies
-    fetch(`https://site222326.tw.cs.unibo.it/squeals/${id}/replies`, {
+    fetch(`https://site222326.tw.cs.unibo.it/squeals/${id}/replies?startindex=${startIndex}&endindex=${endIndex}`, {
       method: "GET"
     })
       .then(res => res.json())
       .then(res => {
         console.log(res);
         setReplies(res);
+        startIndex += 10;
+        endIndex += 10;
+        if (res.length === 0 || res.length < 10) {
+          setMoreReplies(false);
+        }
       })
       .catch(err => console.log(err));
   }
@@ -87,8 +96,24 @@ export default function SquealInsight(props) {
         )}
         {selectedPanel === 'replies' && (
           <div className="mt-3">
-            <p> replies selected</p>
             {/* Render replies here */}
+            {replies == null ? (
+              <button className="btn btn-primary" onClick={loadReplies}>Load replies</button>
+            ) : (
+              <div>
+              {replies.map((reply) => (
+                <div key={reply.id}>
+                  <Squeal selectedAccount={props.selectedAccount} squeal={reply} />
+                </div>
+              ))}
+              {moreReplies && (
+                <button className="btn btn-primary" onClick={loadReplies}>Load more replies</button>
+                )}
+              </div>
+            )
+            }
+
+            
           </div>
         )}
       </div>

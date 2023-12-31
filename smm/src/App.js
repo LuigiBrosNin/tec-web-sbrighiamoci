@@ -22,6 +22,7 @@ import '../../node_modules/bootstrap/dist/css/bootstrap.css'
 import '../../node_modules/bootstrap/dist/js/bootstrap.bundle.js'
 
 import axios from 'axios';
+import MessagesSearchBar from './components/MessageSearchBar.js';
 
 export const globalState = {
   $user: null,
@@ -204,9 +205,10 @@ function App() {
                 <Route path="smm/squealPut" element={<SquealPutHoc selectedAccount={selectedAccount} onAccountChange={handleSelectedAccountChange} loopObject={loopObject} />} />
                 <Route path="smm/profile" element={<ProfileInsights selectedAccount={selectedAccount} />} />
                 <Route path="smm/squeals" element={<SquealsInsights selectedAccount={selectedAccount} />} />
-                <Route path="smm/messages" element={<Messages selectedAccount={selectedAccount} />} />
+                <Route path="smm/messages" element={<MessagesSearchBar />} />
                 <Route path="smm/shop" element={<Shop selectedAccount={selectedAccount} />} />
 
+                <Route path="smm/messages/:id" element={<Messages selectedAccount={selectedAccount} />} />
                 <Route path="smm/squeals/:id" element={<SquealInsight selectedAccount={selectedAccount} />} />
                 <Route path="smm/profile/:id" element={<h1>Soon pt 2</h1>} />
 

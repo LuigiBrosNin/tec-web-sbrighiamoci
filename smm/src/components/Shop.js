@@ -56,7 +56,7 @@ export class Shop extends Component {
               <div className="card-body">
                 <h5 className="card-title">Tears of free speech</h5>
                 <p className="card-text">+100 credits</p>
-                <button className="btn btn-primary" onClick={() => this.makePurchase(100,50)}>Buy for 1.99-</button>
+                <button className="btn btn-primary" onClick={() => this.makePurchase(100,50)}>Buy for 0.99-</button>
               </div>
             </div>
           </div>
@@ -66,7 +66,7 @@ export class Shop extends Component {
               <div className="card-body">
                 <h5 className="card-title">Twitter's lament</h5>
                 <p className="card-text">+500 credits</p>
-                <button className="btn btn-primary" onClick={() => this.makePurchase(500,280)}>Buy for 4.99-</button>
+                <button className="btn btn-primary" onClick={() => this.makePurchase(500,280)}>Buy for 2.99-</button>
               </div>
             </div>
           </div>
@@ -76,7 +76,7 @@ export class Shop extends Component {
                 <div className="card-body">
                 <h5 className="card-title">That's just my opinion</h5>
                 <p className="card-text">+1000 credits</p>
-                <button className="btn btn-primary" onClick={() => this.makePurchase(1000,500)}>Buy for 9.99-</button>
+                <button className="btn btn-primary" onClick={() => this.makePurchase(1000,500)}>Buy for 5.99-</button>
               </div>
             </div>
           </div>
