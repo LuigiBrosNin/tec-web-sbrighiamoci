@@ -1,0 +1,13 @@
+body {
+    background-color: #ddddddff;
+}
+
+.formCard {
+    margin: 1em 0em 1em 0em;
+    padding: 1em;
+    background-color: #fff;
+    border-radius: 1em;
+    border-style: solid;
+    border-width: thin;
+    border-color: #9c9c9c;
+}

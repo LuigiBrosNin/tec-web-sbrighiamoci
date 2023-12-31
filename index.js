@@ -107,6 +107,12 @@ app.use('/app/*', express.static(path.join(global.rootDir, 'app/dist/')));
 app.use('/smm', express.static(path.join(global.rootDir, 'smm/build/')));
 app.use('/smm/*', express.static(path.join(global.rootDir, 'smm/build/')));
 
+app.get("/admin/adminedit/:type/:id", async (req, res) => {
+  if(req.params.type === "squeal"){
+    res.status(200).sendFile(global.rootDir + '/admin/adminEditSqueal.html');
+  }
+})
+
 app.get(["/admin/:paths(*)", "/admin"], async (req, res) => {
   try {
     let url = 'https://site222326.tw.cs.unibo.it/app/';
@@ -139,6 +145,11 @@ app.use("/adminsrc", express.static(path.join(global.rootDir, '/admin/')));
 
 app.use('/images', express.static(path.join(global.rootDir, 'images/')));
 app.use('/icons', express.static(path.join(global.rootDir, 'icons/')));
+
+// Export bootstrap, so the frontend can use it
+app.use('/bootstrap/css', express.static(path.join(global.rootDir, 'node_modules/bootstrap/dist/css/bootstrap.css')));
+app.use('/bootstrap/js', express.static(path.join(global.rootDir, 'node_modules/bootstrap/dist/js/bootstrap.bundle.js')));
+
 
 // ci serve per pubblicare i nostri sorgenti
 // potremmo fare anche a mano
