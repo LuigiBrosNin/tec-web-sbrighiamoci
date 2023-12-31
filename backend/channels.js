@@ -796,7 +796,22 @@ app.get("/channels/:name/squeals_list", async (req, res) => {
     }
 
     const squeals = channel.squeals_list.slice(startIndex, endIndex + 1);
-    res.status(200).json(squeals);
+
+    const squeals_list = await collection_squeals.find({
+      id: {
+        $in: squeals
+      },
+      is_private: false
+    }).toArray();
+
+    if (squeals_list.length === 0) {
+      res.status(404).json({
+        message: "No squeals found."
+      });
+      return;
+    }
+
+    res.status(200).json(squeals_list);
   } catch (error) {
     res.status(500).json({
       message: error.message

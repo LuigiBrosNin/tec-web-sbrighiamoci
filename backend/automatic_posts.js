@@ -24,8 +24,8 @@ const {
 const {
     mongoClient,
     collection_automations,
-    channelCollection,
-    squealCollection,
+    collection_channel,
+    collection_squeals,
     CM,
     interval
 } = require("./const.js");
@@ -64,7 +64,7 @@ async function putControversialPeriodicalSqueals() {
         
         // Make subsequent requests with the established session
         await mongoClient.connect();
-        const channel = channelCollection.findOne({name: channelName});
+        const channel = collection_channel.findOne({name: channelName});
     
         if(channel == null) {
             console.log("Channel not found");
@@ -74,7 +74,7 @@ async function putControversialPeriodicalSqueals() {
         // retrieve all the Controversial squeals posted in the last interval
         // a controversial squeal is a squeal that has a positive and negative
         // polarity ratio greater than the critical mass CM
-        const lastHourSqueals = await squealCollection.find({
+        const lastHourSqueals = await collection_squeals.find({
             date: { $gte: (Date.now() - interval) },
             $and: [
                 { neg_popolarity_ratio: { $gte: CM}},
