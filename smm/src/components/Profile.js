@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Squeal from './Squeal';
-import ProfileCard from './ProfileCard';
-import ChannelCard from './ChannelCard';
+import ProfileCard from './ProfileCard.js';
+import ChannelCard from './ChannelCard.js';
 
 import './Profile.css';
 
@@ -199,7 +199,7 @@ class Profile extends React.Component {
       <div className="container profile_container">
         <div className="row profile_main_data">
           <div className="col-sm-4">
-            <img className="img-fluid rounded-circle profile_img" src={'https://' + this.state.propic} />
+            <img className="img-fluid rounded-circle profile_img_container" src={'https://' + this.state.propic} />
           </div>
           <div className="col-sm-8">
             <h2 className="profile_name">@{this.state.name}</h2>

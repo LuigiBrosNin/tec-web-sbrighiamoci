@@ -9,7 +9,7 @@ export class ProfileCard extends Component {
             <div className="card">
                 <div className="row no-gutters">
                     <div className="col-12 justify-content-center align-items-center">
-                        <img src={this.props.profile.propic} className="card-img profile_img" alt="Profile Picture" />
+                        <img src={'https://' + this.props.profile.propic} className="card-img profile_img" alt="Profile Picture" />
                     </div>
                     <div className="col-12">
                         <div className="card-body">

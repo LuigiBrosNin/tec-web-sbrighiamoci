@@ -15,9 +15,9 @@
     margin: auto;
   }
   
-  .profile_img {
-    width: 16em;
-    height: 16em;
+  .profile_img_container {
+    width: 12em;
+    height: 12em;
     border-radius: 50%;
     margin: 0.5em;
   }
