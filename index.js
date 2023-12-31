@@ -146,6 +146,11 @@ app.use("/adminsrc", express.static(path.join(global.rootDir, '/admin/')));
 app.use('/images', express.static(path.join(global.rootDir, 'images/')));
 app.use('/icons', express.static(path.join(global.rootDir, 'icons/')));
 
+// Export bootstrap, so the frontend can use it
+app.use('/bootstrap/css', express.static(path.join(global.rootDir, 'node_modules/bootstrap/dist/css/bootstrap.css')));
+app.use('/bootstrap/js', express.static(path.join(global.rootDir, 'node_modules/bootstrap/dist/js/bootstrap.bundle.js')));
+
+
 // ci serve per pubblicare i nostri sorgenti
 // potremmo fare anche a mano
 /*
