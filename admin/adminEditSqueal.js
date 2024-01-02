@@ -119,7 +119,7 @@ async function postChanges(originalSqueal = squeal){
     }
 
 
-    let res = await fetch(`https://site222326.tw.cs.unibo.it/squeals/${squeal_id}`, {
+    let res = await fetch(`https://site222326.tw.cs.unibo.it/squeals/${originalSqueal.id}`, {
         method: "POST",
         body: JSON.stringify(changes)
     });
