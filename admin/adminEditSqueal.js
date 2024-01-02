@@ -119,3 +119,5 @@ async function postChanges(originalSqueal = squeal){
         alert("an error has occurred, please try again later");
     }
 }
+
+module.exports = {postChanges};
