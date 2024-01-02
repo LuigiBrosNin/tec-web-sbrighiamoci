@@ -133,8 +133,6 @@ export default {
   },
   methods: {
 
-//<!-- TODO   fare una copia del nome del canale cercato
-
     async createChannel() {
       try {
         if (this.new_bio.length <= this.max_bio_length) {

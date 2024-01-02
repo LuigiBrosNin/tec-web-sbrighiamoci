@@ -65,8 +65,6 @@ import Squeal from "@/components/Squeal.vue";
       Load next page
     </button>
   </div>
-
-<router-link to="/channelCreate"> Crea un canale </router-link>
 </template>
 
 <script>
