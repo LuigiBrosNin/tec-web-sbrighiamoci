@@ -84,6 +84,7 @@ export default {
       this.chat = await fetch(`https://site222326.tw.cs.unibo.it/chat/?user1=${usr}&user2=${friend}&startindex=${this.start_index}&endindex=${this.end_index}`);
       this.chat = await this.chat.json();
 
+      console.log("fetch iniziale: ", this.chat)
       // inverto messaggi fetchati
       this.chat = this.chat.reverse();
 
