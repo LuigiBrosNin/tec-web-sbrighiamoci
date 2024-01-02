@@ -677,11 +677,6 @@ app.get("/chat/", async (req, res) => {
             name: logged_user
         });
 
-        console.log("chat_user: ", chat_user)
-        console.log("logged_user: ", logged_user)
-        console.log("auth: ", await isAuthorizedOrHigher(chat_profile, typeOfProfile.user))
-        console.log("is_Deleted: ", chat_profile.is_deleted)
-
         // if the profile is not found, return 404
         if (chat_profile.is_deleted == true) {
             res.status(404).json({
