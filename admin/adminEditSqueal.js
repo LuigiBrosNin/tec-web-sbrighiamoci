@@ -120,5 +120,6 @@ async function postChanges(originalSqueal = squeal){
     }
 }
 
+
 // ugly export
-windows.postChanges = postChanges;
+window.postChanges = postChanges;
