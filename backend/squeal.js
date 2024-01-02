@@ -636,6 +636,8 @@ app.get("/chat/", async (req, res) => {
         const logged_user = req.query.user1;
         const chat_user = req.query.user2;
 
+        
+
         // initializing the start and end index in case they are not specified
         let startIndex = 0;
         let endIndex = 10;
@@ -674,6 +676,11 @@ app.get("/chat/", async (req, res) => {
         const logged_profile = await collection_profiles.findOne({
             name: logged_user
         });
+
+        console.log("chat_user: ", chat_user)
+        console.log("logged_user: ", logged_user)
+        console.log("auth: ", await isAuthorizedOrHigher(chat_profile, typeOfProfile.user))
+        console.log("is_Deleted: ", chat_profile.is_deleted)
 
         // if the profile is not found, return 404
         if (!(await isAuthorizedOrHigher(chat_profile, typeOfProfile.user)) || chat_profile.is_deleted == true) {

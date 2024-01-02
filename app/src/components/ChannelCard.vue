@@ -95,6 +95,9 @@ export default {
           // ricarico la lista degli iscritti e il numero di iscritti
           this.refresh();
         }
+        else {
+          console.log("response.status: ", response.status)
+        }
       }
       catch (error) {
         console.error('Error during put request: ', error);
