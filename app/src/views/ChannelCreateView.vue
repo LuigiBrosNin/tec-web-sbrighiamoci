@@ -47,7 +47,7 @@
     <div class="input-group mb-3 flex-column">
       <div class="mb-3">
         <label for="modsInput"> Channel name: </label>
-        <input type="text" placeholder="Search a channel..." v-model="search_channel_name" class="form-control mb-3" />
+        <input type="text" placeholder="Search a channel..." v-model="tmp_channel_name" class="form-control mb-3" />
         <button @click="searchChannel" class="btn d-block mx-auto orange_btn mb-5"> Search </button>
       </div>
     </div>
@@ -118,6 +118,7 @@ export default {
     return {
       activeSection: 'create',
       new_channel_name: "",
+      tmp_channel_name: "",
       new_bio: "",
       channel_type: "",
       bio: "",
@@ -132,9 +133,7 @@ export default {
   },
   methods: {
 
-// TODO
-// TODO   fare una copia del nome del canale cercato
-// TODO
+//<!-- TODO   fare una copia del nome del canale cercato
 
     async createChannel() {
       try {
@@ -163,6 +162,7 @@ export default {
 
     async searchChannel() {
       try {
+        this.search_channel_name = this.tmp_channel_name
         const response = await axios.get(`https://site222326.tw.cs.unibo.it/channels/${this.search_channel_name}`);
         console.log("Responseeeee: ", response)
         if (response.status === 200) {
@@ -173,7 +173,7 @@ export default {
 
           this.profilePicUrl = response.data.propic
 
-          //TODO  questa cosa della propic non funziona piu'
+          // <!--TODO  questa cosa della propic non funziona piu'
           if (this.profilePicUrl == null || this.profilePicUrl == "") {
             console.log("La propic è null.")
             this.profilePicUrl =
@@ -226,7 +226,6 @@ export default {
     },
 
     async removeMod(index) {
-      //console.log("rimuovo mod: ", this.mod_to_add)
       const mod_to_remove = this.mods.splice(index, 1)
       console.log("rimuovo mod: ", mod_to_remove)
       const response = await axios.delete(`https://site222326.tw.cs.unibo.it/channels/${this.search_channel_name}/mod_list`, { data: { mod_name: mod_to_remove }});
