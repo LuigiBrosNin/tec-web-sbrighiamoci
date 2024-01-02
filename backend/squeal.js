@@ -683,7 +683,7 @@ app.get("/chat/", async (req, res) => {
         console.log("is_Deleted: ", chat_profile.is_deleted)
 
         // if the profile is not found, return 404
-        if (!(await isAuthorizedOrHigher(chat_profile, typeOfProfile.user)) || chat_profile.is_deleted == true) {
+        if (chat_profile.is_deleted == true) {
             res.status(404).json({
                 message: "chat profile does not exist"
             });
