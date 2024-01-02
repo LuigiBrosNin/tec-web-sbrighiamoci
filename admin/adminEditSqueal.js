@@ -120,4 +120,4 @@ async function postChanges(originalSqueal = squeal){
     }
 }
 
-module.exports = {postChanges};
+export default {postChanges};
