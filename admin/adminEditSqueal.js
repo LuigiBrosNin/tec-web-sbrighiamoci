@@ -120,4 +120,5 @@ async function postChanges(originalSqueal = squeal){
     }
 }
 
-export default {postChanges};
+// ugly export
+windows.postChanges = postChanges;
