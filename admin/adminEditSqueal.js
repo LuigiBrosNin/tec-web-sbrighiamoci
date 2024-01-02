@@ -46,8 +46,12 @@ function populate(squeal_json){
         document.getElementById("oldMedia").innerHTML = `<img src="https://${squeal_json.media}">`;
     }
     
-    document.getElementById("locationLat").setAttribute("value", squeal_json.location.latitude);
-    document.getElementById("locationLng").setAttribute("value", squeal_json.location.longitude);
+    if(squeal_json.location.latitude != null){
+        document.getElementById("locationLat").setAttribute("value", squeal_json.location.latitude);
+    }
+    if(squeal_json.location.longitude != null){
+        document.getElementById("locationLng").setAttribute("value", squeal_json.location.longitude);
+    }
 }
 
 async function postChanges(originalSqueal = squeal){
@@ -101,10 +105,16 @@ async function postChanges(originalSqueal = squeal){
 
     let latitude = document.getElementById("locationLat").getAttribute("value");
     if(latitude != null && latitude != "" && latitude != originalSqueal.location.latitude){
+        if(changes.location == null){
+            changes.location = {};
+        }
         changes.location.latitude = latitude;
     }
     let longitude = document.getElementById("locationLng").getAttribute("value");
     if(longitude != null && longitude != "" && longitude != originalSqueal.location.longitude){
+        if(changes.location == null){
+            changes.location = {};
+        }
         changes.location.longitude = longitude;
     }
 
