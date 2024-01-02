@@ -1486,6 +1486,11 @@ app.post("/profiles/:name/shop", async (req, res) => {
     }
 });
 
+/* -------------------------------------------------------------------------- */
+/*                          /PROFILES/:NAME/SHOPANDPOST                       */
+/*                                     PUT                                    */
+/* -------------------------------------------------------------------------- */
+
 //* PUT
 // aggiunge uno squeal al database, nel caso il profilo non abbia sufficiente credito prima acquista 
 // quello necessario e poi procedere a pubblicare lo squeal
@@ -1583,5 +1588,56 @@ app.put("/profiles/:name/shopandpost", async (req, res) => {
         res.status(500).send(JSON.stringify({
             message: error.message
         }));
+    }
+});
+
+/* -------------------------------------------------------------------------- */
+/*                          /PROFILES/:NAME/CHANNELS                          */
+/*                                    GET                                     */
+/* -------------------------------------------------------------------------- */
+
+//* GET
+// ritorna la lista dei canali che il profilo gestisce/modera
+// ritorna 404 se non esiste
+// ritorna 401 se non sei autorizzato
+// non supporta SMM
+app.get("/profiles/:name/channels", async (req, res) => {
+    try {
+        const profileName = req.params.name;
+        const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === profileName;
+
+        if (!authorized) {
+            res.status(401).json({
+                message: "Unauthorized"
+            });
+            return;
+        }
+
+        await mongoClient.connect();
+        const profile = await collection_profiles.findOne({
+            name: profileName
+        });
+
+        if (profile.is_deleted || profile == null) {
+            res.status(404).json({
+                message: "Profile not found."
+            });
+            return;
+        }
+
+        const channels = await collection_channels.find({
+            $or: [{
+                owner: profileName
+            },  { 
+                mod_list: { $in: [profileName] } 
+            }]
+        }).project({ _id: 0, name: 1, owner: 1 }).toArray(); // only return the name of the channels
+
+        res.status(200).json(channels);
+
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
     }
 });
