@@ -76,46 +76,15 @@ export default {
     },
   },
   async mounted() {
-
     this.fetchFollowedChannels()
     this.fetchOwnedChannels()
-
-    //initialize query field from $query
-    if (this.$route.query.name != null) this.query.name = this.$route.query.name;
-    if (this.$route.query.owner != null) this.query.owner = this.$route.query.owner;
-    if (this.$route.query.type != null) this.query.type = this.$route.query.type;
-    if (this.$route.query.subscribers_num != null) this.query.subscribers_num = this.$route.query.subscribers_num;
-
-    this.updateValidQuery();
-    const response = await fetch(this.getFetchUri(0));
-    // assigns the json to the feed variable
-    this.feed = await response.json();
-    this.feedVersion++;
-
-    // lazy check to avoid making another request
-    if (this.feed.length < 9) {
-      this.nextPageIsEmpty = true;
-    } else {
-      // check if next page is empty for sure
-      const response2 = await fetch(
-        `https://site222326.tw.cs.unibo.it/channels/?startindex=${this.startIndex + 10
-        }&endindex=${this.endIndex + 10}`
-      );
-      const feed2 = await response2.json();
-      console.log("feed2 length: " + feed2.length);
-      if (feed2.length == 0) {
-        this.nextPageIsEmpty = true;
-      } else {
-        this.nextPageIsEmpty = false;
-      }
-    }
   },
 
   methods: {
 
     async fetchOwnedChannels() {
 
-      console.log("feccio i canali seguiti")
+      console.log("feccio i canali owned")
 
       let fetched = await fetch(
         `https://site222326.tw.cs.unibo.it/profiles/${this.$user}/channels`,
@@ -128,7 +97,7 @@ export default {
         }
       );
       fetched = await fetched.json();
-      console.log("canali seguiti fetchati: ", fetched)
+      console.log("canali owned fetchati: ", fetched)
     },
 
     async fetchFollowedChannels() {
