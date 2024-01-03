@@ -38,7 +38,24 @@ import ChannelCreateView from "@/views/ChannelCreateView.vue"
 
   <!-------------------- SEZIONE CANALI GESTITI / POSSEDUTI  --------------------->
   <div v-if="activeSection === 'owned_section'">
-    <h2>THdfg</h2>
+      <div v-if="ownedChannelsList.length > 0">
+      <div v-for="own in ownedChannelsList" :key="own">
+        <ChannelCard :id="own"></ChannelCard>
+      </div>
+    </div>
+    <div v-else>
+      <p class="text-center my-3"> No owned channels. </p>
+    </div>
+
+    <h2 class="text-center my-5"> MODERATED </h2>
+    <div v-if="moderatedChannelsList.length > 0">
+      <div v-for="mod in moderatedChannelsList" :key="mod">
+        <ChannelCard :id="mod"></ChannelCard>
+      </div>
+    </div>
+    <div v-else>
+      <p class="text-center my-3"> No moderated channels. </p>
+    </div>
   </div>
 
   <!-------------------- SEZIONE RICERCA CANALI  --------------------->
@@ -62,9 +79,9 @@ export default {
   data() {
     return {
       activeSection: "followed_section",
-
-      // variabili per canali seguiti
       followedChannelsList: [],
+      ownedChannelsList: [],
+      moderatedChannelsList: [],
       allChannelsLoaded: false,
       loadMoreIndex: 0,
       pageDim: 2,
@@ -83,9 +100,6 @@ export default {
   methods: {
 
     async fetchOwnedChannels() {
-
-      console.log("feccio i canali owned")
-
       let fetched = await fetch(
         `https://site222326.tw.cs.unibo.it/profiles/${this.$user}/channels`,
         {
@@ -97,7 +111,18 @@ export default {
         }
       );
       fetched = await fetched.json();
-      console.log("canali owned fetchati: ", fetched)
+
+      for (const channel of fetched) {
+        if (channel.owner === this.$user) {
+          this.ownedChannelsList.push(channel.name);
+        } else {
+          this.moderatedChannelsList.push(channel.name);
+        }
+      }
+
+      console.log("Owned Channels: ", this.ownedChannelsList);
+      console.log("Moderated Channels: ", this.moderatedChannelsList);
+      
     },
 
     async fetchFollowedChannels() {
