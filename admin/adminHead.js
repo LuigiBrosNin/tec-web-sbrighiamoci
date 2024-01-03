@@ -56,6 +56,8 @@ console.log("Admin loaded!");
 
 
 
+
+
 /* -------------------------------------------------------------------------- */
 /*                                 FUNCTIONS                                  */
 /*                     to make /admin different from /app                     */
@@ -88,14 +90,16 @@ function addEditAndDeleteButtonsToAllSqueals() {
     const squeals = Array.from(document.getElementsByClassName("squeal_container"));
     for (const index in squeals) {
         let buttonArea = Array.from(squeals[index].getElementsByClassName("btn_area"))[0];
-
-        const buttons = document.createElement("div");
-        buttons.appendChild(generateEditButton(squeals[index].id));
-        buttons.appendChild(generateDeleteButton(squeals[index].id));
-
-        if (!buttonArea.hasChildNodes() || !buttonArea.childNodes[0].isEqualNode(buttons) || buttonArea.childNodes.length != 1) {
-            buttonArea.innerHTML = "";
-            buttonArea.appendChild(buttons);
+        
+        if(buttonArea != null){
+            const buttons = document.createElement("div");
+            buttons.appendChild(generateEditButton(squeals[index].id));
+            buttons.appendChild(generateDeleteButton(squeals[index].id));
+    
+            if (!buttonArea.hasChildNodes() || !buttonArea.childNodes[0].isEqualNode(buttons) || buttonArea.childNodes.length != 1) {
+                buttonArea.innerHTML = "";
+                buttonArea.appendChild(buttons);
+            }
         }
     }
 }

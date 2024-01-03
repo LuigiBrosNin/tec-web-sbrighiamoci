@@ -8,7 +8,7 @@ const props = defineProps(["id", "profile_json"]);
 </script>
 
 <template>
-  <div v-if="isValid" class="container profile_container">
+  <div v-if="isValid" class="container profile_container" :id="id">
     <div class="row profile_main_data">
       <div class="col-sm-4">
         <img class="img-fluid rounded-circle profile_img" :src="profilePicUrl" />
@@ -48,9 +48,11 @@ const props = defineProps(["id", "profile_json"]);
       </div>
     </div>
 
-    <button v-if="$user === name" class="settings_btn" @click="goToSettings">
-      <img class="settings_img" src="https://site222326.tw.cs.unibo.it/icons/gear-svgrepo-com.svg" />
-    </button>
+    <div class="btn_area">
+      <button v-if="$user === name" class="settings_btn" @click="goToSettings">
+        <img class="settings_img" src="https://site222326.tw.cs.unibo.it/icons/gear-svgrepo-com.svg" />
+      </button>
+    </div>
 
     <ul class="nav nav-pills mb-3 flex-column flex-sm-row" id="pills-tab" role="tablist">
       <li class="nav-item flex-sm-fill" role="presentation">
@@ -110,7 +112,7 @@ const props = defineProps(["id", "profile_json"]);
       <!-- Following Cards -->
       <div class="tab-pane fade" id="pills-following" role="tabpanel" aria-labelledby="pills-following-tab">
         <div v-for="follower in tmpFollowingList" :key="follower">
-          <ProfileCard :id="follower"></ProfileCard> 
+          <ProfileCard :id="follower"></ProfileCard>
         </div>
         <div class="loadMoreContainer">
           <div v-if="tmpFollowingList.length < 1"> No more profiles. </div>
@@ -122,7 +124,7 @@ const props = defineProps(["id", "profile_json"]);
       <!-- Channels Cards -->
       <div class="tab-pane fade" id="pills-channels" role="tabpanel" aria-labelledby="pills-channels-tab">
         <div v-for="channel in tmpChannelsList" :key="channel">
-          <ChannelCard :id="channel"></ChannelCard> 
+          <ChannelCard :id="channel"></ChannelCard>
         </div>
         <div class="loadMoreContainer">
           <div v-if="tmpChannelsList.length < 1"> No more channels. </div>
@@ -316,11 +318,14 @@ export default {
   margin: 0.5em;
 }
 
-.settings_btn {
+.btn_area {
   position: absolute;
   right: 0;
   top: 0;
   margin: 1em;
+}
+
+.settings_btn {
   background-color: #ffffff00;
   border-style: none;
 }
