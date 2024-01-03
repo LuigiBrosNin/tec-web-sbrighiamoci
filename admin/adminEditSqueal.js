@@ -20,7 +20,87 @@ if (window.location.href.startsWith(editSquealPrefix)) {
 }
 
 
+document.getElementById('squeal_form').addEventListener('submit', async (e) => {
+    e.preventDefault()
+    let data = Object.fromEntries(new FormData(e.target).entries());
+    console.log(data);
 
+
+    let changes = {};
+
+    // id and author cannot be modified
+    if(data.receiver != null && data.receiver != "" && data.receiver != originalSqueal.receiver){
+        changes.receiver = data.receiver;
+    }
+
+    if(data.isPrivate != null && data.isPrivate != "" && data.isPrivate != originalSqueal.is_private){
+        changes.is_private = data.isPrivate;
+    }
+
+    if(data.replyTo != null && data.replyTo != "" && originalSqueal.reply_to != true){
+        changes.reply_to = true;
+    }
+    else if((data.replyTo == null || data.replyTo == "") && originalSqueal.reply_to != false){
+        changes.reply_to = false;
+    }
+
+    if(data.squealText != null && data.squealText != "" && data.squealText != originalSqueal.text){
+        changes.text = data.squealText;
+    }
+
+    if(data.squealDate != null && data.squealDate != "" && data.squealDate != originalSqueal.date){
+        changes.date = data.squealDate;
+    }
+
+    if(data.positiveReactions != null && data.positiveReactions != "" && data.positiveReactions != originalSqueal.positive_reactions){
+        changes.positive_reactions = data.positiveReactions;
+    }
+
+    if(data.negativeReactions != null && data.negativeReactions != "" && data.negativeReactions != originalSqueal.negative_reactions){
+        changes.negative_reactions = data.negativeReactions;
+    }
+
+    if(data.replies != null && data.replies != "" && data.replies != originalSqueal.replies_num){
+        changes.replies_num = data.replies;
+    }
+
+    if(data.impressions != null && data.impressions != "" && data.impressions != originalSqueal.impressions){
+        changes.impressions = data.impressions;
+    }
+
+
+
+
+    // MEDIA
+    
+
+
+
+    if(data.locationLat != null && data.locationLat != "" && data.locationLat != originalSqueal.location.latitude){
+        if(changes.location == null){
+            changes.location = {};
+        }
+        changes.location.latitude = data.locationLat;
+    }
+
+    if(data.locationLng != null && data.locationLng != "" && data.locationLng != originalSqueal.location.longitude){
+        if(changes.location == null){
+            changes.location = {};
+        }
+        changes.location.longitude = data.locationLng;
+    }
+
+    console.log(JSON.stringify(changes));
+    let res = await fetch(`https://site222326.tw.cs.unibo.it/squeals/${originalSqueal.id}`, {
+        method: "POST",
+        body: JSON.stringify(changes)
+    });
+    if (res.status == 200) {
+        //window.location.href = `${sitePrefix}/admin/squeal/${originalSqueal.id}`;
+    } else {
+        alert("an error has occurred, please try again later");
+    }
+});
 
 
 
@@ -132,4 +212,4 @@ async function postChanges(originalSqueal = squeal){
 
 
 // ugly export
-window.postChanges = postChanges;
+//window.postChanges = postChanges;

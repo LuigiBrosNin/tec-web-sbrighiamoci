@@ -8,7 +8,7 @@
 
 <body>
     <p>admin edit squeal</p>
-    <form class="mx-5 my-3">
+    <form class="mx-5 my-3" id="squeal_form">
         <div class="formCard">
             <label for=" squeal_id" class="form-label">Squeal id:</label>
             <input type="text" id="squeal_id" name="squeal_id" class="form-control" disabled>
@@ -66,10 +66,11 @@
             <input type="number" id="locationLng" name="locationLng" class="form-control">
         </div>
 
-        <input type="submit" onclick="event.preventDefault(); postChanges()">
+        <input type="submit">
     </form>
 </body>
-<link rel="stylesheet" href="https://site222326.tw.cs.unibo.it/adminsrc/adminEdit.css"></link>
+<link rel="stylesheet" href="https://site222326.tw.cs.unibo.it/adminsrc/adminEdit.css">
+</link>
 <!--link rel="stylesheet" href="adminEdit.css"></link-->
 <script type="module" src="https://site222326.tw.cs.unibo.it/adminsrc/adminEditSqueal.js"></script>
 <!--script src="adminEditSqueal.js"></script-->
