@@ -118,7 +118,7 @@ async function postChanges(originalSqueal = squeal){
         changes.location.longitude = longitude;
     }
 
-
+    console.log(JSON.stringify(changes));
     let res = await fetch(`https://site222326.tw.cs.unibo.it/squeals/${originalSqueal.id}`, {
         method: "POST",
         body: JSON.stringify(changes)
