@@ -29,42 +29,42 @@ document.getElementById('squeal_form').addEventListener('submit', async (e) => {
     let changes = {};
 
     // id and author cannot be modified
-    if(data.receiver != null && data.receiver != "" && data.receiver != originalSqueal.receiver){
+    if(data.receiver != null && data.receiver != "" && data.receiver != squeal.receiver){
         changes.receiver = data.receiver;
     }
 
-    if(data.isPrivate != null && data.isPrivate != "" && data.isPrivate != originalSqueal.is_private){
+    if(data.isPrivate != null && data.isPrivate != "" && data.isPrivate != squeal.is_private){
         changes.is_private = data.isPrivate;
     }
 
-    if(data.replyTo != null && data.replyTo != "" && originalSqueal.reply_to != true){
+    if(data.replyTo != null && data.replyTo != "" && squeal.reply_to != true){
         changes.reply_to = true;
     }
-    else if((data.replyTo == null || data.replyTo == "") && originalSqueal.reply_to != false){
+    else if((data.replyTo == null || data.replyTo == "") && squeal.reply_to != false){
         changes.reply_to = false;
     }
 
-    if(data.squealText != null && data.squealText != "" && data.squealText != originalSqueal.text){
+    if(data.squealText != null && data.squealText != "" && data.squealText != squeal.text){
         changes.text = data.squealText;
     }
 
-    if(data.squealDate != null && data.squealDate != "" && data.squealDate != originalSqueal.date){
+    if(data.squealDate != null && data.squealDate != "" && data.squealDate != squeal.date){
         changes.date = data.squealDate;
     }
 
-    if(data.positiveReactions != null && data.positiveReactions != "" && data.positiveReactions != originalSqueal.positive_reactions){
+    if(data.positiveReactions != null && data.positiveReactions != "" && data.positiveReactions != squeal.positive_reactions){
         changes.positive_reactions = data.positiveReactions;
     }
 
-    if(data.negativeReactions != null && data.negativeReactions != "" && data.negativeReactions != originalSqueal.negative_reactions){
+    if(data.negativeReactions != null && data.negativeReactions != "" && data.negativeReactions != squeal.negative_reactions){
         changes.negative_reactions = data.negativeReactions;
     }
 
-    if(data.replies != null && data.replies != "" && data.replies != originalSqueal.replies_num){
+    if(data.replies != null && data.replies != "" && data.replies != squeal.replies_num){
         changes.replies_num = data.replies;
     }
 
-    if(data.impressions != null && data.impressions != "" && data.impressions != originalSqueal.impressions){
+    if(data.impressions != null && data.impressions != "" && data.impressions != squeal.impressions){
         changes.impressions = data.impressions;
     }
 
