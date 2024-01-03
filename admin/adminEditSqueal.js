@@ -124,7 +124,7 @@ async function postChanges(originalSqueal = squeal){
         body: JSON.stringify(changes)
     });
     if (res.status == 200) {
-        window.location.href = `${sitePrefix}/admin/squeal/${originalSqueal.id}`;
+        //window.location.href = `${sitePrefix}/admin/squeal/${originalSqueal.id}`;
     } else {
         alert("an error has occurred, please try again later");
     }
