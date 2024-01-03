@@ -38,15 +38,24 @@ import ChannelCreateView from "@/views/ChannelCreateView.vue"
 
   <!-------------------- SEZIONE CANALI GESTITI / POSSEDUTI  --------------------->
   <div v-if="activeSection === 'owned_section'">
-    <h2 class="text-center my-3 text-orange "> OWNED </h2>
+      <div v-if="ownedChannelsList.length > 0">
       <div v-for="own in ownedChannelsList" :key="own">
-          <ChannelCard :id="own"></ChannelCard>
+        <ChannelCard :id="own"></ChannelCard>
       </div>
+    </div>
+    <div v-else>
+      <p class="text-center my-3"> No owned channels. </p>
+    </div>
 
     <h2 class="text-center my-5"> MODERATED </h2>
+    <div v-if="moderatedChannelsList.length > 0">
       <div v-for="mod in moderatedChannelsList" :key="mod">
-          <ChannelCard :id="mod"></ChannelCard>
+        <ChannelCard :id="mod"></ChannelCard>
       </div>
+    </div>
+    <div v-else>
+      <p class="text-center my-3"> No moderated channels. </p>
+    </div>
   </div>
 
   <!-------------------- SEZIONE RICERCA CANALI  --------------------->
