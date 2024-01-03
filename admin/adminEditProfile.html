@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+
+<head>
+    <link rel="stylesheet" href="https://site222326.tw.cs.unibo.it/bootstrap/css">
+    </link>
+    <script type="module" src="https://site222326.tw.cs.unibo.it/bootstrap/js"></script>
+</head>
+
+<body>
+    <p>admin edit profile</p>
+    <form class="mx-5 my-3" id="profile_form">
+        <div class="formCard">
+            <label for="name" class="form-label">Profile name:</label>
+            <input type="text" id="name" name="name" class="form-control" disabled>
+
+            <div>
+                <p class="form-label">Account type:</p>
+                <input type="radio" id="account_normal" name="account_type" value="normal" class="form-check-input">
+                <label for="normal" class="form-label">normal</label>
+                <input type="radio" id="account_premium" name="account_type" value="premium" class="form-check-input">
+                <label for="premium" class="form-label">premium</label>
+                <input type="radio" id="account_smm" name="account_type" value="smm" class="form-check-input">
+                <label for="smm" class="form-label">smm</label>
+                <input type="radio" id="account_admin" name="account_type" value="admin" class="form-check-input">
+                <label for="admin" class="form-label">ADMIN</label>
+            </div>
+
+            <label for="bio" class="form-label">Bio:</label>
+            <input type="text" id="bio" name="bio" class="form-control">
+        </div>
+
+        <div class="formCard">
+            <p class="form-label">Old profile picture:</p>
+            <div id="oldPropic">
+
+            </div>
+
+
+            <label for="propic" class="form-label">New profile picture:</label>
+            <input type="file" accept="image/*" id="propic" name="propic" class="form-control">
+        </div>
+
+        <div class="formCard">
+            <label for="credit_daily" class="form-label">Credit of today:</label>
+            <input type="number" id="credit_daily" name="credit_daily" class="form-control">
+
+            <label for="credit_daily_limit" class="form-label">Maximum daily credit:</label>
+            <input type="number" id="credit_daily_limit" name="credit_daily_limit" class="form-control">
+
+            <label for="credit_weekly" class="form-label">Credit of this week:</label>
+            <input type="number" id="credit_weekly" name="credit_weekly" class="form-control">
+
+            <label for="credit_weekly_limit" class="form-label">Maximum weekly credit:</label>
+            <input type="number" id="credit_weekly_limit" name="credit_weekly_limit" class="form-control">
+
+            <label for="credit_monthly" class="form-label">Credit of this month:</label>
+            <input type="number" id="credit_monthly" name="credit_monthly" class="form-control">
+
+            <label for="credit_monthly_limit" class="form-label">Maximum monthly credit:</label>
+            <input type="number" id="credit_monthly_limit" name="credit_monthly_limit" class="form-control">
+        </div>
+
+        <input type="submit">
+    </form>
+    <button>Ban User</button>
+    <form>
+        <label for="banned_until" class="form-label">Banned until:</label>
+        <input type="datetime-local" id="banned_until" name="banned_until" class="form-control">
+    </form>
+    <button>Delete profile</button>
+</body>
+<link rel="stylesheet" href="https://site222326.tw.cs.unibo.it/adminsrc/adminEdit.css"></link>
+<script type="module" src="https://site222326.tw.cs.unibo.it/adminsrc/adminEditProfile.js"></script>
