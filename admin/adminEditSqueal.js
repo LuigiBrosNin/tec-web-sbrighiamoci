@@ -96,7 +96,7 @@ document.getElementById('squeal_form').addEventListener('submit', async (e) => {
         body: JSON.stringify(changes)
     });
     if (res.status == 200) {
-        //window.location.href = `${sitePrefix}/admin/squeal/${squeal.id}`;
+        window.location.href = `${sitePrefix}/admin/squeal/${squeal.id}`;
     } else {
         alert("an error has occurred, please try again later");
     }
@@ -131,82 +131,6 @@ function populate(squeal_json){
     }
     if(squeal_json.location.longitude != null){
         document.getElementById("locationLng").setAttribute("value", squeal_json.location.longitude);
-    }
-}
-
-async function postChanges(originalSqueal = squeal){
-    let changes = {};
-
-    // id and author cannot be modified
-    let receiver = document.getElementById("receiver").getAttribute("value");
-    if(receiver != null && receiver != "" && receiver != originalSqueal.receiver){
-        changes.receiver = receiver;
-    }
-    let isPrivate = document.getElementById("isPrivate").getAttribute("value");
-    if(isPrivate != null && isPrivate != "" && isPrivate != originalSqueal.is_private){
-        changes.is_private = isPrivate;
-    }
-    let replyTo = document.getElementById("replyTo").getAttribute("value");
-    if(replyTo != null && replyTo != "" && replyTo != originalSqueal.reply_to){
-        changes.reply_to = replyTo;
-    }
-    let text = document.getElementById("squealText").getAttribute("value");
-    if(text != null && text != "" && text != originalSqueal.text){
-        changes.text = text;
-    }
-    let date = document.getElementById("squealDate").getAttribute("value");
-    if(date != null && date != "" && date != originalSqueal.date){
-        changes.date = date;
-    }
-    let positiveReactions = document.getElementById("positiveReactions").getAttribute("value");
-    if(positiveReactions != null && positiveReactions != "" && positiveReactions != originalSqueal.positive_reactions){
-        changes.positive_reactions = positiveReactions;
-    }
-    let negativeReactions = document.getElementById("negativeReactions").getAttribute("value");
-    if(negativeReactions != null && negativeReactions != "" && negativeReactions != originalSqueal.negative_reactions){
-        changes.negative_reactions = negativeReactions;
-    }
-    let replies = document.getElementById("replies").getAttribute("value");
-    if(replies != null && replies != "" && replies != originalSqueal.replies_num){
-        changes.replies_num = replies;
-    }
-    let impressions = document.getElementById("impressions").getAttribute("value");
-    if(impressions != null && impressions != "" && impressions != originalSqueal.impressions){
-        changes.impressions = impressions;
-    }
-
-
-
-
-    // MEDIA
-    
-
-
-
-    let latitude = document.getElementById("locationLat").getAttribute("value");
-    if(latitude != null && latitude != "" && latitude != originalSqueal.location.latitude){
-        if(changes.location == null){
-            changes.location = {};
-        }
-        changes.location.latitude = latitude;
-    }
-    let longitude = document.getElementById("locationLng").getAttribute("value");
-    if(longitude != null && longitude != "" && longitude != originalSqueal.location.longitude){
-        if(changes.location == null){
-            changes.location = {};
-        }
-        changes.location.longitude = longitude;
-    }
-
-    console.log(JSON.stringify(changes));
-    let res = await fetch(`https://site222326.tw.cs.unibo.it/squeals/${originalSqueal.id}`, {
-        method: "POST",
-        body: JSON.stringify(changes)
-    });
-    if (res.status == 200) {
-        //window.location.href = `${sitePrefix}/admin/squeal/${originalSqueal.id}`;
-    } else {
-        alert("an error has occurred, please try again later");
     }
 }
 
