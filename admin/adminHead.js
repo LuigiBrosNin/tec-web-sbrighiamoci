@@ -19,6 +19,7 @@ if (currentUrl.startsWith(adminPrefix)) {
     let observer = new MutationObserver(function (mutations, observer) {     // every time something changes in the DOM, this function is invoked
         replaceAllAppLinks();
         addEditAndDeleteButtonsToAllSqueals();
+        addSettingsButtonToProfile();
 
         console.log("DOM changed", mutations, observer);
     });
