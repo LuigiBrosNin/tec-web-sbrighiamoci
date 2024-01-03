@@ -76,14 +76,14 @@ document.getElementById('squeal_form').addEventListener('submit', async (e) => {
 
 
 
-    if(data.locationLat != null && data.locationLat != "" && data.locationLat != originalSqueal.location.latitude){
+    if(data.locationLat != null && data.locationLat != "" && data.locationLat != squeal.location.latitude){
         if(changes.location == null){
             changes.location = {};
         }
         changes.location.latitude = data.locationLat;
     }
 
-    if(data.locationLng != null && data.locationLng != "" && data.locationLng != originalSqueal.location.longitude){
+    if(data.locationLng != null && data.locationLng != "" && data.locationLng != squeal.location.longitude){
         if(changes.location == null){
             changes.location = {};
         }
@@ -91,12 +91,12 @@ document.getElementById('squeal_form').addEventListener('submit', async (e) => {
     }
 
     console.log(JSON.stringify(changes));
-    let res = await fetch(`https://site222326.tw.cs.unibo.it/squeals/${originalSqueal.id}`, {
+    let res = await fetch(`https://site222326.tw.cs.unibo.it/squeals/${squeal.id}`, {
         method: "POST",
         body: JSON.stringify(changes)
     });
     if (res.status == 200) {
-        //window.location.href = `${sitePrefix}/admin/squeal/${originalSqueal.id}`;
+        //window.location.href = `${sitePrefix}/admin/squeal/${squeal.id}`;
     } else {
         alert("an error has occurred, please try again later");
     }
