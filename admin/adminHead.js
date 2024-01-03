@@ -142,3 +142,31 @@ function generateEditButton(squeal_id) {
     editButton.appendChild(img);
     return editButton;
 }
+
+function addSettingsButtonToProfile() {
+    const profiles = Array.from(document.getElementsByClassName("profile_container")); // there should be only one per page, but who knows...
+    for (const index in profiles) {
+        let buttonArea = Array.from(profiles[index].getElementsByClassName("btn_area"))[0];
+        
+        if(buttonArea != null){
+            const button = document.createElement("div");
+            button.appendChild(generateProfileSettingsButton(profiles[index].id));
+    
+            if (!buttonArea.hasChildNodes() || !buttonArea.childNodes[0].isEqualNode(button) || buttonArea.childNodes.length != 1) {
+                buttonArea.innerHTML = "";
+                buttonArea.appendChild(button);
+            }
+        }
+    }
+}
+
+function generateProfileSettingsButton(profile_id) {
+    const settingsButton = document.createElement("button");
+    settingsButton.classList.add("admin-squeal-button");
+    settingsButton.setAttribute("onclick", `window.location.href = "${sitePrefix}/admin/adminedit/profile/${profile_id}"`);
+    const img = document.createElement("img");
+    img.setAttribute("src", sitePrefix + "/icons/gear-svgrepo-com.svg");
+    img.classList.add("admin-squeal-button-img");
+    settingsButton.appendChild(img);
+    return settingsButton;
+}

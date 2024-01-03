@@ -111,6 +111,15 @@ app.get("/admin/adminedit/:type/:id", async (req, res) => {
   if(req.params.type === "squeal"){
     res.status(200).sendFile(global.rootDir + '/admin/adminEditSqueal.html');
   }
+  else if(req.params.type === "profile"){
+    res.status(404).send();
+  }
+  else if(req.params.type === "channel"){
+    res.status(404).send();
+  }
+  else {
+    res.status(404).send();
+  }
 })
 
 app.get(["/admin/:paths(*)", "/admin"], async (req, res) => {
