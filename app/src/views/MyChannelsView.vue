@@ -2,11 +2,9 @@
 import ChannelCard from "@/components/ChannelCard.vue"
 import SearchChannelsView from "@/views/SearchChannelsView.vue"
 import ChannelCreateView from "@/views/ChannelCreateView.vue"
-const props = defineProps(["id", "profile_json"]);
 </script>
 
 <template>
-  <!-- TODO farsi passare l'id al componente -->
 
   <!-- Pulsanti di commutazione -->
   <div class="d-flex justify-content-center my-3">
@@ -27,12 +25,12 @@ const props = defineProps(["id", "profile_json"]);
 
   <!-------------------- SEZIONE CANALI SEGUITI  ------------------->
   <div v-if="activeSection === 'followed_section'">
-    <div v-for="channel in channelFollowingList" :key="channel">
+    <div v-for="channel in followedChannelsList" :key="channel">
       <ChannelCard :id="channel"></ChannelCard>
     </div>
 
     <div class="loadMoreContainer text-center">
-      <div v-if="channelFollowingList.length < 1"> No more channels. </div>
+      <div v-if="followedChannelsList.length < 1"> No more channels. </div>
       <button v-if="!allChannelsLoaded" @click="loadMoreChannels" class="btn btn-primary loadMoreBtn"> Load more
       </button>
     </div>
@@ -63,12 +61,10 @@ import "leaflet/dist/leaflet.css";
 export default {
   data() {
     return {
-      id: "Alex",  // <!--TODO modificare
-
       activeSection: "followed_section",
 
       // variabili per canali seguiti
-      channelFollowingList: [],
+      followedChannelsList: [],
       allChannelsLoaded: false,
       loadMoreIndex: 0,
       pageDim: 2,
@@ -81,8 +77,8 @@ export default {
   },
   async mounted() {
 
-    //this.fetchProfile(this.$id)
-    console.log("user: ", this.$user)
+    this.fetchFollowedChannels()
+    this.fetchOwnedChannels()
 
     //initialize query field from $query
     if (this.$route.query.name != null) this.query.name = this.$route.query.name;
@@ -117,11 +113,12 @@ export default {
 
   methods: {
 
-    // --------------------------- METODI PER SEGUITI --------------------------------
+    async fetchOwnedChannels() {
 
-    async fetchProfile(id) {
+      console.log("feccio i canali seguiti")
+
       let fetched = await fetch(
-        `https://site222326.tw.cs.unibo.it/profiles/${id}`,
+        `https://site222326.tw.cs.unibo.it/profiles/${this.$user}/channels`,
         {
           method: "GET",
           headers: {
@@ -131,14 +128,29 @@ export default {
         }
       );
       fetched = await fetched.json();
-      this.populate(fetched);
+      console.log("canali seguiti fetchati: ", fetched)
+    },
+
+    async fetchFollowedChannels() {
+      let fetched = await fetch(
+        `https://site222326.tw.cs.unibo.it/profiles/${this.$user}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            "Access-Control-Allow-Origin": "*",
+          },
+        }
+      );
+      fetched = await fetched.json();
+      this.followedChannelsList = fetched.following_channels;
+      console.log("followedChannelsList: ", followedChannelsList)
     },
 
 
     populate(profileJson) {
-      this.channelFollowingList = profileJson.following_channels;
+      this.followedChannelsList = profileJson.following_channels;
 
-      console.log("channelFollowingList: ", channelFollowingList)
       /*
       this.name = profileJson.name;
       this.profilePicUrl = profileJson.propic;
@@ -168,7 +180,7 @@ export default {
 
     loadMoreChannels() {
       this.loadMoreIndex += this.pageDim;
-      const newChannels = this.channelFollowingList.slice(this.loadMoreIndex, this.loadMoreIndex + this.pageDim);
+      const newChannels = this.followedChannelsList.slice(this.loadMoreIndex, this.loadMoreIndex + this.pageDim);
       if (newChannels.length == 0) {
         this.allChannelsLoaded = true;
       }
