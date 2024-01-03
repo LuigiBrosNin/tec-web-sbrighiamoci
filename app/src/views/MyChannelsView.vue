@@ -144,7 +144,7 @@ export default {
       );
       fetched = await fetched.json();
       this.followedChannelsList = fetched.following_channels;
-      console.log("followedChannelsList: ", followedChannelsList)
+      console.log("followedChannelsList: ", this.followedChannelsList)
     },
 
 
