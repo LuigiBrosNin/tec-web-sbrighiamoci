@@ -89,8 +89,7 @@ export default {
 
     async searchChannel() {
       try {
-        console.log("idd (noemc anale): ", this.id)
-        this.search_channel_name = this.tmp_channel_name
+        this.search_channel_name = this.id
         const response = await axios.get(`https://site222326.tw.cs.unibo.it/channels/${this.search_channel_name}`);
         if (response.status === 200) {
           this.bio = response.data.bio;
