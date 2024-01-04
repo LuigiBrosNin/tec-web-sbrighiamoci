@@ -17,8 +17,8 @@ import ChannelCreateView from "@/views/ChannelCreateView.vue"
     <button @click="showSearchSection" class="btn mx-2"
       :class="{ orange_btn: activeSection === 'search_section', 'btn-secondary': activeSection !== 'search_section', }">
       Search </button>
-    <button @click="showModifySection" class="btn mx-2"
-      :class="{ orange_btn: activeSection === 'modify_section', 'btn-secondary': activeSection !== 'modify_section', }">
+    <button @click="showCreateSection" class="btn mx-2"
+      :class="{ orange_btn: activeSection === 'create_section', 'btn-secondary': activeSection !== 'create_section', }">
       Modify </button>
   </div>
 
@@ -63,8 +63,8 @@ import ChannelCreateView from "@/views/ChannelCreateView.vue"
     <SearchChannelsView></SearchChannelsView>
   </div>
 
-  <!-------------------- SEZIONE MODIFICA CANALI  --------------------->
-  <div v-if="activeSection === 'modify_section'">
+  <!-------------------- SEZIONE CREAZIONE CANALI  --------------------->
+  <div v-if="activeSection === 'create_section'">
     <ChannelCreateView></ChannelCreateView>
   </div>
 </template>
@@ -186,9 +186,7 @@ export default {
     showFollowedSection() { this.activeSection = "followed_section"; },
     showOwnedSection() { this.activeSection = "owned_section"; },
     showSearchSection() { this.activeSection = "search_section"; },
-    showModifySection() { this.activeSection = "modify_section"; },
-    showCreateSubsection() { this.activeSubsection = 'create'; },
-    showModifySubsection() { this.activeSubsection = 'modify'; },
+    showCreateSection() { this.activeSection = "create_section"; },
 
   },
 };

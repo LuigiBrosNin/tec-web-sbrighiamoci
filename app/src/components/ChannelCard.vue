@@ -13,6 +13,7 @@ const props = defineProps(["id", "channel_json"]);
           <h5 class="card-title">
             <RouterLink :to="`/channel/${name}`"> §{{ name }} </RouterLink>
           </h5>
+
           <p class="card-text bio"> {{ bio }} </p>
           <div class="d-flex justify-content-start">
             <p class="card-text "><small class="text-muted"> Owner: {{ owner }}</small></p>
@@ -26,14 +27,14 @@ const props = defineProps(["id", "channel_json"]);
           </div>
         </div>
       </div>
-    </div>
-    
-    <div class="btn_area">
-    <button v-if="$user === owner" class="settings_btn" @click="goToSettings">
-      <img class="settings_img" src="https://site222326.tw.cs.unibo.it/icons/gear-svgrepo-com.svg" />
-    </button>
-  </div>
 
+      <div class="btn_area">
+        <button v-if="$user === owner" class="settings_btn" @click="goToSettings">
+          <img class="settings_img" src="https://site222326.tw.cs.unibo.it/icons/gear-svgrepo-com.svg" />
+        </button>
+      </div>
+
+    </div>
   </div>
 </template>
 
@@ -189,5 +190,12 @@ export default {
 .settings_img {
   width: 3em;
   filter: invert(60%) sepia(0%) saturate(326%) hue-rotate(315deg) brightness(95%) contrast(91%);
+}
+
+.btn_area {
+  position: absolute;
+  right: 0;
+  top: 0;
+  margin: 1em;
 }
 </style>
