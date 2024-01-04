@@ -1,41 +1,73 @@
 <template>
-
-  <!-- Pulsanti di commutazione -->
-  <div class="d-flex justify-content-center my-3">
-    <button @click="showCreateSection" class="btn mx-2" :class="{ 'orange_btn': activeSection === 'create', 'btn-secondary': activeSection !== 'create' }">Create Channel</button>
-    <button @click="showModifySection" class="btn mx-2" :class="{ 'orange_btn': activeSection === 'modify', 'btn-secondary': activeSection !== 'modify' }">Modify Channel</button>
-  </div>
-
-  <!-------------------- CREAZIONE CANALE --------------------->
-  <div v-if="activeSection === 'create'" class="squeal_container">
-    <form @submit.prevent="createChannel" class="mt-5">
+    <!-------------------- MODIFICA CANALE --------------------->
+    <div v-if="activeSection === 'modify'" class="squeal_container">
 
       <!-- Titolo -->
-      <h3 class="title"> Create your channel </h3>
+      <h3 class="title"> Modify your channel </h3>
 
-      <!-- Tipo -->
-        <label for="channelType"> Channel type: </label>
-        <select v-model="channel_type" id="channelType" name="channelType" class="form-select mb-3">
-          <option value="privileged">  Privileged   </option>
-          <option value="private">     Private      </option>
-          <option value="required">    Required     </option>
-        </select>
-
-      <!-- Nome e bio -->
+      <!-- Ricerca canale -->
       <div class="input-group mb-3 flex-column">
         <div class="mb-3">
-          <input type="text" placeholder="Choose a name for the channel..." v-model="new_channel_name" required class="form-control" />
-        </div>
-        <div class="mb-3">
-          <input type="text" placeholder="Write a bio..." v-model="new_bio" class="form-control" />
+          <label for="modsInput"> Channel name: </label>
+          <input type="text" placeholder="Search a channel..." v-model="tmp_channel_name" class="form-control mb-3" />
+          <button @click="searchChannel" class="btn d-block mx-auto orange_btn mb-5"> Search </button>
         </div>
       </div>
 
-      <!-- Submit -->
-      <button type="submit" class="btn btn-primary d-block mx-auto orange_btn"> Submit </button>
+      <!-- Sezione di modifica -->
+      <div v-if="show_inputs">
 
-    </form>
-  </div>
+        <!-- Propic -->
+        <div class="flex-column">
+          <label for=""> Actual profile picture: </label>
+          <img class="img-fluid rounded-circle profile_img" :src="profilePicUrl" />
+        </div>
+        <div class="input-group mb-3 flex-column">
+          <div class="custom-file my-3">
+            <label for="" class="mb-1"> Choose a new profile picture: </label>
+            <input type="file" class="form-control my-2" id="inputGroupFile01" @change="handleFileUpload" accept="image/*" />
+          </div>
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary button-spacing" type="button" @click="uploadFile">Upload</button>
+            <button v-if="file" @click="file = null" class="btn btn-danger button-spacing">X</button>
+            <button v-else class="btn btn-danger" @click="removePic">Remove current propic</button>
+          </div>
+        </div>
+
+        <!-- Bio -->
+        <div class="input-group mb-3 flex-column">
+          <div class="mb-3">
+            <label for="channelType"> Bio: </label>
+            <input type="text" placeholder="Write a new bio..." v-model="bio" class="form-control mb-3" />
+            <button @click="updateBio" class="btn d-block mx-auto orange_btn"> Update Bio </button>
+          </div>
+        </div>
+      
+        <!-- Mods -->
+        <div v-if="show_inputs">
+          <div class="mb-3">
+            <label for="modsInput"> Add a mod: </label>
+            <div class="input-group">
+              <input v-model="mod_to_add" type="text" id="modsInput" class="form-control" />
+              <div>
+                <button @click="addMod" class="btn btn-primary "> Insert </button>
+              </div>
+            </div>
+          </div>
+        
+          <div v-if="mods.length > 0">
+            <label> Actual mods: </label>
+            <ul class="list-group mb-3">
+              <li v-for="(name, index) in mods" :key="index" class="list-group-item d-flex justify-content-between align-items-center">{{ name }}
+                <button @click="removeMod(index)" class="btn btn-danger "> Remove </button> 
+              </li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
 </template>
 
 <script>
@@ -45,7 +77,7 @@ import "leaflet/dist/leaflet.css";
 
 export default {
   data() {
-    return {
+    return { //TODO eliminare variabili non usate
       activeSection: 'create',
       new_channel_name: "",
       tmp_channel_name: "",
@@ -63,31 +95,6 @@ export default {
   },
   methods: {
 
-    async createChannel() {
-      try {
-        if (this.new_bio.length <= this.max_bio_length) {
-          const response = await axios.put(`https://site222326.tw.cs.unibo.it/channels/${this.new_channel_name}`, { bio: this.new_bio, type: this.channel_type } );
-          if (response.status === 409) {
-            alert("Channel name already taken, choose a different one.");
-          }
-          else if (response.status === 401) {
-            alert("You're not authorized to create this channel.")
-          }
-          else if (response.status === 200) {
-            alert("Channel succesfully created!");
-          }
-          else {
-            alert("Something did not work, try later!");
-            console.error("Unexpected response status: ", response.status);
-          }
-        }
-        else { alert("Bio too long."); }
-      }
-      catch (error) {
-        console.error("An error occured: ", error);
-      }
-    },
-
     async searchChannel() {
       try {
         this.search_channel_name = this.tmp_channel_name
@@ -96,7 +103,7 @@ export default {
           this.show_inputs = true;
           this.bio = response.data.bio;
           this.channel_type = response.data.type;
-          this.mods = response.data.mod_list; 
+          this.mods = response.data.mod_list;
 
           this.profilePicUrl = response.data.propic
 
@@ -109,7 +116,7 @@ export default {
           else {
             console.log("La propic esiste.")
             this.profilePicUrl = `https://site222326.tw.cs.unibo.it/channels/${this.search_channel_name}/propic`;
-          }   
+          }
         }
         else { alert("Canale non trovato."); }
       }
@@ -131,7 +138,7 @@ export default {
     },
 
     async addMod() {
-      const response = await axios.put(`https://site222326.tw.cs.unibo.it/channels/${this.search_channel_name}/mod_list`, { mod_name: this.mod_to_add } );
+      const response = await axios.put(`https://site222326.tw.cs.unibo.it/channels/${this.search_channel_name}/mod_list`, { mod_name: this.mod_to_add });
 
       if (response.status === 400) {
         alert("This mod is already on the list.")
@@ -155,7 +162,7 @@ export default {
     async removeMod(index) {
       const mod_to_remove = this.mods.splice(index, 1)
       console.log("rimuovo mod: ", mod_to_remove)
-      const response = await axios.delete(`https://site222326.tw.cs.unibo.it/channels/${this.search_channel_name}/mod_list`, { data: { mod_name: mod_to_remove }});
+      const response = await axios.delete(`https://site222326.tw.cs.unibo.it/channels/${this.search_channel_name}/mod_list`, { data: { mod_name: mod_to_remove } });
 
       if (response.status === 404) {
         alert("Channel or profile not found.")
@@ -171,13 +178,6 @@ export default {
         this.mods = response.data.mod_list;
         this.mod_to_add = "";
       }
-    },
-
-    showCreateSection() {
-      this.activeSection = 'create';
-    },
-    showModifySection() {
-      this.activeSection = 'modify';
     },
 
     handleFileUpload(event) {
@@ -216,7 +216,7 @@ export default {
           alert("Upload successful");
           this.profilePicUrl = `https://site222326.tw.cs.unibo.it/channels/${this.search_channel_name}/propic`;
         });
-    }, 
+    },
 
     removePic() {
       const name_of_profile = this.$user;
@@ -232,11 +232,10 @@ export default {
             "https://site222326.tw.cs.unibo.it/images/user-default.svg";
         });
     },
-  
+
   }
 }
 </script>
-
 
 <style scoped>
   .squeal_container {

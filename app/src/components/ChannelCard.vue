@@ -27,6 +27,13 @@ const props = defineProps(["id", "channel_json"]);
         </div>
       </div>
     </div>
+    
+    <div class="btn_area">
+    <button v-if="$user === owner" class="settings_btn" @click="goToSettings">
+      <img class="settings_img" src="https://site222326.tw.cs.unibo.it/icons/gear-svgrepo-com.svg" />
+    </button>
+  </div>
+
   </div>
 </template>
 
@@ -88,11 +95,9 @@ export default {
 
     async subscribe() {
       try {
-        console.log("subscribe")
         const response = await axios.put(`https://site222326.tw.cs.unibo.it/channels/${this.name}/subscribers_list`);
         if (response.status === 200) {
           this.isSubscribed = true;
-          console.log("200: ", response.status)
           // ricarico la lista degli iscritti e il numero di iscritti
           this.refresh();
         }
@@ -137,6 +142,10 @@ export default {
       }
     },
 
+    goToSettings() {
+      window.location.href = `https://site222326.tw.cs.unibo.it/app/channel/${this.name}/settings`;
+    },
+
   },
 
 
@@ -170,5 +179,15 @@ export default {
 .dark_orange_btn {
 	background-color: #b66101;
 	color: white;
+}
+
+.settings_btn {
+  background-color: #ffffff00;
+  border-style: none;
+}
+
+.settings_img {
+  width: 3em;
+  filter: invert(60%) sepia(0%) saturate(326%) hue-rotate(315deg) brightness(95%) contrast(91%);
 }
 </style>

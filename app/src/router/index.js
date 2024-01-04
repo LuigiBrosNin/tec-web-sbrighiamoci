@@ -12,6 +12,7 @@ import SearchChannelsView from '../views/SearchChannelsView.vue'
 import SearchProfilesView from '../views/SearchProfilesView.vue'
 import ChannelCreateView from '../views/ChannelCreateView.vue'
 import MyChannelsView from '../views/MyChannelsView.vue'
+import ChannelSettingsView from '../views/ChannelSettingsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -82,6 +83,12 @@ const router = createRouter({
       path: '/channelCreate',
       name: 'channelCreate',
       component: ChannelCreateView
+    },
+    {
+      path: '/channel/:id/settings',
+      name: 'channelSettings',
+      component: ChannelSettingsView,
+      props: true
     },
   ]
 })
