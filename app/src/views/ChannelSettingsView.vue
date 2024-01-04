@@ -1,3 +1,7 @@
+<script setup>
+const props = defineProps(["id", "profile_json"]);
+</script>
+
 <template>
   <!-------------------- MODIFICA CANALE --------------------->
   <div class="squeal_container">
