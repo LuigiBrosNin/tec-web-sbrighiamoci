@@ -25,94 +25,9 @@ document.getElementById('profile_form').addEventListener('submit', async (e) => 
     let data = Object.fromEntries(new FormData(e.target).entries());
     console.log(data);
 
-    //SQUEAL FUNCTION, adapt this part to profiles
-    /*
     let changes = {};
 
-    // id and author cannot be modified
-    if(data.receiver != null && data.receiver != "" && data.receiver != squeal.receiver){
-        changes.receiver = data.receiver;
-    }
-
-    if(data.isPrivate != null && data.isPrivate != "" && data.isPrivate != squeal.is_private){
-        changes.is_private = data.isPrivate;
-    }
-
-    if(data.replyTo != null && data.replyTo != "" && squeal.reply_to != true){
-        changes.reply_to = true;
-    }
-    else if((data.replyTo == null || data.replyTo == "") && squeal.reply_to != false){
-        changes.reply_to = false;
-    }
-
-    if(data.squealText != null && data.squealText != "" && data.squealText != squeal.text){
-        changes.text = data.squealText;
-    }
-
-    if(data.squealDate != null && data.squealDate != "" && data.squealDate != squeal.date){
-        changes.date = data.squealDate;
-    }
-
-    if(data.positiveReactions != null && data.positiveReactions != "" && data.positiveReactions != squeal.positive_reactions){
-        changes.positive_reactions = data.positiveReactions;
-    }
-
-    if(data.negativeReactions != null && data.negativeReactions != "" && data.negativeReactions != squeal.negative_reactions){
-        changes.negative_reactions = data.negativeReactions;
-    }
-
-    if(data.replies != null && data.replies != "" && data.replies != squeal.replies_num){
-        changes.replies_num = data.replies;
-    }
-
-    if(data.impressions != null && data.impressions != "" && data.impressions != squeal.impressions){
-        changes.impressions = data.impressions;
-    }
-
-
-
-
-    // MEDIA
-    
-
-
-
-    if(data.locationLat != null && data.locationLat != "" && data.locationLat != squeal.location.latitude){
-        if(changes.location == null){
-            changes.location = {};
-        }
-        changes.location.latitude = data.locationLat;
-    }
-
-    if(data.locationLng != null && data.locationLng != "" && data.locationLng != squeal.location.longitude){
-        if(changes.location == null){
-            changes.location = {};
-        }
-        changes.location.longitude = data.locationLng;
-    }
-
-    console.log(JSON.stringify(changes));
-    let res = await fetch(`https://site222326.tw.cs.unibo.it/squeals/${squeal.id}`, {
-        method: "POST",
-        body: JSON.stringify(changes)
-    });
-    if (res.status == 200) {
-        window.location.href = `${sitePrefix}/admin/squeal/${squeal.id}`;
-    } else {
-        alert("an error has occurred, please try again later");
-    }
-    */
-});
-
-
-
-
-
-
-
-
-
-function populate(profile_json){
+    /*
     document.getElementById("name").setAttribute("value", profile_json.name);
     document.getElementById("account_" + profile_json.account_type).setAttribute("checked", "checked");
 
@@ -126,17 +41,70 @@ function populate(profile_json){
 
     document.getElementById("credit_monthly").setAttribute("value", profile_json.credit[2]);
     document.getElementById("credit_monthly_limit").setAttribute("value", profile_json.credit_limits[2]);
-    
+    */
 
-    
-    if(profile_json.media != null && profile_json.media != ""){
-        document.getElementById("oldMedia").innerHTML = `<img src="https://${profile_json.media}">`;
+
+
+    // name cannot be modified
+    if(data.account_type != null && data.account_type != "" && data.account_type != profile.account_type){
+        changes.account_type = data.account_type;
+    }
+    if(data.bio != null && data.bio != "" && data.bio != profile.bio){
+        changes.bio = data.bio;
+    }
+
+    //PROPIC
+
+    let creditTmp = [];
+    creditTmp[0] = data.credit_daily; 
+    creditTmp[1] = data.credit_weekly; 
+    creditTmp[2] = data.credit_monthly;
+    if(creditTmp[0] != profile.credit[0] || creditTmp[1] != profile.credit[1] || creditTmp[2] != profile.credit[2]){
+        changes.credit = creditTmp;
     }
     
-    if(profile_json.location.latitude != null){
-        document.getElementById("locationLat").setAttribute("value", profile_json.location.latitude);
+    let creditLimitsTmp = [];
+    creditLimitsTmp[0] = data.credit_daily_limit; 
+    creditLimitsTmp[1] = data.credit_weekly_limit; 
+    creditLimitsTmp[2] = data.credit_monthly_limit;
+    if(creditLimitsTmp[0] != profile.credit_limits[0] || creditLimitsTmp[1] != profile.credit_limits[1] || creditLimitsTmp[2] != profile.credit_limits[2]){
+        changes.credit_limits = creditLimitsTmp;
     }
-    if(profile_json.location.longitude != null){
-        document.getElementById("locationLng").setAttribute("value", profile_json.location.longitude);
+
+
+    console.log(JSON.stringify(changes));
+    let res = await fetch(`https://site222326.tw.cs.unibo.it/profiles/${profile.name}`, {
+        method: "POST",
+        body: JSON.stringify(changes)
+    });
+    if (res.status == 200) {
+        window.location.href = `${sitePrefix}/admin/profile/${profile.name}`;
+    } else {
+        alert("an error has occurred, please try again later");
     }
+});
+
+
+
+
+
+
+
+
+
+function populate(profile_json){
+    document.getElementById("name").setAttribute("value", profile_json.name);
+    document.getElementById("account_" + profile_json.account_type).setAttribute("checked", "checked");
+    document.getElementById("bio").setAttribute("value", profile_json.bio);
+
+    //PROPIC
+
+    document.getElementById("credit_daily").setAttribute("value", profile_json.credit[0]);
+    document.getElementById("credit_daily_limit").setAttribute("value", profile_json.credit_limits[0]);
+
+    document.getElementById("credit_weekly").setAttribute("value", profile_json.credit[1]);
+    document.getElementById("credit_weekly_limit").setAttribute("value", profile_json.credit_limits[1]);
+
+    document.getElementById("credit_monthly").setAttribute("value", profile_json.credit[2]);
+    document.getElementById("credit_monthly_limit").setAttribute("value", profile_json.credit_limits[2]);
 }
