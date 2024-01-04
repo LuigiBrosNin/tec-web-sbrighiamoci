@@ -77,7 +77,7 @@ document.getElementById('profile_form').addEventListener('submit', async (e) => 
         method: "POST",
         body: JSON.stringify(changes)
     });
-    if (res.status == 200) {
+    if (res.status == 201) {
         window.location.href = `${sitePrefix}/admin/profile/${profile.name}`;
     } else {
         alert("an error has occurred, please try again later");
