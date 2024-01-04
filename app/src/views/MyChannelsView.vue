@@ -19,7 +19,7 @@ import ChannelCreateView from "@/views/ChannelCreateView.vue"
       Search </button>
     <button @click="showCreateSection" class="btn mx-2"
       :class="{ orange_btn: activeSection === 'create_section', 'btn-secondary': activeSection !== 'create_section', }">
-      Modify </button>
+      Create </button>
   </div>
 
 
