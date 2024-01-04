@@ -519,6 +519,8 @@ app.put("/channels/:name/subscribers_list", async (req, res) => {
       }
     });
 
+    console.log("--- post-sub ", result.subscribers_list)
+
     if (result.modifiedCount === 0) {
       res.status(404).json({
         message: "channel not found"

@@ -92,6 +92,7 @@ export default {
         const response = await axios.put(`https://site222326.tw.cs.unibo.it/channels/${this.name}/subscribers_list`);
         if (response.status === 200) {
           this.isSubscribed = true;
+          console.log("200: ", response.status)
           // ricarico la lista degli iscritti e il numero di iscritti
           this.refresh();
         }

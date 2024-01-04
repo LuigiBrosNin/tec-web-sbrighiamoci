@@ -162,7 +162,6 @@ export default {
       try {
         this.search_channel_name = this.tmp_channel_name
         const response = await axios.get(`https://site222326.tw.cs.unibo.it/channels/${this.search_channel_name}`);
-        console.log("Responseeeee: ", response)
         if (response.status === 200) {
           this.show_inputs = true;
           this.bio = response.data.bio;
@@ -251,13 +250,7 @@ export default {
       this.activeSection = 'modify';
     },
 
-
-
-
-
-
     handleFileUpload(event) {
-      console.log("file uploaded");
       this.file = event.target.files[0];
     },
 
