@@ -31,14 +31,13 @@ import ChannelCreateView from "@/views/ChannelCreateView.vue"
 
     <div class="loadMoreContainer text-center">
       <div v-if="followedChannelsList.length < 1"> No more channels. </div>
-      <button v-if="!allChannelsLoaded" @click="loadMoreChannels" class="btn btn-primary loadMoreBtn"> Load more
-      </button>
+        <button v-if="!allChannelsLoaded" @click="loadMoreChannels" class="btn btn-primary loadMoreBtn"> Load more </button>
+      </div>
     </div>
-  </div>
 
   <!-------------------- SEZIONE CANALI GESTITI / POSSEDUTI  --------------------->
   <div v-if="activeSection === 'owned_section'">
-      <div v-if="ownedChannelsList.length > 0">
+    <div v-if="ownedChannelsList.length > 0">
       <div v-for="own in ownedChannelsList" :key="own">
         <ChannelCard :id="own"></ChannelCard>
       </div>
@@ -119,10 +118,6 @@ export default {
           this.moderatedChannelsList.push(channel.name);
         }
       }
-
-      console.log("Owned Channels: ", this.ownedChannelsList);
-      console.log("Moderated Channels: ", this.moderatedChannelsList);
-      
     },
 
     async fetchFollowedChannels() {
@@ -138,7 +133,6 @@ export default {
       );
       fetched = await fetched.json();
       this.followedChannelsList = fetched.following_channels;
-      console.log("followedChannelsList: ", this.followedChannelsList)
     },
 
 

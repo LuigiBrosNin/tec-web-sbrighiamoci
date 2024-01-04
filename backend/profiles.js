@@ -713,7 +713,7 @@ app.get("/profiles/:name/following_channels", async (req, res) => {
 // ritorna 404 se il profilo non esiste
 // ritorna 401 se non autorizzato (login non effettuato)
 // body: channel_name
-app.put("/profiles/:name/following_channels/", async (req, res) => {
+app.put("/profiles/:name/following_channels", async (req, res) => {
     try {
         const profileName = req.params.name;
         const channelName = req.body.channel_name;

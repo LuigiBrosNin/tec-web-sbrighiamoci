@@ -44,7 +44,7 @@ import axios from "axios";
 export default {
   data() {
     return {
-      name: "",
+      name: "",  // nome del canale
       owner: "",
       modList: [],
       profilePicUrl: "",
@@ -78,13 +78,6 @@ export default {
       this.owner = channelJson.owner;
       this.modList = channelJson.mod_list;
       this.profilePicUrl = channelJson.propic;
-      // if propic returns null, use a default one
-      if (this.profilePicUrl == null || this.profilePicUrl == "") {
-        this.profilePicUrl =
-          "https://site222326.tw.cs.unibo.it/images/logoSquealer.svg";
-      } else {
-        this.profilePicUrl = `https://site222326.tw.cs.unibo.it/channels/${this.name}/propic`;
-      }
       this.squealsList = channelJson.squeals_list;
       this.numberOfSqueals = channelJson.squeals_num;
       this.subscribersList = channelJson.subscribers_list;
@@ -94,9 +87,28 @@ export default {
       this.isSubscribed = channelJson.subscribers_list.includes(this.$user); // true se user è iscritto
     },
 
-    async subscribe() {
+    /*async subscribe() {
       try {
         const response = await axios.put(`https://site222326.tw.cs.unibo.it/channels/${this.name}/subscribers_list`);
+        if (response.status === 200) {
+          this.isSubscribed = true;
+          // ricarico la lista degli iscritti e il numero di iscritti
+          this.refresh();
+
+          response = await axios.put(`https://site222326.tw.cs.unibo.it/profiles/${this.name}/following_channels`);
+        }
+        else {
+          console.log("response.status: ", response.status)
+        }
+      }
+      catch (error) {
+        console.error('Error during put request: ', error);
+      }   
+    },*/
+
+    async subscribe() {
+      try {
+        const response = await axios.put(`https://site222326.tw.cs.unibo.it/profiles/${this.$user}/following_channels`, { channel_name: this.name });
         if (response.status === 200) {
           this.isSubscribed = true;
           // ricarico la lista degli iscritti e il numero di iscritti
@@ -108,9 +120,9 @@ export default {
       }
       catch (error) {
         console.error('Error during put request: ', error);
-      }   
+      }
     },
-
+    /*
     async unsub() {
       console.log("UNsubscribo")
       try {
@@ -124,6 +136,20 @@ export default {
       catch (error) {
         console.error('Error during delete request: ', error);
       }   
+    },*/
+
+    async unsub() {
+      try {
+        const response = await axios.delete(`https://site222326.tw.cs.unibo.it/channels/${this.$user}/subscribers_list`, { channel_name: this.name });
+        if (response.status === 200) {
+          this.isSubscribed = false;
+          // ricarico la lista degli iscritti e il numero di iscritti
+          this.refresh();
+        }
+      }
+      catch (error) {
+        console.error('Error during delete request: ', error);
+      }
     },
   
     async refresh() {
