@@ -1,6 +1,5 @@
 <template>
     <!-------------------- MODIFICA CANALE --------------------->
-    <div v-if="activeSection === 'modify'" class="squeal_container">
 
       <!-- Titolo -->
       <h3 class="title"> Modify your channel </h3>
@@ -66,8 +65,6 @@
         </div>
 
       </div>
-
-    </div>
 </template>
 
 <script>
