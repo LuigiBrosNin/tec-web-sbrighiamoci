@@ -1090,6 +1090,8 @@ app.post("/squeals/:id", bodyParser.json(), async (req, res) => {
     try {
         let adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
 
+        console.log("body: " + req.body)
+
         if (adminAuthorized) {
             const squealId = req.params.id;
 
@@ -1159,7 +1161,10 @@ app.post("/squeals/:id", bodyParser.json(), async (req, res) => {
             }, {
                 $set: update
             });
-            res.status(200).json({
+
+            console.log('Squeal successfully updated: ', result.modifiedCount + '\n' + JSON.stringify(update));
+
+            res.status(201).json({
                 message: "squeal updated successfully"
             });
         } else {
