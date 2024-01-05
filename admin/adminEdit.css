@@ -11,3 +11,12 @@ body {
     border-width: thin;
     border-color: #9c9c9c;
 }
+
+h1 {
+    margin: 0.2em;
+    text-align: center;
+}
+
+h2 {
+    font-size: 1.5em;
+}
