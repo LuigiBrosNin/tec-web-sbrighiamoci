@@ -140,7 +140,7 @@ export default {
 
     async unsub() {
       try {
-        const response = await axios.delete(`https://site222326.tw.cs.unibo.it/profiles/${this.$user}/following_channels`, { channel_name: this.name });
+        const response = await axios.put(`https://site222326.tw.cs.unibo.it/profiles/${this.$user}/following_channels`, { channel_name: this.name });
         if (response.status === 200) {
           this.isSubscribed = false;
           // ricarico la lista degli iscritti e il numero di iscritti
