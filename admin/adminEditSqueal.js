@@ -95,8 +95,9 @@ document.getElementById('squeal_form').addEventListener('submit', async (e) => {
         method: "POST",
         body: JSON.stringify(changes)
     });
-    if (res.status == 200) {
-        window.location.href = `${sitePrefix}/admin/squeal/${squeal.id}`;
+    if (res.status == 201) {
+        console.log("Updated!");
+        //window.location.href = `${sitePrefix}/admin/squeal/${squeal.id}`;
     } else {
         alert("an error has occurred, please try again later");
     }
