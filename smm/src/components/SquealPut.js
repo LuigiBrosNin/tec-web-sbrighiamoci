@@ -56,11 +56,6 @@ export class SquealPut extends Component {
     axios.get(`https://site222326.tw.cs.unibo.it/profiles/${newAccount}`)
       .then(res => {
         const currentAccount = res.data;
-        if (currentAccount.propic == null) {
-          currentAccount.propic = "https://site222326.tw.cs.unibo.it/images/user-default.svg";
-        } else {
-          currentAccount.propic = "https://site222326.tw.cs.unibo.it/profiles/" + currentAccount.name + "/propic";
-        }
         globalState.$selectedAccount = currentAccount;
         this.setState({ selectedAccount: currentAccount });
         this.props.onAccountChange(currentAccount);

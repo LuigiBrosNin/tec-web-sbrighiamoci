@@ -93,6 +93,9 @@ document.getElementById('squeal_form').addEventListener('submit', async (e) => {
     console.log(JSON.stringify(changes));
     let res = await fetch(`https://site222326.tw.cs.unibo.it/squeals/${squeal.id}`, {
         method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+          },
         body: JSON.stringify(changes)
     });
     if (res.status == 201) {

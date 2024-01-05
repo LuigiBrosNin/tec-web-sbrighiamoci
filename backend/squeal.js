@@ -1086,11 +1086,11 @@ app.delete("/squeals/:id", async (req, res) => {
 //* POST
 // solo per admin -> modifica quello che vuole (tranne id e autore)
 // the admin has the power to break all logics, use carefully
-app.post("/squeals/:id", bodyParser.json(), async (req, res) => {
+app.post("/squeals/:id", async (req, res) => {
     try {
         let adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
 
-        console.log("body: " + req.body)
+        console.log("body: " + JSON.stringify(req.body))
 
         if (adminAuthorized) {
             const squealId = req.params.id;
