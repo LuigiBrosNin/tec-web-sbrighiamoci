@@ -761,9 +761,7 @@ app.put("/profiles/:name/following_channels", async (req, res) => {
                     following_channels: profile.following_channels
                 },
             });
-            res.status(200).json({
-                message: "Channel removed from the list"
-            });
+            console.log("channel removed from the list")
         } else { // add the channel to the list
             await collection_profiles.updateOne({
                 name: profileName
@@ -772,9 +770,7 @@ app.put("/profiles/:name/following_channels", async (req, res) => {
                     following_channels: channelName
                 }
             });
-            res.status(200).json({
-                message: "Channel added to the list"
-            });
+            console.log("channel added to the list")
         }
 
 
