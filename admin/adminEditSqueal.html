@@ -7,9 +7,11 @@
 </head>
 
 <body>
-    <p>admin edit squeal</p>
+    <h1>admin squeal edit page</h1>
     <form class="mx-5 my-3" id="squeal_form">
         <div class="formCard">
+            <h2>Main data:</h2>
+
             <label for=" squeal_id" class="form-label">Squeal id:</label>
             <input type="text" id="squeal_id" name="squeal_id" class="form-control" disabled>
 
@@ -33,6 +35,8 @@
         </div>
 
         <div class="formCard">
+            <h2>User interaction:</h2>
+
             <label for="positiveReactions" class="form-label">Number of positive reactions:</label>
             <input type="number" id="positiveReactions" name="positiveReactions" class="form-control">
 
@@ -47,18 +51,20 @@
         </div>
 
         <div class="formCard">
-            <p class="form-label">Old media:</p>
-            <div id="oldMedia">
+            <h2>Media:</h2>
+
+            <div id="media">
 
             </div>
 
 
-            <label for="squealMedia" class="form-label">New media:</label>
-            <input type="file" accept="image/*" id="squealMedia" name="squealMedia" class="form-control">
+            <label for="deleteMedia" class="form-label">Delete media?</label>
+            <input type="checkbox" id="deleteMedia" name="deleteMedia" class="form-check-input">
         </div>
 
         <div class="formCard">
-            <p>Location:</p>
+            <h2>Location:</h2>
+            
             <label for="locationLat" class="form-label">Latitude:</label>
             <input type="number" id="locationLat" name="locationLat" class="form-control">
 
