@@ -834,8 +834,8 @@ app.get("/squeals/:id", async (req, res) => {
     try {
         const squealId = req.params.id;
 
-        const authorized = await isAuthorizedOrHigher(req.session.id, typeOfProfile.user);
-        const adminAuthorized = await isAuthorizedOrHigher(req.session.id, typeOfProfile.admin);
+        const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user);
+        const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
 
         let squeal = null;
 
