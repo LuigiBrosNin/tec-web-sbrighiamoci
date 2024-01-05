@@ -1090,7 +1090,7 @@ app.post("/squeals/:id", bodyParser.json(), async (req, res) => {
     try {
         let adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
 
-        console.log("body: " + req.body)
+        console.log("body: " + JSON.stringify(req.body))
 
         if (adminAuthorized) {
             const squealId = req.params.id;
