@@ -87,25 +87,6 @@ export default {
       this.isSubscribed = channelJson.subscribers_list.includes(this.$user); // true se user è iscritto
     },
 
-    /*async subscribe() {
-      try {
-        const response = await axios.put(`https://site222326.tw.cs.unibo.it/channels/${this.name}/subscribers_list`);
-        if (response.status === 200) {
-          this.isSubscribed = true;
-          // ricarico la lista degli iscritti e il numero di iscritti
-          this.refresh();
-
-          response = await axios.put(`https://site222326.tw.cs.unibo.it/profiles/${this.name}/following_channels`);
-        }
-        else {
-          console.log("response.status: ", response.status)
-        }
-      }
-      catch (error) {
-        console.error('Error during put request: ', error);
-      }   
-    },*/
-
     async subscribe() {
       try {
         const response = await axios.put(`https://site222326.tw.cs.unibo.it/profiles/${this.$user}/following_channels`, { channel_name: this.name });
@@ -122,21 +103,6 @@ export default {
         console.error('Error during put request: ', error);
       }
     },
-    /*
-    async unsub() {
-      console.log("UNsubscribo")
-      try {
-        const response = await axios.delete(`https://site222326.tw.cs.unibo.it/channels/${this.name}/subscribers_list`);
-        if (response.status === 200) {
-          this.isSubscribed = false;
-          // ricarico la lista degli iscritti e il numero di iscritti
-          this.refresh();
-        }
-      }
-      catch (error) {
-        console.error('Error during delete request: ', error);
-      }   
-    },*/
 
     async unsub() {
       try {
