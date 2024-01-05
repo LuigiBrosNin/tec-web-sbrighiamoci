@@ -147,7 +147,7 @@ app.put("/channels/:name", async (req, res) => {
   try {
     const channelName = req.params.name;
 
-    if(req.body.user == null){
+    if (req.body.user == null) {
       req.body.user = req.session.user;
     }
 
@@ -221,7 +221,7 @@ app.post("/channels/:name", async (req, res) => {
   try {
     const channelName = req.params.name;
 
-    if(req.body.user == null){
+    if (req.body.user == null) {
       req.body.user = req.session.user;
     }
 
@@ -311,7 +311,7 @@ app.delete("/channels/:name", async (req, res) => {
   try {
     const channelName = req.params.name;
 
-    if(req.body.user == null){
+    if (req.body.user == null) {
       req.body.user = req.session.user;
     }
 
@@ -618,7 +618,7 @@ app.put("/channels/:name/mod_list", async (req, res) => {
   try {
     const channelName = req.params.name;
 
-    if(req.body.user == null){
+    if (req.body.user == null) {
       req.body.user = req.session.user;
     }
 
@@ -697,8 +697,8 @@ app.put("/channels/:name/mod_list", async (req, res) => {
 app.delete("/channels/:name/mod_list", async (req, res) => {
   try {
     const channelName = req.params.name;
-    
-    if(req.body.user == null){
+
+    if (req.body.user == null) {
       req.body.user = req.session.user;
     }
 
@@ -797,14 +797,20 @@ app.get("/channels/:name/squeals_list", async (req, res) => {
       return;
     }
 
-    const squeals = channel.squeals_list.slice(startIndex, endIndex + 1);
+    const squeals = channel.squeals_list;
 
     const squeals_list = await collection_squeals.find({
       id: {
         $in: squeals
       },
       is_private: false
-    }).toArray();
+    })
+      .sort({
+        date: -1
+      }) // ordered inverse chronological order
+      .skip(startIndex) // starting from startIndex
+      .limit(endIndex - startIndex + 1) // returns endIndex squeals
+      .toArray();
 
     if (squeals_list.length === 0) {
       res.status(404).json({
@@ -894,10 +900,10 @@ app.delete("/channels/:name/squeals_list", async (req, res) => {
   try {
     const name = req.params.name;
 
-    if(req.body.user == null){
+    if (req.body.user == null) {
       req.body.user = req.session.user;
     }
-    
+
     const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
     const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === req.body.user;
     const SMMAuthorized = await isSMMAuthorized(req.session.user, req.body.user) && await isAuthorizedOrHigher(req.body.user, typeOfProfile.user);
@@ -983,7 +989,7 @@ app.get("/channels/:name/propic", async (req, res) => {
       return;
     }
 
-    if(channel.media_id == null || channel.media_id == ""){
+    if (channel.media_id == null || channel.media_id == "") {
       res.status(200).json({
         message: "propic not found"
       });
@@ -1006,11 +1012,11 @@ app.get("/channels/:name/propic", async (req, res) => {
 app.put("/channels/:name/propic", upload.single('file'), async (req, res) => {
   try {
     const channelName = req.params.name;
-    
-    if(req.body.user == null){
+
+    if (req.body.user == null) {
       req.body.user = req.session.user;
     }
-    
+
     const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
     const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === req.body.user;
     const SMMAuthorized = await isSMMAuthorized(req.session.user, req.body.user) && await isAuthorizedOrHigher(req.body.user, typeOfProfile.user);
@@ -1059,11 +1065,11 @@ app.put("/channels/:name/propic", upload.single('file'), async (req, res) => {
 app.delete("/channels/:name/propic", async (req, res) => {
   try {
     const channelName = req.params.name;
-    
-    if(req.body.user == null){
+
+    if (req.body.user == null) {
       req.body.user = req.session.user;
     }
-    
+
     const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
     const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === req.body.user;
     const SMMAuthorized = await isSMMAuthorized(req.session.user, req.body.user) && await isAuthorizedOrHigher(req.body.user, typeOfProfile.user);
