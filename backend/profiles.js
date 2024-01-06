@@ -917,7 +917,6 @@ app.put('/profiles/:name/propic', upload.single('file'), async (req, res) => {
 
         res.status(200).json({ message: 'File uploaded successfully' });
     } catch (error) {
-        console.log(error.message);
         res.status(500).json({ message: error.message });
     }
 });
