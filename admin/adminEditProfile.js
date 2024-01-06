@@ -65,13 +65,15 @@ document.getElementById('profile_form').addEventListener('submit', async (e) => 
         });
     }
     else if(newPropic != null){
+        let propicData = new FormData();
+        propicData.append("file", newPropic);
         console.log(newPropic);
         resPropic = await fetch(`https://site222326.tw.cs.unibo.it/profiles/${profile.name}/propic`, {
             method: "PUT",
             headers: {
-                'Content-Type': 'application/json'
+                "Content-Type": "multipart/form-data",
             },
-            file: newPropic
+            body: propicData
         });
     }
     if (resPropic != null && resPropic.status != 200) {
