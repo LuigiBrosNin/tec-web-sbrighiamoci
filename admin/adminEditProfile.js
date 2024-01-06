@@ -70,9 +70,6 @@ document.getElementById('profile_form').addEventListener('submit', async (e) => 
         console.log(newPropic);
         resPropic = await fetch(`https://site222326.tw.cs.unibo.it/profiles/${profile.name}/propic`, {
             method: "PUT",
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
             body: propicData
         });
     }
