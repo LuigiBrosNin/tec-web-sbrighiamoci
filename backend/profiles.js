@@ -888,9 +888,10 @@ app.get("/profiles/:name/propic", async (req, res) => {
 app.put('/profiles/:name/propic', upload.single('file'), async (req, res) => {
     try {
         const authorized = await isAuthorizedOrHigher(req.params.name, typeOfProfile.user) && req.session.user === req.params.name;
+        const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
         const SMMAuthorized = await isSMMAuthorized(req.session.user, req.params.name) && await isAuthorizedOrHigher(req.params.name, typeOfProfile.user);
 
-        if (!authorized && !SMMAuthorized) {
+        if (!authorized && !SMMAuthorized && !adminAuthorized) {
             res.status(401).json({ message: 'Unauthorized' });
             return;
         }

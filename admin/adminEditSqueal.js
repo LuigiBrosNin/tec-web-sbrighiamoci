@@ -122,7 +122,10 @@ function populate(squeal_json) {
     document.getElementById("impressions").setAttribute("value", squeal_json.impressions);
 
     if (squeal_json.media != null && squeal_json.media != "") {
-        document.getElementById("oldMedia").innerHTML = `<img src="https://${squeal_json.media}">`;
+        document.getElementById("media").innerHTML = `<img src="https://${squeal_json.media}">`;
+    }
+    else {
+        document.getElementById("media").innerHTML = `<p>This squeal has no media</p>`;
     }
 
     if (squeal_json.location.latitude != null) {
