@@ -172,7 +172,7 @@ document.getElementById('account_type_form').addEventListener('submit', async (e
                 alert("an error deleting the account smm has occurred, please try again later");
             }
         } else {
-            let smmChanges;
+            let smmChanges = {};
 
             if (data.smm != null && data.smm != "" && data.smm != profile.smm) {
                 smmChanges.smm = data.smm;
