@@ -181,6 +181,9 @@ document.getElementById('account_type_form').addEventListener('submit', async (e
             console.log(JSON.stringify(smmChanges));
             let res = await fetch(`https://site222326.tw.cs.unibo.it/profiles/${profile.name}/smm`, {
                 method: "PUT",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify(smmChanges)
             });
             if (res.status == 200) {
