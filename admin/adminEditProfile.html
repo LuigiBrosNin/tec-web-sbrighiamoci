@@ -7,40 +7,35 @@
 </head>
 
 <body>
-    <p>admin edit profile</p>
+    <h1>admin profile edit page</h1>
+
     <form class="mx-5 my-3" id="profile_form">
         <div class="formCard">
+            <h2>Main data:</h2>
+
             <label for="name" class="form-label">Profile name:</label>
             <input type="text" id="name" name="name" class="form-control" disabled>
-
-            <div>
-                <p class="form-label">Account type:</p>
-                <input type="radio" id="account_normal" name="account_type" value="normal" class="form-check-input">
-                <label for="normal" class="form-label">normal</label>
-                <input type="radio" id="account_premium" name="account_type" value="premium" class="form-check-input">
-                <label for="premium" class="form-label">premium</label>
-                <input type="radio" id="account_smm" name="account_type" value="smm" class="form-check-input">
-                <label for="smm" class="form-label">smm</label>
-                <input type="radio" id="account_admin" name="account_type" value="admin" class="form-check-input">
-                <label for="admin" class="form-label">ADMIN</label>
-            </div>
 
             <label for="bio" class="form-label">Bio:</label>
             <input type="text" id="bio" name="bio" class="form-control">
         </div>
 
         <div class="formCard">
+            <h2>Profile picture:</h2>
+
             <p class="form-label">Old profile picture:</p>
             <div id="oldPropic"></div>
 
             <label for="propic" class="form-label">New profile picture:</label>
             <input type="file" accept="image/*" id="propic" name="propic" class="form-control">
 
-            <label for="deletePropic" class="form-label">Delete profile picture:</label>
+            <label for="deletePropic" class="form-label">Reset to default profile picture?</label>
             <input type="checkbox" id="deletePropic" name="deletePropic" class="form-check-input">
         </div>
 
         <div class="formCard">
+            <h2>Credit:</h2>
+
             <label for="credit_daily" class="form-label">Credit of today:</label>
             <input type="number" id="credit_daily" name="credit_daily" class="form-control">
 
@@ -62,12 +57,57 @@
 
         <input type="submit">
     </form>
-    <button>Ban User</button>
-    <form>
-        <label for="banned_until" class="form-label">Banned until:</label>
-        <input type="datetime-local" id="banned_until" name="banned_until" class="form-control">
-    </form>
-    <button>Delete profile</button>
+
+    <div class="dangerZone">
+        <form class="formCard" id="change_email_pw_form">
+            <h2>Email and password:</h2>
+            <p>For privacy reasons, you cannot see email and password of users. However, you can insert here the new ones.</p>
+
+            <label for="email" class="form-label">New email:</label>
+            <input type="text" id="email" name="email" class="form-control">
+
+            <label for="password" class="form-label">New password:</label>
+            <input type="password" id="password" name="password" class="form-control">
+
+            <input type="submit">
+        </form>
+
+        <form class="formCard" id="account_type_form">
+            <h2>Account type:</h2>
+
+            <div>
+                <p class="form-label">Account type:</p>
+                <input type="radio" id="account_normal" name="account_type" value="normal" class="form-check-input">
+                <label for="normal" class="form-label">normal</label>
+                <input type="radio" id="account_premium" name="account_type" value="premium" class="form-check-input">
+                <label for="premium" class="form-label">premium</label>
+                <input type="radio" id="account_smm" name="account_type" value="smm" class="form-check-input">
+                <label for="smm" class="form-label">smm</label>
+                <input type="radio" id="account_admin" name="account_type" value="admin" class="form-check-input">
+                <label for="admin" class="form-label">ADMIN</label>
+            </div>
+
+            <label for="smm" class="form-label">Smm:</label>
+            <input type="text" id="smm" name="smm" class="form-control">
+
+            <input type="submit">
+        </form>
+
+        <form class="formCard" id="ban_form">
+            <h2>Ban user:</h2>
+
+            <label for="banned_until" class="form-label">Banned until:</label>
+            <input type="datetime-local" id="banned_until" name="banned_until" class="form-control">
+            
+            <input type="submit">Ban User</input>
+        </form>
+
+        <form class="formCard" id="delete_form">
+            <h2>Delete profile:</h2>
+            <input type="submit">Delete profile</input>
+        </form>
+    </div>
+    
 </body>
 <link rel="stylesheet" href="https://site222326.tw.cs.unibo.it/adminsrc/adminEdit.css"></link>
 <script type="module" src="https://site222326.tw.cs.unibo.it/adminsrc/adminEditProfile.js"></script>

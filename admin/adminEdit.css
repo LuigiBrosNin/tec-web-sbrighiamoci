@@ -20,3 +20,12 @@ h1 {
 h2 {
     font-size: 1.5em;
 }
+
+.dangerZone {
+    border-radius: 1em;
+    border-style: solid;
+    border-width: medium;
+    border-color: #ff0000;
+    color:#ff0000;
+    background-color: #ffdede;
+}
