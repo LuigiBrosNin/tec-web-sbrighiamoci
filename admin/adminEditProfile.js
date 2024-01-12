@@ -123,11 +123,13 @@ document.getElementById('change_email_pw_form').addEventListener('submit', async
 });
 
 document.getElementById('account_type_form').addEventListener('change', async (e) => {
-    let data = Object.fromEntries(new FormData(e.target).entries());
-    console.log(data);
+    let selectedAccountType = e.target.value;
 
-    if (data.account_type == "smm") {
-
+    if (selectedAccountType == "smm") {
+        document.getElementById("smm").setAttribute("disabled", "disabled");
+    }
+    else {
+        document.getElementById("smm").removeAttribute("disabled");
     }
 });
 
@@ -285,6 +287,12 @@ function populate(profile_json) {
         document.getElementById("smm").setAttribute("value", profile_json.smm);
     }
 
+    if (profile_json.account_type == "smm") {
+        document.getElementById("smm").setAttribute("disabled", "disabled");
+    }
+    else {
+        document.getElementById("smm").removeAttribute("disabled");
+    }
 
     if (profile_json.is_banned == true || profile_json.is_banned == "true") {
         document.getElementById("banned_until").setAttribute("value", profile_json.banned_until);
