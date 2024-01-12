@@ -1245,6 +1245,10 @@ app.put("/profiles/:name/smm", async (req, res) => {
             return;
         }
 
+
+        console.log("profileName: " + req.params.name)
+        console.log("smmName: " + req.body.smm)
+
         await mongoClient.connect();
         const profile = await collection_profiles.findOne({
             name: profileName
