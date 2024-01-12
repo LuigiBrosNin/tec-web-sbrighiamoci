@@ -139,24 +139,25 @@ document.getElementById('account_type_form').addEventListener('submit', async (e
     console.log(data);
 
     let done = false;
-    let changes = {};
 
     if (data.account_type != null && data.account_type != "" && data.account_type != profile.account_type) {
+        let changes = {};
+        
         changes.account_type = data.account_type;
-    }
 
-    console.log(JSON.stringify(changes));
-    let res = await fetch(`https://site222326.tw.cs.unibo.it/profiles/${profile.name}/account_type`, {
-        method: "POST",
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(changes)
-    });
-    if (res.status == 200) {
-        done = true;
-    } else {
-        alert("an error changing the account type has occurred, please try again later");
+        console.log(JSON.stringify(changes));
+        let res = await fetch(`https://site222326.tw.cs.unibo.it/profiles/${profile.name}/account_type`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(changes)
+        });
+        if (res.status == 200) {
+            done = true;
+        } else {
+            alert("an error changing the account type has occurred, please try again later");
+        }
     }
 
 
@@ -168,7 +169,7 @@ document.getElementById('account_type_form').addEventListener('submit', async (e
             if (res.status == 200) {
                 window.location.href = `${sitePrefix}/admin/profile/${profile.name}`;
             } else {
-                alert("an error changing the account smm has occurred, please try again later");
+                alert("an error deleting the account smm has occurred, please try again later");
             }
         } else {
             let smmChanges;
@@ -180,15 +181,12 @@ document.getElementById('account_type_form').addEventListener('submit', async (e
             console.log(JSON.stringify(smmChanges));
             let res = await fetch(`https://site222326.tw.cs.unibo.it/profiles/${profile.name}/smm`, {
                 method: "PUT",
-                headers: {
-                    'Content-Type': 'application/json'
-                },
                 body: JSON.stringify(smmChanges)
             });
             if (res.status == 200) {
                 done = true;
             } else {
-                alert("an error deleting the account smm has occurred, please try again later");
+                alert("an error changing the account smm has occurred, please try again later");
             }
         }
     }
@@ -236,7 +234,7 @@ document.getElementById('unban_form').addEventListener('submit', async (e) => {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({is_banned: false, banned_until: null})
+        body: JSON.stringify({ is_banned: false, banned_until: null })
     });
     if (res.status == 201) {
         window.location.href = `${sitePrefix}/admin/profile/${profile.name}`;
