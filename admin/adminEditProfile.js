@@ -126,10 +126,10 @@ document.getElementById('account_type_form').addEventListener('change', async (e
     let selectedAccountType = e.target.value;
 
     if (selectedAccountType == "smm") {
-        document.getElementById("smm").setAttribute("disabled", "disabled");
+        document.getElementById("smm").removeAttribute("disabled");
     }
     else {
-        document.getElementById("smm").removeAttribute("disabled");
+        document.getElementById("smm").setAttribute("disabled", "disabled");
     }
 });
 
@@ -288,10 +288,10 @@ function populate(profile_json) {
     }
 
     if (profile_json.account_type == "smm") {
-        document.getElementById("smm").setAttribute("disabled", "disabled");
+        document.getElementById("smm").removeAttribute("disabled");
     }
     else {
-        document.getElementById("smm").removeAttribute("disabled");
+        document.getElementById("smm").setAttribute("disabled", "disabled");
     }
 
     if (profile_json.is_banned == true || profile_json.is_banned == "true") {
