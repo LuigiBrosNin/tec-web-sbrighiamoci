@@ -125,7 +125,7 @@ document.getElementById('change_email_pw_form').addEventListener('submit', async
 document.getElementById('account_type_form').addEventListener('change', async (e) => {
     let selectedAccountType = e.target.value;
 
-    if (selectedAccountType == "smm") {
+    if (selectedAccountType == "premium") {
         document.getElementById("smm").removeAttribute("disabled");
     }
     else {
@@ -160,7 +160,7 @@ document.getElementById('account_type_form').addEventListener('submit', async (e
     }
 
 
-    if (data.account_type != null && data.account_type == "smm") {
+    if (data.account_type != null && data.account_type == "premium") {
         if (data.smm === "" && data.smm != profile.smm && profile.smm != null) {
             let res = await fetch(`https://site222326.tw.cs.unibo.it/profiles/${profile.name}/smm`, {
                 method: "DELETE",
@@ -287,7 +287,7 @@ function populate(profile_json) {
         document.getElementById("smm").setAttribute("value", profile_json.smm);
     }
 
-    if (profile_json.account_type == "smm") {
+    if (profile_json.account_type == "premium") {
         document.getElementById("smm").removeAttribute("disabled");
     }
     else {
@@ -298,3 +298,4 @@ function populate(profile_json) {
         document.getElementById("banned_until").setAttribute("value", profile_json.banned_until);
     }
 }
+
