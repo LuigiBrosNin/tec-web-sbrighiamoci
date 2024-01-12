@@ -21,7 +21,14 @@ h2 {
     font-size: 1.5em;
 }
 
+img {
+    width: 100%;
+    max-width: 30em;
+}
+
 .dangerZone {
+    margin: 1em 0em 1em 0em;
+    padding: 1em;
     border-radius: 1em;
     border-style: solid;
     border-width: medium;

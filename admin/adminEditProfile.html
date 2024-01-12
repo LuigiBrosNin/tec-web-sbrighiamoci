@@ -61,7 +61,8 @@
     <div class="dangerZone">
         <form class="formCard" id="change_email_pw_form">
             <h2>Email and password:</h2>
-            <p>For privacy reasons, you cannot see email and password of users. However, you can insert here the new ones.</p>
+            <p>For privacy reasons, you cannot see email and password of users. However, you can insert here the new
+                ones.</p>
 
             <label for="email" class="form-label">New email:</label>
             <input type="text" id="email" name="email" class="form-control">
@@ -93,21 +94,28 @@
             <input type="submit">
         </form>
 
-        <form class="formCard" id="ban_form">
-            <h2>Ban user:</h2>
+        <div class="formCard">
+            <form id="ban_form">
+                <h2>Ban user:</h2>
 
-            <label for="banned_until" class="form-label">Banned until:</label>
-            <input type="datetime-local" id="banned_until" name="banned_until" class="form-control">
-            
-            <input type="submit">Ban User</input>
-        </form>
+                <label for="banned_until" class="form-label">Banned until:</label>
+                <input type="datetime-local" id="banned_until" name="banned_until" class="form-control">
+
+                <input type="submit" value="Ban User">
+            </form>
+            <form id="unban_form">
+                <h2>Unban user:</h2>
+                <input type="submit" value="Unban User">
+            </form>
+        </div>
 
         <form class="formCard" id="delete_form">
             <h2>Delete profile:</h2>
-            <input type="submit">Delete profile</input>
+            <input type="submit" value="Delete profile">
         </form>
     </div>
-    
+
 </body>
-<link rel="stylesheet" href="https://site222326.tw.cs.unibo.it/adminsrc/adminEdit.css"></link>
+<link rel="stylesheet" href="https://site222326.tw.cs.unibo.it/adminsrc/adminEdit.css">
+</link>
 <script type="module" src="https://site222326.tw.cs.unibo.it/adminsrc/adminEditProfile.js"></script>

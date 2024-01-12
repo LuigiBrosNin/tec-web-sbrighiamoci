@@ -191,7 +191,7 @@ document.getElementById('account_type_form').addEventListener('submit', async (e
         }
     }
 
-    if(done){
+    if (done) {
         window.location.href = `${sitePrefix}/admin/profile/${profile.name}`;
     }
 });
@@ -204,7 +204,7 @@ document.getElementById('ban_form').addEventListener('submit', async (e) => {
     let changes = {};
 
     if (data.banned_until != null && data.banned_until != "" && data.banned_until != profile.banned_until) {
-        changes.banned_until = data.banned_until;
+        changes.banned_until = new Date(data.banned_until).getTime();
 
         changes.is_banned = true;
 
@@ -223,6 +223,23 @@ document.getElementById('ban_form').addEventListener('submit', async (e) => {
     }
     else {
         alert("to ban a user, you must insert for how much time it will be banned");
+    }
+});
+
+document.getElementById('unban_form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    let res = await fetch(`https://site222326.tw.cs.unibo.it/profiles/${profile.name}`, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({is_banned: false, banned_until: null})
+    });
+    if (res.status == 201) {
+        window.location.href = `${sitePrefix}/admin/profile/${profile.name}`;
+    } else {
+        alert("an error unbanning the user has occurred, please try again later");
     }
 });
 
