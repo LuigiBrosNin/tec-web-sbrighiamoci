@@ -122,7 +122,7 @@ document.getElementById('change_email_pw_form').addEventListener('submit', async
 
 });
 
-document.getElementById('account_type_form').addEventListener('change', async (e) => {
+document.getElementById('account_type_radio').addEventListener('change', async (e) => {
     let selectedAccountType = e.target.value;
 
     if (selectedAccountType == "premium") {
