@@ -10,7 +10,7 @@ if (window.location.href.startsWith(editSquealPrefix)) {
 
 
 
-    squeal = await fetch(`https://site222326.tw.cs.unibo.it/squeals/${squeal_id}`, {
+    squeal = await fetch(`${sitePrefix}/squeals/${squeal_id}`, {
         method: "GET"
     });
     if (squeal.status == 200) {
@@ -87,7 +87,7 @@ document.getElementById('squeal_form').addEventListener('submit', async (e) => {
     }
 
     console.log(JSON.stringify(changes));
-    let res = await fetch(`https://site222326.tw.cs.unibo.it/squeals/${squeal.id}`, {
+    let res = await fetch(`${sitePrefix}/squeals/${squeal.id}`, {
         method: "POST",
         headers: {
             'Content-Type': 'application/json'

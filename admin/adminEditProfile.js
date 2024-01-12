@@ -10,7 +10,7 @@ if (window.location.href.startsWith(editProfilePrefix)) {
 
 
 
-    profile = await fetch(`https://site222326.tw.cs.unibo.it/profiles/${profile_id}`, {
+    profile = await fetch(`${sitePrefix}/profiles/${profile_id}`, {
         method: "GET"
     });
     if (profile.status == 200) {
@@ -57,7 +57,7 @@ document.getElementById('profile_form').addEventListener('submit', async (e) => 
 
     let resPropic;
     if (data.deletePropic != null && data.deletePropic != "") {
-        resPropic = await fetch(`https://site222326.tw.cs.unibo.it/profiles/${profile.name}/propic`, {
+        resPropic = await fetch(`${sitePrefix}/profiles/${profile.name}/propic`, {
             method: "DELETE"
         });
     }
@@ -65,7 +65,7 @@ document.getElementById('profile_form').addEventListener('submit', async (e) => 
         let propicData = new FormData();
         propicData.append("file", newPropic);
         console.log(newPropic);
-        resPropic = await fetch(`https://site222326.tw.cs.unibo.it/profiles/${profile.name}/propic`, {
+        resPropic = await fetch(`${sitePrefix}/profiles/${profile.name}/propic`, {
             method: "PUT",
             body: propicData
         });
@@ -76,7 +76,7 @@ document.getElementById('profile_form').addEventListener('submit', async (e) => 
 
 
     console.log(JSON.stringify(changes));
-    let res = await fetch(`https://site222326.tw.cs.unibo.it/profiles/${profile.name}`, {
+    let res = await fetch(`${sitePrefix}/profiles/${profile.name}`, {
         method: "POST",
         headers: {
             'Content-Type': 'application/json'
@@ -107,7 +107,7 @@ document.getElementById('change_email_pw_form').addEventListener('submit', async
     }
 
     console.log(JSON.stringify(changes));
-    let res = await fetch(`https://site222326.tw.cs.unibo.it/profiles/${profile.name}`, {
+    let res = await fetch(`${sitePrefix}/profiles/${profile.name}`, {
         method: "POST",
         headers: {
             'Content-Type': 'application/json'
@@ -146,7 +146,7 @@ document.getElementById('account_type_form').addEventListener('submit', async (e
         changes.account_type = data.account_type;
 
         console.log(JSON.stringify(changes));
-        let res = await fetch(`https://site222326.tw.cs.unibo.it/profiles/${profile.name}/account_type`, {
+        let res = await fetch(`${sitePrefix}/profiles/${profile.name}/account_type`, {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
@@ -163,7 +163,7 @@ document.getElementById('account_type_form').addEventListener('submit', async (e
 
     if (data.account_type != null && data.account_type == "premium") {
         if (data.smm === "" && data.smm != profile.smm && profile.smm != null) {
-            let res = await fetch(`https://site222326.tw.cs.unibo.it/profiles/${profile.name}/smm`, {
+            let res = await fetch(`${sitePrefix}/profiles/${profile.name}/smm`, {
                 method: "DELETE",
             });
             if (res.status == 200) {
@@ -179,7 +179,7 @@ document.getElementById('account_type_form').addEventListener('submit', async (e
             }
 
             console.log(JSON.stringify(smmChanges));
-            let res = await fetch(`https://site222326.tw.cs.unibo.it/profiles/${profile.name}/smm`, {
+            let res = await fetch(`${sitePrefix}/profiles/${profile.name}/smm`, {
                 method: "PUT",
                 headers: {
                     'Content-Type': 'application/json'
@@ -211,7 +211,7 @@ document.getElementById('ban_form').addEventListener('submit', async (e) => {
 
         changes.is_banned = true;
 
-        let res = await fetch(`https://site222326.tw.cs.unibo.it/profiles/${profile.name}`, {
+        let res = await fetch(`${sitePrefix}/profiles/${profile.name}`, {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
@@ -232,7 +232,7 @@ document.getElementById('ban_form').addEventListener('submit', async (e) => {
 document.getElementById('unban_form').addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    let res = await fetch(`https://site222326.tw.cs.unibo.it/profiles/${profile.name}`, {
+    let res = await fetch(`${sitePrefix}/profiles/${profile.name}`, {
         method: "POST",
         headers: {
             'Content-Type': 'application/json'
@@ -249,7 +249,7 @@ document.getElementById('unban_form').addEventListener('submit', async (e) => {
 document.getElementById('delete_form').addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    let res = await fetch(`https://site222326.tw.cs.unibo.it/profiles/${profile.name}`, {
+    let res = await fetch(`${sitePrefix}/profiles/${profile.name}`, {
         method: "DELETE",
     });
     if (res.status == 200) {
