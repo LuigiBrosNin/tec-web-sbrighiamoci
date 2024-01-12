@@ -1253,14 +1253,14 @@ app.put("/profiles/:name/smm", async (req, res) => {
             name: smmName
         });
 
-        if (profile.is_deleted || profile == null) {
+        if (profile == null || profile.is_deleted) {
             res.status(404).json({
                 message: "Profile not found."
             });
             return;
         }
 
-        if (smm.is_deleted || smm == null) {
+        if (smm == null || smm.is_deleted) {
             res.status(404).json({
                 message: "SMM not found."
             });
