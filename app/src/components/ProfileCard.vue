@@ -89,15 +89,15 @@ export default {
     },
     populate(profileJson) {
       this.name = profileJson.name;
-      this.profilePicUrl = profileJson.propic;
-      // if propic returns null, use a default one
-      console.log(this.profilePicUrl);
-      if (this.profilePicUrl == null || this.profilePicUrl == "") {
+
+      // if propic is null, use a default one
+      if (profileJson.propic == null || profileJson.propic == "") {
         this.profilePicUrl =
           "https://site222326.tw.cs.unibo.it/images/user-default.svg";
       } else {
-        this.profilePicUrl = `https://site222326.tw.cs.unibo.it/profiles/${this.name}/propic`;
+        this.profilePicUrl = "https://" + profileJson.propic;
       }
+
       this.bio = profileJson.bio;
       this.credit = profileJson.credit;
       this.creditLimits = profileJson.credit_limits;
@@ -129,5 +129,6 @@ export default {
   height: 10em;
   border-radius: 50%;
   margin: 0.5em;
+  object-fit: cover;
 }
 </style>
