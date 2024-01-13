@@ -26,6 +26,11 @@
       <img class="icon not_selected" src="https://site222326.tw.cs.unibo.it/icons/user-svgrepo-com.svg" />
       <p>Login</p>
     </a>
+
+    <div class="switch_area_btn">
+      <a href="https://site222326.tw.cs.unibo.it/admin" v-if="$typeOfUser == 'admin'" class="admin_btn switch_btn">Go to admin dashboard</a>
+      <a href="https://site222326.tw.cs.unibo.it/smm" v-if="$typeOfUser == 'smm'" class="smm_btn switch_btn">Go to smm dashboard</a>
+    </div>
   </nav>
 </template>
 
@@ -39,7 +44,8 @@ nav {
   font-size: 1.5em;
   padding-top: 1em;
   z-index: 9;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 nav .router-link-exact-active {
@@ -78,6 +84,30 @@ https://codepen.io/sosuke/pen/Pjoqqp
   flex-direction: row;
 }
 
+.switch_area_btn {
+  margin: 0.5em;
+    display: flex;
+    height: 100%;
+    flex-direction: column-reverse;
+}
+
+.switch_btn {
+  border-radius: 1em;
+  text-decoration: none;
+  text-align: center;
+  font-size: 0.8em;
+}
+
+.admin_btn {
+  color: #fff;
+  background-color: #ff0000;
+}
+
+.smm_btn {
+  color: #fff;
+  background-color: #208454;
+}
+
 @media screen and (max-width: 950px) {
   nav {
     box-shadow: 0px 0px 5px;
@@ -88,6 +118,10 @@ https://codepen.io/sosuke/pen/Pjoqqp
     overflow: visible;
   }
   p {
+    display: none;
+  }
+
+  .switch_area_btn {
     display: none;
   }
 }

@@ -18,6 +18,13 @@ user = await user.json();
 app.config.globalProperties.$user = (user.user || null);
 //app.config.globalProperties.$user = "Matilde";
 
+if(app.config.globalProperties.$user != null){
+    let userProfile = await fetch(`https://site222326.tw.cs.unibo.it/profiles/${app.config.globalProperties.$user}`, { method: "GET"});
+    userProfile = await userProfile.json();
+    app.config.globalProperties.$typeOfUser = (userProfile.account_type || null);
+    console.log(app.config.globalProperties.$typeOfUser);
+}
+
 app.config.globalProperties.$global = reactive({ is_looping: false, timeout_id: null });
 
 

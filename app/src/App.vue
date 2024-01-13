@@ -11,7 +11,7 @@ import NewSquealButton from "@/components/NewSquealButton.vue"
     <Header title="Squealer"></Header>
     <div class="main_area">
       <Navbar></Navbar>
-      <NewSquealButton id="NewSquealButton"></NewSquealButton>
+      <NewSquealButton id="NewSquealButton" v-if="$route.name != 'squealPut' && $route.name != 'messages'"></NewSquealButton>
 
       <div class="content">
         <RouterView />
