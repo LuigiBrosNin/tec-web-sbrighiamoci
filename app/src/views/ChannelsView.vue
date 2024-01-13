@@ -10,14 +10,14 @@ const props = defineProps(['id']);
         <h3> Channel not found. </h3>
     </div>
     <div v-else>
-        <div class="infoContainer">
+        <div class="channelInfoContainer" :id="channelName">
             <!----------- card canale ---------->
             <ChannelCard :id="channelName" class="importedCard"></ChannelCard>
-            <RouterLink :to="`/squealPut?receiver=${channelName}`" class="new_squeal_button">
-                <div class="new_squeal_button_content">
-                    <img class="new_squeal_button_image"
+            <RouterLink :to="`/squealPut?receiver=${channelName}`" class="channel_new_squeal_button">
+                <div class="channel_new_squeal_button_content">
+                    <img class="channel_new_squeal_button_image"
                         src="https://site222326.tw.cs.unibo.it/icons/plus-svgrepo-com.svg" />
-                    <p class="new_squeal_button_text">Create a new Squeal in this channel</p>
+                    <p class="channel_new_squeal_button_text">Create a new Squeal in this channel</p>
                 </div>
             </RouterLink>
         </div>
@@ -223,7 +223,7 @@ export default {
     color: #ff8900;
 }
 
-.infoContainer {
+.channelInfoContainer {
     background-color: #fff;
     padding: 0em 0em 1em 0em;
     margin: 1em;
@@ -233,7 +233,7 @@ export default {
     border-width: thin;
 }
 
-.new_squeal_button_content {
+.channel_new_squeal_button_content {
   width: fit-content;
   height: fit-content;
   color: #fff;
@@ -245,19 +245,19 @@ export default {
   align-items: center;
 }
 
-.new_squeal_button_image {
+.channel_new_squeal_button_image {
   height: 1.7em;
   width: 1.7em;
   filter: brightness(0%) invert(100%);
 }
 
-.new_squeal_button {
+.channel_new_squeal_button {
   text-decoration: none;
   display: flex;
   justify-content: center;
 }
 
-.new_squeal_button_text {
+.channel_new_squeal_button_text {
   font-size: 1.1em;
   margin: 0.2em;
 }
