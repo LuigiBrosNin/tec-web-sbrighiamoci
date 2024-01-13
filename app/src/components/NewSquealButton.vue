@@ -1,14 +1,14 @@
 <script setup>
-import {RouterLink} from 'vue-router'
+import { RouterLink } from 'vue-router'
 </script>
 
 <template>
-    <RouterLink to="/squealPut" class="new_squeal_button">
-          <div class="new_squeal_button_content">
-            <img class="new_squeal_button_image" src="https://site222326.tw.cs.unibo.it/icons/plus-svgrepo-com.svg" />
-            <p class="new_squeal_button_text">Create a new Squeal</p>
-          </div>
-        </RouterLink>
+  <RouterLink to="/squealPut" class="new_squeal_button">
+    <div class="new_squeal_button_content">
+      <img class="new_squeal_button_image" src="https://site222326.tw.cs.unibo.it/icons/plus-svgrepo-com.svg" />
+      <p class="new_squeal_button_text">Create a new Squeal</p>
+    </div>
+  </RouterLink>
 </template>
 
 <style scoped>

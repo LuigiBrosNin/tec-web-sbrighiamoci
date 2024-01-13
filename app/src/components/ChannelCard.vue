@@ -4,7 +4,7 @@ const props = defineProps(["id", "channel_json"]);
 
 <template>
   <div class="card m-3">
-    <div class="d-flex">
+    <div v-if="isValid" class="d-flex">
       <div class="col-md-4 d-flex justify-content-center align-items-center">
         <img :src="profilePicUrl" class="card-img channel_img" alt="Profile Picture">
       </div>
@@ -35,6 +35,9 @@ const props = defineProps(["id", "channel_json"]);
       </div>
 
     </div>
+    <div v-else>
+      channel not found
+    </div>
   </div>
 </template>
 
@@ -44,6 +47,7 @@ import axios from "axios";
 export default {
   data() {
     return {
+      isValid: false,
       name: "",  // nome del canale
       owner: "",
       modList: [],
@@ -77,7 +81,11 @@ export default {
       this.name = channelJson.name;
       this.owner = channelJson.owner;
       this.modList = channelJson.mod_list;
-      this.profilePicUrl = channelJson.propic;
+      if(channelJson.propic != null){
+        this.profilePicUrl = "https://" + channelJson.propic;
+      } else {
+        this.profilePicUrl = "https://site222326.tw.cs.unibo.it/images/logoSquealer.svg";
+      }
       this.squealsList = channelJson.squeals_list;
       this.numberOfSqueals = channelJson.squeals_num;
       this.subscribersList = channelJson.subscribers_list;
@@ -85,6 +93,8 @@ export default {
       this.type = channelJson.type;
       this.bio = channelJson.bio;
       this.isSubscribed = channelJson.subscribers_list.includes(this.$user); // true se user è iscritto
+
+      this.isValid = true;
     },
 
     async subscribe() {
