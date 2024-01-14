@@ -51,6 +51,7 @@ header {
   box-shadow: 0px 0px 5px;
   overflow: hidden;
   z-index: 10;
+  flex: none;
 
   justify-content: center;
 }
