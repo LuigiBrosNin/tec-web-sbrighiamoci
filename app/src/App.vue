@@ -37,6 +37,7 @@ import NewSquealButton from "@/components/NewSquealButton.vue"
   flex-direction: row;
   min-height: 0;
   min-width: 0;
+  height: inherit;
 }
 
 .content {
