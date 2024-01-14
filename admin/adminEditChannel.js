@@ -121,7 +121,7 @@ function populate(channel_json) {
 
     document.getElementById("owner").setAttribute("value", channel_json.owner);
     
-    for (index in channel_json.mod_list){
+    for (let index in channel_json.mod_list){
         document.getElementById("modList").innerHTML += `<div><p>${channel_json.mod_list[index]}</p><button onclick="console.log('removed')">Remove</button></div>`;
     }
     
