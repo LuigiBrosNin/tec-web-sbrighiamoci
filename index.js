@@ -135,7 +135,7 @@ app.get(["/admin/:paths(*)", "/admin"], async (req, res) => {
     const $ = cheerio.load(response.data); // naming it $ is a good practice
 
     $('title').text('Squealer Admin');
-    const scriptHead = '<script type="module" src="https://site222326.tw.cs.unibo.it/adminsrc/adminHead.js"></script>'
+    const scriptHead = '<script src="https://site222326.tw.cs.unibo.it/adminsrc/adminHead.js"></script>'
     $('head').prepend(scriptHead);
     const restoreCSS = '<link rel="stylesheet" href="https://site222326.tw.cs.unibo.it/adminsrc/restoreData.css">'
     $('body').append(restoreCSS);
