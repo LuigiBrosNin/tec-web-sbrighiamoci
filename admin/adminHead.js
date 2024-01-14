@@ -18,6 +18,7 @@ if (currentUrl.startsWith(adminPrefix)) {
     MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
     let observer = new MutationObserver(function (mutations, observer) {     // every time something changes in the DOM, this function is invoked
         replaceAllAppLinks();
+        removeSwitchArea();
         addEditAndDeleteButtonsToAllSqueals();
         addSettingsButtonToProfile();
 
@@ -85,6 +86,15 @@ function changeUrlFromAppToAdmin(url) {
         url = adminPrefix + relativeUrl;
     }
     return url;
+}
+
+function removeSwitchArea() {
+    const areas = document.getElementsByClassName("switch_area_btn");
+    if(areas.length > 0){
+        for(const index in areas){
+            areas[index].outerHTML = "";
+        }
+    }
 }
 
 function addEditAndDeleteButtonsToAllSqueals() {
