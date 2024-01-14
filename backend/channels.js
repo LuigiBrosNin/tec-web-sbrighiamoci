@@ -272,7 +272,7 @@ app.post("/channels/:name", async (req, res) => {
 
     if (!mod_auth) {
       res.status(401).json({
-        message: "not authorized to modify this channel's propic (not valid mod)"
+        message: "not authorized to modify this channel (not valid mod)"
       });
       return;
     }
@@ -541,7 +541,7 @@ app.put("/channels/:name/subscribers_list", async (req, res) => {
 
 
 //* DELETE
-// removes a moderator from the channel
+// removes a subscriber from the channel
 // body parameters: user (opzionale)
 app.delete("/channels/:name/subscribers_list", async (req, res) => {
   try {
