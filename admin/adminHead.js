@@ -2,6 +2,8 @@ const sitePrefix = "https://site222326.tw.cs.unibo.it";
 const adminPrefix = sitePrefix + "/admin";
 const appPrefix = sitePrefix + "/app";
 
+let $user = await fetch(sitePrefix + "/user-check");
+$user = $user.json().user;
 
 let currentUrl = window.location.href;
 
@@ -18,8 +20,9 @@ if (currentUrl.startsWith(adminPrefix)) {
     MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
     let observer = new MutationObserver(function (mutations, observer) {     // every time something changes in the DOM, this function is invoked
         replaceAllAppLinks();
+        removeSwitchArea();
         addEditAndDeleteButtonsToAllSqueals();
-        addSettingsButtonToProfile();
+        addSettingsButtonsToProfile();
 
         console.log("DOM changed", mutations, observer);
     });
@@ -87,6 +90,15 @@ function changeUrlFromAppToAdmin(url) {
     return url;
 }
 
+function removeSwitchArea() {
+    const areas = document.getElementsByClassName("switch_area_btn");
+    if(areas.length > 0){
+        for(const index in areas){
+            areas[index].outerHTML = "";
+        }
+    }
+}
+
 function addEditAndDeleteButtonsToAllSqueals() {
     const squeals = Array.from(document.getElementsByClassName("squeal_container"));
     for (const index in squeals) {
@@ -144,14 +156,19 @@ function generateEditButton(squeal_id) {
     return editButton;
 }
 
-function addSettingsButtonToProfile() {
+function addSettingsButtonsToProfile() {
     const profiles = Array.from(document.getElementsByClassName("profile_container")); // there should be only one per page, but who knows...
     for (const index in profiles) {
         let buttonArea = Array.from(profiles[index].getElementsByClassName("btn_area"))[0];
         
         if(buttonArea != null){
             const button = document.createElement("div");
-            button.appendChild(generateProfileSettingsButton(profiles[index].id));
+            let profileId = profiles[index].id;
+            button.appendChild(generateProfileSettingsButton(profileId));
+            
+            if(profileId === $user) {
+                button.appendChild(generateLogOutButton());
+            }
     
             if (!buttonArea.hasChildNodes() || !buttonArea.childNodes[0].isEqualNode(button) || buttonArea.childNodes.length != 1) {
                 buttonArea.innerHTML = "";
@@ -170,4 +187,15 @@ function generateProfileSettingsButton(profile_id) {
     img.classList.add("admin-squeal-button-img");
     settingsButton.appendChild(img);
     return settingsButton;
+}
+
+function generateLogOutButton() {
+    const logOutButton = document.createElement("a");
+    logOutButton.classList.add("admin-squeal-button");
+    logOutButton.setAttribute("href", `${sitePrefix}/logout`);
+    const img = document.createElement("img");
+    img.setAttribute("src", sitePrefix + "/icons/door-open-svgrepo-com.svg");
+    img.classList.add("admin-squeal-button-img");
+    logOutButton.appendChild(img);
+    return logOutButton;
 }
