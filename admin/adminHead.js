@@ -21,6 +21,7 @@ if (currentUrl.startsWith(adminPrefix)) {
         removeSwitchArea();
         addEditAndDeleteButtonsToAllSqueals();
         addSettingsButtonToProfile();
+        addSettingsButtonToChannel();
 
         console.log("DOM changed", mutations, observer);
     });
@@ -171,10 +172,35 @@ function addSettingsButtonToProfile() {
     }
 }
 
+function addSettingsButtonToChannel() {
+    const channels = Array.from(document.getElementsByClassName("channelInfoContainer")); // there should be only one per page, but who knows...
+    for (const index in channels) {
+        let buttonArea = Array.from(channels[index].getElementsByClassName("btn_area"))[0];
+        
+        if(buttonArea != null){
+            const button = document.createElement("div");
+            button.appendChild(generateChannelSettingsButton(channels[index].id));
+    
+            if (!buttonArea.hasChildNodes() || !buttonArea.childNodes[0].isEqualNode(button) || buttonArea.childNodes.length != 1) {
+                buttonArea.innerHTML = "";
+                buttonArea.appendChild(button);
+            }
+        }
+    }
+}
+
 function generateProfileSettingsButton(profile_id) {
+    return generateSettingsButton(profile_id, "profile");
+}
+
+function generateChannelSettingsButton(channel_id) {
+    return generateSettingsButton(channel_id, "channel");
+}
+
+function generateSettingsButton(profile_id, typeOfSettings) {
     const settingsButton = document.createElement("button");
     settingsButton.classList.add("admin-squeal-button");
-    settingsButton.setAttribute("onclick", `window.location.href = "${sitePrefix}/admin/adminedit/profile/${profile_id}"`);
+    settingsButton.setAttribute("onclick", `window.location.href = "${sitePrefix}/admin/adminedit/${typeOfSettings}/${profile_id}"`);
     const img = document.createElement("img");
     img.setAttribute("src", sitePrefix + "/icons/gear-svgrepo-com.svg");
     img.classList.add("admin-squeal-button-img");
