@@ -115,7 +115,7 @@ app.get("/admin/adminedit/:type/:id", async (req, res) => {
     res.status(200).sendFile(global.rootDir + '/admin/adminEditProfile.html');
   }
   else if(req.params.type === "channel"){
-    res.status(404).send();
+    res.status(200).sendFile(global.rootDir + '/admin/adminEditChannel.html');
   }
   else {
     res.status(404).send();
