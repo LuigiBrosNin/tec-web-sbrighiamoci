@@ -32,14 +32,11 @@ import NewSquealButton from "@/components/NewSquealButton.vue"
   left: 0px;
 }
 
-Header {
-  height: 10vh;
-}
-
 .main_area {
-  height: 90vh;
   display: flex;
   flex-direction: row;
+  min-height: 0;
+  min-width: 0;
 }
 
 .content {

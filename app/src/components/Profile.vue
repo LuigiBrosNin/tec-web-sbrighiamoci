@@ -51,9 +51,6 @@ const props = defineProps(["id", "profile_json"]);
       <button v-if="$user === name" class="settings_btn" @click="goToSettings">
         <img class="settings_img" src="https://site222326.tw.cs.unibo.it/icons/gear-svgrepo-com.svg" />
       </button>
-      <a v-if="$user === name" class="logout_btn" href="https://site222326.tw.cs.unibo.it/logout">
-        <img class="logout_img" src="https://site222326.tw.cs.unibo.it/icons/door-open-svgrepo-com.svg" />
-      </a>
     </div>
 
     <ul class="nav nav-pills mb-3 flex-column flex-sm-row" id="pills-tab" role="tablist">
@@ -338,15 +335,6 @@ export default {
 .settings_img {
   width: 3em;
   filter: invert(60%) sepia(0%) saturate(326%) hue-rotate(315deg) brightness(95%) contrast(91%);
-}
-
-.logout_btn {
-  margin: 0em 0.5em 0em 0em;
-}
-
-.logout_img {
-  width: 3em;
-  filter: invert(17%) sepia(87%) saturate(7277%) hue-rotate(359deg) brightness(109%) contrast(118%);
 }
 
 .card-header {
