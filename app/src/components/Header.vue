@@ -96,6 +96,7 @@ h2 {
 .logout_btn {
   margin: 1em;
   display: block;
+  width: fit-content;
 }
 
 .logout_img {
