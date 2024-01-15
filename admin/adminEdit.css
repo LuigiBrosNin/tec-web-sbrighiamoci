@@ -36,3 +36,13 @@ img {
     color:#ff0000;
     background-color: #ffdede;
 }
+
+.modCard {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.modBtn {
+    margin: 0em 1em;
+}

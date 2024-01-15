@@ -158,7 +158,7 @@ function populate(channel_json) {
     document.getElementById("owner").setAttribute("value", channel_json.owner);
 
     for (let index in channel_json.mod_list) {
-        document.getElementById("modList").innerHTML += `<div class="modCard" id="mod_${index}"><p>${channel_json.mod_list[index]}</p><button onclick="event.preventDefalult; removeMod(${channel_json.mod_list[index]}, ${index})">Remove</button></div>`;
+        document.getElementById("modList").innerHTML += `<div class="modCard" id="mod_${index}"><p>${channel_json.mod_list[index]}</p><button class="modBtn" onclick="event.preventDefalult; removeMod("${channel_json.mod_list[index]}", ${index})">Remove</button></div>`;
     }
 
 }
