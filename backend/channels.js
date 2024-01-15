@@ -231,7 +231,7 @@ app.post("/channels/:name", async (req, res) => {
 
     const bio = req.body.bio;
     const owner = req.body.owner;
-    
+
     console.log("bio:" + req.body.bio);
     console.log("owner:" + req.body.owner);
 
@@ -302,7 +302,7 @@ app.post("/channels/:name", async (req, res) => {
       }
     }
 
-    const setter = {};
+    let setter = {};
 
     const keys = [
       bio, owner
