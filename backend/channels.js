@@ -265,7 +265,7 @@ app.post("/channels/:name", async (req, res) => {
       return;
     }
 
-    let mod_auth = false;
+    let mod_auth = adminAuthorized;
 
     for (const mod of channel.mod_list) {
       if (mod == req.body.user) {
