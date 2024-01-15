@@ -265,7 +265,7 @@ document.getElementById('delete_form').addEventListener('submit', async (e) => {
 
 function populate(profile_json) {
     document.getElementById("name").setAttribute("value", profile_json.name);
-    document.getElementById("bio").setAttribute("value", profile_json.bio);
+    document.getElementById("bio").innerHTML = profile_json.bio;
 
     if (profile_json.propic != null && profile_json.propic != "") {
         document.getElementById("oldPropic").innerHTML = `<img src="https://${profile_json.propic}">`;

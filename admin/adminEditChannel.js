@@ -146,7 +146,7 @@ document.getElementById('delete_form').addEventListener('submit', async (e) => {
 function populate(channel_json) {
     document.getElementById("name").setAttribute("value", channel_json.name);
     document.getElementById("channel_" + channel_json.type).setAttribute("checked", "checked");
-    document.getElementById("bio").setAttribute("value", channel_json.bio);
+    document.getElementById("bio").innerHTML = channel_json.bio;
 
     if (channel_json.propic != null && channel_json.propic != "") {
         document.getElementById("oldPropic").innerHTML = `<img src="https://${channel_json.propic}">`;

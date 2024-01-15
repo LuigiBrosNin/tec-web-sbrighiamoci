@@ -30,7 +30,7 @@ const props = defineProps(["id"]);
       <div class="input-group mb-3 flex-column">
         <div class="mb-3">
           <label for="channelType"> Bio: </label>
-          <input type="text" placeholder="Write a new bio..." v-model="bio" class="form-control mb-3" />
+          <textarea placeholder="Write a new bio..." v-model="bio" class="form-control mb-3"></textarea>
           <button @click="updateBio" class="btn d-block mx-auto orange_btn"> Update Bio </button>
         </div>
       </div>

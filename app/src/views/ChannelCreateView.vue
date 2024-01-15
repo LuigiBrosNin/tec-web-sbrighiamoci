@@ -20,7 +20,7 @@
           <input type="text" placeholder="Choose a name for the channel..." v-model="new_channel_name" required class="form-control" />
         </div>
         <div class="mb-3">
-          <input type="text" placeholder="Write a bio..." v-model="new_bio" class="form-control" />
+          <textarea placeholder="Write a bio..." v-model="new_bio" class="form-control"></textarea>
         </div>
       </div>
 
