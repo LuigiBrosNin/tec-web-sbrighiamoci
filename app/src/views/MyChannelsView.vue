@@ -1,11 +1,11 @@
 <script setup>
 import ChannelCard from "@/components/ChannelCard.vue"
+import NotLoggedIn from "@/components/NotLoggedIn.vue"
 import SearchChannelsView from "@/views/SearchChannelsView.vue"
 import ChannelCreateView from "@/views/ChannelCreateView.vue"
 </script>
 
 <template>
-
   <!-- Pulsanti di commutazione -->
   <div class="d-flex justify-content-center my-3">
     <button @click="showFollowedSection" class="btn mx-2"
@@ -25,35 +25,45 @@ import ChannelCreateView from "@/views/ChannelCreateView.vue"
 
   <!-------------------- SEZIONE CANALI SEGUITI  ------------------->
   <div v-if="activeSection === 'followed_section'">
-    <div v-for="channel in followedChannelsList" :key="channel">
-      <ChannelCard :id="channel"></ChannelCard>
-    </div>
-
-    <div class="loadMoreContainer text-center">
-      <div v-if="followedChannelsList.length < 1"> No more channels. </div>
+    <div v-if="$user != null">
+      <div v-for="channel in followedChannelsList" :key="channel">
+        <ChannelCard :id="channel"></ChannelCard>
+      </div>
+  
+      <div class="loadMoreContainer text-center">
+        <div v-if="followedChannelsList.length < 1"> No more channels. </div>
         <button v-if="!allChannelsLoaded" @click="loadMoreChannels" class="btn btn-primary loadMoreBtn"> Load more </button>
       </div>
     </div>
+    <div v-else>
+      <NotLoggedIn></NotLoggedIn>
+    </div>
+  </div>
 
   <!-------------------- SEZIONE CANALI GESTITI / POSSEDUTI  --------------------->
   <div v-if="activeSection === 'owned_section'">
-    <div v-if="ownedChannelsList.length > 0">
-      <div v-for="own in ownedChannelsList" :key="own">
-        <ChannelCard :id="own"></ChannelCard>
+    <div v-if="$user != null">
+      <div v-if="ownedChannelsList.length > 0">
+        <div v-for="own in ownedChannelsList" :key="own">
+          <ChannelCard :id="own"></ChannelCard>
+        </div>
+      </div>
+      <div v-else>
+        <p class="text-center my-3"> No owned channels. </p>
+      </div>
+  
+      <h2 class="text-center my-5"> MODERATED </h2>
+      <div v-if="moderatedChannelsList.length > 0">
+        <div v-for="mod in moderatedChannelsList" :key="mod">
+          <ChannelCard :id="mod"></ChannelCard>
+        </div>
+      </div>
+      <div v-else>
+        <p class="text-center my-3"> No moderated channels. </p>
       </div>
     </div>
     <div v-else>
-      <p class="text-center my-3"> No owned channels. </p>
-    </div>
-
-    <h2 class="text-center my-5"> MODERATED </h2>
-    <div v-if="moderatedChannelsList.length > 0">
-      <div v-for="mod in moderatedChannelsList" :key="mod">
-        <ChannelCard :id="mod"></ChannelCard>
-      </div>
-    </div>
-    <div v-else>
-      <p class="text-center my-3"> No moderated channels. </p>
+      <NotLoggedIn></NotLoggedIn>
     </div>
   </div>
 
@@ -64,14 +74,16 @@ import ChannelCreateView from "@/views/ChannelCreateView.vue"
 
   <!-------------------- SEZIONE CREAZIONE CANALI  --------------------->
   <div v-if="activeSection === 'create_section'">
-    <ChannelCreateView></ChannelCreateView>
+    <div v-if="$user != null">
+      <ChannelCreateView></ChannelCreateView>
+    </div>
+    <div v-else>
+      <NotLoggedIn></NotLoggedIn>
+    </div>
   </div>
 </template>
 
 <script>
-
-import axios from "axios";
-import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
 export default {
@@ -138,32 +150,6 @@ export default {
 
     populate(profileJson) {
       this.followedChannelsList = profileJson.following_channels;
-
-      /*
-      this.name = profileJson.name;
-      this.profilePicUrl = profileJson.propic;
-      // if propic returns null, use a default one
-      console.log(this.profilePicUrl);
-      if (this.profilePicUrl == null || this.profilePicUrl == "") {
-          this.profilePicUrl =
-              "https://site222326.tw.cs.unibo.it/images/user-default.svg";
-      } else {
-          this.profilePicUrl = `https://site222326.tw.cs.unibo.it/profiles/${this.name}/propic`;
-      }
-      //this.profilePicUrl = "https://picsum.photos/100/100"; // TODO: actually implement this
-      this.bio = profileJson.bio;
-      this.credit = profileJson.credit;
-      this.creditLimits = profileJson.credit_limits;
-      this.squealsList = profileJson.squeals_list;
-      this.followersList = profileJson.followers_list;
-      this.followingList = profileJson.following_list;
-      this.accountType = profileJson.account_type;
-      this.extraCredit = profileJson.extra_credit;
-      this.numberOfSqueals = profileJson.squeals_num;
-      this.isBanned = profileJson.is_banned;
-      this.bannedUntil = profileJson.banned_until;
-
-      this.isValid = true;*/
     },
 
     loadMoreChannels() {
@@ -246,4 +232,5 @@ export default {
   height: 10em;
   border-radius: 50%;
   margin: 0.5em;
-}</style>
+}
+</style>

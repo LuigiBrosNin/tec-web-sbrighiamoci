@@ -77,7 +77,7 @@ const router = createRouter({
       path: '/search',
       name: 'searchView',
       component: SearchView,
-      query: {author: "", popularity: "", end_date: "", start_date: "", positive_reactions: "", negative_reactions: "", impressions: "", receiver: "", keywords: "", mentions: "", account_type: "", name: "", bio: "", credit: "", credit_type: "", credit_limits: "", credit_limits_type: "", squeals_num: "", followers_num: "", banned_until: "", is_banned: "", owner: "", type: "", subscribers_num: ""}
+      query: {author: "", popularity: "", end_date: "", start_date: "", positive_reactions: "", negative_reactions: "", impressions: "", receiver: "", keyword: "", mentions: "", account_type: "", name: "", bio: "", credit: "", credit_type: "", credit_limits: "", credit_limits_type: "", squeals_num: "", followers_num: "", banned_until: "", is_banned: "", owner: "", type: "", subscribers_num: ""}
     },
     {
       path: '/channelCreate',

@@ -295,7 +295,7 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
             }
         }
 
-        const parsed_text = newSqueal.text.split(/(\ |\,|\.|\;|\:|\?|\!)/g);
+        const parsed_text = newSqueal.text.split(/(\ |\,|\.|\;|\:|\?|\!|\n)/g);
 
         for (const word of parsed_text) {
             if (word[0] === "#") {

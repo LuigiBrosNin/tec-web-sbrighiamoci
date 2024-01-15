@@ -131,19 +131,31 @@ export default {
             this.isValid = true;
         },
         parseText(text) {
-            let parsedText = text.split(/(\ |\,|\.|\;|\:|\?|\!)/g);
+            let parsedText = text.split(/(\ |\,|\.|\;|\:|\?|\!|\n)/g);
             let newText = "";
-            for (const index in parsedText) {
+            for (let index = 0; index < parsedText.length; index++) {
                 const word = parsedText[index];
                 if (word.length > 0) {
                     let firstChar = word[0];
                     if (firstChar == "#") {
-                        newText = newText.concat('<a href="">' + word + '</a>');
+                        newText = newText.concat('<a href="https://site222326.tw.cs.unibo.it/app/search/?keywords='+ word.slice(1) +'">' + word + '</a>');
                     } else if (firstChar == "@") {
-                        newText = newText.concat('<a href="/profile/' + word.slice(1) + '">' + word + '</a>');
+                        newText = newText.concat('<a href="https://site222326.tw.cs.unibo.it/app/profile/' + word.slice(1) + '">' + word + '</a>');
                     } else if (firstChar == "§") {
-                        newText = newText.concat('<a href="/channel/' + word.slice(1) + '">' + word + '</a>');
-                    } else {
+                        newText = newText.concat('<a href="https://site222326.tw.cs.unibo.it/app/channel/' + word.slice(1) + '">' + word + '</a>');
+                    } else if ((word == "https" || word == "http") && parsedText[index + 1] == ":" && parsedText[index + 2].startsWith("//")) {
+                        let link = "";
+                        let i = 0;
+                        while(parsedText[index + i] != " " && parsedText[index + i] != "," && parsedText[index + i] != ";" && parsedText[index + i] != "\n" && index + i < parsedText.length){
+                            link = link.concat(parsedText[index + i]);
+                            i++;
+                        }
+                        newText = newText.concat('<a href="' + link + '">' + link + '</a>');
+                        if(index + i - 1 > 0){
+                            index = index + i - 1;
+                        }
+                    } 
+                    else {
                         newText = newText.concat(word);
                     }
                 }
