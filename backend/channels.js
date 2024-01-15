@@ -216,7 +216,7 @@ app.put("/channels/:name", async (req, res) => {
 
 //* POST
 // updates the channel with the specified name
-// body parameters: user, bio (users)
+// body parameters: user, bio (users), owner (admin)
 app.post("/channels/:name", async (req, res) => {
   try {
     const channelName = req.params.name;
@@ -230,10 +230,11 @@ app.post("/channels/:name", async (req, res) => {
     const SMMAuthorized = await isSMMAuthorized(req.session.user, req.body.user) && await isAuthorizedOrHigher(req.body.user, typeOfProfile.user);
 
     const bio = req.body.bio;
+    const owner = req.body.owner;
 
-    if (bio == null) {
+    if (bio == null && owner == null) {
       res.status(400).json({
-        message: "bio cannot be null"
+        message: "at least one field is required"
       });
       return;
     }
@@ -241,6 +242,13 @@ app.post("/channels/:name", async (req, res) => {
     if (!authorized && !SMMAuthorized && !adminAuthorized) {
       res.status(401).json({
         message: "Not authorized to modify this channel."
+      });
+      return;
+    }
+
+    if (owner != null && !adminAuthorized) {
+      res.status(401).json({
+        message: "Not authorized to modify the owner of this channel."
       });
       return;
     }
@@ -277,21 +285,38 @@ app.post("/channels/:name", async (req, res) => {
       return;
     }
 
+    if (req.body.owner != null) {
+      await mongoClient.connect();
+      const owner = await collection_profiles.findOne({
+        name: req.body.owner
+      });
+
+      if (owner.is_deleted || owner === null) {
+        res.status(404).json({
+          message: "Owner not found."
+        });
+        return;
+      }
+    }
+
+    const setter = {};
+
+    const keys = [
+      bio, owner
+    ]
+
+    for (const key of keys) {
+      if (req.body[key] != null) {
+        setter[key] = req.body[key];
+      }
+    }
+
     await mongoClient.connect();
     const result = await collection_channels.updateOne({
       name: channelName
     }, {
-      $set: {
-        bio: bio
-      }
+      $set: setter
     });
-
-    if (result.modifiedCount === 0) {
-      res.status(404).json({
-        message: "Channel not found."
-      });
-      return;
-    }
 
     res.status(200).json({
       message: "Channel updated successfully."
