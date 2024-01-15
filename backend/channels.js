@@ -305,7 +305,7 @@ app.post("/channels/:name", async (req, res) => {
     let setter = {};
 
     const keys = [
-      bio, owner
+      "bio", "owner"
     ]
 
     for (const key of keys) {
