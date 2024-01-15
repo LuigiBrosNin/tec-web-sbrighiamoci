@@ -311,6 +311,8 @@ app.post("/channels/:name", async (req, res) => {
       }
     }
 
+    console.log(setter);
+
     await mongoClient.connect();
     const result = await collection_channels.updateOne({
       name: channelName
