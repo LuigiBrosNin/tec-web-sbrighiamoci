@@ -88,6 +88,7 @@ document.getElementById('owner_mods_form').addEventListener('submit', async (e) 
     let data = Object.fromEntries(new FormData(e.target).entries());
     console.log(data);
 
+    let done = false;
 
     if (data.owner != null && data.owner != "" && data.owner != channel.owner) {
         console.log(JSON.stringify(data.owner));
@@ -99,7 +100,7 @@ document.getElementById('owner_mods_form').addEventListener('submit', async (e) 
             body: JSON.stringify({owner: data.owner})
         });
         if (res.status == 200) {
-            window.location.href = `${sitePrefix}/admin/channel/${channel.name}`;
+            done = true;
         } else {
             alert("an error setting the new owner has occurred, please try again later");
         }
@@ -114,10 +115,14 @@ document.getElementById('owner_mods_form').addEventListener('submit', async (e) 
             body: JSON.stringify({mod_name: data.newMod})
         });
         if (res.status == 200) {
-            window.location.href = `${sitePrefix}/admin/channel/${channel.name}`;
+            done = true;
         } else {
             alert("an error setting the new owner has occurred, please try again later");
         }
+    }
+
+    if(done){
+        window.location.href = `${sitePrefix}/admin/channel/${channel.name}`;
     }
 
 });
@@ -153,7 +158,7 @@ function populate(channel_json) {
     document.getElementById("owner").setAttribute("value", channel_json.owner);
 
     for (let index in channel_json.mod_list) {
-        document.getElementById("modList").innerHTML += `<div class="modCard" id="mod_${index}"><p>${channel_json.mod_list[index]}</p><button onclick="e.preventDefalult; removeMod(${channel_json.mod_list[index]}, ${index})">Remove</button></div>`;
+        document.getElementById("modList").innerHTML += `<div class="modCard" id="mod_${index}"><p>${channel_json.mod_list[index]}</p><button onclick="event.preventDefalult; removeMod(${channel_json.mod_list[index]}, ${index})">Remove</button></div>`;
     }
 
 }
