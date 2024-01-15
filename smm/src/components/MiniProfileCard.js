@@ -9,7 +9,7 @@ export class MiniProfileCard extends Component {
             <div className="card">
                 <div className="row no-gutters">
                     <div className="col-4 justify-content-center align-items-center">
-                        <img src={'https://' + this.props.profile.propic} className="card-img profile_img" alt="Profile Picture" />
+                        <img src={this.props.profile.propic == null ? "https://site222326.tw.cs.unibo.it/images/user-default.svg" : 'https://' + this.props.profile.propic } className="card-img profile_img" alt="Profile Picture" />
                     </div>
                     <div className="col-8">
                         <div className="card-body">

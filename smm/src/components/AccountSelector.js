@@ -59,10 +59,11 @@ export class AccountSelector extends Component {
       .then(res => {
         const accounts = res.data.smm_customers;
         const smm_account = res.data;
-        if (smm_account.propic == null) {
-          smm_account.propic = "https://site222326.tw.cs.unibo.it/images/user-default.svg";
+        if (smm_account.propic == null || profileJson.propic == "") {
+          smm_account.propic =
+            "https://site222326.tw.cs.unibo.it/images/user-default.svg";
         } else {
-          smm_account.profilePicUrl = "https://site222326.tw.cs.unibo.it/profiles/" + smm_account.name + "/propic";
+          smm_account.propic = "https://" + smm_account.propic;
         }
         this.setState({ accounts: accounts, smm_account: smm_account, selectedAccount: smm_account });
       })

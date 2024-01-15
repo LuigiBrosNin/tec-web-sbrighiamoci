@@ -240,7 +240,7 @@ export class Squeal extends Component {
           </div>
 
           <div className="profile_data">
-            <img className="profile_img" src={`https://${this.props.selectedAccount.propic}`} />
+            <img className="profile_img" src={this.props.selectedAccount.propic == null ? "https://site222326.tw.cs.unibo.it/images/user-default.svg" : 'https://' + this.props.selectedAccount.propic } />
             <RouterLink to={"smm/profile/" + this.props.squeal.author} className="profile_name"> @{this.props.squeal.author}</RouterLink>
           </div>
 

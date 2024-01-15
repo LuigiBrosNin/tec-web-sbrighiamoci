@@ -254,7 +254,7 @@ export class SquealPut extends Component {
         this.setState({
           temp_credits: response.data.credit,
           credits: response.data.credit,
-          propic: response.data.propic ,
+          propic: response.data.propic ? "https://" + response.data.propic : "https://site222326.tw.cs.unibo.it/images/user-default.svg",
           receiver: this.props.receiver ? this.props.receiver : "",
           reply_to: this.props.replyto ? this.props.replyto : "",
         });
