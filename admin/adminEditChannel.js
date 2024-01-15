@@ -1,3 +1,5 @@
+const { json } = require("stream/consumers");
+
 const sitePrefix = "https://site222326.tw.cs.unibo.it";
 const editChannelPrefix = sitePrefix + "/admin/adminedit/channel/";
 
@@ -20,11 +22,6 @@ if (window.location.href.startsWith(editChannelPrefix)) {
 }
 
 
-let newPropic;
-
-document.getElementById('propic').addEventListener('change', (event) => {
-    newPropic = event.target.files[0];
-});
 
 
 document.getElementById('channel_form').addEventListener('submit', async (e) => {
@@ -34,33 +31,10 @@ document.getElementById('channel_form').addEventListener('submit', async (e) => 
 
     let changes = {};
 
-    // name cannot be modified
-
-    //TODO: add type control
+    // name and type cannot be modified
     if (data.bio != null && data.bio != "" && data.bio != channel.bio) {
         changes.bio = data.bio;
     }
-
-    /*
-    let resPropic;
-    if (data.deletePropic != null && data.deletePropic != "") {
-        resPropic = await fetch(`${sitePrefix}/profiles/${channel.name}/propic`, {
-            method: "DELETE"
-        });
-    }
-    else if (newPropic != null) {
-        let propicData = new FormData();
-        propicData.append("file", newPropic);
-        console.log(newPropic);
-        resPropic = await fetch(`${sitePrefix}/profiles/${channel.name}/propic`, {
-            method: "PUT",
-            body: propicData
-        });
-    }
-    if (resPropic != null && resPropic.status != 200) {
-        alert("an error uploading the new propic has occurred, please try again later");
-    }
-    */
 
     console.log(JSON.stringify(changes));
     let res = await fetch(`${sitePrefix}/channels/${channel.name}`, {
@@ -77,32 +51,91 @@ document.getElementById('channel_form').addEventListener('submit', async (e) => 
     }
 
 });
-/*
-document.getElementById('account_type_radio').addEventListener('change', async (e) => {
-    let selectedAccountType = e.target.value;
 
-    if (selectedAccountType == "premium") {
-        document.getElementById("smm").removeAttribute("disabled");
+let newPropic;
+
+document.getElementById('propic').addEventListener('change', (event) => {
+    newPropic = event.target.files[0];
+});
+
+document.getElementById('propic_form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    let data = Object.fromEntries(new FormData(e.target).entries());
+    console.log(data);
+
+    let resPropic;
+    if (data.deletePropic != null && data.deletePropic != "") {
+        resPropic = await fetch(`${sitePrefix}/channels/${channel.name}/propic`, {
+            method: "DELETE"
+        });
     }
-    else {
-        document.getElementById("smm").setAttribute("disabled", "disabled");
+    else if (newPropic != null) {
+        let propicData = new FormData();
+        propicData.append("file", newPropic);
+        console.log(newPropic);
+        resPropic = await fetch(`${sitePrefix}/channels/${channel.name}/propic`, {
+            method: "PUT",
+            body: propicData
+        });
     }
+    if (resPropic.status == 200) {
+        window.location.href = `${sitePrefix}/admin/channel/${channel.name}`;
+    } else {
+        alert("an error uploading the new propic has occurred, please try again later");
+    }
+});
+
+document.getElementById('owner_mods_form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    let data = Object.fromEntries(new FormData(e.target).entries());
+    console.log(data);
+
+
+    if (data.owner != null && data.owner != "" && data.owner != channel.owner) {
+        console.log(JSON.stringify(data.owner));
+        let res = await fetch(`${sitePrefix}/channels/${channel.name}`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({owner: data.owner})
+        });
+        if (res.status == 201) {
+            window.location.href = `${sitePrefix}/admin/channel/${channel.name}`;
+        } else {
+            alert("an error setting the new owner has occurred, please try again later");
+        }
+    }
+
+    if (data.newMod != null && data.newMod != "") {
+        let res = await fetch(`${sitePrefix}/channels/${channel.name}`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(changes)
+        });
+        if (res.status == 201) {
+            window.location.href = `${sitePrefix}/admin/channel/${channel.name}`;
+        } else {
+            alert("an error setting the new owner has occurred, please try again later");
+        }
+    }
+
 });
 
 document.getElementById('delete_form').addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    let res = await fetch(`${sitePrefix}/profiles/${channel.name}`, {
+    let res = await fetch(`${sitePrefix}/channels/${channel.name}`, {
         method: "DELETE",
     });
     if (res.status == 200) {
         window.location.href = `${sitePrefix}/admin/`;
     } else {
-        alert("an error deleting this profile has occurred, please try again later");
+        alert("an error deleting this channel has occurred, please try again later");
     }
 });
-*/
-
 
 
 
@@ -120,10 +153,21 @@ function populate(channel_json) {
     }
 
     document.getElementById("owner").setAttribute("value", channel_json.owner);
-    
-    for (let index in channel_json.mod_list){
-        document.getElementById("modList").innerHTML += `<div><p>${channel_json.mod_list[index]}</p><button onclick="console.log('removed')">Remove</button></div>`;
+
+    for (let index in channel_json.mod_list) {
+        document.getElementById("modList").innerHTML += `<div class="modCard" id="mod_${index}"><p>${channel_json.mod_list[index]}</p><button onclick="e.preventDefalult; removeMod(${channel_json.mod_list[index]}, ${index})">Remove</button></div>`;
     }
-    
+
 }
 
+async function removeMod(modName, modIndex) {
+    let res = await fetch(`${sitePrefix}/channels/${channel.name}/mod_list`, {
+        method: "DELETE",
+        body: json.stringify({mod_name: modName})
+    });
+    if (res.status == 200) {
+        document.getElementById(`mod_${modIndex}`).outerHTML = "";
+    } else {
+        alert("an error removing a moderator has occurred, please try again later");
+    }
+}
