@@ -229,8 +229,8 @@ app.post("/channels/:name", async (req, res) => {
     const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === req.body.user;
     const SMMAuthorized = await isSMMAuthorized(req.session.user, req.body.user) && await isAuthorizedOrHigher(req.body.user, typeOfProfile.user);
 
-    const bio = req.body.bio;
-    const owner = req.body.owner;
+    console.log("bio:" + req.body.bio);
+    console.log("owner:" + req.body.owner);
 
     if (bio == null && owner == null) {
       res.status(400).json({
