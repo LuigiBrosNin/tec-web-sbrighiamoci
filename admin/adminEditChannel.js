@@ -42,7 +42,7 @@ document.getElementById('channel_form').addEventListener('submit', async (e) => 
         },
         body: JSON.stringify(changes)
     });
-    if (res.status == 201) {
+    if (res.status == 200) {
         window.location.href = `${sitePrefix}/admin/channel/${channel.name}`;
     } else {
         alert("an error has occurred, please try again later");
@@ -174,3 +174,6 @@ async function removeMod(modName, modIndex) {
         alert("an error removing a moderator has occurred, please try again later");
     }
 }
+
+// ugly export
+window.removeMod = removeMod;
