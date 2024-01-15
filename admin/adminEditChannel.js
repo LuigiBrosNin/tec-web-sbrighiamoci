@@ -1,5 +1,3 @@
-const { json } = require("stream/consumers");
-
 const sitePrefix = "https://site222326.tw.cs.unibo.it";
 const editChannelPrefix = sitePrefix + "/admin/adminedit/channel/";
 
@@ -100,7 +98,7 @@ document.getElementById('owner_mods_form').addEventListener('submit', async (e) 
             },
             body: JSON.stringify({owner: data.owner})
         });
-        if (res.status == 201) {
+        if (res.status == 200) {
             window.location.href = `${sitePrefix}/admin/channel/${channel.name}`;
         } else {
             alert("an error setting the new owner has occurred, please try again later");
@@ -108,14 +106,14 @@ document.getElementById('owner_mods_form').addEventListener('submit', async (e) 
     }
 
     if (data.newMod != null && data.newMod != "") {
-        let res = await fetch(`${sitePrefix}/channels/${channel.name}`, {
-            method: "POST",
+        let res = await fetch(`${sitePrefix}/channels/${channel.name}/mod_list`, {
+            method: "PUT",
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(changes)
+            body: JSON.stringify({mod_name: data.newMod})
         });
-        if (res.status == 201) {
+        if (res.status == 200) {
             window.location.href = `${sitePrefix}/admin/channel/${channel.name}`;
         } else {
             alert("an error setting the new owner has occurred, please try again later");
@@ -163,7 +161,7 @@ function populate(channel_json) {
 async function removeMod(modName, modIndex) {
     let res = await fetch(`${sitePrefix}/channels/${channel.name}/mod_list`, {
         method: "DELETE",
-        body: json.stringify({mod_name: modName})
+        body: JSON.stringify({mod_name: modName})
     });
     if (res.status == 200) {
         document.getElementById(`mod_${modIndex}`).outerHTML = "";
