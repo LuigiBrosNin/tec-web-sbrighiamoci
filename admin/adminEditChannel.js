@@ -166,6 +166,9 @@ function populate(channel_json) {
 async function removeMod(modName, modIndex) {
     let res = await fetch(`${sitePrefix}/channels/${channel.name}/mod_list`, {
         method: "DELETE",
+        headers: {
+            'Content-Type': 'application/json'
+        },
         body: JSON.stringify({mod_name: modName})
     });
     if (res.status == 200) {
