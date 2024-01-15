@@ -114,7 +114,7 @@ function populate(squeal_json) {
     document.getElementById("receiver").setAttribute("value", squeal_json.receiver);
     document.getElementById("isPrivate").setAttribute("value", squeal_json.is_private);
     document.getElementById("replyTo").setAttribute("value", squeal_json.reply_to);
-    document.getElementById("squealText").setAttribute("value", squeal_json.text);
+    document.getElementById("squealText").innerHTML = squeal_json.text;
     document.getElementById("squealDate").setAttribute("value", squeal_json.date);
     document.getElementById("positiveReactions").setAttribute("value", squeal_json.positive_reactions);
     document.getElementById("negativeReactions").setAttribute("value", squeal_json.negative_reactions);
