@@ -59,7 +59,7 @@ export class AccountSelector extends Component {
       .then(res => {
         const accounts = res.data.smm_customers;
         const smm_account = res.data;
-        if (smm_account.propic == null || profileJson.propic == "") {
+        if (smm_account.propic == null || smm_account.propic == "") {
           smm_account.propic =
             "https://site222326.tw.cs.unibo.it/images/user-default.svg";
         } else {
