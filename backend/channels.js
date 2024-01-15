@@ -232,7 +232,7 @@ app.post("/channels/:name", async (req, res) => {
     console.log("bio:" + req.body.bio);
     console.log("owner:" + req.body.owner);
 
-    if (bio == null && owner == null) {
+    if (req.body.bio == null && req.body.owner == null) {
       res.status(400).json({
         message: "at least one field is required"
       });
