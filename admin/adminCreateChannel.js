@@ -9,9 +9,10 @@ document.getElementById('channel_creation_form').addEventListener('submit', asyn
     console.log(data);
 
     let newChannelData = {};
+    let newChannelName;
 
     if (data.name != null && data.name != "") {
-        newChannelData.name = data.name;
+        newChannelName = data.name;
     }
     else {
         alert("To create a channel you must specify its name");
@@ -19,7 +20,7 @@ document.getElementById('channel_creation_form').addEventListener('submit', asyn
     }
 
     if (data.channel_type != null && data.channel_type != "") {
-        newChannelData.channel_type = data.channel_type;
+        newChannelData.type = data.channel_type;
     }
     else {
         alert("To create a channel you must specify its type");
@@ -27,7 +28,7 @@ document.getElementById('channel_creation_form').addEventListener('submit', asyn
     }
 
     if (data.owner != null && data.owner != "") { // if not specified the owner is the current user
-        newChannelData.owner = data.owner;
+        newChannelData.user = data.owner;
     }
     
     if (data.bio != null && data.bio != "") {
@@ -35,7 +36,7 @@ document.getElementById('channel_creation_form').addEventListener('submit', asyn
     }
 
     console.log(JSON.stringify(newChannelData));
-    let res = await fetch(`${sitePrefix}/channels/${newChannelData.name}`, {
+    let res = await fetch(`${sitePrefix}/channels/${newChannelName}`, {
         method: "PUT",
         headers: {
             'Content-Type': 'application/json'
@@ -43,7 +44,7 @@ document.getElementById('channel_creation_form').addEventListener('submit', asyn
         body: JSON.stringify(newChannelData)
     });
     if (res.status == 200) {
-        window.location.href = `${sitePrefix}/admin/channel/${channel.name}`;
+        window.location.href = `${sitePrefix}/admin/channel/${newChannelName}`;
     } else {
         alert("an error creating the channel has occurred, please try again later");
     }
