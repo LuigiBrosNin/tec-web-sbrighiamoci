@@ -8,3 +8,7 @@
     width: 2em;
     filter: invert(17%) sepia(87%) saturate(7277%) hue-rotate(359deg) brightness(109%) contrast(118%);
 }
+
+.admin-bg-button {
+    background-color: #ff0000;
+}
