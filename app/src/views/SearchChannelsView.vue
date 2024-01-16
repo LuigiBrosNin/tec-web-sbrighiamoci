@@ -112,6 +112,10 @@ export default {
     },
     async mounted() {
 
+        this.currentPage = 1;
+        this.startIndex = 0;
+        this.endIndex = 9;
+
         //initialize query field from $query
         if(this.$route.query.name != null) this.query.name = this.$route.query.name;
         if(this.$route.query.owner != null) this.query.owner = this.$route.query.owner;
@@ -124,13 +128,17 @@ export default {
         this.feed = await response.json();
         this.feedVersion++;
 
+        console.log("fetch uri: " + this.getFetchUri(0));
+        console.log("feed uri + offset: " + this.getFetchUri(this.offset));
+
         // lazy check to avoid making another request
         if (this.feed.length < 10) {
             this.nextPageIsEmpty = true;
         } else {
             // check if next page is empty for sure
-            const response2 = await fetch(this.getFetchUri(10));
+            const response2 = await fetch(this.getFetchUri(this.offset));
             const feed2 = await response2.json();
+            console.log("feed2 length: " + feed2.length);
             if (feed2.length == 0) {
                 this.nextPageIsEmpty = true;
             } else {
@@ -166,7 +174,7 @@ export default {
             //retrieve squeals and reset pages
             this.currentPage = 1;
             this.startIndex = 0;
-            this.endIndex = 10;
+            this.endIndex = 9;
             const response = await fetch(this.getFetchUri(0));
 
             // assigns the json to the feed variable

@@ -93,7 +93,7 @@ app.get("/channels", async (req, res) => {
         timestamp: -1
       }) // ordered inverse chronological order
       .skip(startIndex) // starting from startIndex
-      .limit(endIndex) // returns endIndex squeals
+      .limit(endIndex - startIndex + 1) // returns endIndex squeals
       .toArray(); // returns the squeals as an array
 
 
