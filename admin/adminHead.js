@@ -246,17 +246,15 @@ function generateNewSquealButton(profile_id) {
 function addCreateButtonToMyChannelsView() {
     const buttonsAreas = Array.from(document.getElementsByClassName("myChannelsButtonsContainer")); // there should be only one per page, but who knows...
     if (buttonsAreas.length > 0) {
-        for (const area of buttonsAreas) {
-            let oldCreateButton = area.getElementById("createChannelsButton");
-            if (oldCreateButton != null) {
-                oldCreateButton.outerHTML = "";
-            }
+        let oldCreateButton = document.getElementById("createChannelsButton");
+        if (oldCreateButton != null) {
+            oldCreateButton.outerHTML = "";
+        }
 
-            let newCreateButton = area.getElementById("adminCreateChannelsButton");
-            if (newCreateButton == null) {
-                const button = generateCreateChannelButton();
-                area.appendChild(button);
-            }
+        let newCreateButton = document.getElementById("adminCreateChannelsButton");
+        if (newCreateButton == null) {
+            const button = generateCreateChannelButton();
+            buttonsAreas[0].appendChild(button);
         }
     }
 }
