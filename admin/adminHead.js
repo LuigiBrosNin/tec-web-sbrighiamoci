@@ -222,17 +222,22 @@ function addNewSquealButtonToChannel() {
 }
 
 function generateNewSquealButton(profile_id) {
-    const newSquealButton = document.createElement("button");
+    const newSquealButton = document.createElement("a");
     newSquealButton.classList.add("channel_new_squeal_button");
     newSquealButton.classList.add("admin-bg-button");
     newSquealButton.setAttribute("href", `window.location.href = "${sitePrefix}/admin/squealPut?receiver=${profile_id}"`);
+    
+    const container = document.createElement("div");
+    container.classList.add("channel_new_squeal_button_content");
     const img = document.createElement("img");
     img.setAttribute("src", sitePrefix + "/icons/plus-svgrepo-com.svg");
     img.classList.add("channel_new_squeal_button_image");
-    newSquealButton.appendChild(img);
+    container.appendChild(img);
     const text = document.createElement("p");
     text.classList.add("channel_new_squeal_button_text");
     text.append("Create a new Squeal in this channel");
-    newSquealButton.appendChild(text);
+    container.appendChild(text);
+    
+    newSquealButton.appendChild(container);
     return newSquealButton;
 }
