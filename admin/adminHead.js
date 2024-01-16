@@ -23,6 +23,7 @@ if (currentUrl.startsWith(adminPrefix)) {
         addSettingsButtonToProfile();
         addSettingsButtonToChannel();
         addNewSquealButtonToChannel();
+        addCreateButtonToMyChannelsView();
 
         console.log("DOM changed", mutations, observer);
     });
@@ -92,8 +93,8 @@ function changeUrlFromAppToAdmin(url) {
 
 function removeSwitchArea() {
     const areas = document.getElementsByClassName("switch_area_btn");
-    if(areas.length > 0){
-        for(const index in areas){
+    if (areas.length > 0) {
+        for (const index in areas) {
             areas[index].outerHTML = "";
         }
     }
@@ -103,12 +104,12 @@ function addEditAndDeleteButtonsToAllSqueals() {
     const squeals = Array.from(document.getElementsByClassName("squeal_container"));
     for (const index in squeals) {
         let buttonArea = Array.from(squeals[index].getElementsByClassName("btn_area"))[0];
-        
-        if(buttonArea != null){
+
+        if (buttonArea != null) {
             const buttons = document.createElement("div");
             buttons.appendChild(generateEditButton(squeals[index].id));
             buttons.appendChild(generateDeleteButton(squeals[index].id));
-    
+
             if (!buttonArea.hasChildNodes() || !buttonArea.childNodes[0].isEqualNode(buttons) || buttonArea.childNodes.length != 1) {
                 buttonArea.innerHTML = "";
                 buttonArea.appendChild(buttons);
@@ -160,11 +161,11 @@ function addSettingsButtonToProfile() {
     const profiles = Array.from(document.getElementsByClassName("profile_container")); // there should be only one per page, but who knows...
     for (const index in profiles) {
         let buttonArea = Array.from(profiles[index].getElementsByClassName("btn_area"))[0];
-        
-        if(buttonArea != null){
+
+        if (buttonArea != null) {
             const button = document.createElement("div");
             button.appendChild(generateProfileSettingsButton(profiles[index].id));
-    
+
             if (!buttonArea.hasChildNodes() || !buttonArea.childNodes[0].isEqualNode(button) || buttonArea.childNodes.length != 1) {
                 buttonArea.innerHTML = "";
                 buttonArea.appendChild(button);
@@ -177,11 +178,11 @@ function addSettingsButtonToChannel() {
     const channels = Array.from(document.getElementsByClassName("channelInfoContainer")); // there should be only one per page, but who knows...
     for (const index in channels) {
         let buttonArea = Array.from(channels[index].getElementsByClassName("btn_area"))[0];
-        
-        if(buttonArea != null){
+
+        if (buttonArea != null) {
             const button = document.createElement("div");
             button.appendChild(generateChannelSettingsButton(channels[index].id));
-    
+
             if (!buttonArea.hasChildNodes() || !buttonArea.childNodes[0].isEqualNode(button) || buttonArea.childNodes.length != 1) {
                 buttonArea.innerHTML = "";
                 buttonArea.appendChild(button);
@@ -213,8 +214,8 @@ function addNewSquealButtonToChannel() {
     const channels = Array.from(document.getElementsByClassName("channelInfoContainer")); // there should be only one per page, but who knows...
     for (const channel of channels) {
         let newSquealButton = Array.from(channel.getElementsByClassName("channel_new_squeal_button"))[0];
-        
-        if(newSquealButton == null){
+
+        if (newSquealButton == null) {
             const button = generateNewSquealButton(channel.id);
             channel.appendChild(button);
         }
@@ -225,7 +226,7 @@ function generateNewSquealButton(profile_id) {
     const newSquealButton = document.createElement("a");
     newSquealButton.classList.add("channel_new_squeal_button");
     newSquealButton.setAttribute("href", `${sitePrefix}/admin/squealPut?receiver=${profile_id}`);
-    
+
     const container = document.createElement("div");
     container.classList.add("channel_new_squeal_button_content");
     container.classList.add("admin-bg-button");
@@ -237,7 +238,33 @@ function generateNewSquealButton(profile_id) {
     text.classList.add("channel_new_squeal_button_text");
     text.append("Create a new Squeal in this channel");
     container.appendChild(text);
-    
+
     newSquealButton.appendChild(container);
     return newSquealButton;
+}
+
+function addCreateButtonToMyChannelsView() {
+    const buttonsAreas = Array.from(document.getElementsByClassName("myChannelsButtonsContainer")); // there should be only one per page, but who knows...
+    if (buttonsAreas.length > 0) {
+        for (const area of buttonsAreas) {
+            let oldCreateButton = area.getElementById("createChannelsButton");
+            if (oldCreateButton != null) {
+                oldCreateButton.outerHTML = "";
+            }
+
+            let newCreateButton = area.getElementById("adminCreateChannelsButton");
+            if (newCreateButton == null) {
+                const button = generateCreateChannelButton();
+                area.appendChild(button);
+            }
+        }
+    }
+}
+
+function generateCreateChannelButton() {
+    const newChannelButton = document.createElement("a");
+    newChannelButton.id = "adminCreateChannelsButton";
+    newChannelButton.setAttribute("href", `${sitePrefix}/admin/admincreate/channel`);
+    newChannelButton.append("Create");
+    return newChannelButton;
 }
