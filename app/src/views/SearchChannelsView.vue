@@ -62,7 +62,7 @@
     </div>
 
     <!-- for function that defines every channel in the feed object-->
-    <div v-for="channel in feed" :key="feedVersion">
+    <div v-for="channel in feed" :key="channel.name">
         <ChannelCard :channel_json="channel"></ChannelCard>
     </div>
 
@@ -125,16 +125,12 @@ export default {
         this.feedVersion++;
 
         // lazy check to avoid making another request
-        if (this.feed.length < 9) {
+        if (this.feed.length < 10) {
             this.nextPageIsEmpty = true;
         } else {
             // check if next page is empty for sure
-            const response2 = await fetch(
-                `https://site222326.tw.cs.unibo.it/channels/?startindex=${this.startIndex + 10
-                }&endindex=${this.endIndex + 10}`
-            );
+            const response2 = await fetch(this.getFetchUri(10));
             const feed2 = await response2.json();
-            console.log("feed2 length: " + feed2.length);
             if (feed2.length == 0) {
                 this.nextPageIsEmpty = true;
             } else {
@@ -170,7 +166,7 @@ export default {
             //retrieve squeals and reset pages
             this.currentPage = 1;
             this.startIndex = 0;
-            this.endIndex = 9;
+            this.endIndex = 10;
             const response = await fetch(this.getFetchUri(0));
 
             // assigns the json to the feed variable
@@ -178,7 +174,7 @@ export default {
             this.feedVersion++;
 
             // lazy check to avoid making another request
-            if (this.feed.length < 9) {
+            if (this.feed.length < 10) {
                 this.nextPageIsEmpty = true;
             } else {
                 // check if next page is empty for sure
@@ -207,7 +203,7 @@ export default {
             }
 
             // lazy check to avoid making another request
-            if (this.feed.length < 9) {
+            if (this.feed.length < 10) {
                 this.nextPageIsEmpty = true;
             } else {
                 // check if next page is empty for sure

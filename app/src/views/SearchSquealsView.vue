@@ -101,7 +101,7 @@ import Squeal from "@/components/Squeal.vue";
   </div>
 
   <!-- for function that defines every squeal in the feed object-->
-  <Squeal v-for="squeal in feed" :squeal_json="squeal" :key="feedVersion"></Squeal>
+  <Squeal v-for="squeal in feed" :squeal_json="squeal" :key="squeal.id"></Squeal>
 
   <!-- buttons to change page -->
   <div class="d-flex justify-content-center align-items-center my-3">
@@ -203,7 +203,7 @@ export default {
     this.feedVersion++;
 
     // lazy check to avoid making another request
-    if (this.feed.length < 9) {
+    if (this.feed.length < 10) {
       this.nextPageIsEmpty = true;
     } else {
       // check if next page is empty for sure
@@ -279,7 +279,7 @@ export default {
       this.feedVersion++;
 
       // lazy check to avoid making another request
-      if (this.feed.length < 9) {
+      if (this.feed.length < 10) {
         this.nextPageIsEmpty = true;
       } else {
         // check if next page is empty for sure
@@ -308,7 +308,7 @@ export default {
       }
 
       // lazy check to avoid making another request
-      if (this.feed.length < 9) {
+      if (this.feed.length < 10) {
         this.nextPageIsEmpty = true;
       } else {
         // check if next page is empty for sure

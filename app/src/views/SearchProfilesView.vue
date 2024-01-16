@@ -77,7 +77,7 @@
     </div>
 
     <!-- for function that defines every channel in the feed object-->
-    <div v-for="profile in feed" :key="feedVersion">
+    <div v-for="profile in feed" :key="profile.name">
         <ProfileCard :profile_json="profile"></ProfileCard>
     </div>
 
@@ -175,7 +175,7 @@ export default {
         this.feedVersion++;
 
         // lazy check to avoid making another request
-        if (this.feed.length < 9) {
+        if (this.feed.length < 10) {
             this.nextPageIsEmpty = true;
         } else {
             // check if next page is empty for sure
@@ -228,13 +228,12 @@ export default {
             this.feedVersion++;
 
             // lazy check to avoid making another request
-            if (this.feed.length < 9) {
+            if (this.feed.length < 10) {
                 this.nextPageIsEmpty = true;
             } else {
                 // check if next page is empty for sure
                 const response2 = await fetch(this.getFetchUri(this.offset));
                 const feed2 = await response2.json();
-                console.log("feed2 length: " + feed2.length);
                 if (feed2.length == 0) {
                     this.nextPageIsEmpty = true;
                 } else {
@@ -257,7 +256,7 @@ export default {
             }
 
             // lazy check to avoid making another request
-            if (this.feed.length < 9) {
+            if (this.feed.length < 10) {
                 this.nextPageIsEmpty = true;
             } else {
                 // check if next page is empty for sure
