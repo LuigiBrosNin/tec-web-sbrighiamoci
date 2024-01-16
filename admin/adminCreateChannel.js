@@ -26,10 +26,6 @@ document.getElementById('channel_creation_form').addEventListener('submit', asyn
         alert("To create a channel you must specify its type");
         return;
     }
-
-    if (data.owner != null && data.owner != "") { // if not specified the owner is the current user
-        newChannelData.user = data.owner;
-    }
     
     if (data.bio != null && data.bio != "") {
         newChannelData.bio = data.bio;
