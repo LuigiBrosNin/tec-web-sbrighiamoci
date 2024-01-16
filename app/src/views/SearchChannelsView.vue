@@ -128,9 +128,6 @@ export default {
         this.feed = await response.json();
         this.feedVersion++;
 
-        console.log("fetch uri: " + this.getFetchUri(0));
-        console.log("feed uri + offset: " + this.getFetchUri(this.offset));
-
         // lazy check to avoid making another request
         if (this.feed.length < 10) {
             this.nextPageIsEmpty = true;
@@ -138,7 +135,6 @@ export default {
             // check if next page is empty for sure
             const response2 = await fetch(this.getFetchUri(this.offset));
             const feed2 = await response2.json();
-            console.log("feed2 length: " + feed2.length);
             if (feed2.length == 0) {
                 this.nextPageIsEmpty = true;
             } else {
