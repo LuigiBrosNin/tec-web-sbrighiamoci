@@ -9,58 +9,58 @@ const props = defineProps(["id"]);
     <!-- Titolo -->
     <h3 class="title"> Modify your channel </h3>
 
-      <!-- Propic -->
-      <div class="flex-column">
-        <label for=""> Actual profile picture: </label>
-        <img class="img-fluid rounded-circle profile_img" :src="profilePicUrl" />
+    <!-- Propic -->
+    <div class="flex-column">
+      <label for=""> Current profile picture: </label>
+      <img class="img-fluid rounded-circle profile_img" :src="profilePicUrl" />
+    </div>
+    <div class="input-group mb-3 flex-column">
+      <div class="custom-file my-3">
+        <label for="" class="mb-1"> Choose a new profile picture: </label>
+        <input type="file" class="form-control my-2" id="inputGroupFile01" @change="handleFileUpload" accept="image/*" />
       </div>
-      <div class="input-group mb-3 flex-column">
-        <div class="custom-file my-3">
-          <label for="" class="mb-1"> Choose a new profile picture: </label>
-          <input type="file" class="form-control my-2" id="inputGroupFile01" @change="handleFileUpload" accept="image/*" />
-        </div>
-        <div class="input-group-append">
-          <button class="btn btn-outline-secondary button-spacing" type="button" @click="uploadFile">Upload</button>
-          <button v-if="file" @click="file = null" class="btn btn-danger button-spacing">X</button>
-          <button v-else class="btn btn-danger" @click="removePic">Remove current propic</button>
-        </div>
+      <div class="input-group-append">
+        <button class="btn btn-outline-secondary button-spacing" type="button" @click="uploadFile">Upload</button>
+        <button v-if="file" @click="file = null" class="btn btn-danger button-spacing">X</button>
+        <button v-else class="btn btn-danger" @click="removePic">Remove current propic</button>
       </div>
+    </div>
 
-      <!-- Bio -->
-      <div class="input-group mb-3 flex-column">
-        <div class="mb-3">
-          <label for="channelType"> Bio: </label>
-          <textarea placeholder="Write a new bio..." v-model="bio" class="form-control mb-3"></textarea>
-          <button @click="updateBio" class="btn d-block mx-auto orange_btn"> Update Bio </button>
-        </div>
-      </div>
-
-      <!-- Mods -->
+    <!-- Bio -->
+    <div class="input-group mb-3 flex-column">
       <div class="mb-3">
-        <label for="modsInput"> Add a mod: </label>
-        <div class="input-group">
-          <input v-model="mod_to_add" type="text" id="modsInput" class="form-control" />
-          <div>
-            <button @click="addMod" class="btn btn-primary "> Insert </button>
-          </div>
+        <label for="channelType"> Bio: </label>
+        <textarea placeholder="Write a new bio..." v-model="bio" class="form-control mb-3"></textarea>
+        <button @click="updateBio" class="btn d-block mx-auto orange_btn"> Update Bio </button>
+      </div>
+    </div>
+
+    <!-- Mods -->
+    <div class="mb-3">
+      <label for="modsInput"> Add a mod: </label>
+      <div class="input-group">
+        <input v-model="mod_to_add" type="text" id="modsInput" class="form-control" />
+        <div>
+          <button @click="addMod" class="btn btn-primary "> Insert </button>
         </div>
       </div>
+    </div>
 
-      <div v-if="mods.length > 0">
-        <label> Actual mods: </label>
-        <ul class="list-group mb-3">
-          <li v-for="(name, index) in mods" :key="index" class="list-group-item d-flex justify-content-between align-items-center">{{ name }}
-            <button @click="removeMod(index)" class="btn btn-danger "> Remove </button>
-          </li>
-        </ul>
-      </div>
-      
+    <div v-if="mods.length > 0">
+      <label> Actual mods: </label>
+      <ul class="list-group mb-3">
+        <li v-for="(name, index) in mods" :key="index"
+          class="list-group-item d-flex justify-content-between align-items-center">{{ name }}
+          <button @click="removeMod(index)" class="btn btn-danger "> Remove </button>
+        </li>
+      </ul>
+    </div>
+
   </div>
 </template>
 
 <script>
 import axios from "axios";
-import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
 export default {
@@ -95,16 +95,13 @@ export default {
           this.bio = response.data.bio;
           this.channel_type = response.data.type;
           this.mods = response.data.mod_list;
-          this.profilePicUrl = response.data.propic
 
-          // <!--TODO  questa cosa della propic non funziona piu'
-          if (this.profilePicUrl == null || this.profilePicUrl == "") {
-            this.profilePicUrl =
-              "https://site222326.tw.cs.unibo.it/images/user-default.svg";
+          if (response.data.propic != null) {
+            this.profilePicUrl = "https://" + response.data.propic;
+          } else {
+            this.profilePicUrl = "https://site222326.tw.cs.unibo.it/images/logoSquealer.svg";
           }
-          else {
-            this.profilePicUrl = `https://site222326.tw.cs.unibo.it/channels/${this.search_channel_name}/propic`;
-          }
+
         }
         else { alert("Channel not found."); }
       }
@@ -217,7 +214,7 @@ export default {
           // notify the user that the upload was successful
           alert("Profile picture removed");
           profilePicUrl =
-            "https://site222326.tw.cs.unibo.it/images/user-default.svg";
+            "https://site222326.tw.cs.unibo.it/images/logoSquealer.svg";
         });
     },
 
@@ -226,39 +223,39 @@ export default {
 </script>
 
 <style scoped>
-  .squeal_container {
-    background-color: #fff;
-    border-style: solid;
-    border-width: thin;
-    border-radius: 1em;
-    border-color: #616161;
-    margin: 0.5em 2em 0.5em 2em;
-    padding: 1em;
-  }
+.squeal_container {
+  background-color: #fff;
+  border-style: solid;
+  border-width: thin;
+  border-radius: 1em;
+  border-color: #616161;
+  margin: 0.5em 2em 0.5em 2em;
+  padding: 1em;
+}
 
-  .title {
-    text-align: center;
-    margin-bottom: 20px; 
-  }
+.title {
+  text-align: center;
+  margin-bottom: 20px;
+}
 
-  .btn_dim {
-    width: 5%;
-  }
+.btn_dim {
+  width: 5%;
+}
 
-  .orange_btn {
-    background-color: #ff8900; 
-    color: white;
-  }
+.orange_btn {
+  background-color: #ff8900;
+  color: white;
+}
 
-  .orange_btn_low {
-    background-color: #ffa947; 
-    color: white;
-  }
+.orange_btn_low {
+  background-color: #ffa947;
+  color: white;
+}
 
-  .profile_img {
-    width: 10em;
-    height: 10em;
-    border-radius: 50%;
-    margin: 0.5em;
+.profile_img {
+  width: 10em;
+  height: 10em;
+  border-radius: 50%;
+  margin: 0.5em;
 }
 </style>

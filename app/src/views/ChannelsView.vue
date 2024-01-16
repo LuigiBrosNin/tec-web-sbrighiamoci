@@ -13,7 +13,7 @@ const props = defineProps(['id']);
         <div class="channelInfoContainer" :id="channelName">
             <!----------- card canale ---------->
             <ChannelCard :id="channelName" class="importedCard"></ChannelCard>
-            <RouterLink :to="`/squealPut?receiver=${channelName}`" class="channel_new_squeal_button">
+            <RouterLink v-if="typeOfChannel == 'private'" :to="`/squealPut?receiver=${channelName}`" class="channel_new_squeal_button">
                 <div class="channel_new_squeal_button_content">
                     <img class="channel_new_squeal_button_image"
                         src="https://site222326.tw.cs.unibo.it/icons/plus-svgrepo-com.svg" />
@@ -90,6 +90,7 @@ export default {
         return {
             idd: this.id,
             channelName: this.id,
+            typeOfChannel: "",
             activeSection: "squeal",
             squealsList: [],         // tutti gli id degli squeal del canale
             loadedSquealsList: [],   // id degli squeal già caricati 
@@ -167,6 +168,7 @@ export default {
             fetched = await fetched.json();
 
             this.owner = fetched.owner;
+            this.typeOfChannel = fetched.type;
             this.modsList = fetched.mod_list;
             this.subscribersNum = fetched.subscribers_num;
             this.subscribersList = fetched.subscribers_list;
