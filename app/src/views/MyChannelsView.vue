@@ -7,17 +7,17 @@ import ChannelCreateView from "@/views/ChannelCreateView.vue"
 
 <template>
   <!-- Pulsanti di commutazione -->
-  <div class="d-flex justify-content-center my-3">
-    <button @click="showFollowedSection" class="btn mx-2"
+  <div class="d-flex justify-content-center my-3 myChannelsButtonsContainer">
+    <button @click="showFollowedSection" id="followedChannelsButton" class="btn mx-2"
       :class="{ orange_btn: activeSection === 'followed_section', 'btn-secondary': activeSection !== 'followed_section', }">
       Followed </button>
-    <button @click="showOwnedSection" class="btn mx-2"
+    <button @click="showOwnedSection" id="ownedChannelsButton" class="btn mx-2"
       :class="{ orange_btn: activeSection === 'owned_section', 'btn-secondary': activeSection !== 'owned_section', }">
       Owned </button>
-    <button @click="showSearchSection" class="btn mx-2"
+    <button @click="showSearchSection" id="searchChannelsButton" class="btn mx-2"
       :class="{ orange_btn: activeSection === 'search_section', 'btn-secondary': activeSection !== 'search_section', }">
       Search </button>
-    <button @click="showCreateSection" class="btn mx-2"
+    <button @click="showCreateSection" id="createChannelsButton" class="btn mx-2"
       :class="{ orange_btn: activeSection === 'create_section', 'btn-secondary': activeSection !== 'create_section', }">
       Create </button>
   </div>
