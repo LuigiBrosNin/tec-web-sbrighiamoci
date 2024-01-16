@@ -224,7 +224,7 @@ function addNewSquealButtonToChannel() {
 function generateNewSquealButton(profile_id) {
     const newSquealButton = document.createElement("a");
     newSquealButton.classList.add("channel_new_squeal_button");
-    newSquealButton.setAttribute("href", `window.location.href = "${sitePrefix}/admin/squealPut?receiver=${profile_id}"`);
+    newSquealButton.setAttribute("href", `${sitePrefix}/admin/squealPut?receiver=${profile_id}`);
     
     const container = document.createElement("div");
     container.classList.add("channel_new_squeal_button_content");
