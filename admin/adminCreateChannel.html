@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+
+<head>
+    <link rel="stylesheet" href="https://site222326.tw.cs.unibo.it/bootstrap/css">
+    </link>
+    <script type="module" src="https://site222326.tw.cs.unibo.it/bootstrap/js"></script>
+</head>
+
+<body>
+    <h1>admin channel creation page</h1>
+
+    <form class="mx-5 my-3 formCard" id="channel_creation_form">
+
+        <label for="name" class="form-label">Channel name:</label>
+        <input type="text" id="name" name="name" class="form-control">
+
+        <div id="channel_type_radio">
+            <p class="form-label">Channel type:</p>
+            <input type="radio" id="channel_private" name="channel_type" value="private" class="form-check-input">
+            <label for="channel_private" class="form-label">normal</label>
+            <input type="radio" id="channel_privileged" name="channel_type" value="privileged" class="form-check-input">
+            <label for="channel_privileged" class="form-label">privileged</label>
+            <input type="radio" id="channel_required" name="channel_type" value="required" class="form-check-input">
+            <label for="channel_required" class="form-label">required</label>
+        </div>
+        
+        <label for="owner" class="form-label">Owner (if this field is left empty you will be the owner):</label>
+        <input type="text" id="owner" name="owner" class="form-control">
+
+        <label for="bio" class="form-label">Bio:</label>
+        <textarea id="bio" name="bio" class="form-control"></textarea>
+
+        <input type="submit">
+    </form>
+
+    
+</body>
+<link rel="stylesheet" href="https://site222326.tw.cs.unibo.it/adminsrc/adminEdit.css">
+</link>
+<script type="module" src="https://site222326.tw.cs.unibo.it/adminsrc/adminCreateChannel.js"></script>

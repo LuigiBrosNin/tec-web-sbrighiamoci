@@ -122,6 +122,15 @@ app.get("/admin/adminedit/:type/:id", async (req, res) => {
   }
 })
 
+app.get("/admin/admincreate/:type", async (req, res) => {
+  if(req.params.type === "channel"){
+    res.status(200).sendFile(global.rootDir + '/admin/adminEditSqueal.html');
+  }
+  else {
+    res.status(404).send();
+  }
+})
+
 app.get(["/admin/:paths(*)", "/admin"], async (req, res) => {
   try {
     let url = 'https://site222326.tw.cs.unibo.it/app/';
