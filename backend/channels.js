@@ -191,7 +191,7 @@ app.put("/channels/:name", async (req, res) => {
 
     // check if there is another channel with the same name, in that case deny the creation
     const already_taken = await collection_channels.findOne({
-      name: channel.channelName
+      name: channel.name
     })
     if (already_taken != null) {
       res.status(409).json({
