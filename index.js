@@ -124,7 +124,7 @@ app.get("/admin/adminedit/:type/:id", async (req, res) => {
 
 app.get("/admin/admincreate/:type", async (req, res) => {
   if(req.params.type === "channel"){
-    res.status(200).sendFile(global.rootDir + '/admin/adminEditSqueal.html');
+    res.status(200).sendFile(global.rootDir + '/admin/adminCreateChannel.html');
   }
   else {
     res.status(404).send();
