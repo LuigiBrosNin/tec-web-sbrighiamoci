@@ -12,3 +12,12 @@
 .admin-bg-button {
     background-color: #ff0000;
 }
+
+#adminCreateChannelsButton {
+    background-color: #ff0000;
+    padding: 0.5em;
+    border-radius: 0.5em;
+    color: #fff;
+    text-decoration: none;
+    margin: 0 0.5em;
+}
