@@ -26,12 +26,12 @@ import ChannelCreateView from "@/views/ChannelCreateView.vue"
   <!-------------------- SEZIONE CANALI SEGUITI  ------------------->
   <div v-if="activeSection === 'followed_section'">
     <div v-if="$user != null">
-      <div v-for="channel in followedChannelsList" :key="channel">
+      <div v-for="channel in tmpChannelsList" :key="channel">
         <ChannelCard :id="channel"></ChannelCard>
       </div>
   
       <div class="loadMoreContainer text-center">
-        <div v-if="followedChannelsList.length < 1"> No more channels. </div>
+        <div v-if="allChannelsLoaded"> No more channels. </div>
         <button v-if="!allChannelsLoaded" @click="loadMoreChannels" class="btn btn-primary loadMoreBtn"> Load more </button>
       </div>
     </div>
@@ -90,12 +90,13 @@ export default {
   data() {
     return {
       activeSection: "followed_section",
-      followedChannelsList: [],
+      followedChannelsList: [],   // lista completa dei canali seguiti dal profilo
       ownedChannelsList: [],
       moderatedChannelsList: [],
+      tmpChannelsList: [],       // lista riempita mano a mano da pulsante LoadMore 
       allChannelsLoaded: false,
       loadMoreIndex: 0,
-      pageDim: 2,
+      pageDim: 3,
     };
   },
   computed: {
@@ -145,16 +146,12 @@ export default {
       );
       fetched = await fetched.json();
       this.followedChannelsList = fetched.following_channels;
-    },
-
-
-    populate(profileJson) {
-      this.followedChannelsList = profileJson.following_channels;
+      this.loadMoreChannels()
     },
 
     loadMoreChannels() {
-      this.loadMoreIndex += this.pageDim;
       const newChannels = this.followedChannelsList.slice(this.loadMoreIndex, this.loadMoreIndex + this.pageDim);
+      this.loadMoreIndex += this.pageDim;
       if (newChannels.length == 0) {
         this.allChannelsLoaded = true;
       }
