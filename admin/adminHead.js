@@ -269,7 +269,7 @@ function generateCreateChannelButton() {
 }
 
 function addPrivateSquealToSearchView() {
-    const pillsArea = document.getElementById("pills-tab");
+    const pillsArea = document.getElementById("pills-tab-search");
     if (pillsArea != null) {
         let privateSquealsButton = document.getElementById("adminSearchPrivateSquealsPill");
         if (privateSquealsButton == null) {
