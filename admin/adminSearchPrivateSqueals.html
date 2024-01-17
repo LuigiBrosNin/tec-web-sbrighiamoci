@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+
+<head>
+    <link rel="stylesheet" href="https://site222326.tw.cs.unibo.it/bootstrap/css">
+    </link>
+    <script type="module" src="https://site222326.tw.cs.unibo.it/bootstrap/js"></script>
+</head>
+
+<body>
+    <h1>admin private squeals search page</h1>
+
+    <form class="formCard mx-5 my-3 row g-3" id="private_squeals_form">
+
+        <div class="col-md-3">
+            <label for="author" class="form-label fw-bold mb-2">Author</label>
+            <input type="text" class="form-control" id="author" placeholder="Author" />
+        </div>
+
+        <div class="col-md-3">
+            <label for="popularity" class="form-label fw-bold mb-2">Popularity</label>
+            <select class="form-control" id="popularity">
+                <option value="isPopular">Populars</option>
+                <option value="isUnpopular">Unpopulars</option>
+                <option value="isControversial">Controversial</option>
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label for="start_date" class="form-label fw-bold mb-2">Older date</label>
+            <input type="date" class="form-control" id="start_date" placeholder="Start Date" />
+        </div>
+
+        <div class="col-md-3">
+            <label for="end_date" class="form-label fw-bold mb-2">Newer date</label>
+            <input type="date" class="form-control" id="end_date" placeholder="End Date" />
+        </div>
+
+        <div class="col-md-3">
+            <label for="positiveReactions" class="form-label fw-bold mb-2">N° of Positive Reactions</label>
+            <input type="number" class="form-control" id="positiveReactions"
+                placeholder="Positive Reactions" />
+        </div>
+
+        <div class="col-md-3">
+            <label for="negativeReactions" class="form-label fw-bold mb-2">N° of Negative Reactions</label>
+            <input type="number" class="form-control" id="negativeReactions"
+                placeholder="Negative Reactions" />
+        </div>
+
+        <div class="col-md-3">
+            <label for="impressions" class="form-label fw-bold mb-2">N° of Impressions</label>
+            <input type="number" class="form-control" id="impressions" placeholder="Impressions" />
+        </div>
+
+        <div class="col-md-3">
+            <label for="receiver" class="form-label fw-bold mb-2">Channel</label>
+            <input type="text" class="form-control" id="receiver" placeholder="Receiver" />
+        </div>
+
+        <div class="col-md-3">
+            <label for="keyword" class="form-label fw-bold mb-2">Keywords</label>
+            <input type="text" class="form-control" id="keyword" placeholder="Keyword" />
+            <small class="form-text text-muted">*separated by commas</small>
+        </div>
+
+        <div class="col-md-3">
+            <label for="mentions" class="form-label fw-bold mb-2">Mentions</label>
+            <input type="text" class="form-control" id="mentions" placeholder="Mentions" />
+            <small class="form-text text-muted">*separated by commas</small>
+        </div>
+
+        <div class="col-12 d-flex justify-content-center">
+            <input type="submit">
+        </div>
+
+    </form>
+
+    <div id="result_container">
+
+    </div>
+
+
+</body>
+<link rel="stylesheet" href="https://site222326.tw.cs.unibo.it/adminsrc/adminEdit.css">
+</link>
+<script type="module" src="https://site222326.tw.cs.unibo.it/adminsrc/adminSearchPrivateSqueals.js"></script>
