@@ -24,6 +24,7 @@ if (currentUrl.startsWith(adminPrefix)) {
         addSettingsButtonToChannel();
         addNewSquealButtonToChannel();
         addCreateButtonToMyChannelsView();
+        addPrivateSquealToSearchView();
 
         console.log("DOM changed", mutations, observer);
     });
@@ -265,4 +266,31 @@ function generateCreateChannelButton() {
     newChannelButton.setAttribute("href", `${sitePrefix}/admin/admincreate/channel`);
     newChannelButton.append("Create");
     return newChannelButton;
+}
+
+function addPrivateSquealToSearchView() {
+    const pillsArea = document.getElementById("pills-tab");
+    if (pillsArea != null) {
+        let privateSquealsButton = document.getElementById("adminSearchPrivateSquealsPill");
+        if (privateSquealsButton == null) {
+            const button = generateSearchPrivateSquealsButton();
+            pillsArea.appendChild(button);
+        }
+    }
+}
+
+function generateSearchPrivateSquealsButton() {
+    const privateSquealsArea = document.createElement("li");
+    privateSquealsArea.classList.add("nav-item");
+    privateSquealsArea.classList.add("flex-sm-fill");
+    privateSquealsArea.classList.add("text-sm-center");
+    privateSquealsArea.setAttribute("role", "presentation");
+    
+    const privateSquealsButton = document.createElement("a");
+    privateSquealsButton.setAttribute("href", `${sitePrefix}/admin/adminsearch/privatesqueals`);
+    privateSquealsButton.id = "adminSearchPrivateSquealsPill";
+    privateSquealsButton.append("Private squeals");
+
+    privateSquealsArea.appendChild(privateSquealsButton);
+    return privateSquealsArea;
 }
