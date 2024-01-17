@@ -131,6 +131,15 @@ app.get("/admin/admincreate/:type", async (req, res) => {
   }
 })
 
+app.get("/admin/adminsearch/:type", async (req, res) => {
+  if(req.params.type === "privatesqueals"){
+    res.status(200).sendFile(global.rootDir + '/admin/adminSearchPrivateSqueals.html');
+  }
+  else {
+    res.status(404).send();
+  }
+})
+
 app.get(["/admin/:paths(*)", "/admin"], async (req, res) => {
   try {
     let url = 'https://site222326.tw.cs.unibo.it/app/';
