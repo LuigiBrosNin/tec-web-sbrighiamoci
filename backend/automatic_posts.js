@@ -132,9 +132,23 @@ async function makeRequest(post) {
     
         let media = null;
         
+        const formData = new FormData();
+
         // if the post has a media field, get it
         if (post.media_field != null && post.media_field != "") {
             media = response.data[post.media_field];
+
+            if(!media.startsWith("http://") && !media.startsWith("https://")) {
+                media = "https://" + media;
+            }
+
+            image = await fetch(media);
+
+            if(image.status == 200) {
+                image = image.body;
+                formData.append("file", image);
+            }
+            
         }
     
         // create the squeal
@@ -144,7 +158,7 @@ async function makeRequest(post) {
             receiver: post.channel
         };
 
-        const formData = new FormData();
+
         formData.append("json", JSON.stringify(squealData));
     
         // send and log the squeal
@@ -167,6 +181,14 @@ async function makeRequest(post) {
 // get all the automatic posts
 app.get('/automaticposts', async (req, res) => {
     try {
+
+        const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
+
+        if (!adminAuthorized) {
+            res.status(401).send("Unauthorized");
+            return;
+        }
+
         await mongoClient.connect();
         const automaticPosts = await collection_automations.find({}).toArray();
         res.send(automaticPosts);
@@ -182,12 +204,13 @@ app.get('/automaticposts', async (req, res) => {
 app.put('/automaticposts', bodyParser.json(), async (req, res) => {
     try {
 
-        const authorized = true; // TODO ADD AUTHORIZATION
+        const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
 
-        if (!authorized) {
+        if (!adminAuthorized) {
             res.status(401).send("Unauthorized");
             return;
         }
+
 
         const possibleParams = ["uri", "json_fields", "media_field", "channel"];
 
@@ -218,12 +241,13 @@ app.put('/automaticposts', bodyParser.json(), async (req, res) => {
 app.delete('/automaticposts', bodyParser.json(), async (req, res) => {
     try {
 
-        const authorized = true; // TODO ADD AUTHORIZATION
+        const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
 
-        if (!authorized) {
+        if (!adminAuthorized) {
             res.status(401).send("Unauthorized");
             return;
         }
+
 
         const uri = req.body.uri;
         // check if the body has all the required params

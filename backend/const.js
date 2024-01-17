@@ -26,6 +26,15 @@ const collection_channels = database.collection(channelCollection);
 const interval = 10000 // 10 seconds
 //1000 * 60 * 60; // 1 hour
 
+// interval for quota calcs
+const quota_interval =30*24*60*60*1000 // 30 days
+
+const quota_threshold = 10
+
+const day_week_reset = 0;
+
+const day_month_reset = 1;
+
 const CREDIT_LIMITS = [150, 500, 1000];
 
 const CM = 0.25;
@@ -140,8 +149,12 @@ module.exports = {
     automationsCollection,
     mongoClient,
     interval,
+    quota_interval,
+    quota_threshold,
     CREDIT_LIMITS,
     CM,
+    day_week_reset,
+    day_month_reset,
     importPic,
     exportPic,
     deletePic,

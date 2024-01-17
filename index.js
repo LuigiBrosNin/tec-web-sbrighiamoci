@@ -12,7 +12,7 @@ const cheerio = require('cheerio');
 
 const { isAuthorizedOrHigher, canLogIn, typeOfProfile, registerNewUser } = require("./backend/loginUtils.js");
 
-//const { interval } = require("./backend/const.js");
+const { interval, day_week_reset, day_month_reset } = require("./backend/const.js");
 
 const BASE_SITE = 'https://site222326.tw.cs.unibo.it'
 //const BASE_SITE = 'http://localhost'
@@ -193,11 +193,40 @@ app.use('/source', express.static('/webapp/tec-web-sbrighiamoci/source', {
 
 module.exports = { app };
 
+const { update_quota_all, reset_credits_all } = require("./backend/profiles.js");
 require("./backend/squeal.js");
-require("./backend/profiles.js");
 require("./backend/channels.js");
 require("./backend/automatic_posts.js");
+
+async function update_profiles() {
+  try {
+    update_quota_all();
+    reset_credits_all(0);
+
+    const date = Date.now();
+
+    if (date.getDay() == day_week_reset) {
+      reset_credits_all(1);
+    }
+
+    if (date.getDate() == day_month_reset) {
+      reset_credits_all(2);
+    }
+
+  } catch (e) {
+    console.log(e);
+  }
+}
 
 //* periodic function, activate when ready
 //setInterval(putPeriodicalSqueals, interval);
 //setInterval(putControversialPeriodicalSqueals, interval);
+/*
+const now = new Date();
+const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0);
+const timeUntilMidnight = midnight - now;
+
+setTimeout(() => {
+  setInterval(update_profiles, interval * 24);
+}, timeUntilMidnight);
+*/

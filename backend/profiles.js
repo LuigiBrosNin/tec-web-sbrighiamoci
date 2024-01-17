@@ -27,6 +27,8 @@ const {
     channelCollection,
     mongoClient,
     CREDIT_LIMITS,
+    quota_interval,
+    quota_threshold,
     importPic,
     exportPic,
     deletePic
@@ -38,6 +40,114 @@ const database = mongoClient.db(dbName);
 const collection_profiles = database.collection(profileCollection);
 const collection_channels = database.collection(channelCollection);
 
+
+async function update_quota(profile) {
+    try {
+        await mongoClient.connect();
+
+        if (profile == null || profile.is_deleted) {
+            return;
+        }
+
+        // find all the squeals published in the last month
+        const squeals = await collection_squeals.find({
+            author: profileName,
+            date: {
+                $gte: Date.now() - quota_interval
+            }
+        }).toArray();
+
+        // calculate the total number positive squeals and negative squeals
+        let positiveSqueals = 0;
+        let negativeSqueals = 0;
+        for (const squeal of squeals) {
+            if (squeal.pos_popularity_ratio > CM && !(squeal.neg_popularity_ratio > CM)) {
+                positiveSqueals++;
+            }
+
+            if (squeal.neg_popularity_ratio > CM && !(squeal.pos_popularity_ratio > CM)) {
+                negativeSqueals++;
+            }
+        }
+
+        // calculate the new quota
+        const quota = Math.floor((positiveSqueals - negativeSqueals) / quota_threshold) / 100 + 1;
+
+        // update the profile
+        await collection_profiles.updateOne({
+            name: profileName
+        }, {
+            $set: {
+                credit_limits: [
+                    profile.credit_limits[0]* quota,
+                    profile.credit_limits[1] * quota,
+                    profile.credit_limits[2] * quota,
+                ],
+            }
+        });
+
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+async function reset_credits(profile, index_to_update) {
+    try {
+        if (profile == null || profile.is_deleted) {
+            return;
+        }
+
+        const credit = profile.credit;
+        credit[index_to_update] = profile.credit_limits[index_to_update];
+
+        await mongoClient.connect();
+
+        await collection_profiles.updateOne({
+            name: profileName
+        }, {
+            $set: {
+                credit: credit
+            }
+        });
+    }
+    catch (error) {
+        console.log(error);
+    }
+}
+
+async function reset_credits_all(index_to_update) {
+    try {
+        await mongoClient.connect();
+        const profiles = await collection_profiles.find({}).toArray();
+
+        for (const profile of profiles) {
+            reset_credits(profile, index_to_update);
+        }
+    }
+    catch (error) {
+        console.log(error);
+    }
+}
+
+async function update_quota_all() {
+    try {
+        mongoClient.connect();
+        const profiles = await collection_profiles.find({}).toArray();
+
+        for (const profile of profiles) {
+            update_quota(profile);
+        }
+    }
+    catch (error) {
+        console.log(error);
+    }
+}
+
+module.exports = {
+    update_quota_all,
+    reset_credits_all
+};
 /* -------------------------------------------------------------------------- */
 /*                                 /PROFILES/                                 */
 /*                                    GET                                     */
@@ -224,11 +334,11 @@ app.put("/profiles/:name", async (req, res) => {
         // check if there is another profile with the same name, in that case deny the creation
         const already_taken = await collection_profiles.findOne({
             $or: [{
-                    name: name
-                },
-                {
-                    email: req.body.email
-                }
+                name: name
+            },
+            {
+                email: req.body.email
+            }
             ]
         });
         if (already_taken !== null) {
@@ -257,7 +367,7 @@ app.put("/profiles/:name", async (req, res) => {
             propic: "site222326.tw.cs.unibo.it/images/user-default.svg",
         };
         console.log(JSON.stringify(profile))
-        
+
         if (profile.bio == undefined) {
             profile.bio = "";
         }
@@ -322,11 +432,11 @@ app.delete("/profiles/:name", async (req, res) => {
             // if the profile was owning a channel, pass it to a mod; if there are no mods, reset the channel to null values
             const channels_owned = await collection_channels.find({
                 $or: [{
-                        owner: profileName
-                    },
-                    {
-                        mods_list: profileName
-                    }
+                    owner: profileName
+                },
+                {
+                    mods_list: profileName
+                }
                 ]
             }).toArray();
 
@@ -908,7 +1018,7 @@ app.put('/profiles/:name/propic', upload.single('file'), async (req, res) => {
             name: profileName
         });
 
-        if(profile.is_deleted || profile === null) {
+        if (profile.is_deleted || profile === null) {
             res.status(404).json({ message: 'Profile not found.' });
             return;
         }
@@ -1062,7 +1172,7 @@ app.put("/profiles/:name/account_type", async (req, res) => {
         const op = await axios.post('https://site222326.tw.cs.unibo.it/profiles/' + profileName + '/account_type', {
             account_type: req.body.account_type
         }).then(resPost => {
-            if(resPost.status == 200) {
+            if (resPost.status == 200) {
                 res.status(200).json({
                     message: "Account type changed"
                 });
@@ -1095,8 +1205,8 @@ async function switchAccountType(profileName, newAccountType) {
                         data: {
                             smm_name: profile.smm
                         }
-                        });
-                    }
+                    });
+                }
                 break;
             case "smm":
                 for (const customer of profile.smm_customers) {
@@ -1154,7 +1264,7 @@ async function switchAccountType(profileName, newAccountType) {
                 return true;
             default:
                 return false;
-            }
+        }
     }
     catch (e) {
         console.log(e);
@@ -1334,7 +1444,7 @@ app.delete("/profiles/:name/smm", async (req, res) => {
         await mongoClient.connect();
         const profile = await collection_profiles.findOne({
             name: profileName
-        });        
+        });
 
         if (profile == null || profile.is_deleted) {
             res.status(404).json({
@@ -1343,7 +1453,7 @@ app.delete("/profiles/:name/smm", async (req, res) => {
             return;
         }
 
-        if(profile.account_type !== "premium") {
+        if (profile.account_type !== "premium") {
             res.status(400).json({
                 message: "This profile is not premium."
             });
@@ -1441,7 +1551,7 @@ app.post("/profiles/:name/shop", async (req, res) => {
             return;
         }
 
-        if ( req.body.credit == undefined) {
+        if (req.body.credit == undefined) {
             res.status(400).json({
                 message: "Missing parameters"
             });
@@ -1468,7 +1578,7 @@ app.post("/profiles/:name/shop", async (req, res) => {
         await axios.post('https://site222326.tw.cs.unibo.it/profiles/' + profileName, {
             credit: credit
         }).then(resPost => {
-            if(resPost.status == 201) {
+            if (resPost.status == 201) {
                 res.status(200).json({
                     message: "Purchase successful"
                 });
@@ -1505,7 +1615,7 @@ app.put("/profiles/:name/shopandpost", async (req, res) => {
 
         const authorized = await isAuthorized(req.session.user, typeOfProfile.user) && req.session.user === profileName; // only a user can access this page, premium and smm can use /profiles/:name/shop
         const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
-        
+
         if (!authorized && !adminAuthorized) {
             res.status(401).json({
                 message: "Unauthorized"
@@ -1527,7 +1637,7 @@ app.put("/profiles/:name/shopandpost", async (req, res) => {
         });
 
         // credit check
-        if(profile.credit[0] <= 0 || profile.credit[1] <= 0 || profile.credit[2] <= 0){
+        if (profile.credit[0] <= 0 || profile.credit[1] <= 0 || profile.credit[2] <= 0) {
             res.status(400).send(JSON.stringify({
                 message: "you cannot create squeal, not even paying, if your credit is zero"
             }));
@@ -1539,7 +1649,7 @@ app.put("/profiles/:name/shopandpost", async (req, res) => {
         let usedMonthlyCredit = profile.credit[2] - charCost;
 
         let charToBuy = Math.min(usedDailyCredit, usedWeeklyCredit, usedMonthlyCredit);
-        if(charToBuy > 0){
+        if (charToBuy > 0) {
             charToBuy = 0;
         } else { // if the user don't have enough credits, buy it
             charToBuy = - charToBuy;
@@ -1553,7 +1663,7 @@ app.put("/profiles/:name/shopandpost", async (req, res) => {
                     credit: charToBuy
                 })
             });
-            if(buyRes.status != 200) {
+            if (buyRes.status != 200) {
                 res.status(500).send(JSON.stringify({
                     message: "error during character purchase"
                 }));
@@ -1570,7 +1680,7 @@ app.put("/profiles/:name/shopandpost", async (req, res) => {
             },
             body: JSON.stringify(reqBody)
         });
-        if(response.status == 200){
+        if (response.status == 200) {
             const resBody = JSON.parse(response.body.json);
             res.status(200).send(JSON.stringify({
                 message: "squeal added successfully with db id:" + resBody.squeal_id + ", character purchased: " + charToBuy,
@@ -1629,8 +1739,8 @@ app.get("/profiles/:name/channels", async (req, res) => {
         const channels = await collection_channels.find({
             $or: [{
                 owner: profileName
-            },  { 
-                mod_list: { $in: [profileName] } 
+            }, {
+                mod_list: { $in: [profileName] }
             }]
         }).project({ _id: 0, name: 1, owner: 1 }).toArray(); // only return the name of the channels
 
