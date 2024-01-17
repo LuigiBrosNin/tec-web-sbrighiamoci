@@ -158,7 +158,9 @@ export default {
       if (newChannels.length == 0) {
         this.allChannelsLoaded = true;
       }
-      this.tmpChannelsList.push(...newChannels);
+      else {
+        this.tmpChannelsList.push(...newChannels);
+      }
     },
 
     // --------------------------- ALTRO --------------------------------
