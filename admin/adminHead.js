@@ -286,7 +286,7 @@ function generateManageAutomaticSquealsButton() {
     manageAutomaticSquealsButton.id = "adminManageAutomaticSquealsButton";
     manageAutomaticSquealsButton.setAttribute("href", `${sitePrefix}/admin/automaticsqueals`);
     manageAutomaticSquealsButton.classList.add("admin-pill");
-    manageAutomaticSquealsButton.append("Create");
+    manageAutomaticSquealsButton.append("Manage automatic squeals");
     return manageAutomaticSquealsButton;
 }
 
