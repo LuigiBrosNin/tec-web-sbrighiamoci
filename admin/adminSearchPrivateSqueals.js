@@ -71,7 +71,7 @@ function displayPrivateSqueal(squeal) {
             <a class="receiver" href="${sitePrefix}/admin/profile/${squeal.receiver}">To: ${squeal.receiver}</a>
             <p class="text">${squeal.text}</p>
             <p class="date">${new Date(squeal.date)}</p>
-            <button class="danger_button" onclick="deleteSqueal(${squeal.id})">Delete</button>
+            <button class="danger_button" onclick="deleteSqueal('${squeal.id}')">Delete</button>
         </div>
         `;
     }
