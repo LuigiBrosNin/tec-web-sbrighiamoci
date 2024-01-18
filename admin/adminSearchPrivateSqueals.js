@@ -1,7 +1,7 @@
 const sitePrefix = "https://site222326.tw.cs.unibo.it";
 const squealsUrl = sitePrefix + "/squeals";
 
-let query = squealsUrl + "/?";
+let query = squealsUrl + "/?is_private=true";
 
 const numberOfSquealsToLoad = 10;
 let numberOfSquealsLoaded = 0;
@@ -14,7 +14,7 @@ document.getElementById('private_squeals_form').addEventListener('submit', async
     let data = Object.fromEntries(new FormData(e.target).entries());
     console.log(data);
 
-    query = squealsUrl + "/?";
+    query = squealsUrl + "/?is_private=true";
 
     if (data.author != null && data.author != "") {
         query = query.concat("author=" + data.author + "&");
@@ -59,6 +59,7 @@ document.getElementById('private_squeals_form').addEventListener('submit', async
     console.log(JSON.stringify(query));
 
     document.getElementById("result_container").innerHTML = "";
+    numberOfSquealsLoaded = 0;
     fetchPagedSqueals();
 });
 
@@ -70,9 +71,24 @@ async function fetchPagedSqueals(){
     if (res.status == 200) {
         res = await res.json();
         numberOfSquealsLoaded = numberOfSquealsLoaded + numberOfSquealsToLoad;
-        document.getElementById("result_container").innerHTML += res;
+        for(squeal of res){
+            displayPrivateSqueal(squeal);
+        }
     } else {
         alert("an error has occurred, please try again later");
+    }
+}
+
+function displayPrivateSqueal(squeal) {
+    if(squeal.is_private == true){
+        document.getElementById("result_container").innerHTML += `
+        <div class="squealContainer">
+            <p class="author">From: ${squeal.author}</p>
+            <p class="receiver">To: ${squeal.receiver}</p>
+            <p class="text">${squeal.text}</p>
+            <p class="date">${new Date(squeal.date)}</p>
+        </div>
+        `
     }
 }
 
