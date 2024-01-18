@@ -13,21 +13,19 @@
     background-color: #ff0000;
 }
 
-#adminCreateChannelsButton {
+.admin-pill {
     background-color: #ff0000;
     padding: 0.5em;
     border-radius: 0.5em;
     color: #fff;
     text-decoration: none;
+}
+
+#adminCreateChannelsButton {
     margin: 0 0.5em;
 }
 
 #adminSearchPrivateSquealsPill {
-    background-color: #ff0000;
-    padding: 0.5em;
-    border-radius: 0.5em;
-    color: #fff;
-    text-decoration: none;
     display: block;
     margin: auto;
     width: fit-content;

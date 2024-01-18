@@ -24,6 +24,7 @@ if (currentUrl.startsWith(adminPrefix)) {
         addSettingsButtonToChannel();
         addNewSquealButtonToChannel();
         addCreateButtonToMyChannelsView();
+        addManageAutomaticSquealsToMyChannelsView();
         addPrivateSquealToSearchView();
 
         console.log("DOM changed", mutations, observer);
@@ -264,8 +265,29 @@ function generateCreateChannelButton() {
     const newChannelButton = document.createElement("a");
     newChannelButton.id = "adminCreateChannelsButton";
     newChannelButton.setAttribute("href", `${sitePrefix}/admin/admincreate/channel`);
+    newChannelButton.classList.add("admin-pill");
     newChannelButton.append("Create");
     return newChannelButton;
+}
+
+function addManageAutomaticSquealsToMyChannelsView() {
+    const buttonsAreas = Array.from(document.getElementsByClassName("myChannelsButtonsContainer")); // there should be only one per page, but who knows...
+    if (buttonsAreas.length > 0) {
+        let manageButton = document.getElementById("adminManageAutomaticSquealsButton");
+        if (manageButton == null) {
+            const button = generateManageAutomaticSquealsButton();
+            buttonsAreas[0].appendChild(button);
+        }
+    }
+}
+
+function generateManageAutomaticSquealsButton() {
+    const manageAutomaticSquealsButton = document.createElement("a");
+    manageAutomaticSquealsButton.id = "adminManageAutomaticSquealsButton";
+    manageAutomaticSquealsButton.setAttribute("href", `${sitePrefix}/admin/automaticsqueals`);
+    manageAutomaticSquealsButton.classList.add("admin-pill");
+    manageAutomaticSquealsButton.append("Create");
+    return manageAutomaticSquealsButton;
 }
 
 function addPrivateSquealToSearchView() {
@@ -289,6 +311,7 @@ function generateSearchPrivateSquealsButton() {
     const privateSquealsButton = document.createElement("a");
     privateSquealsButton.setAttribute("href", `${sitePrefix}/admin/adminsearch/privatesqueals`);
     privateSquealsButton.id = "adminSearchPrivateSquealsPill";
+    privateSquealsButton.classList.add("admin-pill");
     privateSquealsButton.append("Private squeals");
 
     privateSquealsArea.appendChild(privateSquealsButton);
