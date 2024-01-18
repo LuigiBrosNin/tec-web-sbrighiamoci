@@ -71,7 +71,6 @@ app.get("/", async (req, res) => {
 app.get("/login", async (req, res) => {
   res.status(200).sendFile(global.rootDir + '/login/login.html');
 })
-app.use('/login/*', express.static(path.join(global.rootDir, '/login/')));
 
 app.post("/login", bodyParser.json(), async (req, res) => {
   if (await canLogIn(req.body.username, req.body.password)) {
@@ -82,6 +81,8 @@ app.post("/login", bodyParser.json(), async (req, res) => {
     console.log("wrong username or password");
   }
 })
+
+app.use('/loginsrc/*', express.static(path.join(global.rootDir, '/login/')));
 
 app.get("/logout", async (req, res) => {
   req.session.destroy();
