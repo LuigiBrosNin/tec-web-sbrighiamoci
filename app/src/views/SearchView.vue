@@ -1,26 +1,39 @@
 <script setup>
-    import SearchChannelsView from "@/views/SearchChannelsView.vue";
-    import SearchProfilesView from "@/views/SearchProfilesView.vue";
-    import SearchSquealsView from "@/views/SearchSquealsView.vue";
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import SearchChannelsView from "@/views/SearchChannelsView.vue";
+import SearchProfilesView from "@/views/SearchProfilesView.vue";
+import SearchSquealsView from "@/views/SearchSquealsView.vue";
 
-    query.tab_index ? activeTab = query.tab_index : activeTab = "channels";
-    
+let activeTab = ref('channels'); // Default to 'channels'
+const route = useRoute();
+
+onMounted(() => {
+  const tabIndex = route.query.tab_index;
+  if (tabIndex) activeTab.value = tabIndex;
+});
 </script>
 
 <template>
     <ul class="nav nav-pills mb-3 flex-column flex-sm-row" id="pills-tab-search" role="tablist">
         <li class="nav-item flex-sm-fill text-sm-center" role="presentation">
-            <button class="nav-link" :class="{ active: activeTab === 'channels' }" id="pills-channels-tab" @click="activeTab = 'channels'" type="button" role="tab" aria-controls="search-channels" aria-selected="activeTab === 'channels'">
+            <button class="nav-link" :class="{ active: activeTab === 'channels' }" id="pills-channels-tab"
+                @click="activeTab = 'channels'" type="button" role="tab" aria-controls="search-channels"
+                aria-selected="activeTab === 'channels'">
                 Channels
             </button>
         </li>
         <li class="nav-item flex-sm-fill text-sm-center" role="presentation">
-            <button class="nav-link" :class="{ active: activeTab === 'profiles' }" id="pills-profiles-tab" @click="activeTab = 'profiles'" type="button" role="tab" aria-controls="search-profiles" aria-selected="activeTab === 'profiles'">
+            <button class="nav-link" :class="{ active: activeTab === 'profiles' }" id="pills-profiles-tab"
+                @click="activeTab = 'profiles'" type="button" role="tab" aria-controls="search-profiles"
+                aria-selected="activeTab === 'profiles'">
                 Profiles
             </button>
         </li>
         <li class="nav-item flex-sm-fill text-sm-center" role="presentation">
-            <button class="nav-link" :class="{ active: activeTab === 'squeals' }" id="pills-squeals-tab" @click="activeTab = 'squeals'" type="button" role="tab" aria-controls="search-squeals" aria-selected="activeTab === 'squeals'">
+            <button class="nav-link" :class="{ active: activeTab === 'squeals' }" id="pills-squeals-tab"
+                @click="activeTab = 'squeals'" type="button" role="tab" aria-controls="search-squeals"
+                aria-selected="activeTab === 'squeals'">
                 Squeals
             </button>
         </li>
@@ -39,8 +52,6 @@
     </div>
 </template>
 
-<style scoped>
-.nav-link {
-  margin: auto;
-}
-</style>
+<style scoped>.nav-link {
+    margin: auto;
+}</style>
