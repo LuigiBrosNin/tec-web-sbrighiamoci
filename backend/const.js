@@ -21,6 +21,7 @@ const database = mongoClient.db(dbName);
 const collection_squeals = database.collection(squealCollection);
 const collection_profiles = database.collection(profileCollection);
 const collection_channels = database.collection(channelCollection);
+const collection_automations = database.collection(automationsCollection);
 
 // interval for periodical posts
 const interval = 10000 // 10 seconds
@@ -147,6 +148,10 @@ module.exports = {
     profileCollection,
     channelCollection,
     automationsCollection,
+    collection_automations,
+    collection_channels,
+    collection_profiles,
+    collection_squeals,
     mongoClient,
     interval,
     quota_interval,
