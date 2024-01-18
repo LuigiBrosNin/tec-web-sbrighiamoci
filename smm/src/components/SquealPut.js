@@ -318,7 +318,7 @@ export class SquealPut extends Component {
           <form onSubmit={(e) => { e.preventDefault(); this.submitForm(); }} className="mt-5">
             <div className="input-group mb-3">
               <span className="input-group-text" id="basic-addon1">§</span>
-              <input type="text" id="receiver" placeholder="Select a channel to squeal to" value={this.state.receiver} required
+              <input type="text" name="receiver" id="receiver" placeholder="Select a channel to squeal to" value={this.state.receiver} required
                 className="form-control" onChange={e => this.setState({ receiver: e.target.value })} />
             </div>
             <div className="profile_data">
@@ -329,7 +329,7 @@ export class SquealPut extends Component {
             </div>
             <div className="form-group">
               <label htmlFor="text">Text:</label>
-              <textarea id="text" value={this.state.text} required className="form-control" onChange={e => { this.setState({ text: e.target.value }); this.state.text = e.target.value; this.updateCreditsOnScreen(this.state.text) }}></textarea>
+              <textarea id="text" name="text" value={this.state.text} required className="form-control" onChange={e => { this.setState({ text: e.target.value }); this.state.text = e.target.value; this.updateCreditsOnScreen(this.state.text) }}></textarea>
               <div>
                 <div className="credits-container">
                   {this.state.temp_credits.map((credit, index) => (
@@ -344,7 +344,7 @@ export class SquealPut extends Component {
               <div className="col">
                 <div className="form-group">
                   <label htmlFor="location" className="form-label">Location:</label>
-                  <button onClick={(e) => { e.preventDefault(); this.getGeolocation() }} className="btn btn-info">
+                  <button onClick={(e) => { e.preventDefault(); this.getGeolocation() }} name="location" id="location" className="btn btn-info">
                     Set current location
                   </button>
                   {this.state.location && (
@@ -364,7 +364,7 @@ export class SquealPut extends Component {
               <div className="col">
                 <div className="form-group">
                   <label htmlFor="media" className="form-label">Media:</label>
-                  <input type="file" id="media" onChange={this.handleFileUpload} accept="image/*" className="form-control" />
+                  <input type="file" id="media" onChange={this.handleFileUpload} name="media" accept="image/*" className="form-control" />
                   {this.state.media && (
                     <button onClick={(e) => { e.preventDefault(); this.removeMedia() }} className="btn btn-danger">
                       X
@@ -385,23 +385,23 @@ export class SquealPut extends Component {
 
             <div className="form-group">
             <label htmlFor="reply_to">Reply To:</label>
-              <input type="text" id="reply_to" value={this.state.reply_to} onChange={e => this.setState({ reply_to: e.target.value })} className="form-control" />
+              <input type="text" name="reply_to" id="reply_to" value={this.state.reply_to} onChange={e => this.setState({ reply_to: e.target.value })} className="form-control" />
 
               <div className="form-check mt-3">
                 <label htmlFor="send_for_loop" className="form-label">Looping post?</label>
-                <input type="checkbox" id="send_for_loop" onChange={e => this.setState({ send_for_loop: e.target.checked })} className="form-check-input" />
+                <input type="checkbox" name="reply_to" id="send_for_loop" onChange={e => this.setState({ send_for_loop: e.target.checked })} className="form-check-input" />
               </div>
 
               {this.state.send_for_loop && (
                 <div>
                   <div className="form-group">
                     <label htmlFor="times" className="form-label">Number of posts (set negative for endless posts):</label>
-                    <input type="number" id="times" value={this.state.times} onChange={e => this.setState({ times: e.target.value })} className="form-control" />
+                    <input type="number" name="times" id="times" value={this.state.times} onChange={e => this.setState({ times: e.target.value })} className="form-control" />
                   </div>
 
                   <div className="form-group">
                     <label htmlFor="delay" className="form-label">Delay (in minutes):</label>
-                    <input type="number" id="delay" value={this.state.delay} onChange={e => this.setState({ delay: e.target.value })} className="form-control" />
+                    <input type="number" name="delay" id="delay" value={this.state.delay} onChange={e => this.setState({ delay: e.target.value })} className="form-control" />
                   </div>
                 </div>
               )}

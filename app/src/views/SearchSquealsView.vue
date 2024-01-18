@@ -43,38 +43,38 @@ import Squeal from "@/components/Squeal.vue";
           </div>
           <div class="col-md-3">
             <label for="start_date" class="form-label fw-bold mb-2">Older date</label>
-            <input type="date" class="form-control" v-model="query.start_date" placeholder="Start Date" />
+            <input type="date" id="start_date" name="start_date" class="form-control" v-model="query.start_date" placeholder="Start Date" />
           </div>
           <div class="col-md-3">
             <label for="end_date" class="form-label fw-bold mb-2">Newer date</label>
-            <input type="date" class="form-control" v-model="query.end_date" placeholder="End Date" />
+            <input type="date" id="end_date" name="end_date" class="form-control" v-model="query.end_date" placeholder="End Date" />
           </div>
           <div class="col-md-3">
             <label for="positiveReactions" class="form-label fw-bold mb-2">N° of Positive Reactions</label>
-            <input type="number" class="form-control" v-model="query.positiveReactions"
+            <input type="number" id="positiveReactions" name="positiveReactions" class="form-control" v-model="query.positiveReactions"
               placeholder="Positive Reactions" />
           </div>
           <div class="col-md-3">
             <label for="negativeReactions" class="form-label fw-bold mb-2">N° of Negative Reactions</label>
-            <input type="number" class="form-control" v-model="query.negativeReactions"
+            <input type="number" id="negativeReactions" name="negativeReactions" class="form-control" v-model="query.negativeReactions"
               placeholder="Negative Reactions" />
           </div>
           <div class="col-md-3">
             <label for="impressions" class="form-label fw-bold mb-2">N° of Impressions</label>
-            <input type="number" class="form-control" v-model="query.impressions" placeholder="Impressions" />
+            <input type="number" id="impressions" name="impressions" class="form-control" v-model="query.impressions" placeholder="Impressions" />
           </div>
           <div class="col-md-3">
             <label for="receiver" class="form-label fw-bold mb-2">Channel</label>
-            <input type="text" class="form-control" v-model="query.receiver" placeholder="Receiver" />
+            <input type="text" id="receiver" name="receiver" class="form-control" v-model="query.receiver" placeholder="Receiver" />
           </div>
           <div class="col-md-3">
             <label for="keyword" class="form-label fw-bold mb-2">Keywords</label>
-            <input type="text" class="form-control" v-model="query.keyword" placeholder="Keyword" />
+            <input type="text" id="keyword" name="keyword" class="form-control" v-model="query.keyword" placeholder="Keyword" />
             <small class="form-text text-muted">*separated by commas</small>
           </div>
           <div class="col-md-3">
             <label for="mentions" class="form-label fw-bold mb-2">Mentions</label>
-            <input type="text" class="form-control" v-model="query.mentions" placeholder="Mentions" />
+            <input type="text" id="mentions" name="mentions" class="form-control" v-model="query.mentions" placeholder="Mentions" />
             <small class="form-text text-muted">*separated by commas</small>
           </div>
           <div class="col-12 d-flex justify-content-center">

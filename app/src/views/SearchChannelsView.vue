@@ -19,15 +19,15 @@
                         <form @submit.prevent="submitForm" class="row g-3">
                             <div class="form-group">
                                 <label for="name">Name</label>
-                                <input type="text" class="form-control" id="name" v-model="query.name">
+                                <input type="text" class="form-control" name="name" id="name" v-model="query.name">
                             </div>
                             <div class="form-group">
                                 <label for="owner">Owner</label>
-                                <input type="text" class="form-control" id="owner" v-model="query.owner">
+                                <input type="text" class="form-control" name="owner" id="owner" v-model="query.owner">
                             </div>
                             <div class="form-group">
                                 <label for="type">Type</label>
-                                <select class="form-control" id="type" v-model="query.type">
+                                <select class="form-control" name="type" id="type" v-model="query.type">
                                     <option value="privileged">Privileged</option>
                                     <option value="private">Private</option>
                                     <option value="required">Required</option>
@@ -35,7 +35,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="subscribers_num">Number of Subscribers</label>
-                                <input type="number" class="form-control" id="subscribers_num"
+                                <input type="number" class="form-control" name="subscribers_num" id="subscribers_num"
                                     v-model="query.subscribers_num">
                             </div>
                             <div class="form-group d-flex justify-content-center">

@@ -89,6 +89,16 @@ async function putControversialPeriodicalSqueals() {
     
         // get the squeal with the most impressions
         const squealToPost = lastHourSqueals[0];
+
+        if(squealToPost.secondary_channels == null) {
+            squealToPost.secondary_channels = [];
+        }
+
+        // add the channel to the squeal
+        squealToPost.secondary_channels.push(channelName);
+
+        // update the squeal in the db
+        await collection_squeals.updateOne({id: squealToPost.id}, {$set: squealToPost});
     
         // add the squeal to the channel
         fetch('https://site222326.tw.cs.unibo.it/channels/' + channelName + '/squeals_list', {

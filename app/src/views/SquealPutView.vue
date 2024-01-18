@@ -17,7 +17,7 @@ import router from "@/router/index.js";
       </div>
       <div class="form-group">
         <label for="text">Text:</label>
-        <textarea id="text" v-model="text" required class="form-control"></textarea>
+        <textarea id="text" name="text" v-model="text" required class="form-control"></textarea>
         <div>
           <div class="credits-container">
             <span v-for="(credit, index) in temp_credits" :key="credit.id"
@@ -43,7 +43,7 @@ import router from "@/router/index.js";
         <div class="col">
           <div class="form-group">
             <label for="location" class="form-label">Location:</label>
-            <button @click.prevent="getGeolocation" class="btn btn-info">
+            <button @click.prevent="getGeolocation" id="location" name="location" class="btn btn-info">
               Include Geolocation in your Squeal
             </button>
             <button v-if="location" @click.prevent="
@@ -68,7 +68,7 @@ import router from "@/router/index.js";
         <div class="col">
           <div class="form-group">
             <label for="media" class="form-label">Media:</label>
-            <input type="file" id="media" @change="handleFileUpload" accept="image/*" class="form-control" />
+            <input type="file" name="media" id="media" @change="handleFileUpload" accept="image/*" class="form-control" />
             <button v-if="media" @click.prevent="media = null" class="btn btn-danger">
               X
             </button>
@@ -84,23 +84,23 @@ import router from "@/router/index.js";
 
       <div class="form-group">
         <label for="reply_to" class="form-label">Reply To:</label>
-        <input type="text" id="reply_to" v-model="reply_to" class="form-control" />
+        <input type="text" name="reply_to" id="reply_to" v-model="reply_to" class="form-control" />
 
         <div class="form-check mt-3">
           <label for="send_for_loop" class="form-label">Looping post?</label>
-          <input type="checkbox" id="send_for_loop" v-model="send_for_loop" class="form-check-input" />
+          <input type="checkbox" name="send_for_loop" id="send_for_loop" v-model="send_for_loop" class="form-check-input" />
         </div>
       </div>
 
       <div v-if="send_for_loop">
         <div class="form-group">
           <label for="times" class="form-label">Number of posts (set negative for endless posts):</label>
-          <input type="number" id="times" v-model="times" class="form-control" />
+          <input type="number" name="times" id="times" v-model="times" class="form-control" />
         </div>
 
         <div class="form-group">
           <label for="delay" class="form-label">Delay (in minutes):</label>
-          <input type="number" id="delay" v-model="delay" class="form-control" />
+          <input type="number" name="delay" id="delay" v-model="delay" class="form-control" />
         </div>
       </div>
       <button type="submit" class="btn btn-primary" style="background-color: #ff8900; color: white">
@@ -314,6 +314,29 @@ export default {
 
       for (let i = 0; i < times; i++) {
         try {
+
+          // send notification to user with browser
+          if (Notification.permission === "granted") {
+            navigator.serviceWorker.getRegistration().then(function (reg) {
+              var options = {
+                body: "Automatic post " + (i + 1) + " sent!",
+                icon: "https://site222326.tw.cs.unibo.it/icons/squealer_icon.png",
+                vibrate: [100, 50, 100],
+                data: {
+                  dateOfArrival: Date.now(),
+                  primaryKey: 1,
+                },
+                actions: [
+                  {
+                    action: "close",
+                    title: "Close the notification",
+                  },
+                ],
+              };
+              reg.showNotification("Squealer", options);
+            });
+          }
+
           // update location
           if (jsonBody.location && navigator.geolocation) {
             navigator.geolocation.getCurrentPosition((position) => {

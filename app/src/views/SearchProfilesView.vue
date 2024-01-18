@@ -19,19 +19,19 @@
                         <form @submit.prevent="submitForm" class="row g-3">
                             <div class="form-group col-md-6">
                                 <label for="name">Name</label>
-                                <input type="text" class="form-control" id="name" v-model="query.name">
+                                <input type="text" class="form-control" name="name" id="name" v-model="query.name">
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="bio">Bio</label>
-                                <input type="text" class="form-control" id="bio" v-model="query.bio">
+                                <input type="text" class="form-control" name="bio" id="bio" v-model="query.bio">
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="credit">Minimum available credit</label>
-                                <input type="number" class="form-control" id="credit" v-model="query.credit">
+                                <input type="number" class="form-control" name="credit" id="credit" v-model="query.credit">
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="credit_type">Credit Type</label>
-                                <select class="form-control" id="credit_type" v-model="query.credit_type">
+                                <select class="form-control" name="credit_type" id="credit_type" v-model="query.credit_type">
                                     <option value="g">Daily</option>
                                     <option value="s">Weekly</option>
                                     <option value="m">Monthly</option>
@@ -39,11 +39,11 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="credit_limits">Maximum possible credit</label>
-                                <input type="number" class="form-control" id="credit_limits" v-model="query.credit_limits">
+                                <input type="number" class="form-control" name="credit_limits" id="credit_limits" v-model="query.credit_limits">
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="credit_limits_type">Credit Limits Type</label>
-                                <select class="form-control" id="credit_limits_type" v-model="query.credit_limits_type">
+                                <select class="form-control" name="credit_limits_type" id="credit_limits_type" v-model="query.credit_limits_type">
                                     <option value="g">Daily</option>
                                     <option value="s">Weekly</option>
                                     <option value="m">Monthly</option>
@@ -51,7 +51,7 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="squeals_num">Number of squeals created</label>
-                                <input type="number" class="form-control" id="squeals_num" v-model="query.squeals_num">
+                                <input type="number" class="form-control" name="squeals_num" id="squeals_num" v-model="query.squeals_num">
                             </div>
                             <div class="form-group d-flex justify-content-center">
                                 <button type="submit" class="btn btn-primary custom-btn">Submit</button>
