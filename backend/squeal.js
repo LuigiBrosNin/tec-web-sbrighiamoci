@@ -896,6 +896,7 @@ app.get("/squeals/:id", async (req, res) => {
 app.delete("/squeals/:id", async (req, res) => {
     try {
         const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user);
+        const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
 
 
         // check if the user has logged in
@@ -925,7 +926,7 @@ app.delete("/squeals/:id", async (req, res) => {
         const SMMAuthorized = await isSMMAuthorized(req.session.user, squeal.author) && await isAuthorizedOrHigher(squeal.author, typeOfProfile.user);
 
         // if the user is not authorized to delete the squeal, return 401
-        if (squeal.author !== req.session.user && !SMMAuthorized) {
+        if (squeal.author !== req.session.user && !SMMAuthorized && !adminAuthorized) {
             res.status(401).json({
                 message: "you are not authorized to delete this squeal"
             });
@@ -1020,6 +1021,21 @@ app.delete("/squeals/:id", async (req, res) => {
                     $put: {
                         squeals_list: `DeletedSqueals${deletedSquealsNum}`
                     }
+                });
+            }
+
+            if (squeal.secondary_channels != null) {
+                squeal.secondary_channels.forEach(async (channel) => {
+                    await collection_channels.updateOne({
+                        name: channel
+                    }, {
+                        $pull: {
+                            squeals_list: squealId
+                        },
+                        $put: {
+                            squeals_list: `DeletedSqueals${deletedSquealsNum}`
+                        }
+                    });
                 });
             }
 
