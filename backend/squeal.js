@@ -1031,9 +1031,6 @@ app.delete("/squeals/:id", async (req, res) => {
                     }, {
                         $pull: {
                             squeals_list: squealId
-                        },
-                        $put: {
-                            squeals_list: `DeletedSqueals${deletedSquealsNum}`
                         }
                     });
                 });
