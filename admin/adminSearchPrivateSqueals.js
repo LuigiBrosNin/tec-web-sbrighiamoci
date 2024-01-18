@@ -1,7 +1,7 @@
 const sitePrefix = "https://site222326.tw.cs.unibo.it";
 const squealsUrl = sitePrefix + "/squeals";
 
-let query = squealsUrl + "/?is_private=true";
+let query = squealsUrl + "/?is_private=true&";
 
 const numberOfSquealsToLoad = 10;
 let numberOfSquealsLoaded = 0;
@@ -14,7 +14,7 @@ document.getElementById('private_squeals_form').addEventListener('submit', async
     let data = Object.fromEntries(new FormData(e.target).entries());
     console.log(data);
 
-    query = squealsUrl + "/?is_private=true";
+    query = squealsUrl + "/?is_private=true&";
 
     if (data.author != null && data.author != "") {
         query = query.concat("author=" + data.author + "&");
@@ -83,8 +83,8 @@ function displayPrivateSqueal(squeal) {
     if(squeal.is_private == true){
         document.getElementById("result_container").innerHTML += `
         <div class="squealContainer">
-            <p class="author">From: ${squeal.author}</p>
-            <p class="receiver">To: ${squeal.receiver}</p>
+            <a class="author" href="${sitePrefix}/admin/profile/${squeal.author}">From: ${squeal.author}</a>
+            <a class="receiver" href="${sitePrefix}/admin/profile/${squeal.receiver}>To: ${squeal.receiver}</a>
             <p class="text">${squeal.text}</p>
             <p class="date">${new Date(squeal.date)}</p>
         </div>
