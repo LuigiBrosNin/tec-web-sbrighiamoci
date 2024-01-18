@@ -1,7 +1,7 @@
 <template>
 
   <div class="squeal_container">
-    <form @submit.prevent="createChannel" class="mt-5">
+    <form @submit.prevent="createChannel" class="mt-5" aria-labelledby="createChannelTitle">
 
       <!-- Titolo -->
       <h3 class="title"> Create your channel </h3>

@@ -2,34 +2,34 @@
 
 <template>
   <nav>
-    <RouterLink to="/" class="router_link">
+    <RouterLink to="/" class="router_link" aria-label="Home">
       <img class="icon not_selected" src="https://site222326.tw.cs.unibo.it/icons/house-floor-svgrepo-com.svg" />
       <p>Home</p>
     </RouterLink>
-    <RouterLink to="/search" class="router_link">
+    <RouterLink to="/search" class="router_link" aria-label="Search">
       <img class="icon not_selected" src="https://site222326.tw.cs.unibo.it/icons/search-alt-1-svgrepo-com.svg" />
       <p>Search</p>
     </RouterLink>
-    <RouterLink to="/channels" class="router_link">
+    <RouterLink to="/channels" class="router_link" aria-label="Channels">
       <img class="icon not_selected" src="https://site222326.tw.cs.unibo.it/icons/podcast-svgrepo-com.svg" />
       <p>Channels</p>
     </RouterLink>
-    <RouterLink to="/messages" class="router_link" v-if="$user">
+    <RouterLink to="/messages" class="router_link" v-if="$user" aria-label="Messages">
       <img class="icon not_selected" src="https://site222326.tw.cs.unibo.it/icons/message-circle-dots-svgrepo-com.svg" />
       <p>Messages</p>
     </RouterLink>
-    <RouterLink :to="`/profile/${$user}`" class="router_link" v-if="$user">
+    <RouterLink :to="`/profile/${$user}`" class="router_link" v-if="$user" aria-label="Profile">
       <img class="icon not_selected" src="https://site222326.tw.cs.unibo.it/icons/user-svgrepo-com.svg" />
       <p>{{ $user || "Profile" }}</p>
     </RouterLink>
-    <a href="https://site222326.tw.cs.unibo.it/login" class="router_link" v-if="!$user">
+    <a href="https://site222326.tw.cs.unibo.it/login" class="router_link" v-if="!$user" aria-label="Login">
       <img class="icon not_selected" src="https://site222326.tw.cs.unibo.it/icons/user-svgrepo-com.svg" />
       <p>Login</p>
     </a>
 
     <div class="switch_area_btn">
-      <a href="https://site222326.tw.cs.unibo.it/admin" v-if="$typeOfUser == 'admin'" class="admin_btn switch_btn">Go to admin dashboard</a>
-      <a href="https://site222326.tw.cs.unibo.it/smm" v-if="$typeOfUser == 'smm'" class="smm_btn switch_btn">Go to smm dashboard</a>
+      <a href="https://site222326.tw.cs.unibo.it/admin" v-if="$typeOfUser == 'admin'" class="admin_btn switch_btn" aria-label="Go to admin dashboard">Go to admin dashboard</a>
+      <a href="https://site222326.tw.cs.unibo.it/smm" v-if="$typeOfUser == 'smm'" class="smm_btn switch_btn" aria-label="Go to smm dashboard">Go to smm dashboard</a>
     </div>
   </nav>
 </template>

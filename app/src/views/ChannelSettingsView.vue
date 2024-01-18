@@ -11,12 +11,12 @@ const props = defineProps(["id"]);
 
     <!-- Propic -->
     <div class="flex-column">
-      <label for=""> Current profile picture: </label>
-      <img class="img-fluid rounded-circle profile_img" :src="profilePicUrl" />
+      <label for="currentProfilePic"> Current profile picture: </label>
+      <img class="img-fluid rounded-circle profile_img" :src="profilePicUrl" alt="Current Profile Picture"/>
     </div>
     <div class="input-group mb-3 flex-column">
       <div class="custom-file my-3">
-        <label for="" class="mb-1"> Choose a new profile picture: </label>
+        <label for="newProfilePic" class="mb-1"> Choose a new profile picture: </label>
         <input type="file" class="form-control my-2" id="inputGroupFile01" @change="handleFileUpload" accept="image/*" />
       </div>
       <div class="input-group-append">

@@ -3,7 +3,7 @@ const props = defineProps(["id", "profile_json"]);
 </script>
 
 <template>
-  <div class="card m-3">
+  <div class="card m-3" role="presentation">
     <div v-if="isValid" class="d-flex">
       <div class="col-md-4 d-flex justify-content-center align-items-center">
         <img :src="profilePicUrl" class="card-img profile_img" alt="Profile Picture">
@@ -11,7 +11,7 @@ const props = defineProps(["id", "profile_json"]);
       <div class="col-md-8">
         <div class="card-body">
           <h5 class="card-title">
-            <RouterLink :to="`/profile/${name}`" class="text-decoration-none">@{{ name }}</RouterLink>
+            <RouterLink :to="`/profile/${name}`" class="text-decoration-none" role="link">@{{ name }}</RouterLink>
           </h5>
           <p class="card-text">{{ bio }}</p>
           <div class="row credits_info">
@@ -42,7 +42,7 @@ const props = defineProps(["id", "profile_json"]);
       </div>
     </div>
     <div v-else>
-      <p>Profile not found</p>
+      <p role="alert">Profile not found</p>
     </div>
   </div>
 </template>

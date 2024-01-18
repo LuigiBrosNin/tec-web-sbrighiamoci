@@ -9,13 +9,13 @@ const props = defineProps(['id']);
 <template>
   <div v-if="isValid" class="messagesViewContainer">
     <div class="searchArea">
-      <RouterLink to="/messages" class="goBackBtn"> &lt Go back</RouterLink>
+      <RouterLink to="/messages" class="goBackBtn" aria-label="Go back to messages"> &lt Go back</RouterLink>
       <ProfileCard :id="id"></ProfileCard>
     </div>
 
     <!-- chat area -->
     <div class="chatBox container mx-0 mx-auto">
-      <button v-if="chat.length > 0" @click="loadMore" class="loadMoreBtn"> Load more </button>
+      <button v-if="chat.length > 0" @click="loadMore" class="loadMoreBtn" aria-label="Load more messages"> Load more </button>
       <div class="chatInner">
         <div :class="getMessageClass(message.author)" v-for="(message, index) in chat" :key="index">
           {{ message.text }}
@@ -27,12 +27,12 @@ const props = defineProps(['id']);
     <div class="messageInput d-flex justify-content-center">
       <input v-model="new_msg_text" type="text" placeholder="Write your message..." class="form-control"
         @keypress.enter="sendMessage" />
-      <button @click="sendMessage" class="btn btn-primary"> Send </button>
+      <button @click="sendMessage" class="btn btn-primary" aria-label="Send message"> Send </button>
     </div>
   </div>
   <div v-else>
     <p>You are not logged in or this user does not exist</p>
-    <RouterLink to="/messages">Go back</RouterLink>
+    <RouterLink to="/messages" aria-label="Go back to messages">Go back</RouterLink>
   </div>
 </template>
 

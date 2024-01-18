@@ -8,15 +8,15 @@ import NewSquealButton from "@/components/NewSquealButton.vue"
 
 <template>
   <div class="page_wrapper">
-    <Header title="Squealer"></Header>
-    <div class="main_area">
-      <Navbar></Navbar>
-      <NewSquealButton id="NewSquealButton" v-if="$route.name != 'squealPut' && $route.name != 'messages'"></NewSquealButton>
+      <Header title="Squealer"></Header>
+      <div class="main_area" role="main" aria-label="Main Content">
+        <Navbar></Navbar>
+        <NewSquealButton id="NewSquealButton" v-if="$route.name != 'squealPut' && $route.name != 'messages'" aria-label="New Squeal"></NewSquealButton>
 
-      <div class="content">
-        <RouterView />
+        <div class="content">
+          <RouterView />
+        </div>
       </div>
-    </div>
   </div>
 </template>
 

@@ -9,16 +9,16 @@ import ChannelCreateView from "@/views/ChannelCreateView.vue"
   <!-- Pulsanti di commutazione -->
   <div class="d-flex justify-content-center my-3 myChannelsButtonsContainer">
     <button @click="showFollowedSection" id="followedChannelsButton" class="btn mx-2"
-      :class="{ orange_btn: activeSection === 'followed_section', 'btn-secondary': activeSection !== 'followed_section', }">
+      :class="{ orange_btn: activeSection === 'followed_section', 'btn-secondary': activeSection !== 'followed_section', }" aria-label="Show Followed Channels">
       Followed </button>
     <button @click="showOwnedSection" id="ownedChannelsButton" class="btn mx-2"
-      :class="{ orange_btn: activeSection === 'owned_section', 'btn-secondary': activeSection !== 'owned_section', }">
+      :class="{ orange_btn: activeSection === 'owned_section', 'btn-secondary': activeSection !== 'owned_section', }" aria-label="Show Owned Channels">
       Owned </button>
     <button @click="showSearchSection" id="searchChannelsButton" class="btn mx-2"
-      :class="{ orange_btn: activeSection === 'search_section', 'btn-secondary': activeSection !== 'search_section', }">
+      :class="{ orange_btn: activeSection === 'search_section', 'btn-secondary': activeSection !== 'search_section', }" aria-label="Show Search Channels">
       Search </button>
     <button @click="showCreateSection" id="createChannelsButton" class="btn mx-2"
-      :class="{ orange_btn: activeSection === 'create_section', 'btn-secondary': activeSection !== 'create_section', }">
+      :class="{ orange_btn: activeSection === 'create_section', 'btn-secondary': activeSection !== 'create_section', }" aria-label="Show Create Channel">
       Create </button>
   </div>
 
@@ -32,7 +32,7 @@ import ChannelCreateView from "@/views/ChannelCreateView.vue"
   
       <div class="loadMoreContainer text-center">
         <div v-if="allChannelsLoaded"> No more channels. </div>
-        <button v-if="!allChannelsLoaded" @click="loadMoreChannels" class="btn btn-primary loadMoreBtn"> Load more </button>
+        <button v-if="!allChannelsLoaded" @click="loadMoreChannels" class="btn btn-primary loadMoreBtn" aria-label="Load More Followed Channels"> Load more </button>
       </div>
     </div>
     <div v-else>

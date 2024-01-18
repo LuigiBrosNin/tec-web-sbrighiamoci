@@ -3,7 +3,7 @@
 </script>
 
 <template>
-    <div class="squeal_container" v-if="isValid && !isPrivate" :id="squeal_id">
+    <div class="squeal_container" v-if="isValid && !isPrivate" :id="squeal_id" role="article">
         <RouterLink :to="`/channel/${channel}`"> §{{ channel }} </RouterLink>
         <div v-if='replyTo != null && replyTo != ""'>
             <p>Reply to:
@@ -31,18 +31,18 @@
             <button
                 :class="'interaction_button' + ' ' + (($user != null && positiveReactionsList.includes($user)) ? 'active_button' : '')"
                 @click="addOrRemovePositiveReaction">
-                <img class="interaction_img" src="https://site222326.tw.cs.unibo.it/icons/face-smile-svgrepo-com.svg" />
+                <img class="interaction_img" src="https://site222326.tw.cs.unibo.it/icons/face-smile-svgrepo-com.svg" alt="Positive Reaction"/>
                 <p class="interaction_counter">{{ positiveReactions }}</p>
             </button>
             <button
                 :class="'interaction_button' + ' ' + (($user != null && negativeReactionsList.includes($user)) ? 'active_button' : '')"
                 @click="addOrRemoveNegativeReaction">
-                <img class="interaction_img" src="https://site222326.tw.cs.unibo.it/icons/face-frown-svgrepo-com.svg" />
+                <img class="interaction_img" src="https://site222326.tw.cs.unibo.it/icons/face-frown-svgrepo-com.svg" alt="Negative Reaction" />
                 <p class="interaction_counter">{{ negativeReactions }}</p>
             </button>
             <RouterLink class="interaction_button" :to="`/squealPut/?replyto=${squeal_id}&receiver=${channel}`">
                 <img class="interaction_img"
-                    src="https://site222326.tw.cs.unibo.it/icons/message-circle-dots-svgrepo-com.svg" />
+                    src="https://site222326.tw.cs.unibo.it/icons/message-circle-dots-svgrepo-com.svg" alt="Reply"/>
                 <p class="interaction_counter">{{ replies }}</p>
             </RouterLink>
         </div>
@@ -51,14 +51,14 @@
 
         <div class="btn_area">
             <button v-if="canBeDeleted" class="delete_btn" @click="askToDelete">
-                <img class="delete_img" src="https://site222326.tw.cs.unibo.it/icons/trash-svgrepo-com.svg" />
+                <img class="delete_img" src="https://site222326.tw.cs.unibo.it/icons/trash-svgrepo-com.svg" alt="Delete Squeal" />
             </button>
 
         </div>
 
     </div>
     <div class="squeal_container" v-else>
-        <p>Squeal not found</p>
+        <p role="alert">Squeal not found</p>
     </div>
 </template>
 

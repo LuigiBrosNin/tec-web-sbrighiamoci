@@ -16,7 +16,7 @@ const props = defineProps(['id']);
             <RouterLink v-if="typeOfChannel == 'private'" :to="`/squealPut?receiver=${channelName}`" class="channel_new_squeal_button">
                 <div class="channel_new_squeal_button_content">
                     <img class="channel_new_squeal_button_image"
-                        src="https://site222326.tw.cs.unibo.it/icons/plus-svgrepo-com.svg" />
+                        src="https://site222326.tw.cs.unibo.it/icons/plus-svgrepo-com.svg" alt="Create Squeal" />
                     <p class="channel_new_squeal_button_text">Create a new Squeal in this channel</p>
                 </div>
             </RouterLink>

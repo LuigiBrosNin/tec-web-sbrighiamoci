@@ -3,9 +3,9 @@ import { RouterLink } from 'vue-router'
 </script>
 
 <template>
-  <RouterLink to="/squealPut" class="new_squeal_button">
+  <RouterLink to="/squealPut" class="new_squeal_button" aria-label="Create a new Squeal" role="button">
     <div class="new_squeal_button_content">
-      <img class="new_squeal_button_image" src="https://site222326.tw.cs.unibo.it/icons/plus-svgrepo-com.svg" />
+      <img class="new_squeal_button_image" src="https://site222326.tw.cs.unibo.it/icons/plus-svgrepo-com.svg" alt="Create a new Squeal"/>
       <p class="new_squeal_button_text">Create a new Squeal</p>
     </div>
   </RouterLink>

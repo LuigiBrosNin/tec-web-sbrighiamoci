@@ -1,6 +1,6 @@
 <template>
     <div class="not_logged_in_container">
-        <p class="text">you must be logged in to use this section</p>
+        <p class="text" aria-live="polite" role="alert">you must be logged in to use this section</p>
         <a class="login_btn" href="https://site222326.tw.cs.unibo.it/login">Log in</a>
     </div>
 </template>

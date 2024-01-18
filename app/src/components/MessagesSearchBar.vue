@@ -9,6 +9,7 @@ import router from '@/router/index.js'
       <div class="col-sm-8 mx-auto">
         <div class="form-group d-flex align-items-center">
 
+          <label for="search_user" class="visually-hidden">Search profiles</label>
           <input v-model="search_user" type="text" placeholder="Search profiles..."
             class="form-control searchProfileTextbox" @keypress.enter="searchChat" />
           <button @click="searchChat" class="searchBtn "> Search </button>

@@ -4,7 +4,7 @@ const props = defineProps(["id"]);
 
 <template>
   <div v-if="$user != id">
-    <button class="follow_button" @click="changeFollowStatus()">
+    <button class="follow_button" @click="changeFollowStatus()" aria-label="Toggle Follow Status">
       <span class="follow" v-if="!followed">Follow</span>
       <span class="unfollow" v-else>Unfollow</span>
     </button>

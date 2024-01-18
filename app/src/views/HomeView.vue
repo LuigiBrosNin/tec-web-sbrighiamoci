@@ -8,6 +8,7 @@ import Squeal from "@/components/Squeal.vue";
     <button
       class="btn custom-btn"
       @click="refresh()"
+      aria-label="Refresh feed"
     >
       Refresh feed
     </button>
@@ -19,6 +20,7 @@ import Squeal from "@/components/Squeal.vue";
       :class="{ 'btn-disabled': isPrevDisabled }"
       @click="loadPrev()"
       :disabled="isPrevDisabled"
+      aria-label="Load previous page"
     >
       Load previous page
     </button>
@@ -28,6 +30,7 @@ import Squeal from "@/components/Squeal.vue";
       :class="{ 'btn-disabled': nextPageIsEmpty }"
       @click="loadNext()"
       :disabled="nextPageIsEmpty"
+      aria-label="Load next page"
     >
       Load next page
     </button>
@@ -41,7 +44,7 @@ import Squeal from "@/components/Squeal.vue";
     :key="feedVersion"
   ></Squeal>
   <div v-else class="d-flex justify-content-center align-items-center my-3">
-    <div class="spinner-border text-primary" role="status">
+    <div class="spinner-border text-primary" role="status" aria-label="Loading">
     </div>
   </div>
 
@@ -52,6 +55,7 @@ import Squeal from "@/components/Squeal.vue";
       :class="{ 'btn-disabled': isPrevDisabled }"
       @click="loadPrev()"
       :disabled="isPrevDisabled"
+      aria-label="Load previous page"
     >
       Load previous page
     </button>
@@ -61,6 +65,7 @@ import Squeal from "@/components/Squeal.vue";
       :class="{ 'btn-disabled': nextPageIsEmpty }"
       @click="loadNext()"
       :disabled="nextPageIsEmpty"
+      aria-label="Load next page"
     >
       Load next page
     </button>

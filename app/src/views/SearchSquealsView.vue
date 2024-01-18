@@ -24,7 +24,7 @@ import Squeal from "@/components/Squeal.vue";
       src="https://site222326.tw.cs.unibo.it/icons/search-alt-1-svgrepo-com.svg" />
     Toggle Search Options
   </button>
-  <div id="formSection" class="collapse show">
+  <div id="formSection" class="collapse show" aria-labelledby="formToggle">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <div class="container-fluid">
         <form @submit.prevent="submitForm" class="row g-3">
@@ -90,12 +90,12 @@ import Squeal from "@/components/Squeal.vue";
   <!-- buttons to change page -->
   <div class="d-flex justify-content-center align-items-center my-3">
     <button class="btn custom-btn mr-2" :class="{ 'btn-disabled': isPrevDisabled }" @click="loadPrev()"
-      :disabled="isPrevDisabled">
+      :disabled="isPrevDisabled" aria-label="Load Previous Page">
       Load previous page
     </button>
     <span class="mx-3">Page: {{ currentPage }}</span>
     <button class="btn custom-btn ml-2" :class="{ 'btn-disabled': nextPageIsEmpty }" @click="loadNext()"
-      :disabled="nextPageIsEmpty">
+      :disabled="nextPageIsEmpty" aria-label="Load Next Page">
       Load next page
     </button>
   </div>
@@ -106,12 +106,12 @@ import Squeal from "@/components/Squeal.vue";
   <!-- buttons to change page -->
   <div class="d-flex justify-content-center align-items-center my-3">
     <button class="btn custom-btn mr-2" :class="{ 'btn-disabled': isPrevDisabled }" @click="loadPrev()"
-      :disabled="isPrevDisabled">
+      :disabled="isPrevDisabled" aria-label="Load Previous Page">
       Load previous page
     </button>
     <span class="mx-3">Page: {{ currentPage }}</span>
     <button class="btn custom-btn ml-2" :class="{ 'btn-disabled': nextPageIsEmpty }" @click="loadNext()"
-      :disabled="nextPageIsEmpty">
+      :disabled="nextPageIsEmpty" aria-label="Load Next Page">
       Load next page
     </button>
   </div>

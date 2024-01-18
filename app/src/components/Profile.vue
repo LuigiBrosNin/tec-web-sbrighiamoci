@@ -10,7 +10,7 @@ const props = defineProps(["id", "profile_json"]);
   <div v-if="isValid" class="container profile_container" :id="id">
     <div class="row profile_main_data">
       <div class="col-sm-4">
-        <img class="img-fluid rounded-circle profile_img" :src="profilePicUrl" />
+        <img class="img-fluid rounded-circle profile_img" :src="profilePicUrl" alt="Profile Picture"/>
       </div>
       <div class="col-sm-8">
         <h2 class="profile_name">@{{ name }}</h2>
@@ -49,7 +49,7 @@ const props = defineProps(["id", "profile_json"]);
 
     <div class="btn_area">
       <button v-if="$user === name" class="settings_btn" @click="goToSettings">
-        <img class="settings_img" src="https://site222326.tw.cs.unibo.it/icons/gear-svgrepo-com.svg" />
+        <img class="settings_img" src="https://site222326.tw.cs.unibo.it/icons/gear-svgrepo-com.svg" alt="Settings"/>
       </button>
     </div>
 
@@ -102,8 +102,8 @@ const props = defineProps(["id", "profile_json"]);
           <ProfileCard :id="follower"></ProfileCard>
         </div>
         <div class="loadMoreContainer">
-          <div v-if="tmpFollowersList.length < 1"> No more profiles. </div>
-          <button v-if="!allFollowersLoaded" @click="loadMoreFollowers" class="btn btn-primary loadMoreBtn"> Load more
+          <div v-if="tmpFollowersList.length < 1" aria-live="polite"> No more profiles. </div>
+          <button v-if="!allFollowersLoaded" @click="loadMoreFollowers" class="btn btn-primary loadMoreBtn" aria-label="Load more followers"> Load more
           </button>
         </div>
       </div>
@@ -114,8 +114,8 @@ const props = defineProps(["id", "profile_json"]);
           <ProfileCard :id="follower"></ProfileCard>
         </div>
         <div class="loadMoreContainer">
-          <div v-if="tmpFollowingList.length < 1"> No more profiles. </div>
-          <button v-if="!allFollowingLoaded" @click="loadMoreFollowing" class="btn btn-primary loadMoreBtn"> Load more
+          <div v-if="tmpFollowingList.length < 1" aria-live="polite"> No more profiles. </div>
+          <button v-if="!allFollowingLoaded" @click="loadMoreFollowing" class="btn btn-primary loadMoreBtn" aria-label="Load more following"> Load more
           </button>
         </div>
       </div>
@@ -126,8 +126,8 @@ const props = defineProps(["id", "profile_json"]);
           <ChannelCard :id="channel"></ChannelCard>
         </div>
         <div class="loadMoreContainer">
-          <div v-if="tmpChannelsList.length < 1"> No more channels. </div>
-          <button v-if="!allChannelsLoaded" @click="loadMoreChannels" class="btn btn-primary loadMoreBtn"> Load more
+          <div v-if="tmpChannelsList.length < 1" aria-live="polite"> No more channels. </div>
+          <button v-if="!allChannelsLoaded" @click="loadMoreChannels" class="btn btn-primary loadMoreBtn" aria-label="Load more channels"> Load more
           </button>
         </div>
       </div>

@@ -3,7 +3,7 @@ const props = defineProps(["id", "channel_json"]);
 </script>
 
 <template>
-  <div class="card m-3">
+  <div class="card m-3" role="article">
     <div v-if="isValid" class="d-flex">
       <div class="col-md-4 d-flex justify-content-center align-items-center">
         <img :src="profilePicUrl" class="card-img channel_img" alt="Profile Picture">
@@ -11,33 +11,33 @@ const props = defineProps(["id", "channel_json"]);
       <div class="col-md-8">
         <div class="card-body">
           <h5 class="card-title">
-            <RouterLink :to="`/channel/${name}`"> §{{ name }} </RouterLink>
+            <RouterLink :to="`/channel/${name}`" role="link" tabindex="0"> §{{ name }} </RouterLink>
           </h5>
 
           <p class="card-text bio"> {{ bio }} </p>
           <div class="infoContainer d-flex justify-content-start">
             <p class="card-text "><small class="text-muted"> Owner: {{ owner }}</small></p>
-            <p class="divider mx-4"></p>
+            <p class="divider mx-4" aria-hidden="true"></p>
             <p class="card-text"><small class="text-muted"> Subscribers: {{ subscribersNum }} </small></p>
           </div>
           <div v-if="!isSubscribed">
-            <button class="btn orange_btn" @click="subscribe"> Subscribe </button>
+            <button class="btn orange_btn" @click="subscribe"  role="button" aria-label="Subscribe to Channel"> Subscribe </button>
           </div>
           <div v-else>
-            <button class="btn dark_orange_btn" @click="unsub"> Unsubscribe </button>
+            <button class="btn dark_orange_btn" @click="unsub"  role="button" aria-label="Unsubscribe from Channel"> Unsubscribe </button>
           </div>
         </div>
       </div>
 
       <div class="btn_area">
-        <button v-if="$user === owner" class="settings_btn" @click="goToSettings">
-          <img class="settings_img" src="https://site222326.tw.cs.unibo.it/icons/gear-svgrepo-com.svg" />
+        <button v-if="$user === owner" class="settings_btn" @click="goToSettings" role="button" aria-label="Go to Channel Settings">
+          <img class="settings_img" src="https://site222326.tw.cs.unibo.it/icons/gear-svgrepo-com.svg" alt="Settings Icon"/>
         </button>
       </div>
 
     </div>
     <div v-else>
-      channel not found
+       <p class="text-danger" role="alert">Channel not found</p>
     </div>
   </div>
 </template>

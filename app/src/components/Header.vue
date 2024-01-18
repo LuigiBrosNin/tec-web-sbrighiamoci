@@ -1,8 +1,8 @@
 <template>
   <header>
     <div class="logout">
-      <a v-if="$user != null" class="logout_btn" href="https://site222326.tw.cs.unibo.it/logout">
-        <img class="logout_img" src="https://site222326.tw.cs.unibo.it/icons/door-open-svgrepo-com.svg" />
+      <a v-if="$user != null" class="logout_btn" href="https://site222326.tw.cs.unibo.it/logout" aria-label="Logout">
+        <img alt="Logout" class="logout_img" src="https://site222326.tw.cs.unibo.it/icons/door-open-svgrepo-com.svg" />
       </a>
     </div>
 
@@ -20,7 +20,7 @@
             <strong>Posting automatic squeals!</strong>
           </div>
           <div class="mr-3">
-            <button class="btn btn-danger" @click="stopLoop">Stop</button>
+            <button class="btn btn-danger" @click="stopLoop" aria-label="Stop Automatic Posting">Stop</button>
           </div>
         </div>
       </div>
