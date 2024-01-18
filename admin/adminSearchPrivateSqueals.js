@@ -20,28 +20,12 @@ document.getElementById('private_squeals_form').addEventListener('submit', async
         query = query.concat("author=" + data.author + "&");
     }
 
-    if (data.popularity != null && data.popularity != "") {
-        query = query.concat("popularity=" + data.popularity + "&");
-    }
-
     if (data.start_date != null && data.start_date != "") {
         query = query.concat("start_date=" + data.start_date + "&");
     }
 
     if (data.end_date != null && data.end_date != "") {
         query = query.concat("end_date=" + data.end_date + "&");
-    }
-
-    if (data.positiveReactions != null && data.positiveReactions != "") {
-        query = query.concat("positive_reactions=" + data.positiveReactions + "&");
-    }
-
-    if (data.negativeReactions != null && data.negativeReactions != "") {
-        query = query.concat("negative_reactions=" + data.negativeReactions + "&");
-    }
-
-    if (data.impressions != null && data.impressions != "") {
-        query = query.concat("impressions=" + data.impressions + "&");
     }
 
     if (data.receiver != null && data.receiver != "") {
@@ -87,7 +71,7 @@ function displayPrivateSqueal(squeal) {
             <a class="receiver" href="${sitePrefix}/admin/profile/${squeal.receiver}">To: ${squeal.receiver}</a>
             <p class="text">${squeal.text}</p>
             <p class="date">${new Date(squeal.date)}</p>
-            <button class="button danger" onclick="deleteSqueal(${squeal.id})">Delete<button>
+            <button class="danger_button" onclick="deleteSqueal(${squeal.id})">Delete</button>
         </div>
         `;
     }
