@@ -2,25 +2,25 @@
     import SearchChannelsView from "@/views/SearchChannelsView.vue";
     import SearchProfilesView from "@/views/SearchProfilesView.vue";
     import SearchSquealsView from "@/views/SearchSquealsView.vue";
+
+    query.tab_index ? activeTab = query.tab_index : activeTab = "channels";
+    
 </script>
 
 <template>
     <ul class="nav nav-pills mb-3 flex-column flex-sm-row" id="pills-tab-search" role="tablist">
         <li class="nav-item flex-sm-fill text-sm-center" role="presentation">
-            <button class="nav-link active" id="pills-channels-tab" data-bs-toggle="pill" data-bs-target="#search-channels"
-                type="button" role="tab" aria-controls="search-channels" aria-selected="true">
+            <button class="nav-link" :class="{ active: activeTab === 'channels' }" id="pills-channels-tab" @click="activeTab = 'channels'" type="button" role="tab" aria-controls="search-channels" aria-selected="activeTab === 'channels'">
                 Channels
             </button>
         </li>
         <li class="nav-item flex-sm-fill text-sm-center" role="presentation">
-            <button class="nav-link" id="pills-profiles-tab" data-bs-toggle="pill" data-bs-target="#search-profiles"
-                type="button" role="tab" aria-controls="search-profiles" aria-selected="false">
+            <button class="nav-link" :class="{ active: activeTab === 'profiles' }" id="pills-profiles-tab" @click="activeTab = 'profiles'" type="button" role="tab" aria-controls="search-profiles" aria-selected="activeTab === 'profiles'">
                 Profiles
             </button>
         </li>
         <li class="nav-item flex-sm-fill text-sm-center" role="presentation">
-            <button class="nav-link" id="pills-squeals-tab" data-bs-toggle="pill" data-bs-target="#search-squeals"
-                type="button" role="tab" aria-controls="search-squeals" aria-selected="false">
+            <button class="nav-link" :class="{ active: activeTab === 'squeals' }" id="pills-squeals-tab" @click="activeTab = 'squeals'" type="button" role="tab" aria-controls="search-squeals" aria-selected="activeTab === 'squeals'">
                 Squeals
             </button>
         </li>
