@@ -18,3 +18,8 @@
     margin-bottom: 1em;
     margin-top: 1em;
 }
+
+.danger {
+    color: #ff0000;
+    border-color: #ff0000;
+}

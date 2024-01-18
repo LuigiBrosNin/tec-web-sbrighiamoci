@@ -82,14 +82,33 @@ async function fetchPagedSqueals(){
 function displayPrivateSqueal(squeal) {
     if(squeal.is_private == true){
         document.getElementById("result_container").innerHTML += `
-        <div class="squealContainer">
+        <div class="squealContainer" id="${squeal.id}">
             <a class="author" href="${sitePrefix}/admin/profile/${squeal.author}">From: ${squeal.author}</a>
-            <a class="receiver" href="${sitePrefix}/admin/profile/${squeal.receiver}>To: ${squeal.receiver}</a>
+            <a class="receiver" href="${sitePrefix}/admin/profile/${squeal.receiver}">To: ${squeal.receiver}</a>
             <p class="text">${squeal.text}</p>
             <p class="date">${new Date(squeal.date)}</p>
+            <button class="button danger" onclick="deleteSqueal(${squeal.id})">Delete<button>
         </div>
         `;
     }
 }
 
+async function deleteSqueal(squeal_id) {
+    if (confirm("Are you sure you want to delete this squeal? This action can't be undone") === true) {
+        let res = await fetch(
+            sitePrefix + `/squeals/${squeal_id}`,
+            {
+                method: "DELETE",
+            }
+        );
+        if (res.status == 200) {
+            let squealNode = document.getElementById(squeal_id);
+            squealNode.outerHTML = "";
+        }
+    } else {
+        // do nothing
+    }
+}
+
 window.fetchPagedSqueals = fetchPagedSqueals;
+window.deleteSqueal = deleteSqueal;
