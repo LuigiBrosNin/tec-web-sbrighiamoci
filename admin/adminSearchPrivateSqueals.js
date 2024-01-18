@@ -71,7 +71,7 @@ async function fetchPagedSqueals(){
     if (res.status == 200) {
         res = await res.json();
         numberOfSquealsLoaded = numberOfSquealsLoaded + numberOfSquealsToLoad;
-        for(squeal of res){
+        for(let squeal of res){
             displayPrivateSqueal(squeal);
         }
     } else {
@@ -88,7 +88,7 @@ function displayPrivateSqueal(squeal) {
             <p class="text">${squeal.text}</p>
             <p class="date">${new Date(squeal.date)}</p>
         </div>
-        `
+        `;
     }
 }
 
