@@ -82,7 +82,7 @@ app.post("/login", bodyParser.json(), async (req, res) => {
   }
 })
 
-app.use('/loginsrc/*', express.static(path.join(global.rootDir, '/login/')));
+app.use("/loginsrc", express.static(path.join(global.rootDir, '/login/')));
 
 app.get("/logout", async (req, res) => {
   req.session.destroy();
