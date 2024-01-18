@@ -21,11 +21,13 @@ document.getElementById('private_squeals_form').addEventListener('submit', async
     }
 
     if (data.start_date != null && data.start_date != "") {
-        query = query.concat("start_date=" + data.start_date + "&");
+        let startdate = new Date(data.start_date);
+        query = query.concat("start_date=" + startdate.getTime() + "&");
     }
 
     if (data.end_date != null && data.end_date != "") {
-        query = query.concat("end_date=" + data.end_date + "&");
+        let enddate = new Date(data.end_date);
+        query = query.concat("end_date=" + enddate.getTime() + "&");
     }
 
     if (data.receiver != null && data.receiver != "") {
