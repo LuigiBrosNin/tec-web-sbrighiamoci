@@ -26,6 +26,13 @@ document.getElementById('channel_creation_form').addEventListener('submit', asyn
         alert("To create a channel you must specify its type");
         return;
     }
+
+    if(data.channel_type == "privileged" || data.channel_type == "required"){
+        newChannelName = newChannelName.toUpperCase();
+    }
+    else {
+        newChannelName = newChannelName.toLowerCase();
+    }
     
     if (data.bio != null && data.bio != "") {
         newChannelData.bio = data.bio;
