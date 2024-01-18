@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+
+<head>
+    <link rel="stylesheet" href="https://site222326.tw.cs.unibo.it/bootstrap/css">
+    </link>
+    <script type="module" src="https://site222326.tw.cs.unibo.it/bootstrap/js"></script>
+</head>
+
+<body>
+    <h1>admin edit automatic squeals page</h1>
+
+    <div id="automaticRulesContainer" class="formCard"></div>
+
+    <form class="mx-5 my-3 formCard" id="add_rule_form">
+        <h2>Add a new automatic squeals rule:</h2>
+
+        <label for="uri" class="form-label">Url of the resource:</label>
+        <input type="text" id="uri" name="uri" class="form-control" required>
+
+        <label for="json_fields" class="form-label">Json fields* to include in the squeal:</label>
+        <input type="text" id="json_fields" name="json_fields" class="form-control">
+        <small class="form-text text-muted">*separated by commas</small> <br>
+
+        <label for="media_field" class="form-label">Json field containing the squeal media:</label>
+        <input type="text" id="media_field" name="media_field" class="form-control">
+
+        <label for="channel" class="form-label">Channel in which post the squeal:</label>
+        <input type="text" id="channel" name="channel" class="form-control" required>
+
+        <input type="submit">
+    </form>
+
+</body>
+<link rel="stylesheet" href="https://site222326.tw.cs.unibo.it/adminsrc/adminEdit.css">
+</link>
+<script type="module" src="https://site222326.tw.cs.unibo.it/adminsrc/adminManageAutomaticSqueals.js"></script>

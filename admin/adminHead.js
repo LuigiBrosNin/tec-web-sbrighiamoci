@@ -284,7 +284,7 @@ function addManageAutomaticSquealsToMyChannelsView() {
 function generateManageAutomaticSquealsButton() {
     const manageAutomaticSquealsButton = document.createElement("a");
     manageAutomaticSquealsButton.id = "adminManageAutomaticSquealsButton";
-    manageAutomaticSquealsButton.setAttribute("href", `${sitePrefix}/admin/automaticsqueals`);
+    manageAutomaticSquealsButton.setAttribute("href", `${sitePrefix}/admin/adminedit/automaticsqueals`);
     manageAutomaticSquealsButton.classList.add("admin-pill");
     manageAutomaticSquealsButton.append("Manage automatic squeals");
     return manageAutomaticSquealsButton;
