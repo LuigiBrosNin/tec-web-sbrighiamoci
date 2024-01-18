@@ -67,7 +67,7 @@ document.getElementById('add_rule_form').addEventListener('submit', async (e) =>
 
 
 function displayRules(rules) {
-    let container = document.getElementById(automaticRulesContainer);
+    let container = document.getElementById("automaticRulesContainer");
     container.innerHTML = "";
     if(rules.length > 0){
         for(let rule of rules){
