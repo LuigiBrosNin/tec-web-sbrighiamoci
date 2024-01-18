@@ -107,6 +107,10 @@ app.use('/app/*', express.static(path.join(global.rootDir, 'app/dist/')));
 app.use('/smm', express.static(path.join(global.rootDir, 'smm/build/')));
 app.use('/smm/*', express.static(path.join(global.rootDir, 'smm/build/')));
 
+app.get("/admin/adminedit/automaticsqueals", async (req, res) => {
+  res.status(200).sendFile(global.rootDir + '/admin/adminManageAutomaticSqueals.html');
+})
+
 app.get("/admin/adminedit/:type/:id", async (req, res) => {
   if(req.params.type === "squeal"){
     res.status(200).sendFile(global.rootDir + '/admin/adminEditSqueal.html');
@@ -116,9 +120,6 @@ app.get("/admin/adminedit/:type/:id", async (req, res) => {
   }
   else if(req.params.type === "channel"){
     res.status(200).sendFile(global.rootDir + '/admin/adminEditChannel.html');
-  }
-  else if(req.params.type === "automaticsqueals"){
-    res.status(200).sendFile(global.rootDir + '/admin/adminManageAutomaticSqueals.html');
   }
   else {
     res.status(404).send();
