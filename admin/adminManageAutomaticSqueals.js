@@ -27,7 +27,7 @@ document.getElementById('add_rule_form').addEventListener('submit', async (e) =>
 
     if (data.json_fields != null && data.json_fields != "") {
         changes.json_fields = [];
-        let splittedFields = text.split(",");
+        let splittedFields = data.json_fields.split(",");
         for(let field of splittedFields){
             field = field.replaceAll(" ", "");
             changes.json_fields.push(field);
