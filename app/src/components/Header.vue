@@ -52,6 +52,7 @@ header {
   overflow: hidden;
   z-index: 10;
   flex: none;
+  flex-wrap: wrap;
 
   justify-content: center;
 }
@@ -104,10 +105,21 @@ h2 {
   filter: invert(17%) sepia(87%) saturate(7277%) hue-rotate(359deg) brightness(109%) contrast(118%);
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 660px) {
   header {
-    flex-direction: column-reverse;
     overflow:visible;
+  }
+  .title{
+    display: none;
+  }
+  .logo_container {
+    margin: 0.5em 1em;
+  }
+  .alert_container {
+    justify-content: center;
+  }
+  .alert {
+    margin-top: 0em !important;
   }
 }
 </style>

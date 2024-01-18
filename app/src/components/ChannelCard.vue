@@ -15,9 +15,10 @@ const props = defineProps(["id", "channel_json"]);
           </h5>
 
           <p class="card-text bio"> {{ bio }} </p>
-          <div class="d-flex justify-content-start">
+          <div class="infoContainer d-flex justify-content-start">
             <p class="card-text "><small class="text-muted"> Owner: {{ owner }}</small></p>
-            <p class="card-text mx-5"><small class="text-muted"> Subscribers: {{ subscribersNum }} </small></p>
+            <p class="divider mx-4"></p>
+            <p class="card-text"><small class="text-muted"> Subscribers: {{ subscribersNum }} </small></p>
           </div>
           <div v-if="!isSubscribed">
             <button class="btn orange_btn" @click="subscribe"> Subscribe </button>
@@ -201,4 +202,13 @@ export default {
   margin: 1em;
 }
 
+@media screen and (max-width: 420px) {
+  .infoContainer {
+    flex-direction: column;
+  }
+
+  .divider {
+    display: none;
+  }
+}
 </style>

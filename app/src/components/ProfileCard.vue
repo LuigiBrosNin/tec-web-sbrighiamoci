@@ -11,7 +11,7 @@ const props = defineProps(["id", "profile_json"]);
       <div class="col-md-8">
         <div class="card-body">
           <h5 class="card-title">
-            <RouterLink :to="`/profile/${name}`" class="text-decoration-none">{{ name }}</RouterLink>
+            <RouterLink :to="`/profile/${name}`" class="text-decoration-none">@{{ name }}</RouterLink>
           </h5>
           <p class="card-text">{{ bio }}</p>
           <div class="row credits_info">

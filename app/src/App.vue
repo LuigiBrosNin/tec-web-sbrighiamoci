@@ -38,6 +38,9 @@ import NewSquealButton from "@/components/NewSquealButton.vue"
   min-height: 0;
   min-width: 0;
   height: inherit;
+
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 .content {
