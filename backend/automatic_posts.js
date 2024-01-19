@@ -112,9 +112,9 @@ async function putControversialPeriodicalSqueals() {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: {
+            body: await {
                 squeal_id: squealToPost.id
-            }
+            }.json()
         }).then(res => {
             if (res.status == 200) {
                 console.log("Controversial squeal added to channel");
