@@ -68,4 +68,10 @@ import NewSquealButton from "@/components/NewSquealButton.vue"
     bottom: 2em;
   }
 }
+
+@media screen and (min-width: 950px) {
+  .content {
+    padding: 0 10%;
+  }
+}
 </style>
