@@ -204,7 +204,7 @@ app.get('/automaticposts', async (req, res) => {
         res.send(automaticPosts);
     }
     catch (e) {
-        res.status(500).send(e);
+        res.status(500).send({ message: e.message });
     }
 })
 
@@ -241,7 +241,7 @@ app.put('/automaticposts', bodyParser.json(), async (req, res) => {
         res.send(automaticPost);
     }
     catch (e) {
-        res.status(500).send(e);
+        res.status(500).send({ message: e.message });
     }
 })
 
@@ -278,7 +278,7 @@ app.delete('/automaticposts', bodyParser.json(), async (req, res) => {
         res.send(automaticPost);
     }
     catch (e) {
-        res.status(500).send(e);
+        res.status(500).send({ message: e.message });
     }
 })
 
