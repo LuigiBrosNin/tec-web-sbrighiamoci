@@ -136,7 +136,7 @@ async function makeRequest(post) {
         const response = await axios.get(post.uri);
         
         // get the fields we want from the response
-        for(field of post.json_fields) {
+        for(let field of post.json_fields) {
             text = text + " " + response.data[field];
         }
     
@@ -227,7 +227,7 @@ app.put('/automaticposts', bodyParser.json(), async (req, res) => {
         let toInsert = {};
 
         // check if the body has all the required params
-        for (param of possibleParams) {
+        for (let param of possibleParams) {
             if (req.body[param] == null || req.body[param] == "" || (typeof req.body[field] != "string")) {
                 res.status(400).send("Missing/Invalid parameter: " + param);
                 return;
