@@ -2,7 +2,7 @@
 const axios = require('axios');
 const tough = require('tough-cookie');
 const bodyParser = require('body-parser');
-const {wrapper} = require('axios-cookiejar-support');
+const { wrapper } = require('axios-cookiejar-support');
 const { CookieJar } = tough;
 
 
@@ -40,18 +40,18 @@ const authData = {
 
 // needed for posting squeals trough the API
 async function putPeriodicalSqueals() {
-        // Authenticate and store the session in the cookie jar
-        await axios.post('https://site222326.tw.cs.unibo.it/login', authData);
-        // Once authenticated, the session is stored in the cookie jar for subsequent requests
-        
-        // Make subsequent requests with the established session
-        await mongoClient.connect();
-        const posts = await collection_automations.find({}).toArray();
+    // Authenticate and store the session in the cookie jar
+    await axios.post('https://site222326.tw.cs.unibo.it/login', authData);
+    // Once authenticated, the session is stored in the cookie jar for subsequent requests
 
-        for (const post of posts) {
-            await makeRequest(post);
-        }
-        console.log("Periodical squeals posted");
+    // Make subsequent requests with the established session
+    await mongoClient.connect();
+    const posts = await collection_automations.find({}).toArray();
+
+    for (const post of posts) {
+        await makeRequest(post);
+    }
+    console.log("Periodical squeals posted");
 }
 
 async function putControversialPeriodicalSqueals() {
@@ -61,36 +61,36 @@ async function putControversialPeriodicalSqueals() {
         // Authenticate and store the session in the cookie jar
         await axios.post('https://site222326.tw.cs.unibo.it/login', authData);
         // Once authenticated, the session is stored in the cookie jar for subsequent requests
-        
+
         // Make subsequent requests with the established session
         await mongoClient.connect();
-        const channel = collection_channel.findOne({name: channelName});
-    
-        if(channel == null) {
+        const channel = collection_channel.findOne({ name: channelName });
+
+        if (channel == null) {
             console.log("Channel not found");
             return;
         }
-    
+
         // retrieve all the Controversial squeals posted in the last interval
         // a controversial squeal is a squeal that has a positive and negative
         // polarity ratio greater than the critical mass CM
         const lastHourSqueals = await collection_squeals.find({
             date: { $gte: (Date.now() - interval) },
             $and: [
-                { neg_popolarity_ratio: { $gte: CM}},
-                { pos_popolarity_ratio: { $gte: CM}}
+                { neg_popolarity_ratio: { $gte: CM } },
+                { pos_popolarity_ratio: { $gte: CM } }
             ]
         }).toArray();
-    
+
         // sort the squeals by number of impressions
         lastHourSqueals.sort((a, b) => {
             return b.impressions - a.impressions;
         });
-    
+
         // get the squeal with the most impressions
         const squealToPost = lastHourSqueals[0];
 
-        if(squealToPost.secondary_channels == null) {
+        if (squealToPost.secondary_channels == null) {
             squealToPost.secondary_channels = [];
         }
 
@@ -98,8 +98,8 @@ async function putControversialPeriodicalSqueals() {
         squealToPost.secondary_channels.push(channelName);
 
         // update the squeal in the db
-        await collection_squeals.updateOne({id: squealToPost.id}, {$set: squealToPost});
-    
+        await collection_squeals.updateOne({ id: squealToPost.id }, { $set: squealToPost });
+
         // add the squeal to the channel
         fetch('https://site222326.tw.cs.unibo.it/channels/' + channelName + '/squeals_list', {
             method: 'PUT',
@@ -132,48 +132,48 @@ async function makeRequest(post) {
         console.log("Making request for post: " + post.uri + "");
 
         // get the data from the post
-        const response = await axios.get(post.uri);
+        const response = await fetch(post.uri);
+        const data = await response.json();
 
         let text = "";
 
-        if(post.json_fields && !post.is_body_media) {
+        if (post.json_fields && !post.is_body_media) {
             // get the fields we want from the response
-            for(let field of post.json_fields) {
-                text = text + " " + response.data[field];
+            for (let field of post.json_fields) {
+                text = text + " " + data[field];
             }
         } else {
             text = " ";
         }
 
-    
         let formData = new FormData();
-        
+
         let media = null;
 
         if (post.is_body_media) {
             const body_media = await response.blob();
             formData.append("file", body_media);
 
-            console.log("media type: " + typeof(body_media));
+            console.log("media type: " + typeof (body_media));
         }
 
         // if the post has a media field, get it
         if (post.media_field != null && post.media_field != "" && !post.is_body_media) {
             media = response.data[post.media_field];
 
-            if(!media.startsWith("http://") && !media.startsWith("https://")) {
+            if (!media.startsWith("http://") && !media.startsWith("https://")) {
                 media = "https://" + media;
             }
 
             const image = await fetch(media);
 
-            if(image.status == 200) {
+            if (image.status == 200) {
                 image = await image.blob();
                 formData.append("file", image);
             }
-            
+
         }
-    
+
         // create the squeal
         const squealData = {
             author: authData.username,
@@ -183,10 +183,10 @@ async function makeRequest(post) {
 
 
         formData.append("json", JSON.stringify(squealData));
-    
+
         // send and log the squeal
         console.log("sending: " + JSON.stringify(squealData));
-    
+
         const postResponse = await axios.put('https://site222326.tw.cs.unibo.it/squeals', formData);
         console.log("response: " + JSON.stringify(postResponse.data));
     }
@@ -255,16 +255,16 @@ app.put('/automaticposts', bodyParser.json(), async (req, res) => {
             return;
         }
 
-        if(!toInsert.is_body_media && !toInsert.media_field && !toInsert.json_fields) {
+        if (!toInsert.is_body_media && !toInsert.media_field && !toInsert.json_fields) {
             res.status(400).send("At least one of the following parameters must be specified: media_field, json_fields, is_body_media");
             return;
         }
 
         // transform is_body_media to boolean
-        if(toInsert.is_body_media == "true") {
+        if (toInsert.is_body_media == "true") {
             toInsert.is_body_media = true;
         }
-        else if(toInsert.is_body_media == "false") {
+        else if (toInsert.is_body_media == "false") {
             toInsert.is_body_media = false;
         }
 
@@ -300,9 +300,9 @@ app.delete('/automaticposts', bodyParser.json(), async (req, res) => {
         }
 
         await mongoClient.connect();
-        const toDelete = await collection_automations.findOne({uri: uri});
+        const toDelete = await collection_automations.findOne({ uri: uri });
 
-        if(toDelete == null) {
+        if (toDelete == null) {
             res.status(404).send("Automatic post not found");
             return;
         }
@@ -316,4 +316,4 @@ app.delete('/automaticposts', bodyParser.json(), async (req, res) => {
 })
 
 
-module.exports = {putPeriodicalSqueals, putControversialPeriodicalSqueals};
+module.exports = { putPeriodicalSqueals, putControversialPeriodicalSqueals };
