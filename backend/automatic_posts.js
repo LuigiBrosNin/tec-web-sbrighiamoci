@@ -314,4 +314,4 @@ app.delete('/automaticposts', bodyParser.json(), async (req, res) => {
 })
 
 
-//module.exports = {putPeriodicalSqueals, putControversialPeriodicalSqueals};
+module.exports = {putPeriodicalSqueals, putControversialPeriodicalSqueals};
