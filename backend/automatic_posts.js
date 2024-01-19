@@ -258,12 +258,6 @@ app.put('/automaticposts', bodyParser.json(), async (req, res) => {
             return;
         }
 
-        // check if the json_fields is an array
-        if (!Array.isArray(toInsert.json_fields)) {
-            res.status(400).send("Invalid parameter: json_fields");
-            return;
-        }
-
         // transform is_body_media to boolean
         if(toInsert.is_body_media == "true") {
             toInsert.is_body_media = true;
