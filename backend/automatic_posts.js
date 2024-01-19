@@ -153,9 +153,9 @@ async function makeRequest(post) {
         if (post.is_body_media) {
             media = response.data;
             formData.append("file", media);
-        }
 
-        console.log("media: " + media)
+            console.log("media type: " + typeof(media));
+        }
 
         // if the post has a media field, get it
         if (post.media_field != null && post.media_field != "" && !post.is_body_media) {
@@ -186,8 +186,6 @@ async function makeRequest(post) {
     
         // send and log the squeal
         console.log("sending: " + JSON.stringify(squealData));
-
-        console.log("sending media: " + formData.get("file"));
     
         const postResponse = await axios.put('https://site222326.tw.cs.unibo.it/squeals', formData);
         console.log("response: " + JSON.stringify(postResponse.data));
