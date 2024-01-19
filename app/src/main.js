@@ -15,8 +15,8 @@ app.use(router);
 
 let user = await fetch("https://site222326.tw.cs.unibo.it/user-check", { method: "GET"});
 user = await user.json();
-//app.config.globalProperties.$user = (user.user || null);
-app.config.globalProperties.$user = "Matilde";
+app.config.globalProperties.$user = (user.user || null);
+//app.config.globalProperties.$user = "Matilde";
 
 if(app.config.globalProperties.$user != null){
     let userProfile = await fetch(`https://site222326.tw.cs.unibo.it/profiles/${app.config.globalProperties.$user}`, { method: "GET"});
