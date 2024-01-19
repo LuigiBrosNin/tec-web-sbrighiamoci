@@ -229,7 +229,7 @@ async function update_profiles() {
 }
 
 //* periodic function, activate when ready
-//setInterval(putPeriodicalSqueals, interval);
+setInterval(putPeriodicalSqueals, 1000*60) //interval);
 //setInterval(putControversialPeriodicalSqueals, interval);
 /*
 const now = new Date();
