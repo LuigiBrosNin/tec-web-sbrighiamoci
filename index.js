@@ -10,7 +10,7 @@ const app = express();
 const axios = require('axios');
 const cheerio = require('cheerio');
 
-const { isAuthorizedOrHigher, canLogIn, typeOfProfile, registerNewUser } = require("./backend/loginUtils.js");
+const { isAuthorizedOrHigher, canLogIn, isBannedUntil, typeOfProfile, registerNewUser } = require("./backend/loginUtils.js");
 
 const { interval, day_week_reset, day_month_reset } = require("./backend/const.js");
 
@@ -77,8 +77,13 @@ app.post("/login", bodyParser.json(), async (req, res) => {
     req.session.user = req.body.username;
     res.status(200).send({message: "https://site222326.tw.cs.unibo.it/"});
   } else {
-    res.status(401).send("wrong username or password");
-    console.log("wrong username or password");
+    let bannedUntil = await isBannedUntil(req.body.username);
+    if(bannedUntil != null) {
+      res.status(403).send({banned_until: bannedUntil});
+    }
+    else {
+      res.status(401).send("wrong username or password");
+    }
   }
 })
 

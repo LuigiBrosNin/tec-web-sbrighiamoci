@@ -17,7 +17,12 @@ function sub(){
         window.location.href = data.message;
       });
 
-    } else {
+    } else if(res.status === 403){
+      res.json().then(data => {
+        alert("This user is banned until:" + new Date(data.banned_until));
+      });
+    }
+    else{
       alert("Wrong Username or Password");
     }
   });
@@ -46,7 +51,7 @@ function signin(){
 
 
 /* Luizo needs this to populate some channels and not go insane */
-
+/*
 function populateChannels(name, owner, type, bio) {
   fetch(`https://site222326.tw.cs.unibo.it/channels/${name}`, {
     method: "PUT",
@@ -84,3 +89,4 @@ function makeAdmin(name) {
     }
   });
 }
+*/

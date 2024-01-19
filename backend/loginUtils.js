@@ -93,6 +93,16 @@ async function canLogIn(username, password) {
     }
 }
 
+async function isBannedUntil(username){
+    const userFromDB = await searchProfileInDB(username);
+    if (userFromDB != null && !userFromDB.is_deleted && userFromDB.is_banned) {
+        return userFromDB.banned_until;
+    }
+    else{
+        return null;
+    }
+}
+
 async function isPasswordCorrect(user, password) { // user is NOT the username, but the object returned from the database query
     return password === user.password;
 }
@@ -117,4 +127,4 @@ async function registerNewUser(user, email, password) {
     return res.status;
 }
 
-module.exports = { typeOfProfile, isAuthorized, isAuthorizedOrHigher, isSMMAuthorized, canLogIn, registerNewUser };
+module.exports = { typeOfProfile, isAuthorized, isAuthorizedOrHigher, isSMMAuthorized, canLogIn, isBannedUntil, registerNewUser };
