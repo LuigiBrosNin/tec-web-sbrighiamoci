@@ -90,6 +90,12 @@ async function putControversialPeriodicalSqueals() {
         // get the squeal with the most impressions
         const squealToPost = lastHourSqueals[0];
 
+        // if there are no squeals to post, return
+        if (squealToPost == null) {
+            console.log("No controversial squeals to post");
+            return;
+        }
+
         if (squealToPost.secondary_channels == null) {
             squealToPost.secondary_channels = [];
         }
