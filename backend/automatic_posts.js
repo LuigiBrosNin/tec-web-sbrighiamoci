@@ -155,7 +155,7 @@ async function makeRequest(post) {
             formData.append("file", media);
         }
 
-        print("media: " + media)
+        console.log("media: " + media)
 
         // if the post has a media field, get it
         if (post.media_field != null && post.media_field != "" && !post.is_body_media) {
