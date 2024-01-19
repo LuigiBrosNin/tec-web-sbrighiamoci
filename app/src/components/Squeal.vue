@@ -138,7 +138,7 @@ export default {
                 if (word.length > 0) {
                     let firstChar = word[0];
                     if (firstChar == "#") {
-                        newText = newText.concat('<a href="https://site222326.tw.cs.unibo.it/app/search/?keywords='+ word.slice(1) +'">' + word + '</a>');
+                        newText = newText.concat('<a href="https://site222326.tw.cs.unibo.it/app/search/?tab_index=squeals&keywords=%23'+ word.slice(1) +'">' + word + '</a>');
                     } else if (firstChar == "@") {
                         newText = newText.concat('<a href="https://site222326.tw.cs.unibo.it/app/profile/' + word.slice(1) + '">' + word + '</a>');
                     } else if (firstChar == "§") {

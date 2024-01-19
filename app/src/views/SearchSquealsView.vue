@@ -12,7 +12,7 @@ import Squeal from "@/components/Squeal.vue";
         negative_reactions (number),
         impressions (number),
         receiver (text), 
-        Keyword (text, spaced by commas), 
+        Keywords (text, spaced by commas), 
         Mentions (text, spaced by commas),
         is_private (boolean)
     -->
@@ -68,8 +68,8 @@ import Squeal from "@/components/Squeal.vue";
             <input type="text" id="receiver" name="receiver" class="form-control" v-model="query.receiver" placeholder="Receiver" />
           </div>
           <div class="col-md-3">
-            <label for="keyword" class="form-label fw-bold mb-2">Keywords</label>
-            <input type="text" id="keyword" name="keyword" class="form-control" v-model="query.keyword" placeholder="Keyword" />
+            <label for="keywords" class="form-label fw-bold mb-2">Keywords</label>
+            <input type="text" id="keywords" name="keywords" class="form-control" v-model="query.keywords" placeholder="Keywords" />
             <small class="form-text text-muted">*separated by commas</small>
           </div>
           <div class="col-md-3">
@@ -137,7 +137,7 @@ export default {
         negative_reactions: 0,
         impressions: 0,
         receiver: "",
-        keyword: "",
+        keywords: "",
         mentions: "",
         isPrivate: false,
       },
@@ -150,7 +150,7 @@ export default {
         negative_reactions: 0,
         impressions: 0,
         receiver: "",
-        keyword: "",
+        keywords: "",
         mentions: "",
         isPrivate: false,
       },
@@ -188,8 +188,8 @@ export default {
     if (this.$route.query.receiver != null) {
       this.query.receiver = this.$route.query.receiver;
     }
-    if (this.$route.query.keyword != null) {
-      this.query.keyword = this.$route.query.keyword;
+    if (this.$route.query.keywords != null) {
+      this.query.keywords = this.$route.query.keywords;
     }
     if (this.$route.query.mentions != null) {
       this.query.mentions = this.$route.query.mentions;
@@ -235,15 +235,15 @@ export default {
       }
 
       // parse keywords and mentions
-      if (this.query.keyword != "") {
-        this.queryToSend.keyword = this.query.keyword.split(",");
+      if (this.query.keywords != "") {
+        this.queryToSend.keywords = this.query.keywords.split(",");
       }
       if (this.query.mentions != "") {
         this.queryToSend.mentions = this.query.mentions.split(",");
       }
       //remove spaces from keywords and mentions
-      for (let i = 0; i < this.query.keyword.length; i++) {
-        this.queryToSend.keyword[i] = this.query.keyword[i].trim();
+      for (let i = 0; i < this.query.keywords.length; i++) {
+        this.queryToSend.keywords[i] = this.query.keywords[i].trim();
       }
       for (let i = 0; i < this.query.mentions.length; i++) {
         this.queryToSend.mentions[i] = this.query.mentions[i].trim();
