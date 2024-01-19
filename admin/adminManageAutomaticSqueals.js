@@ -79,12 +79,12 @@ function displayRules(rules) {
     if(rules.length > 0){
         for(let rule of rules){
             container.innerHTML += `
-                <div id="${rule.uri}">
+                <div class="ruleCard" id="${rule.uri}">
                     <p>Url: <a href="${rule.uri}">${rule.uri}</a></p>
                     <p>Text fields: ${rule.json_fields}</p>
                     <p>Media field: ${rule.media_field}</p>
                     <p>Channel: §${rule.channel}</p>
-                    <button class="modBtn" type="button" onclick="removeRule('${rule.uri}')">Remove</button>
+                    <button class="modBtn dangerBtn" type="button" onclick="removeRule('${rule.uri}')">Remove</button>
                 </div>
             `;
         }
