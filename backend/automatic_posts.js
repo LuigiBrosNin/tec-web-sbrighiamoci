@@ -133,7 +133,6 @@ async function makeRequest(post) {
 
         // get the data from the post
         const response = await fetch(post.uri);
-        const data = await response.json();
 
         let text = "";
 
@@ -150,11 +149,14 @@ async function makeRequest(post) {
 
         let media = null;
 
+        const data = {}
         if (post.is_body_media) {
             const body_media = await response.blob();
             formData.append("file", body_media);
 
             console.log("media type: " + typeof (body_media));
+        } else {
+            data = await response.json();
         }
 
         // if the post has a media field, get it
