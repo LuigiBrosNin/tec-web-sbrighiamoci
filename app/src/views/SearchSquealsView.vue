@@ -68,14 +68,12 @@ import Squeal from "@/components/Squeal.vue";
             <input type="text" id="receiver" name="receiver" class="form-control" v-model="query.receiver" placeholder="Receiver" />
           </div>
           <div class="col-md-3">
-            <label for="keywords" class="form-label fw-bold mb-2">Keywords</label>
+            <label for="keywords" class="form-label fw-bold mb-2">Keyword</label>
             <input type="text" id="keywords" name="keywords" class="form-control" v-model="query.keywords" placeholder="Keywords" />
-            <small class="form-text text-muted">*separated by commas</small>
           </div>
           <div class="col-md-3">
-            <label for="mentions" class="form-label fw-bold mb-2">Mentions</label>
+            <label for="mentions" class="form-label fw-bold mb-2">Mention</label>
             <input type="text" id="mentions" name="mentions" class="form-control" v-model="query.mentions" placeholder="Mentions" />
-            <small class="form-text text-muted">*separated by commas</small>
           </div>
           <div class="col-12 d-flex justify-content-center">
             <button type="submit" class="btn" :style="{ backgroundColor: '#ff8900' }">
