@@ -16,17 +16,20 @@
 
         <label for="uri" class="form-label">Url of the resource:</label>
         <input type="text" id="uri" name="uri" class="form-control" required>
-
+        <br>
         <label for="json_fields" class="form-label">Json fields* to include in the squeal:</label>
         <input type="text" id="json_fields" name="json_fields" class="form-control">
         <small class="form-text text-muted">*separated by commas</small> <br>
-
+        <br>
         <label for="media_field" class="form-label">Json field containing the squeal media:</label>
         <input type="text" id="media_field" name="media_field" class="form-control">
-
+        <br>
+        <label for="isBodyMedia" class="form-label">Is the body of the response the entire media?</label>
+        <input type="checkbox" id="isBodyMedia" name="isBodyMedia" class="form-check-input"> <br />
+        <br>
         <label for="channel" class="form-label">Channel in which post the squeal:</label>
         <input type="text" id="channel" name="channel" class="form-control" required>
-
+        <br>
         <input type="submit">
     </form>
 

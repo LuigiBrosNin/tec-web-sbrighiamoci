@@ -33,15 +33,15 @@ document.getElementById('squeal_form').addEventListener('submit', async (e) => {
         changes.receiver = data.receiver;
     }
 
-    if (data.isPrivate != null && data.isPrivate != "" && data.isPrivate != squeal.is_private) {
-        changes.is_private = data.isPrivate;
+    if (data.replyTo != null && data.replyTo != "" && data.replyTo != squeal.reply_to) {
+        changes.reply_to = data.replyTo;
     }
 
-    if (data.replyTo != null && data.replyTo != "" && squeal.reply_to != true) {
-        changes.reply_to = true;
+    if (data.isPrivate != null && data.isPrivate != "" && squeal.is_private != true) {
+        changes.is_private = true;
     }
-    else if ((data.replyTo == null || data.replyTo == "") && squeal.reply_to != false) {
-        changes.reply_to = false;
+    else if ((data.isPrivate == null || data.isPrivate == "") && squeal.is_private != false) {
+        changes.is_private = false;
     }
 
     if (data.squealText != null && data.squealText != "" && data.squealText != squeal.text) {

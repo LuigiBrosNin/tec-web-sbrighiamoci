@@ -38,8 +38,15 @@ document.getElementById('add_rule_form').addEventListener('submit', async (e) =>
         changes.media_field = data.media_field;
     }
 
-    if((data.json_fields == null || data.json_fields == "") && (data.media_field == null || data.media_field == "")){
-        alert("To create a rule you must specify at least one text json field or a media json field");
+    if (data.isBodyMedia != null && data.isBodyMedia != "") {
+        changes.is_body_media = true;
+    }
+    else {
+        changes.is_body_media = false;
+    }
+
+    if(changes.json_fields == null && changes.media_field == null && !changes.is_body_media){
+        alert("To create a rule you must specify at least one text json field or a media json field, or is body media must be true");
         return;
     }
 
