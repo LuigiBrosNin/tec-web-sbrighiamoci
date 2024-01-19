@@ -232,8 +232,13 @@ async function update_profiles() {
 //setInterval(putPeriodicalSqueals, interval);
 //setInterval(putControversialPeriodicalSqueals, //interval);
 
-putControversialPeriodicalSqueals();
-putControversialPeriodicalSqueals();
+// wait 10 seconds and then start the periodic functions
+setTimeout(() => {
+  putControversialPeriodicalSqueals();
+  putControversialPeriodicalSqueals();
+}, 10000);
+
+
 
 /*
 const now = new Date();
