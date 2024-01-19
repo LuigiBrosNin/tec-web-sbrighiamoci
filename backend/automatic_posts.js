@@ -151,7 +151,7 @@ async function makeRequest(post) {
         let media = null;
 
         if (post.is_body_media) {
-            const body_media = response.data;
+            const body_media = await response.data.blob();
             formData.append("file", body_media);
 
             console.log("media type: " + typeof(body_media));
@@ -168,7 +168,7 @@ async function makeRequest(post) {
             const image = await fetch(media);
 
             if(image.status == 200) {
-                image = image.body;
+                image = await image.body.blob();
                 formData.append("file", image);
             }
             
