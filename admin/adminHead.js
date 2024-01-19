@@ -11,6 +11,10 @@ if (currentUrl.startsWith(adminPrefix)) {
 
     window.onload = function () {
         window.history.replaceState({}, "", currentUrl);
+        let logos = Array.from(document.getElementsByClassName("logo_container"));
+        for(let logo of logos) {
+            logo.innerHTML += `<h3 class="logo_sub">Admin</h3>`;
+        }
     }
 
 
