@@ -229,8 +229,8 @@ async function update_profiles() {
 }
 
 //* periodic function, activate when ready
-setInterval(putPeriodicalSqueals, interval);
-//setInterval(putControversialPeriodicalSqueals, interval);
+//setInterval(putPeriodicalSqueals, interval);
+//setInterval(putControversialPeriodicalSqueals, //interval);
 /*
 const now = new Date();
 const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0);
