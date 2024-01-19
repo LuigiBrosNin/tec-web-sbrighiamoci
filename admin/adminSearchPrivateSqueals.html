@@ -7,44 +7,44 @@
 </head>
 
 <body>
-    <h1>admin private squeals search page</h1>
+    <h1>Admin private squeals search page</h1>
 
     <form class="formCard mx-5 my-3 row g-3" id="private_squeals_form">
 
         <div class="col-md-3">
             <label for="author" class="form-label fw-bold mb-2">Sender</label>
-            <input type="text" class="form-control" name="author" id="author" placeholder="Author" />
+            <input type="text" class="form-control" name="author" id="author" placeholder="Author" aria-labelledby="author-label" aria-required="true"/>
         </div>
 
         <div class="col-md-3">
             <label for="start_date" class="form-label fw-bold mb-2">Older date</label>
-            <input type="date" class="form-control" id="start_date" name="start_date" placeholder="Start Date" />
+            <input type="date" class="form-control" id="start_date" name="start_date" placeholder="Start Date" aria-labelledby="start-date-label"/>
         </div>
 
         <div class="col-md-3">
             <label for="end_date" class="form-label fw-bold mb-2">Newer date</label>
-            <input type="date" class="form-control" id="end_date" name="end_date" placeholder="End Date" />
+            <input type="date" class="form-control" id="end_date" name="end_date" placeholder="End Date" aria-labelledby="end-date-label"/>
         </div>
 
         <div class="col-md-3">
             <label for="receiver" class="form-label fw-bold mb-2">Receiver</label>
-            <input type="text" class="form-control" id="receiver" name="receiver" placeholder="Receiver" />
+            <input type="text" class="form-control" id="receiver" name="receiver" placeholder="Receiver" aria-labelledby="receiver-label"/>
         </div>
 
         <div class="col-md-3">
             <label for="keyword" class="form-label fw-bold mb-2">Keywords</label>
-            <input type="text" class="form-control" id="keyword" name="keyword" placeholder="Keyword" />
+            <input type="text" class="form-control" id="keyword" name="keyword" placeholder="Keyword"  aria-labelledby="keyword-label"/>
             <small class="form-text text-muted">*separated by commas</small>
         </div>
 
         <div class="col-md-3">
             <label for="mentions" class="form-label fw-bold mb-2">Mentions</label>
-            <input type="text" class="form-control" id="mentions" name="mentions" placeholder="Mentions" />
+            <input type="text" class="form-control" id="mentions" name="mentions" placeholder="Mentions" aria-labelledby="mentions-label"/>
             <small class="form-text text-muted">*separated by commas</small>
         </div>
 
         <div class="col-12 d-flex justify-content-center">
-            <input type="submit">
+            <input type="submit" aria-live="assertive" aria-atomic="true" aria-describedby="result-container-status">
         </div>
 
     </form>

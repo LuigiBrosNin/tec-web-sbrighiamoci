@@ -5,19 +5,20 @@
     </link>
     <script type="module" src="https://site222326.tw.cs.unibo.it/bootstrap/js"></script>
 </head>
+<title>Admin Profile Edit Page</title>
 
 <body>
-    <h1>admin profile edit page</h1>
+    <h1>Admin Profile Edit Page</h1>
 
     <form class="mx-5 my-3" id="profile_form">
         <div class="formCard">
             <h2>Main infos:</h2>
 
             <label for="name" class="form-label">Profile name:</label>
-            <input type="text" id="name" name="name" class="form-control" disabled>
+            <input type="text" id="name" name="name" class="form-control" aria-describedby="name-help" disabled>
 
             <label for="bio" class="form-label">Bio:</label>
-            <textarea id="bio" name="bio" class="form-control"></textarea>
+            <textarea id="bio" name="bio" class="form-control" aria-describedby="bio-help"></textarea>
         </div>
 
         <div class="formCard">
@@ -37,38 +38,38 @@
             <h2>Credit:</h2>
 
             <label for="credit_daily" class="form-label">Credit of today:</label>
-            <input type="number" id="credit_daily" name="credit_daily" class="form-control">
+            <input type="number" id="credit_daily" name="credit_daily" class="form-control" aria-describedby="credit-daily-help">
 
             <label for="credit_daily_limit" class="form-label">Maximum daily credit:</label>
-            <input type="number" id="credit_daily_limit" name="credit_daily_limit" class="form-control">
+            <input type="number" id="credit_daily_limit" name="credit_daily_limit" class="form-control" aria-describedby="credit-daily-limit-help">
 
             <label for="credit_weekly" class="form-label">Credit of this week:</label>
-            <input type="number" id="credit_weekly" name="credit_weekly" class="form-control">
+            <input type="number" id="credit_weekly" name="credit_weekly" class="form-control" aria-describedby="credit-weekly--help">
 
             <label for="credit_weekly_limit" class="form-label">Maximum weekly credit:</label>
-            <input type="number" id="credit_weekly_limit" name="credit_weekly_limit" class="form-control">
+            <input type="number" id="credit_weekly_limit" name="credit_weekly_limit" class="form-control" aria-describedby="credit-weekly-limit-help">
 
             <label for="credit_monthly" class="form-label">Credit of this month:</label>
-            <input type="number" id="credit_monthly" name="credit_monthly" class="form-control">
+            <input type="number" id="credit_monthly" name="credit_monthly" class="form-control" aria-describedby="credit-monthly-help">
 
             <label for="credit_monthly_limit" class="form-label">Maximum monthly credit:</label>
-            <input type="number" id="credit_monthly_limit" name="credit_monthly_limit" class="form-control">
+            <input type="number" id="credit_monthly_limit" name="credit_monthly_limit" class="form-control" aria-describedby="credit-monthly-limit-help">
         </div>
 
         <input type="submit">
     </form>
 
     <div class="dangerZone">
-        <form class="formCard" id="change_email_pw_form">
+        <form class="formCard" id="change_email_pw_form" aria-labelledby="change-email-pw-form">
             <h2>Email and password:</h2>
             <p>For privacy reasons, you cannot see email and password of users. However, you can insert here the new
                 ones.</p>
 
             <label for="email" class="form-label">New email:</label>
-            <input type="text" id="email" name="email" class="form-control">
+            <input type="text" id="email" name="email" class="form-control" aria-labelledby="email-label">
 
             <label for="password" class="form-label">New password:</label>
-            <input type="password" id="password" name="password" class="form-control">
+            <input type="password" id="password" name="password" class="form-control" aria-labelledby="password-label">
 
             <input type="submit">
         </form>
@@ -76,7 +77,7 @@
         <form class="formCard" id="account_type_form">
             <h2>Account type:</h2>
 
-            <div id="account_type_radio">
+            <div id="account_type_radio" aria-labelledby="account-type-radio">
                 <p class="form-label">Account type:</p>
                 <input type="radio" id="account_normal" name="account_type" value="normal" class="form-check-input">
                 <label for="account_normal" class="form-label">normal</label>
@@ -89,17 +90,17 @@
             </div>
 
             <label for="smm" class="form-label">Smm:</label>
-            <input type="text" id="smm" name="smm" class="form-control">
+            <input type="text" id="smm" name="smm" class="form-control" aria-labelledby="smm-label">
 
             <input type="submit">
         </form>
 
-        <div class="formCard">
-            <form id="ban_form">
+        <div class="formCard" role="group" aria-labelledby="ban-unban-forms">
+            <form id="ban_form" aria-labelledby="ban-form">
                 <h2>Ban user:</h2>
 
                 <label for="banned_until" class="form-label">Banned until:</label>
-                <input type="datetime-local" id="banned_until" name="banned_until" class="form-control">
+                <input type="datetime-local" id="banned_until" name="banned_until" class="form-control" aria-labelledby="banned-until-label">
 
                 <input type="submit" value="Ban User">
             </form>
@@ -109,7 +110,7 @@
             </form>
         </div>
 
-        <form class="formCard" id="delete_form">
+        <form class="formCard" id="delete_form" aria-labelledby="delete-profile-form">
             <h2>Delete profile:</h2>
             <input type="submit" value="Delete profile">
         </form>

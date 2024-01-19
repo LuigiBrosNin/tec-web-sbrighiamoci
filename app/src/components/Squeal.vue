@@ -12,11 +12,11 @@
         </div>
 
         <div class="profile_data">
-            <img class="profile_img" :src="authorProfilePicUrl" />
+            <img class="profile_img" :src="authorProfilePicUrl" alt="Profile picture"/>
             <RouterLink :to="`/profile/${author}`" class="profile_name"> @{{ author }}</RouterLink>
         </div>
 
-        <p class="squeal_body" v-html="body"></p>
+        <p class="squeal_body" v-html="body" v-bind:aria-label="body"></p>
         <img class="squeal_media" v-if='media != null && media != ""'
             :src="`https://site222326.tw.cs.unibo.it/squeals/${squeal_id}/media`">
 
@@ -50,10 +50,9 @@
         <RouterLink :to="`/squeal/${squeal_id}`">More info</RouterLink>
 
         <div class="btn_area">
-            <button v-if="canBeDeleted" class="delete_btn" @click="askToDelete">
+            <button v-if="canBeDeleted" class="delete_btn" @click="askToDelete" aria-label="Delete Squeal"> 
                 <img class="delete_img" src="https://site222326.tw.cs.unibo.it/icons/trash-svgrepo-com.svg" alt="Delete Squeal" />
             </button>
-
         </div>
 
     </div>

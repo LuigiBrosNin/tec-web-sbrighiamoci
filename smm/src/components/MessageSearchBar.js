@@ -22,7 +22,7 @@ export default function MessagesSearchBar() {
   }
 
   return (
-    <div className="container d-flex justify-content-center">
+    <div className="container d-flex justify-content-center" role="search">
       <div className="col-sm-8 mx-auto my-2">
         <div className="col-sm-8 mx-auto">
           <div className="form-group d-flex align-items-center">
@@ -32,8 +32,9 @@ export default function MessagesSearchBar() {
               type="text" 
               placeholder="Search profiles..." 
               className="form-control searchProfileTextbox"
+              aria-label="Search profiles"
             />
-            <button onClick={searchChat} className="searchBtn">Search</button>
+            <button onClick={searchChat} className="searchBtn" aria-label="Search button">Search</button>
           </div>
         </div>
       </div>

@@ -4,6 +4,7 @@
     <link rel="stylesheet" href="https://site222326.tw.cs.unibo.it/bootstrap/css">
     </link>
     <script type="module" src="https://site222326.tw.cs.unibo.it/bootstrap/js"></script>
+    <title>Admin Channel Creation Page</title>
 </head>
 
 <body>
@@ -16,7 +17,7 @@
 
         <div id="channel_type_radio">
             <p class="form-label">Channel type:</p>
-            <input type="radio" id="channel_private" name="channel_type" value="private" class="form-check-input">
+            <input type="radio" id="channel_private" name="channel_type" value="private" class="form-check-input" role="radiogroup" aria-labelledby="channel_type_label">
             <label for="channel_private" class="form-label">normal</label>
             <input type="radio" id="channel_privileged" name="channel_type" value="privileged" class="form-check-input">
             <label for="channel_privileged" class="form-label">privileged</label>

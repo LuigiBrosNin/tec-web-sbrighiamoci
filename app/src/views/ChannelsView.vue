@@ -17,7 +17,7 @@ const props = defineProps(['id']);
                 <div class="channel_new_squeal_button_content">
                     <img class="channel_new_squeal_button_image"
                         src="https://site222326.tw.cs.unibo.it/icons/plus-svgrepo-com.svg" alt="Create Squeal" />
-                    <p class="channel_new_squeal_button_text">Create a new Squeal in this channel</p>
+                    <p class="channel_new_squeal_button_text" aria-label="Create a new squeal in this channel">Create a new Squeal in this channel</p>
                 </div>
             </RouterLink>
         </div>

@@ -132,17 +132,17 @@ export default function MessagesView({selectedAccount}) {
   }
 
   return isValid ? (
-    <div className="messagesViewContainer">
+    <div className="messagesViewContainer" role="main">
       <div className="searchArea">
-        <Link to="/smm/messages" className="goBackBtn">Go back</Link>
+        <Link to="/smm/messages" className="goBackBtn" aria-label="Go back to messages">Go back</Link>
         {profile && (<MiniProfileCard profile={profile} />)}
       </div>
 
       <div className="chatBox container mx-0 mx-auto">
-        {chat.length > 0 && <button onClick={loadMore} className="loadMoreBtn"> Load more </button>}
-        <div className="chatInner">
+        {chat.length > 0 && <button onClick={loadMore} className="loadMoreBtn" aria-label="Load more messages"> Load more </button>}
+        <div className="chatInner" role="log" aria-live="polite">
           {chat.map((message, index) => (
-            <div className={getMessageClass(message.author)} key={index}>
+            <div role="listitem" className={getMessageClass(message.author)} key={index}>
               {message.text}
             </div>
           ))}
@@ -156,8 +156,9 @@ export default function MessagesView({selectedAccount}) {
           type="text" 
           placeholder="Write your message..." 
           className="form-control"
+          aria-label="Type your message"
         />
-        <button onClick={sendMessage} className="btn btn-primary"> Send </button>
+        <button onClick={sendMessage} aria-label="Send message" className="btn btn-primary"> Send </button>
       </div>
     </div>
   ) : (
