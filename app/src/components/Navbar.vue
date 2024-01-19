@@ -3,27 +3,27 @@
 <template>
   <nav>
     <RouterLink to="/" class="router_link" aria-label="Home">
-      <img class="icon not_selected" src="https://site222326.tw.cs.unibo.it/icons/house-floor-svgrepo-com.svg" />
+      <img class="icon not_selected" src="https://site222326.tw.cs.unibo.it/icons/house-floor-svgrepo-com.svg" alt="Go to home"/>
       <p>Home</p>
     </RouterLink>
     <RouterLink to="/search" class="router_link" aria-label="Search">
-      <img class="icon not_selected" src="https://site222326.tw.cs.unibo.it/icons/search-alt-1-svgrepo-com.svg" />
+      <img class="icon not_selected" src="https://site222326.tw.cs.unibo.it/icons/search-alt-1-svgrepo-com.svg" alt="Go to search"/>
       <p>Search</p>
     </RouterLink>
     <RouterLink to="/channels" class="router_link" aria-label="Channels">
-      <img class="icon not_selected" src="https://site222326.tw.cs.unibo.it/icons/podcast-svgrepo-com.svg" />
+      <img class="icon not_selected" src="https://site222326.tw.cs.unibo.it/icons/podcast-svgrepo-com.svg" alt="Go to channels"/>
       <p>Channels</p>
     </RouterLink>
     <RouterLink to="/messages" class="router_link" v-if="$user" aria-label="Messages">
-      <img class="icon not_selected" src="https://site222326.tw.cs.unibo.it/icons/message-circle-dots-svgrepo-com.svg" />
+      <img class="icon not_selected" src="https://site222326.tw.cs.unibo.it/icons/message-circle-dots-svgrepo-com.svg" alt="Go to messages"/>
       <p>Messages</p>
     </RouterLink>
     <RouterLink :to="`/profile/${$user}`" class="router_link" v-if="$user" aria-label="Profile">
-      <img class="icon not_selected" src="https://site222326.tw.cs.unibo.it/icons/user-svgrepo-com.svg" />
+      <img class="icon not_selected" src="https://site222326.tw.cs.unibo.it/icons/user-svgrepo-com.svg" alt="Go to profile"/>
       <p>{{ $user || "Profile" }}</p>
     </RouterLink>
     <a href="https://site222326.tw.cs.unibo.it/login" class="router_link" v-if="!$user" aria-label="Login">
-      <img class="icon not_selected" src="https://site222326.tw.cs.unibo.it/icons/user-svgrepo-com.svg" />
+      <img class="icon not_selected" src="https://site222326.tw.cs.unibo.it/icons/user-svgrepo-com.svg" alt="Go to login"/>
       <p>Login</p>
     </a>
 

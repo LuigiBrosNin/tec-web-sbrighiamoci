@@ -11,8 +11,8 @@ import router from '@/router/index.js'
 
           <label for="search_user" class="visually-hidden">Search profiles</label>
           <input v-model="search_user" type="text" placeholder="Search profiles..."
-            class="form-control searchProfileTextbox" @keypress.enter="searchChat" />
-          <button @click="searchChat" class="searchBtn "> Search </button>
+            class="form-control searchProfileTextbox" @keypress.enter="searchChat" aria-describedby="searchUserDescription"/>
+          <button @click="searchChat" class="searchBtn " aria-label="Search"> Search </button>
 
         </div>
       </div>
