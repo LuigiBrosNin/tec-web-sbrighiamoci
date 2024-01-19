@@ -131,21 +131,32 @@ async function makeRequest(post) {
     try {
         console.log("Making request for post: " + post.uri + "");
 
-        let text = "";
         // get the data from the post
         const response = await axios.get(post.uri);
-        
-        // get the fields we want from the response
-        for(let field of post.json_fields) {
-            text = text + " " + response.data[field];
+
+        let text = "";
+
+        if(post.json_fields && !post.is_body_media) {
+            // get the fields we want from the response
+            for(let field of post.json_fields) {
+                text = text + " " + response.data[field];
+            }
+        } else {
+            text = " ";
         }
+
     
-        let media = null;
+        let formData = new FormData();
         
-        const formData = new FormData();
+        let media = null;
+
+        if (post.is_body_media) {
+            media = response.data;
+            formData.append("file", media);
+        }
 
         // if the post has a media field, get it
-        if (post.media_field != null && post.media_field != "") {
+        if (post.media_field != null && post.media_field != "" && !post.is_body_media) {
             media = response.data[post.media_field];
 
             if(!media.startsWith("http://") && !media.startsWith("https://")) {
@@ -222,19 +233,45 @@ app.put('/automaticposts', bodyParser.json(), async (req, res) => {
         }
 
 
-        const possibleParams = ["uri", "json_fields", "media_field", "channel"];
+        const possibleParams = ["uri", "json_fields", "media_field", "channel", "is_body_media"];
+
+
 
         let toInsert = {};
 
         // check if the body has all the required params
         for (let param of possibleParams) {
-            if (req.body[param] == null || req.body[param] == "" || (typeof req.body[param] != "string")) {
-                res.status(400).send("Missing/Invalid parameter: " + param);
-                return;
+            if (req.body[param] == null || req.body[param] == "") {
+                continue;
             } else {
                 toInsert[param] = req.body[param];
             }
         }
+
+        if (!toInsert.uri || !toInsert.channel) {
+            res.status(400).send("Missing/Invalid parameter: uri or channel");
+            return;
+        }
+
+        if(!toInsert.is_body_media && !toInsert.media_field && !toInsert.json_fields) {
+            res.status(400).send("At least one of the following parameters must be specified: media_field, json_fields, is_body_media");
+            return;
+        }
+
+        // check if the json_fields is an array
+        if (!Array.isArray(toInsert.json_fields)) {
+            res.status(400).send("Invalid parameter: json_fields");
+            return;
+        }
+
+        // transform is_body_media to boolean
+        if(toInsert.is_body_media == "true") {
+            toInsert.is_body_media = true;
+        }
+        else if(toInsert.is_body_media == "false") {
+            toInsert.is_body_media = false;
+        }
+
 
         await mongoClient.connect();
         const automaticPost = await collection_automations.insertOne(toInsert);
