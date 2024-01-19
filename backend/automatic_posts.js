@@ -107,14 +107,12 @@ async function putControversialPeriodicalSqueals() {
         await collection_squeals.updateOne({ id: squealToPost.id }, { $set: squealToPost });
 
         // add the squeal to the channel
-        fetch('https://site222326.tw.cs.unibo.it/channels/' + channelName + '/squeals_list', {
-            method: 'PUT',
+        axios.put('https://site222326.tw.cs.unibo.it/channels/' + channelName + '/squeals_list', {
+            squeal_id: squealToPost.id
+        }, {
             headers: {
                 'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                squeal_id: squealToPost.id
-            })
+            }
         }).then(res => {
             if (res.status == 200) {
                 console.log("Controversial squeal added to channel");
