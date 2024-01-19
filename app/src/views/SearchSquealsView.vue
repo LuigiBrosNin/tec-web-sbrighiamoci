@@ -241,12 +241,14 @@ export default {
       if (this.query.mentions != "") {
         this.queryToSend.mentions = this.query.mentions.split(",");
       }
-      //remove spaces from keywords and mentions
-      for (let i = 0; i < this.query.keywords.length; i++) {
-        this.queryToSend.keywords[i] = this.query.keywords[i].trim();
+      //remove spaces from keywords and mentions, then encodes them
+      for (let i in this.queryToSend.keywords) {
+        this.queryToSend.keywords[i] = this.queryToSend.keywords[i].trim();
+        this.queryToSend.keywords[i] = encodeURIComponent(this.queryToSend.keywords[i]);
       }
-      for (let i = 0; i < this.query.mentions.length; i++) {
-        this.queryToSend.mentions[i] = this.query.mentions[i].trim();
+      for (let i in this.queryToSend.mentions) {
+        this.queryToSend.mentions[i] = this.queryToSend.mentions[i].trim();
+        this.queryToSend.mentions[i] = encodeURIComponent(this.queryToSend.mentions[i]);
       }
     },
     getFetchUri(offset) {
