@@ -83,7 +83,7 @@ function displayRules(rules) {
                     <p>Url: <a href="${rule.uri}">${rule.uri}</a></p>
                     <p>Text fields: ${rule.json_fields}</p>
                     <p>Media field: ${rule.media_field}</p>
-                    <p>Channel: §${rule.channel}</p>
+                    <p>Channel: <a href="${sitePrefix}/admin/channel/${rule.channel}">§${rule.channel}</a></p>
                     <button class="modBtn dangerBtn" type="button" onclick="removeRule('${rule.uri}')">Remove</button>
                 </div>
             `;
