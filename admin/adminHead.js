@@ -137,8 +137,10 @@ function generateDeleteButton(squeal_id) {
     const deleteButton = document.createElement("button");
     deleteButton.classList.add("admin-squeal-button");
     deleteButton.setAttribute("onclick", `deleteSqueal("${squeal_id}")`);
+    deleteButton.setAttribute("aria-label", "Delete squeal");
     const img = document.createElement("img");
     img.setAttribute("src", sitePrefix + "/icons/trash-svgrepo-com.svg");
+    img.setAttribute("alt", "Delete squeal");
     img.classList.add("admin-squeal-button-img");
     deleteButton.appendChild(img);
     return deleteButton;
@@ -165,8 +167,10 @@ function generateEditButton(squeal_id) {
     const editButton = document.createElement("button");
     editButton.classList.add("admin-squeal-button");
     editButton.setAttribute("onclick", `window.location.href = "${sitePrefix}/admin/adminedit/squeal/${squeal_id}"`);
+    editButton.setAttribute("aria-label", "Edit squeal");
     const img = document.createElement("img");
     img.setAttribute("src", sitePrefix + "/icons/pen-svgrepo-com.svg");
+    img.setAttribute("alt", "Edit squeal");
     img.classList.add("admin-squeal-button-img");
     editButton.appendChild(img);
     return editButton;
@@ -218,8 +222,10 @@ function generateSettingsButton(profile_id, typeOfSettings) {
     const settingsButton = document.createElement("button");
     settingsButton.classList.add("admin-squeal-button");
     settingsButton.setAttribute("onclick", `window.location.href = "${sitePrefix}/admin/adminedit/${typeOfSettings}/${profile_id}"`);
+    settingsButton.setAttribute("aria-label", `${typeOfSettings} settings`);
     const img = document.createElement("img");
     img.setAttribute("src", sitePrefix + "/icons/gear-svgrepo-com.svg");
+    img.setAttribute("alt", `${typeOfSettings} settings`);
     img.classList.add("admin-squeal-button-img");
     settingsButton.appendChild(img);
     return settingsButton;
@@ -245,9 +251,11 @@ function generateNewSquealButton(profile_id) {
     const container = document.createElement("div");
     container.classList.add("channel_new_squeal_button_content");
     container.classList.add("admin-bg-button");
+    container.setAttribute("aria-label", "Create a new Squeal in this channel");
     const img = document.createElement("img");
     img.setAttribute("src", sitePrefix + "/icons/plus-svgrepo-com.svg");
     img.classList.add("channel_new_squeal_button_image");
+    img.setAttribute("alt", "Create a new Squeal in this channel");
     container.appendChild(img);
     const text = document.createElement("p");
     text.classList.add("channel_new_squeal_button_text");
@@ -278,6 +286,7 @@ function generateCreateChannelButton() {
     const newChannelButton = document.createElement("a");
     newChannelButton.id = "adminCreateChannelsButton";
     newChannelButton.setAttribute("href", `${sitePrefix}/admin/admincreate/channel`);
+    newChannelButton.setAttribute("aria-label", "Create new channel");
     newChannelButton.classList.add("admin-pill");
     newChannelButton.append("Create");
     return newChannelButton;
@@ -323,6 +332,7 @@ function generateSearchPrivateSquealsButton() {
 
     const privateSquealsButton = document.createElement("a");
     privateSquealsButton.setAttribute("href", `${sitePrefix}/admin/adminsearch/privatesqueals`);
+    privateSquealsButton.setAttribute("arial-label", "Search in private squeals");
     privateSquealsButton.id = "adminSearchPrivateSquealsPill";
     privateSquealsButton.classList.add("admin-pill");
     privateSquealsButton.append("Private squeals");
