@@ -206,7 +206,7 @@ module.exports = { app };
 const { update_quota_all, reset_credits_all } = require("./backend/profiles.js");
 require("./backend/squeal.js");
 require("./backend/channels.js");
-require("./backend/automatic_posts.js");
+const { putPeriodicalSqueals, putControversialPeriodicalSqueals} = require("./backend/automatic_posts.js");
 
 async function update_profiles() {
   try {
