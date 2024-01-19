@@ -298,15 +298,15 @@ app.delete('/automaticposts', bodyParser.json(), async (req, res) => {
         }
 
         await mongoClient.connect();
-        const post = await collection_automations.findOne({uri: uri});
+        const toDelete = await collection_automations.findOne({uri: uri});
 
-        if(post == null) {
+        if(toDelete == null) {
             res.status(404).send("Automatic post not found");
             return;
         }
 
-        const automaticPost = await collection_automations.deleteOne(toDelete);
-        res.send(automaticPost);
+        const deleted = await collection_automations.deleteOne(toDelete);
+        res.send(deleted);
     }
     catch (e) {
         res.status(500).send({ message: e.message });
