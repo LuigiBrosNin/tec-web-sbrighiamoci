@@ -11,10 +11,6 @@ if (currentUrl.startsWith(adminPrefix)) {
 
     window.onload = function () {
         window.history.replaceState({}, "", currentUrl);
-        let logos = Array.from(document.getElementsByClassName("logo_container"));
-        for(let logo of logos) {
-            logo.innerHTML += `<h3 class="logo_sub">Admin</h3>`;
-        }
     }
 
 
@@ -22,6 +18,7 @@ if (currentUrl.startsWith(adminPrefix)) {
     MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
     let observer = new MutationObserver(function (mutations, observer) {     // every time something changes in the DOM, this function is invoked
         replaceAllAppLinks();
+        addSubtitleToLogo();
         removeSwitchArea();
         addEditAndDeleteButtonsToAllSqueals();
         addSettingsButtonToProfile();
@@ -95,6 +92,15 @@ function changeUrlFromAppToAdmin(url) {
         url = adminPrefix + relativeUrl;
     }
     return url;
+}
+
+function addSubtitleToLogo() {
+    let logos = Array.from(document.getElementsByClassName("logo_container"));
+    for (let logo of logos) {
+        if(Array.from(logo.getElementsByClassName(logo_sub)).length <= 0){
+            logo.innerHTML += `<h3 class="logo_sub">Admin</h3>`;
+        }
+    }
 }
 
 function removeSwitchArea() {
@@ -311,7 +317,7 @@ function generateSearchPrivateSquealsButton() {
     privateSquealsArea.classList.add("flex-sm-fill");
     privateSquealsArea.classList.add("text-sm-center");
     privateSquealsArea.setAttribute("role", "presentation");
-    
+
     const privateSquealsButton = document.createElement("a");
     privateSquealsButton.setAttribute("href", `${sitePrefix}/admin/adminsearch/privatesqueals`);
     privateSquealsButton.id = "adminSearchPrivateSquealsPill";
