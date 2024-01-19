@@ -228,7 +228,7 @@ app.put('/automaticposts', bodyParser.json(), async (req, res) => {
 
         // check if the body has all the required params
         for (let param of possibleParams) {
-            if (req.body[param] == null || req.body[param] == "" || (typeof req.body[field] != "string")) {
+            if (req.body[param] == null || req.body[param] == "" || (typeof req.body[param] != "string")) {
                 res.status(400).send("Missing/Invalid parameter: " + param);
                 return;
             } else {
