@@ -151,10 +151,10 @@ async function makeRequest(post) {
         let media = null;
 
         if (post.is_body_media) {
-            media = response.data;
-            formData.append("file", media);
+            const body_media = response.data;
+            formData.append("file", body_media);
 
-            console.log("media type: " + typeof(media));
+            console.log("media type: " + typeof(body_media));
         }
 
         // if the post has a media field, get it
@@ -165,7 +165,7 @@ async function makeRequest(post) {
                 media = "https://" + media;
             }
 
-            image = await fetch(media);
+            const image = await fetch(media);
 
             if(image.status == 200) {
                 image = image.body;
