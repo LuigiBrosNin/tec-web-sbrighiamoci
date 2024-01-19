@@ -24,7 +24,7 @@ const {
 const {
     mongoClient,
     collection_automations,
-    collection_channel,
+    collection_channels,
     collection_squeals,
     CM,
     interval
@@ -64,7 +64,7 @@ async function putControversialPeriodicalSqueals() {
 
         // Make subsequent requests with the established session
         await mongoClient.connect();
-        const channel = collection_channel.findOne({ name: channelName });
+        const channel = collection_channels.findOne({ name: channelName });
 
         if (channel == null) {
             console.log("Channel not found");
