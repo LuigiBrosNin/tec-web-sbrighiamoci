@@ -88,6 +88,8 @@ async function putControversialPeriodicalSqueals() {
         });
 
         // get the squeal with the most impressions
+        // it will never be the same since the function
+        // is called every X hours, and it checks for the last X hours squeals
         const squealToPost = lastHourSqueals[0];
 
         // if there are no squeals to post, return
