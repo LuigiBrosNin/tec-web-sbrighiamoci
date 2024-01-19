@@ -97,8 +97,11 @@ function changeUrlFromAppToAdmin(url) {
 function addSubtitleToLogo() {
     let logos = Array.from(document.getElementsByClassName("logo_container"));
     for (let logo of logos) {
-        if(Array.from(logo.getElementsByClassName("logo_sub")).length <= 0){
-            logo.innerHTML += `<h3 class="logo_sub">Admin</h3>`;
+        let titles = Array.from(logo.getElementsByClassName("title"));
+        for(let title of titles){
+            if(Array.from(title.getElementsByClassName("logo_sub")).length <= 0){
+                title.innerHTML += `<h3 class="logo_sub">Admin</h3>`;
+            }
         }
     }
 }
