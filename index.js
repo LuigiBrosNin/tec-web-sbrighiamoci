@@ -215,11 +215,11 @@ async function update_profiles() {
 
     const date = new Date();
 
-    if (true || date.getDay() == day_week_reset) {
+    if (date.getDay() == day_week_reset) {
       reset_credits_all(1);
     }
 
-    if (true || date.getDate() == day_month_reset) {
+    if (date.getDate() == day_month_reset) {
       reset_credits_all(2);
     }
 
@@ -228,13 +228,11 @@ async function update_profiles() {
   }
 }
 
-update_profiles();
-
 //* periodic function, activate when ready
 //setInterval(putPeriodicalSqueals, interval);
 //setInterval(putControversialPeriodicalSqueals, interval);
 
-/*
+
 const now = new Date();
 const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0);
 const timeUntilMidnight = midnight - now;
@@ -242,4 +240,3 @@ const timeUntilMidnight = midnight - now;
 setTimeout(() => {
   setInterval(update_profiles, interval * 24);
 }, timeUntilMidnight);
-*/
