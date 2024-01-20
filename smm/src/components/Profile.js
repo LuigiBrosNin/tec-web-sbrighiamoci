@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Squeal from './Squeal';
 import ProfileCard from './ProfileCard.js';
-import ChannelCard from './ChannelCard.js';
+
 
 import './Profile.css';
 
@@ -19,7 +19,6 @@ class Profile extends React.Component {
       squealsList: [],
       followersList: [],
       followingList: [],
-      channelFollowingList: [],
       accountType: "normal",
       extraCredit: 0,
       numberOfSqueals: 0,
@@ -35,8 +34,6 @@ class Profile extends React.Component {
       allFollowersLoaded: false,
       tmpFollowingList: [],
       allFollowingLoaded: false,
-      tmpChannelsList: [],
-      allChannelsLoaded: false,
       loadMoreIndex: 0,
       pageDim: 2,  // dimension of a "page" to load
     };
@@ -49,8 +46,6 @@ class Profile extends React.Component {
     this.loadMoreFollowers = this.loadMoreFollowers.bind(this);
     this.fetchFollowing = this.fetchFollowing.bind(this);
     this.loadMoreFollowing = this.loadMoreFollowing.bind(this);
-    this.fetchChannels = this.fetchChannels.bind(this);
-    this.loadMoreChannels = this.loadMoreChannels.bind(this);
   }
 
   async fetchProfile(id) {
@@ -78,7 +73,6 @@ class Profile extends React.Component {
       squealsList: profileJson.squeals_list,
       followersList: profileJson.followers_list,
       followingList: profileJson.following_list,
-      channelFollowingList: profileJson.following_channels,
       accountType: profileJson.account_type,
       extraCredit: profileJson.extra_credit,
       numberOfSqueals: profileJson.squeals_num,
@@ -144,24 +138,6 @@ class Profile extends React.Component {
     });
   }
 
-  fetchChannels() {
-    this.setState(prevState => ({
-      loadMoreIndex: 0,
-      tmpChannelsList: prevState.channelFollowingList.slice(0, prevState.pageDim)
-    }));
-  }
-
-  loadMoreChannels() {
-    this.setState(prevState => {
-      const newChannels = prevState.channelFollowingList.slice(prevState.loadMoreIndex, prevState.loadMoreIndex + prevState.pageDim);
-      return {
-        loadMoreIndex: prevState.loadMoreIndex + prevState.pageDim,
-        allChannelsLoaded: newChannels.length === 0,
-        tmpChannelsList: [...prevState.tmpChannelsList, ...newChannels]
-      };
-    });
-  }
-
   async componentDidMount() {
     if (this.props.id != null) {
       await this.fetchProfile(this.props.id);
@@ -182,8 +158,6 @@ class Profile extends React.Component {
         allFollowersLoaded: false,
         tmpFollowingList: [],
         allFollowingLoaded: false,
-        tmpChannelsList: [],
-        allChannelsLoaded: false,
         loadMoreIndex: 0
       });
       this.componentDidMount();
@@ -259,12 +233,6 @@ class Profile extends React.Component {
                   Following
                 </button>
               </li>
-              <li className="nav-item flex-sm-fill text-sm-center" role="presentation">
-                <button className="nav-link" id="pills-following-tab" data-bs-toggle="pill" data-bs-target="#pills-channels"
-                  type="button" role="tab" aria-controls="pills-following" aria-selected="false" onClick={this.fetchChannels}>
-                  Channels
-                </button>
-              </li>
             </ul>
             <div className="tab-content" id="pills-tabContent">
               {/* Squeals Cards */}
@@ -291,15 +259,6 @@ class Profile extends React.Component {
                 <div className="loadMoreContainer">
                   {this.state.tmpFollowingList.length < 1 && <div> No more profiles. </div>}
                   {!this.state.allFollowingLoaded && <button onClick={() => this.loadMoreFollowing} className="btn btn-primary loadMoreBtn"> Load more</button>}
-                </div>
-              </div>
-
-              {/* Channels Cards */}
-              <div className="tab-pane fade" id="pills-channels" role="tabpanel" aria-labelledby="pills-channels-tab">
-                {this.state.tmpChannelsList.map(channel => <ChannelCard id={channel} />)}
-                <div className="loadMoreContainer">
-                  {this.state.tmpChannelsList.length < 1 && <div> No more channels. </div>}
-                  {!this.state.allChannelsLoaded && <button onClick={() => this.loadMoreChannels} className="btn btn-primary loadMoreBtn"> Load more</button>}
                 </div>
               </div>
             </div>
