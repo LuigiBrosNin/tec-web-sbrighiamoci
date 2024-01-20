@@ -64,7 +64,7 @@ async function update_quota(profile) {
 
         // update the profile
         await collection_profiles.updateOne({
-            name: profileName
+            name: profile.name
         }, {
             $set: {
                 credit_limits: [
