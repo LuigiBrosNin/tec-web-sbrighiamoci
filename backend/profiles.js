@@ -21,6 +21,7 @@ const {
     CREDIT_LIMITS,
     quota_interval,
     quota_threshold,
+    CM,
     importPic,
     exportPic,
     deletePic
