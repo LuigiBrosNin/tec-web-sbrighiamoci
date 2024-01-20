@@ -47,7 +47,7 @@ async function update_quota(profile) {
         }).toArray();
 
         if (profile.name == "Premium1Test" || profile.name == "Premium2Test") {
-            console.log("squeals: " + squeals.id)
+            console.log("squeals: " + squeals)
         }
 
         // calculate the total number positive squeals and negative squeals
