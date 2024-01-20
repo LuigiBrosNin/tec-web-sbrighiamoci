@@ -215,11 +215,11 @@ async function update_profiles() {
 
     const date = new Date();
 
-    if (date.getDay() == day_week_reset) {
+    if (true || date.getDay() == day_week_reset) {
       reset_credits_all(1);
     }
 
-    if (date.getDate() == day_month_reset) {
+    if (true || date.getDate() == day_month_reset) {
       reset_credits_all(2);
     }
 
