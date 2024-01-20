@@ -93,7 +93,7 @@ export class SquealsInsights extends Component {
 
     return (
       <div>
-        {this.state.squeals.map(squeal => (
+        {this.state.squeals.slice().reverse().map(squeal => (
           <Squeal key={squeal.id} squeal={squeal} selectedAccount={this.props.selectedAccount} />
         ))}
          {this.state.more_squeals ? <button className='btn btn-primary mt-2' onClick={this.getSqueals}>Load More</button> : <p>no more squeals to load for this account.</p>}

@@ -183,7 +183,7 @@ export class SquealPut extends Component {
                 const id = response.data.squeal_id;
                 this.reloadAccount(this.props.selectedAccount.name);
                 // redirect to the squeal page
-                this.props.navigate(`smm/squeals/${id}`);
+                this.props.navigate(`/smm/squeals/${id}`);
               } else {
                 alert("an error has occurred, please try again later");
               }
