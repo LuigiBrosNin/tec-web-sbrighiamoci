@@ -113,6 +113,7 @@ async function reset_credits_all(index_to_update) {
         for (const profile of profiles) {
             reset_credits(profile, index_to_update);
         }
+        console.log("credits reset: " + index_to_update);
     }
     catch (error) {
         console.log(error);
@@ -127,6 +128,7 @@ async function update_quota_all() {
         for (const profile of profiles) {
             update_quota(profile);
         }
+        console.log("quotas updated");
     }
     catch (error) {
         console.log(error);
