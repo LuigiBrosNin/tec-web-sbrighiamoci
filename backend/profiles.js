@@ -46,10 +46,6 @@ async function update_quota(profile) {
             }
         }).toArray();
 
-        if (profile.name == "Premium1Test" || profile.name == "Premium2Test") {
-            console.log("squeals: " + squeals)
-        }
-
         // calculate the total number positive squeals and negative squeals
         let positiveSqueals = 0;
         let negativeSqueals = 0;
@@ -64,12 +60,7 @@ async function update_quota(profile) {
         }
 
         // calculate the new quota
-        const quota = Math.floor((positiveSqueals - negativeSqueals) / quota_threshold) / 100 + 1;
-
-        if (profile.name == "Premium1Test" || profile.name == "Premium2Test") {
-            console.log("user: " + profile.name + " positive squeals: " + positiveSqueals + " negative squeals: " + negativeSqueals + " quota: " + quota)
-        }
-
+        const quota = Math.floor((positiveSqueals - negativeSqueals) / quota_threshold) / 100;
 
         // update the profile
         await collection_profiles.updateOne({
@@ -77,9 +68,9 @@ async function update_quota(profile) {
         }, {
             $set: {
                 credit_limits: [
-                    profile.credit_limits[0]* quota,
-                    profile.credit_limits[1] * quota,
-                    profile.credit_limits[2] * quota,
+                    profile.credit_limits[0] + CREDIT_LIMITS[0] * quota,
+                    profile.credit_limits[1] + CREDIT_LIMITS[1] * quota,
+                    profile.credit_limits[2] + CREDIT_LIMITS[2] * quota,
                 ],
             }
         });
