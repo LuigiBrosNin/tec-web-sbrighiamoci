@@ -51,7 +51,7 @@ async function update_quota(profile) {
 
         // find all the squeals published in the last month
         const squeals = await collection_squeals.find({
-            author: profileName,
+            author: profile.name,
             date: {
                 $gte: Date.now() - quota_interval
             }
@@ -104,7 +104,7 @@ async function reset_credits(profile, index_to_update) {
         await mongoClient.connect();
 
         await collection_profiles.updateOne({
-            name: profileName
+            name: profile.name
         }, {
             $set: {
                 credit: credit
