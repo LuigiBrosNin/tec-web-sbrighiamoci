@@ -239,7 +239,7 @@ export class Squeal extends Component {
       this.state.isValid && !this.state.squeal.is_private ?
 
         <div className="squeal_container">
-          <href to={"https://site222326.tw.cs.unibo.it/app/channel/" + this.props.squeal.receiver}>§{this.props.squeal.receiver}</href>
+          <Link to={"https://site222326.tw.cs.unibo.it/app/channel/" + this.props.squeal.receiver}>§{this.props.squeal.receiver}</Link>
           <div>
             <p>Reply to: {this.props.squeal.replyTo}</p>
           </div>
@@ -265,14 +265,14 @@ export class Squeal extends Component {
 
           <div className="interaction_data">
             <button
-              className={`interaction_button ${(this.props.user && this.state.squeal.positive_reactions_list.includes(this.props.user)) ? 'active_button' : ''}`}
+              className={`interaction_button ${(this.props.user && this.state.squeal.positive_reactions_list.includes(this.state.user)) ? 'active_button' : ''}`}
               onClick={this.addOrRemovePositiveReaction}
             >
               <img className="interaction_img" src="https://site222326.tw.cs.unibo.it/icons/face-smile-svgrepo-com.svg" />
               <p className="interaction_counter">{this.state.squeal.positive_reactions}</p>
             </button>
             <button
-              className={`interaction_button ${(this.props.user && this.state.squeal.negative_reactions_list.includes(this.props.user)) ? 'active_button' : ''}`}
+              className={`interaction_button ${(this.props.user && this.state.squeal.negative_reactions_list.includes(this.state.user)) ? 'active_button' : ''}`}
               onClick={this.addOrRemoveNegativeReaction}
             >
               <img className="interaction_img" src="https://site222326.tw.cs.unibo.it/icons/face-frown-svgrepo-com.svg" />
