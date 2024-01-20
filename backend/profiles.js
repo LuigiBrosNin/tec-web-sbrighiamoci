@@ -68,9 +68,9 @@ async function update_quota(profile) {
         }, {
             $set: {
                 credit_limits: [
-                    profile.credit_limits[0] + CREDIT_LIMITS[0] * quota,
-                    profile.credit_limits[1] + CREDIT_LIMITS[1] * quota,
-                    profile.credit_limits[2] + CREDIT_LIMITS[2] * quota,
+                    Math.floor(profile.credit_limits[0] + CREDIT_LIMITS[0] * quota),
+                    Math.floor(profile.credit_limits[1] + CREDIT_LIMITS[1] * quota),
+                    Math.floor(profile.credit_limits[2] + CREDIT_LIMITS[2] * quota),
                 ],
             }
         });
