@@ -213,7 +213,7 @@ async function update_profiles() {
     update_quota_all();
     reset_credits_all(0);
 
-    const date = Date.now();
+    const date = new Date();
 
     if (date.getDay() == day_week_reset) {
       reset_credits_all(1);
