@@ -1,15 +1,9 @@
-const {
-    parse
-} = require("path");
+require("path");
 const multer = require('multer');
-const stream = require('stream');
-const sharp = require('sharp');
-const fs = require('fs');
 const axios = require('axios');
 const upload = multer({
     storage: multer.memoryStorage()
 });
-const { GridFSBucket, ObjectId } = require('mongodb');
 const {
     app
 } = require("../index.js");
@@ -19,12 +13,10 @@ const {
     isAuthorizedOrHigher,
     isSMMAuthorized
 } = require("./loginUtils.js");
-const bodyParser = require('body-parser');
 const {
-    dbName,
-    squealCollection,
-    profileCollection,
-    channelCollection,
+    collection_squeals,
+    collection_channels,
+    collection_profiles,
     mongoClient,
     CREDIT_LIMITS,
     quota_interval,
@@ -36,10 +28,6 @@ const {
 
 // connecting to the database
 mongoClient.connect();
-const database = mongoClient.db(dbName);
-const collection_profiles = database.collection(profileCollection);
-const collection_channels = database.collection(channelCollection);
-
 
 async function update_quota(profile) {
     try {
