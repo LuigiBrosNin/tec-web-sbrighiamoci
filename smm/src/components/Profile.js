@@ -199,7 +199,7 @@ class Profile extends React.Component {
       <div className="container profile_container">
         <div className="row profile_main_data">
           <div className="col-sm-4">
-            <img className="img-fluid rounded-circle profile_img_container" src={this.state.propic == null ? "https://site222326.tw.cs.unibo.it/images/user-default.svg" : 'https://' + this.state.propic } />
+            <img className="img-fluid rounded-circle profile_img_container" src={(this.state.propic == null || this.state.propic =="https://site222326.tw.cs.unibo.it/images/user-default.svg")  ? "https://site222326.tw.cs.unibo.it/images/user-default.svg" : 'https://' + this.state.propic } />
           </div>
           <div className="col-sm-8">
             <h2 className="profile_name">@{this.state.name}</h2>
