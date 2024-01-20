@@ -54,11 +54,11 @@ async function update_quota(profile) {
         let positiveSqueals = 0;
         let negativeSqueals = 0;
         for (const squeal of squeals) {
-            if (squeal.pos_popularity_ratio > CM && !(squeal.neg_popularity_ratio > CM)) {
+            if (squeal.pos_popolarity_ratio > CM && !(squeal.neg_popularity_ratio > CM)) {
                 positiveSqueals++;
             }
 
-            if (squeal.neg_popularity_ratio > CM && !(squeal.pos_popularity_ratio > CM)) {
+            if (squeal.neg_popolarity_ratio > CM && !(squeal.pos_popularity_ratio > CM)) {
                 negativeSqueals++;
             }
         }

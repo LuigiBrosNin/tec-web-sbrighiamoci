@@ -113,6 +113,9 @@ export class Squeal extends Component {
         `https://site222326.tw.cs.unibo.it/squeals/${this.props.squeal.id}/positive_reactions_list`,
         {
           method: "POST",
+          body: JSON.stringify({
+            user: this.state.user
+          }),
           headers: {
             "Content-type": "application/json; charset=UTF-8",
             "Access-Control-Allow-Origin": "*",
@@ -152,6 +155,9 @@ export class Squeal extends Component {
         `https://site222326.tw.cs.unibo.it/squeals/${this.state.squeal.id}/negative_reactions_list`,
         {
           method: "POST",
+          body: JSON.stringify({
+            user: this.state.user
+          }),
           headers: {
             "Content-type": "application/json; charset=UTF-8",
             "Access-Control-Allow-Origin": "*",
