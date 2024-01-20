@@ -239,13 +239,13 @@ export class Squeal extends Component {
       this.state.isValid && !this.state.squeal.is_private ?
 
         <div className="squeal_container">
-          <Link to={"https://site222326.tw.cs.unibo.it/app/channel/" + this.props.squeal.receiver}>§{this.props.squeal.receiver}</Link>
+          <a href={"https://site222326.tw.cs.unibo.it/app/channel/" + this.props.squeal.receiver} target="_blank" rel="noopener noreferrer">§{this.props.squeal.receiver}</a>
           <div>
             <p>Reply to: {this.props.squeal.replyTo}</p>
           </div>
 
           <div className="profile_data">
-            <img className="profile_img" src={(this.props.selectedAccount.propic == null || this.props.selectedAccount.propic =="https://site222326.tw.cs.unibo.it/images/user-default.svg") ? "https://site222326.tw.cs.unibo.it/images/user-default.svg" : 'https://' + this.props.selectedAccount.propic } />
+            <img className="profile_img" src={(this.props.selectedAccount.propic == null || this.props.selectedAccount.propic == "https://site222326.tw.cs.unibo.it/images/user-default.svg") ? "https://site222326.tw.cs.unibo.it/images/user-default.svg" : 'https://' + this.props.selectedAccount.propic} />
             <RouterLink to={"/smm/profile/"} className="profile_name"> @{this.props.squeal.author}</RouterLink>
           </div>
 
@@ -285,8 +285,8 @@ export class Squeal extends Component {
           </div>
 
           {this.props.squeal.author == this.props.selectedAccount.name ?
-          <RouterLink to={'/smm/squeals/' + this.props.squeal.id}>Insights</RouterLink>
-          : null}
+            <RouterLink to={'/smm/squeals/' + this.props.squeal.id}>Insights</RouterLink>
+            : null}
 
           {this.state.canBeDeleted ?
 
