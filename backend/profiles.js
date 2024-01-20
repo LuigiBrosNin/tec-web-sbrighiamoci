@@ -62,6 +62,8 @@ async function update_quota(profile) {
         // calculate the new quota
         const quota = Math.floor((positiveSqueals - negativeSqueals) / quota_threshold) / 100 + 1;
 
+        console.log("user: " + profile.name + " positive squeals: " + positiveSqueals + " negative squeals: " + negativeSqueals + " quota: " + quota)
+
         // update the profile
         await collection_profiles.updateOne({
             name: profile.name
