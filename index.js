@@ -228,6 +228,8 @@ async function update_profiles() {
   }
 }
 
+update_profiles();
+
 //* periodic function, activate when ready
 //setInterval(putPeriodicalSqueals, interval);
 //setInterval(putControversialPeriodicalSqueals, interval);
