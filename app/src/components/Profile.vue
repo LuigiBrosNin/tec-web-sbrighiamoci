@@ -303,6 +303,7 @@ export default {
   width: auto;
   max-width: none;
   padding: 1em;
+  position: relative;
 }
 
 .nav-link {
