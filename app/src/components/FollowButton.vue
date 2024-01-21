@@ -3,11 +3,14 @@ const props = defineProps(["id"]);
 </script>
 
 <template>
-  <div v-if="$user != id">
+  <div v-if="$user != id && $user != null">
     <button class="follow_button" @click="changeFollowStatus()" aria-label="Toggle Follow Status">
       <span class="follow" v-if="!followed">Follow</span>
       <span class="unfollow" v-else>Unfollow</span>
     </button>
+  </div>
+  <div v-else-if="$user == null">
+    <a class="follow_button follow_link" href="https://site222326.tw.cs.unibo.it/login">Follow</a>
   </div>
 </template>
 
@@ -75,5 +78,11 @@ export default {
 
 .unfollow{
   color: red;
+}
+
+.follow_link{
+  color: #fff;
+  text-decoration: none;
+  text-align: center;
 }
 </style>

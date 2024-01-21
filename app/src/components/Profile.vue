@@ -38,7 +38,8 @@ const props = defineProps(["id", "profile_json"]);
           </div>
         </div>
         <FollowButton :id="id"></FollowButton>
-        <RouterLink :to="`/messages/${id}`" class="message_button">Chat</RouterLink>
+        <RouterLink :to="`/messages/${id}`" class="message_button" v-if="$user != id && $user != null">Chat</RouterLink>
+        <a href="https://site222326.tw.cs.unibo.it/login" class="message_button" v-if="$user != id && $user == null">Chat</a>
       </div>
     </div>
     <div class="row">
