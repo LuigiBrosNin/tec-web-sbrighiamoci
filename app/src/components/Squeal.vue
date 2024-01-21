@@ -263,7 +263,7 @@ export default {
                     }
                 );
 
-                await updateReactions();
+                await this.updateReactions();
             }
             else {
                 window.location.replace("https://site222326.tw.cs.unibo.it/login");
@@ -282,7 +282,7 @@ export default {
                     }
                 );
 
-                await updateReactions();
+                await this.updateReactions();
             }
             else {
                 window.location.replace("https://site222326.tw.cs.unibo.it/login");
