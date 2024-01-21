@@ -47,7 +47,7 @@ const props = defineProps(["id"]);
     </div>
 
     <div v-if="mods.length > 0">
-      <label> Actual mods: </label>
+      <label> Current mods: </label>
       <ul class="list-group mb-3">
         <li v-for="(name, index) in mods" :key="index"
           class="list-group-item d-flex justify-content-between align-items-center">{{ name }}

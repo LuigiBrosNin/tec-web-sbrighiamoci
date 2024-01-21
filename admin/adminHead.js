@@ -87,7 +87,7 @@ function replaceAllAppLinks() {
 
 // if the provided url refers to /app, it is returned the same url that refers to /admin, otherwise the provided url is returned
 function changeUrlFromAppToAdmin(url) {
-    if (url.startsWith(appPrefix)) {
+    if (url != null && url.startsWith(appPrefix)) {
         let relativeUrl = url.slice(appPrefix.length);
         url = adminPrefix + relativeUrl;
     }

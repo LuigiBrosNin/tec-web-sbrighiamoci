@@ -6,14 +6,6 @@
       <!-- Titolo -->
       <h3 class="title"> Create your channel </h3>
 
-      <!-- Tipo -->
-        <label for="channelType"> Channel type: </label>
-        <select v-model="channel_type" id="channelType" name="channelType" class="form-select mb-3">
-          <option value="privileged">  Privileged   </option>
-          <option value="private">     Private      </option>
-          <option value="required">    Required     </option>
-        </select>
-
       <!-- Nome e bio -->
       <div class="input-group mb-3 flex-column">
         <div class="mb-3">
@@ -35,8 +27,6 @@
 <script>
 
   import axios from "axios";
-  import L from "leaflet";
-  import "leaflet/dist/leaflet.css";
 
   export default {
     data() {
@@ -44,7 +34,7 @@
         new_channel_name: "",
         tmp_channel_name: "",
         new_bio: "",
-        channel_type: "",
+        channel_type: "private", //normal users can only create private channel
         max_bio_length: 150,
         profilePicUrl: "",
       };
