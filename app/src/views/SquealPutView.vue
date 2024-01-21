@@ -1,9 +1,10 @@
 <script setup>
 import router from "@/router/index.js";
+import NotLoggedIn from "@/components/NotLoggedIn.vue"
 </script>
 
 <template>
-  <div class="squeal_container">
+  <div class="squeal_container" v-if="$user != null">
     <form @submit.prevent="submitForm" class="mt-5">
       <div class="input-group mb-3">
         <span class="input-group-text" id="basic-addon1">§</span>
@@ -47,7 +48,7 @@ import router from "@/router/index.js";
               Include Geolocation in your Squeal
             </button>
             <button v-if="location" @click.prevent="
-                                    {
+                                                {
               location = null;
               if (map != null) {
                 destroyMap();
@@ -88,7 +89,8 @@ import router from "@/router/index.js";
 
         <div class="form-check mt-3">
           <label for="send_for_loop" class="form-label">Looping post?</label>
-          <input type="checkbox" name="send_for_loop" id="send_for_loop" v-model="send_for_loop" class="form-check-input" />
+          <input type="checkbox" name="send_for_loop" id="send_for_loop" v-model="send_for_loop"
+            class="form-check-input" />
         </div>
       </div>
 
@@ -107,6 +109,9 @@ import router from "@/router/index.js";
         Submit
       </button>
     </form>
+  </div>
+  <div v-else>
+    <NotLoggedIn></NotLoggedIn>
   </div>
 </template>
 
@@ -149,11 +154,10 @@ export default {
         this.credits = response.data.credit;
         this.temp_credits = response.data.credit;
         this.propic = response.data.propic;
-        if (this.propic == null || this.propic == "") {
-          this.propic =
-            "https://site222326.tw.cs.unibo.it/images/user-default.svg";
+        if (profileJson.propic == null || profileJson.propic == "") {
+          this.profilePicUrl = "https://site222326.tw.cs.unibo.it/images/user-default.svg";
         } else {
-          this.propic = `https://site222326.tw.cs.unibo.it/profiles/${profile}/propic`;
+          this.profilePicUrl = "https://" + profileJson.propic;
         }
         console.log("credits: ", this.credits);
 

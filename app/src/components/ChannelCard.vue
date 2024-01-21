@@ -99,38 +99,46 @@ export default {
     },
 
     async subscribe() {
-      try {
-        const response = await axios.put(`https://site222326.tw.cs.unibo.it/profiles/${this.$user}/following_channels`, { channel_name: this.name });
-        if (response.status === 200) {
-          this.isSubscribed = true;
-          // ricarico la lista degli iscritti e il numero di iscritti
-          this.refresh();
+      if(this.$user != null){
+        try {
+          const response = await axios.put(`https://site222326.tw.cs.unibo.it/profiles/${this.$user}/following_channels`, { channel_name: this.name });
+          if (response.status === 200) {
+            this.isSubscribed = true;
+            // ricarico la lista degli iscritti e il numero di iscritti
+            this.refresh();
+          }
+          else {
+            console.log("response.status: ", response.status)
+          }
         }
-        else {
-          console.log("response.status: ", response.status)
+        catch (error) {
+          console.error('Error during put request: ', error);
         }
-      }
-      catch (error) {
-        console.error('Error during put request: ', error);
+      } else {
+        window.location.replace("https://site222326.tw.cs.unibo.it/login");
       }
     },
 
     async unsub() {
-      try {
-        const response = await axios.put(`https://site222326.tw.cs.unibo.it/profiles/${this.$user}/following_channels`, { channel_name: this.name });
-        if (response.status === 200) {
-          this.isSubscribed = false;
-          // ricarico la lista degli iscritti e il numero di iscritti
-          this.refresh();
+      if(this.$user != null) {
+        try {
+          const response = await axios.put(`https://site222326.tw.cs.unibo.it/profiles/${this.$user}/following_channels`, { channel_name: this.name });
+          if (response.status === 200) {
+            this.isSubscribed = false;
+            // ricarico la lista degli iscritti e il numero di iscritti
+            this.refresh();
+          }
         }
-      }
-      catch (error) {
-        console.error('Error during delete request: ', error);
+        catch (error) {
+          console.error('Error during delete request: ', error);
+        }
+      } else {
+        window.location.replace("https://site222326.tw.cs.unibo.it/login");
       }
     },
   
     async refresh() {
-      console.log("refrescio")
+      console.log("refresh")
       const sub_resp = await axios.get(`https://site222326.tw.cs.unibo.it/channels/${this.name}/subscribers_list`)
       console.log("sub_resp: ", sub_resp)
 
