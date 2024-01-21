@@ -198,6 +198,58 @@ export default {
                 }
             );
         },
+        async updateReactions() {
+            let positiveUsers = await fetch(
+                    `https://site222326.tw.cs.unibo.it/squeals/${this.squeal_id}/positive_reactions`,
+                    {
+                        method: "GET",
+                        headers: {
+                            "Content-type": "application/json; charset=UTF-8",
+                            "Access-Control-Allow-Origin": "*",
+                        },
+                    }
+                );
+                positiveUsers = await positiveUsers.json();
+                this.positiveReactions = positiveUsers.positive_reactions;
+
+                let negativeUsers = await fetch(
+                    `https://site222326.tw.cs.unibo.it/squeals/${this.squeal_id}/negative_reactions`,
+                    {
+                        method: "GET",
+                        headers: {
+                            "Content-type": "application/json; charset=UTF-8",
+                            "Access-Control-Allow-Origin": "*",
+                        },
+                    }
+                );
+                negativeUsers = await negativeUsers.json();
+                this.negativeReactions = negativeUsers.negative_reactions;
+
+                let positiveUsersList = await fetch(
+                    `https://site222326.tw.cs.unibo.it/squeals/${this.squeal_id}/positive_reactions_list`,
+                    {
+                        method: "GET",
+                        headers: {
+                            "Content-type": "application/json; charset=UTF-8",
+                            "Access-Control-Allow-Origin": "*",
+                        },
+                    }
+                );
+                this.positiveReactionsList = await positiveUsersList.json();
+
+                let negativeUsersList = await fetch(
+                    `https://site222326.tw.cs.unibo.it/squeals/${this.squeal_id}/negative_reactions_list`,
+                    {
+                        method: "GET",
+                        headers: {
+                            "Content-type": "application/json; charset=UTF-8",
+                            "Access-Control-Allow-Origin": "*",
+                        },
+                    }
+                );
+                this.negativeReactionsList = await negativeUsersList.json();
+
+        },
         async addOrRemovePositiveReaction() {
             if (this.$user != null) {
                 await fetch(
@@ -211,19 +263,7 @@ export default {
                     }
                 );
 
-                let positiveUsers = await fetch(
-                    `https://site222326.tw.cs.unibo.it/squeals/${this.squeal_id}/positive_reactions`,
-                    {
-                        method: "GET",
-                        headers: {
-                            "Content-type": "application/json; charset=UTF-8",
-                            "Access-Control-Allow-Origin": "*",
-                        },
-                    }
-                );
-
-                positiveUsers = await positiveUsers.json();
-                this.positiveReactions = positiveUsers.positive_reactions;
+                await updateReactions();
             }
             else {
                 window.location.replace("https://site222326.tw.cs.unibo.it/login");
@@ -242,19 +282,7 @@ export default {
                     }
                 );
 
-                let negativeUsers = await fetch(
-                    `https://site222326.tw.cs.unibo.it/squeals/${this.squeal_id}/negative_reactions`,
-                    {
-                        method: "GET",
-                        headers: {
-                            "Content-type": "application/json; charset=UTF-8",
-                            "Access-Control-Allow-Origin": "*",
-                        },
-                    }
-                );
-
-                negativeUsers = await negativeUsers.json();
-                this.negativeReactions = negativeUsers.negative_reactions;
+                await updateReactions();
             }
             else {
                 window.location.replace("https://site222326.tw.cs.unibo.it/login");
