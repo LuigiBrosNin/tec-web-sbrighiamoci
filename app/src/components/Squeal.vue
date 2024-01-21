@@ -212,7 +212,7 @@ export default {
                 );
 
                 let positiveUsers = await fetch(
-                    `https://site222326.tw.cs.unibo.it/squeals/${this.squeal_id}/positive_reactions_list`,
+                    `https://site222326.tw.cs.unibo.it/squeals/${this.squeal_id}/positive_reactions`,
                     {
                         method: "GET",
                         headers: {
@@ -222,8 +222,8 @@ export default {
                     }
                 );
 
-                this.positiveReactionsList = await positiveUsers.json();
-                this.positiveReactions = this.positiveReactionsList.length;
+                positiveUsers = await positiveUsers.json();
+                this.positiveReactions = positiveUsers.positive_reactions;
             }
             else {
                 window.location.replace("https://site222326.tw.cs.unibo.it/login");
@@ -243,7 +243,7 @@ export default {
                 );
 
                 let negativeUsers = await fetch(
-                    `https://site222326.tw.cs.unibo.it/squeals/${this.squeal_id}/negative_reactions_list`,
+                    `https://site222326.tw.cs.unibo.it/squeals/${this.squeal_id}/negative_reactions`,
                     {
                         method: "GET",
                         headers: {
@@ -253,8 +253,8 @@ export default {
                     }
                 );
 
-                this.negativeReactionsList = await negativeUsers.json();
-                this.negativeReactions = this.negativeReactionsList.length;
+                negativeUsers = await negativeUsers.json();
+                this.negativeReactions = negativeUsers.negative_reactions;
             }
             else {
                 window.location.replace("https://site222326.tw.cs.unibo.it/login");
