@@ -53,7 +53,7 @@ app.listen(port, function () {
 //html files indexing
 app.get("/", async (req, res) => {
   console.log(req.session.user);
-  if(await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)){
+  if (await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)) {
     res.redirect("/admin");
   }
   else if (await isAuthorizedOrHigher(req.session.user, typeOfProfile.smm)) {
@@ -63,7 +63,7 @@ app.get("/", async (req, res) => {
     res.redirect("/app");
   }
   else {
-    res.redirect("/login");
+    res.redirect("/app");
   }
 
 })
@@ -75,11 +75,11 @@ app.get("/login", async (req, res) => {
 app.post("/login", bodyParser.json(), async (req, res) => {
   if (await canLogIn(req.body.username, req.body.password)) {
     req.session.user = req.body.username;
-    res.status(200).send({message: "https://site222326.tw.cs.unibo.it/"});
+    res.status(200).send({ message: "https://site222326.tw.cs.unibo.it/" });
   } else {
     let bannedUntil = await isBannedUntil(req.body.username);
-    if(bannedUntil != null) {
-      res.status(403).send({banned_until: bannedUntil});
+    if (bannedUntil != null) {
+      res.status(403).send({ banned_until: bannedUntil });
     }
     else {
       res.status(401).send("wrong username or password");
@@ -114,68 +114,92 @@ app.use('/smm', express.static(path.join(global.rootDir, 'smm/build/')));
 app.use('/smm/*', express.static(path.join(global.rootDir, 'smm/build/')));
 
 app.get("/admin/adminedit/automaticsqueals", async (req, res) => {
-  res.status(200).sendFile(global.rootDir + '/admin/adminManageAutomaticSqueals.html');
+  if (await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)) {
+    res.status(200).sendFile(global.rootDir + '/admin/adminManageAutomaticSqueals.html');
+  } else {
+    res.redirect("/");
+  }
 })
 
 app.get("/admin/adminedit/:type/:id", async (req, res) => {
-  if(req.params.type === "squeal"){
-    res.status(200).sendFile(global.rootDir + '/admin/adminEditSqueal.html');
-  }
-  else if(req.params.type === "profile"){
-    res.status(200).sendFile(global.rootDir + '/admin/adminEditProfile.html');
-  }
-  else if(req.params.type === "channel"){
-    res.status(200).sendFile(global.rootDir + '/admin/adminEditChannel.html');
+  if (await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)) {
+    if (req.params.type === "squeal") {
+      res.status(200).sendFile(global.rootDir + '/admin/adminEditSqueal.html');
+    }
+    else if (req.params.type === "profile") {
+      res.status(200).sendFile(global.rootDir + '/admin/adminEditProfile.html');
+    }
+    else if (req.params.type === "channel") {
+      res.status(200).sendFile(global.rootDir + '/admin/adminEditChannel.html');
+    }
+    else {
+      res.status(404).send();
+    }
   }
   else {
-    res.status(404).send();
+    res.redirect("/");
   }
 })
 
 app.get("/admin/admincreate/:type", async (req, res) => {
-  if(req.params.type === "channel"){
-    res.status(200).sendFile(global.rootDir + '/admin/adminCreateChannel.html');
+  if (await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)) {
+    if (req.params.type === "channel") {
+      res.status(200).sendFile(global.rootDir + '/admin/adminCreateChannel.html');
+    }
+    else {
+      res.status(404).send();
+    }
   }
   else {
-    res.status(404).send();
+    res.redirect("/");
   }
 })
 
 app.get("/admin/adminsearch/:type", async (req, res) => {
-  if(req.params.type === "privatesqueals"){
-    res.status(200).sendFile(global.rootDir + '/admin/adminSearchPrivateSqueals.html');
+  if (await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)) {
+    if (req.params.type === "privatesqueals") {
+      res.status(200).sendFile(global.rootDir + '/admin/adminSearchPrivateSqueals.html');
+    }
+    else {
+      res.status(404).send();
+    }
   }
   else {
-    res.status(404).send();
+    res.redirect("/");
   }
 })
 
 app.get(["/admin/:paths(*)", "/admin"], async (req, res) => {
-  try {
-    let url = 'https://site222326.tw.cs.unibo.it/app/';
-    if(req.params.paths != null){
-      url = url + req.params.paths;
+  if (await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin)) {
+    try {
+      let url = 'https://site222326.tw.cs.unibo.it/app/';
+      if (req.params.paths != null) {
+        url = url + req.params.paths;
+      }
+      console.log(url);
+      const response = await axios.get(url); // Fetch the HTML content
+  
+      // Load the HTML content into cheerio for easy manipulation
+      const $ = cheerio.load(response.data); // naming it $ is a good practice
+  
+      $('title').text('Squealer Admin');
+      const scriptHead = '<script src="https://site222326.tw.cs.unibo.it/adminsrc/adminHead.js"></script>'
+      $('head').prepend(scriptHead);
+      const restoreCSS = '<link rel="stylesheet" href="https://site222326.tw.cs.unibo.it/adminsrc/restoreData.css">'
+      $('body').append(restoreCSS);
+      const adminCSS = '<link rel="stylesheet" href="https://site222326.tw.cs.unibo.it/adminsrc/adminCss.css">'
+      $('body').append(adminCSS);
+  
+      // Get the modified HTML
+      const modifiedHTML = $.html();
+  
+      res.status(200).send(modifiedHTML);
+    } catch (error) {
+      res.status(500).send(error);
     }
-    console.log(url);
-    const response = await axios.get(url); // Fetch the HTML content
-
-    // Load the HTML content into cheerio for easy manipulation
-    const $ = cheerio.load(response.data); // naming it $ is a good practice
-
-    $('title').text('Squealer Admin');
-    const scriptHead = '<script src="https://site222326.tw.cs.unibo.it/adminsrc/adminHead.js"></script>'
-    $('head').prepend(scriptHead);
-    const restoreCSS = '<link rel="stylesheet" href="https://site222326.tw.cs.unibo.it/adminsrc/restoreData.css">'
-    $('body').append(restoreCSS);
-    const adminCSS = '<link rel="stylesheet" href="https://site222326.tw.cs.unibo.it/adminsrc/adminCss.css">'
-    $('body').append(adminCSS);
-
-    // Get the modified HTML
-    const modifiedHTML = $.html();
-
-    res.status(200).send(modifiedHTML);
-  } catch (error) {
-    res.status(500).send(error);
+  }
+  else {
+    res.redirect("/");
   }
 })
 app.use("/adminsrc", express.static(path.join(global.rootDir, '/admin/')));
@@ -206,7 +230,7 @@ module.exports = { app };
 const { update_quota_all, reset_credits_all } = require("./backend/profiles.js");
 require("./backend/squeal.js");
 require("./backend/channels.js");
-const { putPeriodicalSqueals, putControversialPeriodicalSqueals} = require("./backend/automatic_posts.js");
+const { putPeriodicalSqueals, putControversialPeriodicalSqueals } = require("./backend/automatic_posts.js");
 
 async function update_profiles() {
   try {
