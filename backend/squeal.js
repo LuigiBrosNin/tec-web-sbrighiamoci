@@ -1399,7 +1399,7 @@ app.get("/squeals/:id/:reaction_list", async (req, res) => {
                 return;
             }
             // if the squeal is found, return its positive reactions number
-            res.status(200).json(squeal.positive_reactions);
+            res.status(200).json({positive_reactions: squeal.positive_reactions});
             return;
         }
 
@@ -1418,7 +1418,7 @@ app.get("/squeals/:id/:reaction_list", async (req, res) => {
                 return;
             }
             // if the squeal is found, return its positive reactions number
-            res.status(200).json(squeal.negative_reactions);
+            res.status(200).json({negative_reactions: squeal.negative_reactions});
             return;
         }
 
