@@ -1384,6 +1384,44 @@ app.get("/squeals/:id/:reaction_list", async (req, res) => {
             return;
         }
 
+        if (reactions == "positive_reactions") {
+            // fetching the squeal with the given id
+            await mongoClient.connect();
+            const squeal = await collection_squeals.findOne({
+                id: squealId
+            });
+
+            // if the squeal is not found, return 404
+            if (squeal === null) {
+                res.status(404).json({
+                    message: "squeal not found"
+                });
+                return;
+            }
+            // if the squeal is found, return its positive reactions number
+            res.status(200).json(squeal.positive_reactions);
+            return;
+        }
+
+        if (reactions == "negative_reactions") {
+            // fetching the squeal with the given id
+            await mongoClient.connect();
+            const squeal = await collection_squeals.findOne({
+                id: squealId
+            });
+
+            // if the squeal is not found, return 404
+            if (squeal === null) {
+                res.status(404).json({
+                    message: "squeal not found"
+                });
+                return;
+            }
+            // if the squeal is found, return its positive reactions number
+            res.status(200).json(squeal.negative_reactions);
+            return;
+        }
+
         // check if the reaction list is valid
         if (reactions != "positive_reactions_list" && reactions != "negative_reactions_list") {
             res.status(400).json({
