@@ -1601,8 +1601,12 @@ app.post("/profiles/:name/shop", async (req, res) => {
 // optional: media, reply_to
 app.put("/profiles/:name/shopandpost", async (req, res) => {
     try {
+
+        console.log("json: " + req.body.json)
+
         const profileName = req.params.name;
         const reqBody = JSON.parse(req.body.json);
+        return;
 
         const authorized = await isAuthorized(req.session.user, typeOfProfile.user) && req.session.user === profileName; // only a user can access this page, premium and smm can use /profiles/:name/shop
         const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
