@@ -28,7 +28,7 @@ if (currentUrl.startsWith(adminPrefix)) {
         addManageAutomaticSquealsToMyChannelsView();
         addPrivateSquealToSearchView();
 
-        console.log("DOM changed", mutations, observer);
+        //console.log("DOM changed", mutations, observer);
     });
     observer.observe(document, {
         subtree: true,
