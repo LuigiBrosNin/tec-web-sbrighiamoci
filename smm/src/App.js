@@ -128,12 +128,13 @@ function App() {
     for (let i = 0; i < times; i++) {
       console.log("looping post " + (i + 1) + " of " + times);
       try {
-
-        // send an alert with sound to the user
-        alert("automatic post " + (i + 1) + " sent!");
         // play sound
         let audio = new Audio("https://site222326.tw.cs.unibo.it/sounds/notification-sound.mp3");
         audio.play();
+        
+        // send an alert with sound to the user
+        alert("automatic post " + (i + 1) + " sent!");
+
 
         // update text
         jsonBody.text = jsonBody.text.replace(/automatic post \d+ /, "automatic post " + (i + 1) + " ");
