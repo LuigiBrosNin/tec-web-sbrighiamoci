@@ -3,9 +3,9 @@ import { useParams } from 'react-router-dom';
 import Squeal from './Squeal';
 
 //*Alex - Importazione dati e tipi di grafico per gli insights
-import { top_10_words, average_impressions, average_comments, average_text, average_pos_reactions, average_neg_reactions, tot_average_impressions, tot_average_comments } from './InsightsData.js'   
-import TopWordsChart, { AverageImpressionsChart, AverageCommentsChart, AveragePosReactionsChart, AverageNegReactionsChart, BipartiteReactionsChart, CompareAvgImpressionsChart, CompareAvgCommentsChart, ImpressionsVsReactionsChart, ImpressionsVsCommentsChart } from './InsightsChart';
-import { fetchData } from './InsightsData.js';
+import { tot_average_impressions, tot_average_comments } from './InsightsData.js'   
+import { BipartiteReactionsChart, CompareAvgImpressionsChart, CompareAvgCommentsChart, ImpressionsVsReactionsChart, ImpressionsVsCommentsChart } from './InsightsChart';
+
 
 // functional component, because in class components params don't work for some reason
 export default function SquealInsight(props) {

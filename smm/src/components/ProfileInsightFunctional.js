@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
 
 //*Alex - Importazione dati e tipi di grafico per gli insights
 import { top_10_words, average_impressions, average_comments, average_text, average_pos_reactions, average_neg_reactions } from './InsightsData.js'
@@ -121,6 +120,7 @@ export default function ProfileInsightFunctional(props) {
         <div className="row">
           <div className="col-lg-6">
             <div className="p-1">
+              <p> Top 10 most used words </p>
               {<TopWordsChart chartData={local_top_10} />}
             </div>
           </div>
