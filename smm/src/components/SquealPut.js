@@ -105,7 +105,8 @@ export class SquealPut extends Component {
 
   showMap = (location) => {
     let map_exist = document.getElementById("map");
-    if (map_exist != null && map_exist.innerHTML !== "") {
+    console.log("map exist: ", document.getElementById("map"))
+    if (map_exist != null && map_exist.innerHTML === "") {
       const map = L.map("map").setView(
         [location.latitude, location.longitude],
         13

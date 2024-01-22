@@ -32,8 +32,8 @@ export const globalState = {
 // globally defining the smm user
 globalState.$user = await fetch("https://site222326.tw.cs.unibo.it/user-check", { method: "GET" });
 globalState.$user = await globalState.$user.json();
-globalState.$user = globalState.$user.user || null
-//globalState.$user = "SMMTest"; //! DEBUG, REMOVE BEFORE RELEASE
+//globalState.$user = globalState.$user.user || null
+globalState.$user = "SMMTest"; //! DEBUG, REMOVE BEFORE RELEASE
 console.log("current user: " + globalState.$user);
 
 
@@ -131,7 +131,7 @@ function App() {
         // play sound
         let audio = new Audio("https://site222326.tw.cs.unibo.it/sounds/notification-sound.mp3");
         audio.play();
-        
+
         // send an alert with sound to the user
         alert("automatic post " + (i + 1) + " sent!");
 
