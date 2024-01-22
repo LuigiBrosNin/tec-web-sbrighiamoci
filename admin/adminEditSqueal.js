@@ -37,19 +37,12 @@ document.getElementById('squeal_form').addEventListener('submit', async (e) => {
         changes.reply_to = data.replyTo;
     }
 
-    if (data.isPrivate != null && data.isPrivate != "" && squeal.is_private != true) {
-        changes.is_private = true;
-    }
-    else if ((data.isPrivate == null || data.isPrivate == "") && squeal.is_private != false) {
-        changes.is_private = false;
-    }
-
     if (data.squealText != null && data.squealText != "" && data.squealText != squeal.text) {
         changes.text = data.squealText;
     }
 
     if (data.squealDate != null && data.squealDate != "" && data.squealDate != squeal.date) {
-        changes.date = data.squealDate;
+        changes.date = new Date(data.squealDate).getTime();
     }
 
     if (data.positiveReactions != null && data.positiveReactions != "" && data.positiveReactions != squeal.positive_reactions) {
@@ -112,10 +105,9 @@ function populate(squeal_json) {
     document.getElementById("squeal_id").setAttribute("value", squeal_json.id);
     document.getElementById("author").setAttribute("value", squeal_json.author);
     document.getElementById("receiver").setAttribute("value", squeal_json.receiver);
-    document.getElementById("isPrivate").setAttribute("value", squeal_json.is_private);
     document.getElementById("replyTo").setAttribute("value", squeal_json.reply_to);
     document.getElementById("squealText").innerHTML = squeal_json.text;
-    document.getElementById("squealDate").setAttribute("value", squeal_json.date);
+    document.getElementById("squealDate").setAttribute("value", new Date(squeal_json.date).toISOString().slice(0, -5))
     document.getElementById("positiveReactions").setAttribute("value", squeal_json.positive_reactions);
     document.getElementById("negativeReactions").setAttribute("value", squeal_json.negative_reactions);
     document.getElementById("replies").setAttribute("value", squeal_json.replies_num);
