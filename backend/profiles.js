@@ -1687,7 +1687,7 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
         let response = await fetch(`https://site222326.tw.cs.unibo.it/squeals`, {
             method: "PUT",
             headers: {
-                "Content-Type": "application/json",
+                "Content-Type": "multipart/form-data",
                 "Cookie": req.headers.cookie
             },
             body: formData
