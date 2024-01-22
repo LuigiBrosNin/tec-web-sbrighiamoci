@@ -25,7 +25,7 @@
             <div :id="'map' + squeal_id" style="height: 200px"></div>
         </div>
 
-        <p> {{ date }} </p>
+        <p> {{ date.toLocaleString() }} </p>
 
         <div class="interaction_data">
             <button

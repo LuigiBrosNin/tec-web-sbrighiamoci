@@ -107,7 +107,8 @@ function populate(squeal_json) {
     document.getElementById("receiver").setAttribute("value", squeal_json.receiver);
     document.getElementById("replyTo").setAttribute("value", squeal_json.reply_to);
     document.getElementById("squealText").innerHTML = squeal_json.text;
-    document.getElementById("squealDate").setAttribute("value", new Date(squeal_json.date).toISOString().slice(0, -5))
+    let date = new Date(squeal_json.date);
+    document.getElementById("squealDate").setAttribute("value", new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().slice(0, -5));
     document.getElementById("positiveReactions").setAttribute("value", squeal_json.positive_reactions);
     document.getElementById("negativeReactions").setAttribute("value", squeal_json.negative_reactions);
     document.getElementById("replies").setAttribute("value", squeal_json.replies_num);
