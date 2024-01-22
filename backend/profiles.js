@@ -1520,6 +1520,9 @@ app.delete("/profiles/:name/smm", async (req, res) => {
 // body: credit
 app.post("/profiles/:name/shop", async (req, res) => {
     try {
+
+        console.log("credits to buy: " + req.body.credit)
+
         const profileName = req.params.name;
         const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.premium) && req.session.user === profileName;
         const SMMauthorized = await isSMMAuthorized(req.session.user, profileName) && await isAuthorizedOrHigher(req.session.user, typeOfProfile.user);
@@ -1640,9 +1643,9 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
 
         // credit check
         if (profile.credit[0] <= 0 || profile.credit[1] <= 0 || profile.credit[2] <= 0) {
-            res.status(400).send(JSON.stringify({
+            res.status(400).json({
                 message: "you cannot create squeal, not even paying, if your credit is zero"
-            }));
+            });
             return;
         }
 
@@ -1666,9 +1669,9 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
                 })
             });
             if (buyRes.status != 200) {
-                res.status(500).send(JSON.stringify({
+                res.status(500).json({
                     message: "error during character purchase"
-                }));
+                });
                 return;
             }
         }
