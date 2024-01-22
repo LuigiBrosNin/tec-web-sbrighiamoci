@@ -194,7 +194,7 @@ function addSettingsButtonToProfile() {
 }
 
 function addSettingsButtonToChannel() {
-    const channels = Array.from(document.getElementsByClassName("channelContainer")); // there should be only one per page, but who knows...
+    const channels = Array.from(document.getElementsByClassName("channelInfoContainer")); // there should be only one per page, but who knows...
     for (const index in channels) {
         let buttonArea = Array.from(channels[index].getElementsByClassName("btn_area"))[0];
 
