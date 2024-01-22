@@ -208,6 +208,13 @@ function addSettingsButtonToChannel() {
             }
         }
     }
+
+    if(channels.length <= 0){
+        let buttonAreasToEmpty = Array.from(document.getElementsByClassName("btn_area"));
+        for (area of buttonAreasToEmpty){
+            area.innerHTML = "";
+        }
+    }
 }
 
 function generateProfileSettingsButton(profile_id) {
