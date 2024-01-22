@@ -126,13 +126,13 @@ export class SquealPut extends Component {
         draggable: true,
         autoPan: true,
       }).addTo(map);
-  
+
       // Update the location in the state when the marker is dragged
       marker.on('dragend', (event) => {
         const position = marker.getLatLng();
         this.setState({ location: { latitude: position.lat, longitude: position.lng } });
       });
-  
+
       this.setState({ map, marker });
     }
 
@@ -146,82 +146,47 @@ export class SquealPut extends Component {
   };
 
   submitForm = () => {
+    const jsonBody = {
+      author: this.props.selectedAccount.name,
+      text: this.state.text,
+      receiver: this.state.receiver,
+      reply_to: this.state.reply_to,
+      is_private: false,
+      location: this.state.location,
+    };
+    const formData = new FormData();
+    formData.append("json", JSON.stringify(jsonBody));
+    formData.append("file", this.state.media);
+
+    console.log("sending body: ", formData);
+
+    if (this.state.send_for_loop) {
+      console.log("looping post");
+      this.props.loopObject.loopPost(formData, this.state.delay, this.state.times);
+      return;
+    }
 
     if (Math.min(...Object.values(this.state.temp_credits)) < 0) {
-      axios.put("https://site222326.tw.cs.unibo.it/profiles/" + this.props.selectedAccount.name + "/shop", {
-        credit: [
-          this.state.temp_credits[0] < 0 ? Math.abs(this.state.temp_credits[0]) : 0,
-          this.state.temp_credits[1] < 0 ? Math.abs(this.state.temp_credits[1]) : 0,
-          this.state.temp_credits[2] < 0 ? Math.abs(this.state.temp_credits[2]) : 0,
-        ],
-        credit_limits: [0, 0, 0],
-      }).then((response) => {
-        console.log(response.data);
-        if (response.status === 200) {
+      // Send formData to server using axios or fetch
+      axios
+        .put(`https://site222326.tw.cs.unibo.it/profiles/`+ this.props.selectedAccount.name +`/shopandpost/`, formData)
+        .then((response) => {
+          console.log(response.data);
+          if (response.status === 200) {
+            const id = response.data.squeal_id;
+            this.reloadAccount(this.props.selectedAccount.name);
+            // redirect to the squeal page
+            this.props.navigate(`/smm/squeals/${id}`);
 
-          const jsonBody = {
-            author: this.props.selectedAccount.name,
-            text: this.state.text,
-            receiver: this.state.receiver,
-            reply_to: this.state.reply_to,
-            is_private: false,
-            location: this.state.location,
-          };
-          const formData = new FormData();
-          formData.append("json", JSON.stringify(jsonBody));
-          formData.append("file", this.state.media);
-
-          console.log("sending body: ", formData);
-
-          if (this.state.send_for_loop) {
-            console.log("looping post");
-            this.props.loopObject.loopPost(formData, this.state.delay, this.state.times);
-            return;
+          } else {
+            alert("an error has occurred, please try again later");
           }
-
-          // Send formData to server using axios or fetch
-          axios
-            .put("https://site222326.tw.cs.unibo.it/squeals/", formData)
-            .then((response) => {
-              console.log(response.data);
-              if (response.status === 200) {
-                const id = response.data.squeal_id;
-                this.reloadAccount(this.props.selectedAccount.name);
-                // redirect to the squeal page
-                this.props.navigate(`/smm/squeals/${id}`);
-              } else {
-                alert("an error has occurred, please try again later");
-              }
-            })
-            .catch((error) => {
-              console.log(error);
-              alert("an error has occurred, please try again later");
-            });
-        } else {
+        })
+        .catch((error) => {
+          console.log(error);
           alert("an error has occurred, please try again later");
-        }
-      })
+        });
     } else {
-      const jsonBody = {
-        author: this.props.selectedAccount.name,
-        text: this.state.text,
-        receiver: this.state.receiver,
-        reply_to: this.state.reply_to,
-        is_private: false,
-        location: this.state.location,
-      };
-      const formData = new FormData();
-      formData.append("json", JSON.stringify(jsonBody));
-      formData.append("file", this.state.media);
-
-      console.log("sending body: ", formData);
-
-      if (this.state.send_for_loop) {
-        console.log("looping post");
-        this.props.loopObject.loopPost(formData, this.state.delay, this.state.times);
-        return;
-      }
-
       // Send formData to server using axios or fetch
       axios
         .put("https://site222326.tw.cs.unibo.it/squeals/", formData)
