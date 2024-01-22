@@ -3,7 +3,7 @@ const props = defineProps(["id", "channel_json"]);
 </script>
 
 <template>
-  <div class="card m-3" role="article">
+  <div class="channelCard card m-3" role="article">
     <div v-if="isValid" class="channelContainer d-flex">
       <div class="col-md-4 d-flex justify-content-center align-items-center">
         <img :src="profilePicUrl" class="card-img channel_img" alt="Profile Picture">

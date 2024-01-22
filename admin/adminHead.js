@@ -210,10 +210,13 @@ function addSettingsButtonToChannel() {
     }
 
     if(channels.length <= 0){
-        let buttonAreasToEmpty = Array.from(document.getElementsByClassName("btn_area"));
-        for (area of buttonAreasToEmpty){
-            if(area.innerHTML != ""){
-                area.innerHTML = "";
+        let channelCards = Array.from(document.getElementsByClassName("channelCard"));
+        for (card of channelCards){
+            let buttonAreasToEmpty = Array.from(card.getElementsByClassName("btn_area"));
+            for(area of buttonAreasToEmpty){
+                if(area.innerHTML != ""){
+                    area.innerHTML = "";
+                }
             }
         }
     }
