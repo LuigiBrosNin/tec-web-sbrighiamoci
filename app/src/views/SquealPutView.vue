@@ -153,11 +153,10 @@ export default {
         console.log("response: ", response.data);
         this.credits = response.data.credit;
         this.temp_credits = response.data.credit;
-        this.propic = response.data.propic;
-        if (profileJson.propic == null || profileJson.propic == "") {
-          this.profilePicUrl = "https://site222326.tw.cs.unibo.it/images/user-default.svg";
+        if (response.data.propic == null || response.data.propic == "") {
+          this.propic = "https://site222326.tw.cs.unibo.it/images/user-default.svg";
         } else {
-          this.profilePicUrl = "https://" + profileJson.propic;
+          this.propic = "https://" + response.data.propic;
         }
         console.log("credits: ", this.credits);
 
