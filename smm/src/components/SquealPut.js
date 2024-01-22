@@ -225,7 +225,28 @@ export class SquealPut extends Component {
           if (response.status === 200) {
             const id = response.data.squeal_id;
             this.reloadAccount(this.props.selectedAccount.name);
-            this.props.navigate(`smm/squeals/${id}`);
+            // notify the user with a browser notification
+            const options = {
+              body: "Squeal published!",
+              icon: "https://site222326.tw.cs.unibo.it/icons/squealer.png",
+              vibrate: [100, 50, 100],
+              data: {
+                dateOfArrival: Date.now(),
+                primaryKey: 1,
+              },
+              actions: [
+                {
+                  action: "close",
+                  title: "Close the notification",
+                },
+              ],
+            };
+            const reg = navigator.serviceWorker.getRegistration();
+            reg.then((reg) => {
+              reg.showNotification("Squealer", options);
+            });
+            // redirect to the squeal page
+            this.props.navigate(`/smm/squeals/${id}`);
 
           } else {
             alert("an error has occurred, please try again later");
