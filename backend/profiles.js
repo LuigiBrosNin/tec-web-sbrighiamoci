@@ -1694,10 +1694,11 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
         if (response.status == 200) {
             console.log("squeal added successfully, sending back info")
             const resBody = response.data
-            res.status(200).send(JSON.stringify({
-                message: "squeal added successfully with db id:" + resBody.id + ", character purchased: " + charToBuy,
-                id: resBody.id,
-            }));
+            console.log("resBody: " + JSON.parse(resBody))
+            res.status(200).json({
+                message: "squeal added successfully with db id:" + resBody.squeal_id + ", character purchased: " + charToBuy,
+                squeal_id: resBody.squeal_id,
+            });
         }
         else {
             res.status(500).send(JSON.stringify({
