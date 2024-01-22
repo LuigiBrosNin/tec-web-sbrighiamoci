@@ -26,7 +26,6 @@ export class Squeal extends Component {
     this.canUserDeleteIt = this.canUserDeleteIt.bind(this);
     this.askToDelete = this.askToDelete.bind(this);
     this.deleteSqueal = this.deleteSqueal.bind(this);
-    this.parseText = this.parseText.bind(this);
   }
 
   componentDidMount() {
@@ -36,8 +35,7 @@ export class Squeal extends Component {
 
     this.setState({
       squeal: {
-        ...this.state.squeal,
-        text: this.parseText(this.state.squeal.text)
+        ...this.state.squeal
       }
     });
 
@@ -46,27 +44,6 @@ export class Squeal extends Component {
     this.canUserDeleteIt();
 
     this.registerImpression();
-  }
-
-  parseText(text) {
-    let parsedText = text.split(/(\ |\,|\.|\;|\:|\?|\!)/g);
-    let newText = "";
-    for (const index in parsedText) {
-      const word = parsedText[index];
-      if (word.length > 0) {
-        let firstChar = word[0];
-        if (firstChar == "#") {
-          newText = newText.concat('<a href="">' + word + '</a>');
-        } else if (firstChar == "@") {
-          newText = newText.concat('<a href="/profile/' + word.slice(1) + '">' + word + '</a>');
-        } else if (firstChar == "§") {
-          newText = newText.concat('<a href="/channel/' + word.slice(1) + '">' + word + '</a>');
-        } else {
-          newText = newText.concat(word);
-        }
-      }
-    }
-    return newText;
   }
 
   hasLocation() {
