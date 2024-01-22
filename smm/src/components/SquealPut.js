@@ -379,11 +379,11 @@ export class SquealPut extends Component {
             </div>
 
             <button type="submit" className="btn btn-primary" style={{ backgroundColor: "#ff8900", color: "white" }}>
-              ({Math.min(...Object.values(this.state.temp_credits)) < 0 ? (
-                'Buy' + Math.abs(Math.min(...Object.values(this.state.temp_credits))) + 'credits'
-              ) : (
-                'Submit'
-              )})
+              ({Math.min(...Object.values(this.state.temp_credits)) < 0 ? 
+                'Buy ' + Math.abs(Math.min(...Object.values(this.state.temp_credits))) + ' credits'
+               : 
+                ' Submit '
+              })
             </button>
 
           </form>
