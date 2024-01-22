@@ -22,6 +22,7 @@ export class Squeal extends Component {
     this.registerImpression = this.registerImpression.bind(this);
     this.addOrRemovePositiveReaction = this.addOrRemovePositiveReaction.bind(this);
     this.addOrRemoveNegativeReaction = this.addOrRemoveNegativeReaction.bind(this);
+    this.updateReactions = this.updateReactions.bind(this);
     this.canUserDeleteIt = this.canUserDeleteIt.bind(this);
     this.askToDelete = this.askToDelete.bind(this);
     this.deleteSqueal = this.deleteSqueal.bind(this);
@@ -107,10 +108,68 @@ export class Squeal extends Component {
       }
     );
   }
+
+  async updateReactions() {
+    let positiveUsers = await fetch(
+        `https://site222326.tw.cs.unibo.it/squeals/${this.props.squeal.id}/positive_reactions`,
+        {
+            method: "GET",
+            headers: {
+                "Content-type": "application/json; charset=UTF-8",
+                "Access-Control-Allow-Origin": "*",
+            },
+        }
+    );
+    positiveUsers = await positiveUsers.json();
+
+    let negativeUsers = await fetch(
+        `https://site222326.tw.cs.unibo.it/squeals/${this.props.squeal.id}/negative_reactions`,
+        {
+            method: "GET",
+            headers: {
+                "Content-type": "application/json; charset=UTF-8",
+                "Access-Control-Allow-Origin": "*",
+            },
+        }
+    );
+    negativeUsers = await negativeUsers.json();
+
+    let positiveUsersList = await fetch(
+        `https://site222326.tw.cs.unibo.it/squeals/${this.props.squeal.id}/positive_reactions_list`,
+        {
+            method: "GET",
+            headers: {
+                "Content-type": "application/json; charset=UTF-8",
+                "Access-Control-Allow-Origin": "*",
+            },
+        }
+    );
+    positiveUsersList = await positiveUsersList.json();
+
+    let negativeUsersList = await fetch(
+        `https://site222326.tw.cs.unibo.it/squeals/${this.props.squeal.id}/negative_reactions_list`,
+        {
+            method: "GET",
+            headers: {
+                "Content-type": "application/json; charset=UTF-8",
+                "Access-Control-Allow-Origin": "*",
+            },
+        }
+    );
+    negativeUsersList = await negativeUsersList.json();
+
+    this.setState({
+        positiveReactions: positiveUsers.positive_reactions,
+        negativeReactions: negativeUsers.negative_reactions,
+        positiveReactionsList: positiveUsersList,
+        negativeReactionsList: negativeUsersList
+    });
+}
+
   async addOrRemovePositiveReaction() {
     if (this.state.user != null) {
       await fetch(
-        `https://site222326.tw.cs.unibo.it/squeals/${this.props.squeal.id}/positive_reactions_list`,
+        `https://site222326.tw.cs.unibo.it/squeals/${this.state.squeal.id}/positive_reactions_list`,
         {
           method: "POST",
           body: JSON.stringify({
@@ -123,30 +182,7 @@ export class Squeal extends Component {
         }
       );
 
-      let positiveUsers = await fetch(
-        `https://site222326.tw.cs.unibo.it/squeals/${this.props.squeal.id}/positive_reactions_list`,
-        {
-          method: "GET",
-          headers: {
-            "Content-type": "application/json; charset=UTF-8",
-            "Access-Control-Allow-Origin": "*",
-          },
-        }
-      );
-
-      const pos = await positiveUsers.json();
-
-      this.setState({
-        squeal: {
-          ...this.state.squeal,
-          positive_reactions_list: pos,
-          positive_reactions: pos.length
-        }
-      });
-
-    }
-    else {
-      window.location.replace("https://site222326.tw.cs.unibo.it/login");
+      await this.updateReactions();
     }
   }
   async addOrRemoveNegativeReaction() {
@@ -165,30 +201,7 @@ export class Squeal extends Component {
         }
       );
 
-      let negativeUsers = await fetch(
-        `https://site222326.tw.cs.unibo.it/squeals/${this.state.squeal.id}/negative_reactions_list`,
-        {
-          method: "GET",
-          headers: {
-            "Content-type": "application/json; charset=UTF-8",
-            "Access-Control-Allow-Origin": "*",
-          },
-        }
-      );
-
-      const neg = await negativeUsers.json();
-
-      this.setState({
-        squeal: {
-          ...this.state.squeal,
-          negative_reactions_list: neg,
-          negative_reactions: neg.length
-        }
-      });
-
-    }
-    else {
-      window.location.replace("https://site222326.tw.cs.unibo.it/login");
+      await this.updateReactions();
     }
   }
   async canUserDeleteIt() {
@@ -261,7 +274,7 @@ export class Squeal extends Component {
 
             : null}
 
-          <p> {new Date(this.props.squeal.date).toUTCString()} </p>
+          <p> {new Date(this.props.squeal.date).toLocaleString()} </p>
 
           <div className="interaction_data">
             <button
