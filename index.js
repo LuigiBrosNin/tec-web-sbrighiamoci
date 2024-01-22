@@ -206,6 +206,7 @@ app.use("/adminsrc", express.static(path.join(global.rootDir, '/admin/')));
 
 app.use('/images', express.static(path.join(global.rootDir, 'images/')));
 app.use('/icons', express.static(path.join(global.rootDir, 'icons/')));
+app.use('/sounds', express.static(path.join(global.rootDir, 'sounds/')));
 
 // Export bootstrap, so the frontend can use it
 app.use('/bootstrap/css', express.static(path.join(global.rootDir, 'node_modules/bootstrap/dist/css/bootstrap.css')));
