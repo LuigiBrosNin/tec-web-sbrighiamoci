@@ -42,6 +42,9 @@ export class AccountSelector extends Component {
     axios.get(`https://site222326.tw.cs.unibo.it/profiles/${event.target.value}`)
       .then(res => {
         const currentAccount = res.data;
+        if (currentAccount.propic == null ) {
+          currentAccount.propic = "https://site222326.tw.cs.unibo.it/images/user-default.svg";
+        }
         globalState.$selectedAccount = currentAccount;
         this.setState({ selectedAccount: currentAccount });
         this.props.onAccountChange(currentAccount);

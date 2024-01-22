@@ -8,7 +8,7 @@ export class ProfileCard extends Component {
         return (
             <div className="card">
                 <div className="row no-gutters">
-                    <div className="col-12 justify-content-center align-items-center">
+                    <div className="col-12 justify-content-center align-items-center d-flex">
                         <img src={(this.props.profile.propic == null  || this.props.profile.propic == "https://site222326.tw.cs.unibo.it/images/user-default.svg" ) ? "https://site222326.tw.cs.unibo.it/images/user-default.svg"  : "https://" + this.props.profile.propic } className="card-img profile_img" alt="Profile Picture" />
                     </div>
                     <div className="col-12">
