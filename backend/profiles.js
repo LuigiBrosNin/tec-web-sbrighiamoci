@@ -1694,7 +1694,7 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
         if (response.status == 200) {
             console.log("squeal added successfully, sending back info")
             const resBody = await response.json();
-            console.log("resBody: " + JSON.parse(resBody))
+            console.log("resBody: " + JSON.stringify(resBody))
             res.status(200).json({
                 message: "squeal added successfully with db id:" + resBody.squeal_id + ", character purchased: " + charToBuy,
                 squeal_id: resBody.squeal_id,
