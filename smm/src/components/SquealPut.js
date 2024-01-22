@@ -385,7 +385,7 @@ export class SquealPut extends Component {
             </div>
 
             <div className="form-group">
-            <label htmlFor="reply_to">Reply To:</label>
+              <label htmlFor="reply_to">Reply To:</label>
               <input type="text" name="reply_to" id="reply_to" value={this.state.reply_to} onChange={e => this.setState({ reply_to: e.target.value })} className="form-control" />
 
               <div className="form-check mt-3">
@@ -407,17 +407,15 @@ export class SquealPut extends Component {
                 </div>
               )}
             </div>
-            {Math.min(...Object.values(this.state.temp_credits)) < 0 ? (
-              <button type="submit" className="btn btn-primary" style={{ backgroundColor: "#ff8900", color: "white" }} onClick={(e) => { e.preventDefault() }}>
-                Buy {Math.abs(Math.min(...Object.values(this.state.temp_credits)))} credits
-                for {(Math.abs(Math.min(...Object.values(this.state.temp_credits))) * 0.01).toFixed(2)}€
-                and submit
-              </button>
-            ) :
-              (<button type="submit" className="btn btn-primary" style={{ backgroundColor: "#ff8900", color: "white" }}>
-                Submit
-              </button>)
-            }
+
+            <button type="submit" className="btn btn-primary" style={{ backgroundColor: "#ff8900", color: "white" }}>
+              ({Math.min(...Object.values(this.state.temp_credits)) < 0 ? (
+                'Buy' + Math.abs(Math.min(...Object.values(this.state.temp_credits))) + 'credits'
+              ) : (
+                'Submit'
+              )})
+            </button>
+
           </form>
         </div>
     );
