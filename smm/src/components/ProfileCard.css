@@ -2,4 +2,12 @@
     width: 5rem!important;
     height: 5rem!important;
     border-radius: 50%!important;
+    max-width: 20em;
+    max-height: 20em;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+    margin: auto;
   }
