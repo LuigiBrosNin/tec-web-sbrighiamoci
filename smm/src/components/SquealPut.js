@@ -104,33 +104,37 @@ export class SquealPut extends Component {
   };
 
   showMap = (location) => {
-    const map = L.map("map").setView(
-      [location.latitude, location.longitude],
-      13
-    );
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 19,
-    }).addTo(map);
-    // Create a new icon
-    const customIcon = L.icon({
-      iconUrl: "https://site222326.tw.cs.unibo.it/icons/squealer_marker.png",
-      iconSize: [38, 38], // size of the icon
-      iconAnchor: [19, 38], // point of the icon which will correspond to marker's location
-      popupAnchor: [-3, -76], // point from which the popup should open relative to the iconAnchor
-    });
-    const marker = L.marker([location.latitude, location.longitude], {
-      icon: customIcon,
-      draggable: true,
-      autoPan: true,
-    }).addTo(map);
+    let map_exist = document.getElementById("map");
+    if (map_exist != null && map_exist.innerHTML !== "") {
+      const map = L.map("map").setView(
+        [location.latitude, location.longitude],
+        13
+      );
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+      }).addTo(map);
+      // Create a new icon
+      const customIcon = L.icon({
+        iconUrl: "https://site222326.tw.cs.unibo.it/icons/squealer_marker.png",
+        iconSize: [38, 38], // size of the icon
+        iconAnchor: [19, 38], // point of the icon which will correspond to marker's location
+        popupAnchor: [-3, -76], // point from which the popup should open relative to the iconAnchor
+      });
+      const marker = L.marker([location.latitude, location.longitude], {
+        icon: customIcon,
+        draggable: true,
+        autoPan: true,
+      }).addTo(map);
+  
+      // Update the location in the state when the marker is dragged
+      marker.on('dragend', (event) => {
+        const position = marker.getLatLng();
+        this.setState({ location: { latitude: position.lat, longitude: position.lng } });
+      });
+  
+      this.setState({ map, marker });
+    }
 
-    // Update the location in the state when the marker is dragged
-    marker.on('dragend', (event) => {
-      const position = marker.getLatLng();
-      this.setState({ location: { latitude: position.lat, longitude: position.lng } });
-    });
-
-    this.setState({ map, marker });
   };
 
   handleFileUpload = (event) => {
