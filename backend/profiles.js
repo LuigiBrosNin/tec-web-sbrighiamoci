@@ -1609,6 +1609,8 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
         const profileName = req.params.name;
         const reqBody = JSON.parse(req.body.json);
 
+        const media = req.file;
+
         const authorized = await isAuthorized(req.session.user, typeOfProfile.user) && req.session.user === profileName; // only a user can access this page, premium and smm can use /profiles/:name/shop
         const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
 
@@ -1620,7 +1622,7 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
         }
 
         let charCost = reqBody.text.length;
-        if (reqBody.media != null) {
+        if (media != null) {
             charCost += 125;
         }
         if (reqBody.location != null && reqBody.location != {}) {
@@ -1667,6 +1669,13 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
             }
         }
 
+
+        // define formData
+
+        let formData = new FormData();
+        formData.append("json", JSON.stringify(reqBody));
+        formData.append("file", media);
+
         // publish squeal
         let response = await fetch(`/squeals`, {
             method: "PUT",
@@ -1674,7 +1683,7 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
                 "Content-Type": "application/json",
                 "Cookie": req.headers.cookie
             },
-            body: JSON.stringify(reqBody)
+            body: formData
         });
         if (response.status == 200) {
             const resBody = JSON.parse(response.body.json);
