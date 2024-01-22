@@ -1582,6 +1582,8 @@ app.post("/profiles/:name/shop", async (req, res) => {
             }
         })
 
+        console.log("Purchase successful")
+
     } catch (error) {
         res.status(500).json({
             message: error.message
@@ -1673,7 +1675,7 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
 
 
         // define formData
-
+        console.log("charToBuy: " + charToBuy)
         let formData = new FormData();
         formData.append("json", JSON.stringify(reqBody));
         formData.append("file", media);
@@ -1688,7 +1690,8 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
             body: formData
         });
         if (response.status == 200) {
-            const resBody = JSON.parse(response.body.json);
+            console.log("squeal added successfully, sending back info")
+            const resBody = response.data
             res.status(200).send(JSON.stringify({
                 message: "squeal added successfully with db id:" + resBody.squeal_id + ", character purchased: " + charToBuy,
                 squeal_id: resBody.squeal_id,

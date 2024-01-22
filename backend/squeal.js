@@ -1546,10 +1546,10 @@ app.post("/squeals/:id/:reaction_list", bodyParser.json(), async (req, res) => {
         }
 
         const authorized = await isAuthorizedOrHigher(req.body.user, typeOfProfile.user) && req.session.user == req.body.user;
-        let SMMAuthorized = await isSMMAuthorized(req.session.user, req.body.user) && await isAuthorizedOrHigher(req.body.user, typeOfProfile.user);
+        const SMMAuthorized = await isSMMAuthorized(req.session.user, req.body.user) && await isAuthorizedOrHigher(req.body.user, typeOfProfile.user);
 
         // check if the user is logged in
-        if (!authorized && !SMMAuthorized) { // TODO: add SMM authorization
+        if (!authorized && !SMMAuthorized) {
             res.status(401).json({
                 message: "you must be logged in to react to a squeal"
             });
