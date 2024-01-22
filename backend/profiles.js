@@ -516,7 +516,7 @@ app.delete("/profiles/:name", async (req, res) => {
 });
 
 async function deleteSquealById(squealId) {
-    fetch("/squeals/" + squealId, {
+    fetch("https://site222326.tw.cs.unibo.it/squeals/" + squealId, {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json"
@@ -1653,7 +1653,7 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
             charToBuy = 0;
         } else { // if the user don't have enough credits, buy it
             charToBuy = - charToBuy;
-            let buyRes = await fetch(`/profiles/${profileName}/shop`, {
+            let buyRes = await fetch(`https://site222326.tw.cs.unibo.it/profiles/${profileName}/shop`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -1679,7 +1679,7 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
         formData.append("file", media);
 
         // publish squeal
-        let response = await fetch(`/squeals`, {
+        let response = await fetch(`https://site222326.tw.cs.unibo.it/squeals`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
