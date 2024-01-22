@@ -48,7 +48,7 @@ import NotLoggedIn from "@/components/NotLoggedIn.vue"
               Include Geolocation in your Squeal
             </button>
             <button v-if="location" @click.prevent="
-                                                {
+                                                            {
               location = null;
               if (map != null) {
                 destroyMap();
@@ -318,30 +318,14 @@ export default {
       for (let i = 0; i < times; i++) {
         try {
 
-          // send notification to user with browser
-          if (Notification.permission === "granted") {
-            navigator.serviceWorker.getRegistration().then(function (reg) {
-              var options = {
-                body: "Automatic post " + (i + 1) + " sent!",
-                icon: "https://site222326.tw.cs.unibo.it/icons/squealer_icon.png",
-                vibrate: [100, 50, 100],
-                data: {
-                  dateOfArrival: Date.now(),
-                  primaryKey: 1,
-                },
-                actions: [
-                  {
-                    action: "close",
-                    title: "Close the notification",
-                  },
-                ],
-              };
-              reg.showNotification("Squealer", options);
-            });
-          }
+          // send an alert with sound to the user
+          alert("automatic post " + (i + 1) + " sent!");
+          // play sound
+          let audio = new Audio("https://site222326.tw.cs.unibo.it/sounds/notification-sound.mp3");
+          audio.play();
 
           // update location
-          if (jsonBody.location && navigator.geolocation) {
+          if (jsonBody.location != "" && navigator.geolocation) {
             navigator.geolocation.getCurrentPosition((position) => {
               jsonBody.location = {
                 latitude: position.coords.latitude,
