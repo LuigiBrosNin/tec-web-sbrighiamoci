@@ -1118,6 +1118,7 @@ app.post("/squeals/:id", async (req, res) => {
                 "media",
                 "impressions",
                 "keywords",
+                "location",
                 "mentions",
             ];
 
