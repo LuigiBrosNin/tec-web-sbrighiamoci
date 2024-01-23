@@ -215,13 +215,13 @@ app.use('/bootstrap/js', express.static(path.join(global.rootDir, 'node_modules/
 // Publish source code:
 const serveIndex = require('serve-index');
 app.use('/source', serveIndex(global.rootDir, { 'icons': true, 'view': 'details' }));
-app.use('/source', express.static(global.rootDir), /*{
+app.use('/source', express.static(global.rootDir, {
   setHeaders: function (res, path) {
     if (path.endsWith(".html")) {
       res.set("Content-type", "text/plain; charset=UTF-8");
     }
   }
-}*/);
+}));
 
 // ci serve per pubblicare i nostri sorgenti
 // potremmo fare anche a mano
