@@ -105,6 +105,7 @@ class Profile extends React.Component {
   fetchFollowers() {
     this.setState(prevState => ({
       loadMoreIndex: 0,
+      allFollowersLoaded: false,
       tmpFollowersList: prevState.followersList.slice(0, prevState.pageDim)
     }));
   }
@@ -123,6 +124,7 @@ class Profile extends React.Component {
   fetchFollowing() {
     this.setState(prevState => ({
       loadMoreIndex: 0,
+      allFollowingLoaded:false,
       tmpFollowingList: prevState.followingList.slice(0, prevState.pageDim)
     }));
   }
