@@ -1615,8 +1615,6 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
         const profileName = req.params.name;
         const reqBody = JSON.parse(req.body.json);
 
-        const media = req.file;
-
         console.log("media: " + media)
 
         const authorized = await isAuthorized(req.session.user, typeOfProfile.user) && req.session.user === profileName; // only a user can access this page, premium and smm can use /profiles/:name/shop
@@ -1631,7 +1629,7 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
         }
 
         let charCost = reqBody.text.length;
-        if (media != null) {
+        if (req.file != null) {
             charCost += 125;
         }
         if (reqBody.location != null && reqBody.location != {}) {
@@ -1683,13 +1681,7 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
         console.log("charToBuy: " + charToBuy)
         let formData = new FormData();
         formData.append("json", JSON.stringify(reqBody));
-        if (media) {
-            console.log("adding media")
-            formData.append("file", media.buffer, {
-                filename: media.originalname,
-                contentType: media.mimetype,
-            });
-        }
+        formData.append("file", req.file);
 
         // publish squeal
         let response = await axios.put(`https://site222326.tw.cs.unibo.it/squeals`,formData);
