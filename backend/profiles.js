@@ -1611,7 +1611,6 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
     try {
 
         console.log("json: " + req.body.json)
-        console.log("file: " + req.file.buffer)
 
         const profileName = req.params.name;
         const reqBody = JSON.parse(req.body.json);
@@ -1678,12 +1677,16 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
 
         // define formData
         console.log("charToBuy: " + charToBuy)
-        let formData = new FormData();
+        const formData = new FormData();
         formData.append("json", JSON.stringify(reqBody));
-        formData.append("file", req.file.buffer);
+        formData.append("file", req.file);
+
+        console.log("formData: " + JSON.stringify(formData))
 
         // publish squeal
-        let response = await axios.put(`https://site222326.tw.cs.unibo.it/squeals`,formData);
+        let response = await axios.put(`https://site222326.tw.cs.unibo.it/squeals`, formData, {
+            headers: formData.getHeaders(),
+        });
         if (response.status == 200) {
             console.log("squeal added successfully, sending back info")
             const resBody = await response.data;

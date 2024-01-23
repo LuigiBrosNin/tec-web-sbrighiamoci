@@ -2,7 +2,8 @@
 /* SEZIONE MONGODB ALEX */
 const {
     MongoClient,
-    GridFSBucket
+    GridFSBucket,
+    ObjectId
 } = require("mongodb");
 const mongouri = `mongodb://site222326:ui9aeG5f@mongo_site222326?writeConcern=majority`;
 const mongoClient = new MongoClient(mongouri);
