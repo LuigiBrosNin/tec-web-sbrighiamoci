@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<head lang="en">
+<head>
     <meta charset="utf-8">
     <title>Admin Channel Creation Page</title>
     <link rel="icon" href="https://site222326.tw.cs.unibo.it/images/logoSquealer.svg" type="image/x-icon">
@@ -20,7 +20,7 @@
 
         <div id="channel_type_radio">
             <p class="form-label">Channel type:</p>
-            <input type="radio" id="channel_private" name="channel_type" value="private" class="form-check-input" role="radiogroup" aria-labelledby="channel_type_label">
+            <input type="radio" id="channel_private" name="channel_type" value="private" class="form-check-input" role="radiogroup" aria-labelledby="channel-type-label">
             <label for="channel_private" class="form-label">normal</label>
             <input type="radio" id="channel_privileged" name="channel_type" value="privileged" class="form-check-input">
             <label for="channel_privileged" class="form-label">privileged</label>
@@ -31,7 +31,7 @@
         <label for="bio" class="form-label">Bio:</label>
         <textarea id="bio" name="bio" class="form-control"></textarea>
 
-        <input type="submit">
+        <input type="submit" aria-label="Send-button">
     </form>
 
     

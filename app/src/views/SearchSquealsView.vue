@@ -24,13 +24,13 @@ import Squeal from "@/components/Squeal.vue";
       src="https://site222326.tw.cs.unibo.it/icons/search-alt-1-svgrepo-com.svg" />
     Toggle Search Options
   </button>
-  <div id="formSection" class="collapse show" aria-labelledby="formToggle">
+  <div id="formSection" class="collapse show" aria-labelledby="form-toggle">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <div class="container-fluid">
         <form @submit.prevent="submitForm" class="row g-3">
           <div class="col-md-3">
             <label for="author" class="form-label fw-bold mb-2">Author</label>
-            <input type="text" class="form-control" v-model="query.author" placeholder="Author" />
+            <input type="text" class="form-control" v-model="query.author" placeholder="Author" aria-labelledby="formSection" />
           </div>
           <div class="col-md-3">
             <label for="popularity" class="form-label fw-bold mb-2">Popularity</label>
