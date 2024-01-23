@@ -1681,11 +1681,14 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
         formData.append("json", JSON.stringify(reqBody));
         formData.append("file", req.file);
 
-        console.log("formData: " + JSON.stringify(formData))
+        console.log("formData: " + formData)
 
         // publish squeal
         let response = await axios.put(`https://site222326.tw.cs.unibo.it/squeals`, formData, {
-            headers: formData.getHeaders(),
+            headers: {
+                "Content-Type": `multipart/form-data`,
+                "Cookie": req.headers.cookie
+            }
         });
         if (response.status == 200) {
             console.log("squeal added successfully, sending back info")
