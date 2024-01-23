@@ -223,18 +223,6 @@ app.use('/source', express.static(global.rootDir, {
   }
 }));
 
-// ci serve per pubblicare i nostri sorgenti
-// potremmo fare anche a mano
-/*
-app.use('/source', express.static('/webapp/tec-web-sbrighiamoci/source', {
-    index: false,
-    setHeaders: function (res, path) {
-        if (path.endsWith(".html") || path.endsWith(".js") || path.endsWith(".ts") || path.endsWith(".vue") || path.endsWith(".css") || path.endsWith(".txt")) {
-            res.set("Content-type", "text/plain; charset=UTF-8");
-        }
-    },
-}), serveIndex('/webapp/tec-web-sbrighiamoci/source', { 'icons': true }));
- */
 
 module.exports = { app };
 
