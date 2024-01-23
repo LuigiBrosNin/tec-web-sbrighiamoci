@@ -217,9 +217,7 @@ const serveIndex = require('serve-index');
 app.use('/source', serveIndex(global.rootDir, { 'icons': true, 'view': 'details' }));
 app.use('/source', express.static(global.rootDir, {
   setHeaders: function (res, path) {
-    if (path.endsWith(".html")) {
-      res.set("Content-type", "text/plain; charset=UTF-8");
-    }
+    res.setHeader("Content-type", "text/plain");
   }
 }));
 
