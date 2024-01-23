@@ -235,7 +235,7 @@ export class Squeal extends Component {
           </div>
 
           <div className="profile_data">
-            <img className="profile_img" src={(this.props.selectedAccount.propic == null || this.props.selectedAccount.propic == "https://site222326.tw.cs.unibo.it/images/user-default.svg") ? "https://site222326.tw.cs.unibo.it/images/user-default.svg" : 'https://' + this.props.selectedAccount.propic} />
+            <img className="profile_img" alt="profile-image" src={(this.props.selectedAccount.propic == null || this.props.selectedAccount.propic == "https://site222326.tw.cs.unibo.it/images/user-default.svg") ? "https://site222326.tw.cs.unibo.it/images/user-default.svg" : 'https://' + this.props.selectedAccount.propic} />
             <RouterLink to={"/smm/profile/"} className="profile_name"> @{this.props.squeal.author}</RouterLink>
           </div>
 
@@ -258,18 +258,18 @@ export class Squeal extends Component {
               className={`interaction_button ${(this.props.user && this.state.squeal.positive_reactions_list.includes(this.state.user)) ? 'active_button' : ''}`}
               onClick={this.addOrRemovePositiveReaction}
             >
-              <img className="interaction_img" src="https://site222326.tw.cs.unibo.it/icons/face-smile-svgrepo-com.svg" />
+              <img className="interaction_img" src="https://site222326.tw.cs.unibo.it/icons/face-smile-svgrepo-com.svg" alt="positive-reaction-icon" />
               <p className="interaction_counter">{this.state.squeal.positive_reactions}</p>
             </button>
             <button
               className={`interaction_button ${(this.props.user && this.state.squeal.negative_reactions_list.includes(this.state.user)) ? 'active_button' : ''}`}
               onClick={this.addOrRemoveNegativeReaction}
             >
-              <img className="interaction_img" src="https://site222326.tw.cs.unibo.it/icons/face-frown-svgrepo-com.svg" />
+              <img className="interaction_img" src="https://site222326.tw.cs.unibo.it/icons/face-frown-svgrepo-com.svg" alt="negative-reaction-icon" />
               <p className="interaction_counter">{this.state.squeal.negative_reactions}</p>
             </button>
             <RouterLink className="interaction_button" to={`/smm/squealPut?replyto=${this.props.squeal.id}&receiver=${this.props.squeal.receiver}`}>
-              <img className="interaction_img" src="https://site222326.tw.cs.unibo.it/icons/message-circle-dots-svgrepo-com.svg" />
+              <img className="interaction_img" src="https://site222326.tw.cs.unibo.it/icons/message-circle-dots-svgrepo-com.svg" alt="replies-icon" />
               <p className="interaction_counter">{this.state.squeal.replies}</p>
             </RouterLink>
           </div>
@@ -281,7 +281,7 @@ export class Squeal extends Component {
           {this.state.canBeDeleted ?
 
             <button className="delete_btn" onClick={this.askToDelete}>
-              <img className="delete_img" src="https://site222326.tw.cs.unibo.it/icons/trash-svgrepo-com.svg" />
+              <img className="delete_img" src="https://site222326.tw.cs.unibo.it/icons/trash-svgrepo-com.svg" alt="delete-icon" />
             </button>
 
             : null}
