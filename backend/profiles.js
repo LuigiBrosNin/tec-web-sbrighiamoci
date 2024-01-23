@@ -1686,13 +1686,7 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
         formData.append("file", media);
 
         // publish squeal
-        let response = await fetch(`https://site222326.tw.cs.unibo.it/squeals`, {
-            method: "PUT",
-            headers: {
-                "Cookie": req.headers.cookie
-            },
-            body: formData
-        });
+        let response = await axios(`https://site222326.tw.cs.unibo.it/squeals`,formData);
         if (response.status == 200) {
             console.log("squeal added successfully, sending back info")
             const resBody = await response.json();
