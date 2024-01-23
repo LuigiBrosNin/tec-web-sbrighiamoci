@@ -1693,7 +1693,7 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
             console.log("resBody: " + JSON.stringify(resBody))
             res.status(200).json({
                 message: "squeal added successfully with db id:" + resBody.id + ", character purchased: " + charToBuy,
-                id: resBody.id,
+                squeal_id: resBody.id,
             });
         }
         else {
