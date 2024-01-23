@@ -25,7 +25,7 @@ const props = defineProps(['id']);
 
     <!-- send message area -->
     <div class="messageInput d-flex justify-content-center">
-      <input v-model="new_msg_text" type="text" placeholder="Write your message..." class="form-control"
+      <input v-model="new_msg_text" type="text" placeholder="Write your message..." class="form-control" aria-label="Type your message"
         @keypress.enter="sendMessage" />
       <button @click="sendMessage" class="btn btn-primary" aria-label="Send message"> Send </button>
     </div>
