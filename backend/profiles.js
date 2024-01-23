@@ -5,7 +5,6 @@ const axios = require('axios');
 const upload = multer({
     storage: multer.memoryStorage()
 });
-const { Readable } = require('stream');
 const {
     app
 } = require("../index.js");
@@ -1672,40 +1671,287 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
             }
         }
 
+        // here's the entirety of squeal put again, because
+        // of an issue with the media, i am forced to copy-paste the entire process here
+        // i've been trying to fix this issue for hours to no avail, i am done
 
-        // define formData
-        const formData = new FormData();
-        formData.append("json", JSON.stringify(reqBody));
+        const media = req.file;
 
-        if (req.file) {
-            // Append the file buffer to formData
-            formData.append("file", req.file.buffer, req.file.originalname);
+        console.log("media: " + media)
+
+        const location = reqBody.location;
+
+        if (reqBody.author == null) {
+            reqBody.author = req.session.user;
         }
 
-        // publish squeal
-        let response = await fetch('https://site222326.tw.cs.unibo.it/squeals/', {
-            method: 'PUT',
-            headers: {
-                "Content-Type": "multipart/form-data",
-                "Cookie": req.headers.cookie
-            },
-            body: formData,
-        })
-        if (response.status == 200) {
-            console.log("squeal added successfully, sending back info")
-            const resBody = await response.data;
-            console.log("resBody: " + JSON.stringify(resBody))
-            res.status(200).json({
-                message: "squeal added successfully with db id:" + resBody.squeal_id + ", character purchased: " + charToBuy,
-                squeal_id: resBody.squeal_id,
+        const requiredFields = [
+            "author",
+            "text",
+            "receiver"
+        ];
+
+        // Check if all required fields are present in the request body
+        for (const field of requiredFields) {
+            if (reqBody[field] == null || reqBody[field] === "" || (typeof reqBody[field] != "string")) {
+                res.status(400).json({
+                    message: `${field} is required and has to be valid`
+                });
+                return;
+            }
+        }
+        // If all required fields are present, continue with the insertion
+
+        if (!authorized && !SMMAuthorized && !adminAuthorized) {
+            res.status(401).json({
+                message: "you must be logged in to add a squeal"
             });
-        }
-        else {
-            res.status(500).send(JSON.stringify({
-                message: "error during squeal upload"
-            }));
             return;
         }
+
+        // defining the required fields as well as initializing the standard fields
+        let newSqueal = {
+            id: "",
+            author: reqBody.author,
+            text: reqBody.text,
+            receiver: reqBody.receiver,
+            date: Date.now(),
+            positive_reactions: 0,
+            positive_reactions_list: [],
+            negative_reactions: 0,
+            negative_reactions_list: [],
+            replies_num: 0,
+            replies: [],
+            impressions: 0,
+            is_private: false,
+            mentions: [],
+            channel_mentions: [],
+            keywords: [],
+            reply_to: "",
+            media: "",
+            location: {}
+        }
+
+        // checking boolean separately because in optionalFields it would be seen as string
+        if (reqBody.is_private === "true" || reqBody.is_private === true) {
+            newSqueal.is_private = true;
+        }
+
+        const optionalFields = [
+            "reply_to",
+            "location"
+        ];
+
+        // Check if the optional fields are present in the request body
+        // If they are, add them to the newSqueal object
+        for (const field of optionalFields) {
+            console.log("field: " + field + " body: " + reqBody[field]);
+            if (reqBody[field] != null && reqBody[field] != "") {
+                newSqueal[field] = reqBody[field];
+            }
+        }
+
+        const parsed_text = newSqueal.text.split(/(\ |\,|\.|\;|\:|\?|\!|\n)/g);
+
+        for (const word of parsed_text) {
+            if (word[0] === "#") {
+                newSqueal.keywords.push(word);
+            } else if (word[0] === "@") {
+                newSqueal.mentions.push(word);
+            } else if (word[0] === "§") {
+                newSqueal.channel_mentions.push(word);
+            }
+        }
+
+        let char_cost = newSqueal.text.length;
+
+        // if the media field is present, calculate the cost of the media
+        if (media != null) {
+            char_cost += 125;
+        }
+
+        if (location != null && location != {}) {
+            char_cost += 125;
+        }
+
+        await mongoClient.connect();
+
+        const profile_author = await collection_profiles.findOne({
+            name: newSqueal.author
+        });
+
+        if (newSqueal.is_private == true || newSqueal.is_private == "true") {
+            const profile_receiver = await collection_profiles.findOne({
+                name: newSqueal.receiver
+            });
+
+            if (profile_receiver == null) {
+                res.status(400).json({
+                    message: "profile receiver does not exist"
+                });
+                return;
+            }
+        } else {
+            const channel_receiver = await collection_channels.findOne({
+                name: newSqueal.receiver
+            });
+
+            if (channel_receiver == null) {
+                res.status(400).json({
+                    message: "channel receiver does not exist"
+                });
+                return;
+            }
+
+            if (channel_receiver.type != "private" && !adminAuthorized) {
+                res.status(401).json({
+                    message: "you are not authorized to post on this channel"
+                });
+                return;
+            }
+            
+        }
+
+        console.log("author credit\navailable: g: " + profile_author.credit[0] + " s: " + profile_author.credit[1] + " m: " + profile_author.credit[2] + ")\nrequired: " + char_cost);
+
+        // CREDITS
+        // 0 = giorno, 1 = settimana, 2 = mese
+        // if the author does not exist, invalid request
+        if (profile_author === null) {
+            res.status(400).json({
+                message: "author does not exist"
+            });
+            return;
+        } // check if the authos has enough credit 
+        else if (newSqueal.is_private == false && (profile_author.credit[0] < char_cost || profile_author.credit[1] < char_cost || profile_author.credit[2] < char_cost) && !(await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin))) {
+            res.status(400).json({
+                message: "author does not have enough credit. available (g: " + profile_author.credit[0] + " s: " + profile_author.credit[1] + " m: " + profile_author.credit[2] + ") required: " + char_cost
+            });
+            return;
+        }
+        // if the author exists, update the number of squeals, the list of squeals and it's credit
+        const squeals_num = parseInt(profile_author.squeals_num) + 1;
+        const squeals_list = profile_author.squeals_list;
+
+        let g, s, m;
+
+        // if the author is an admin, don't subtract the credit
+        if (adminAuthorized || newSqueal.is_private == true) {
+            console.log("admin");
+            g = profile_author.credit[0];
+            s = profile_author.credit[1];
+            m = profile_author.credit[2];
+        } else if (newSqueal.is_private == false) {
+            console.log("not admin");
+            g = profile_author.credit[0] - char_cost;
+            s = profile_author.credit[1] - char_cost;
+            m = profile_author.credit[2] - char_cost;
+        }
+
+
+        console.log("g: " + g + " s: " + s + " m: " + m);
+
+        // update the author's squeals_num and squeals_list
+        newSqueal.id = `${squeals_num}-${profile_author.name}`;
+
+        // adds the new squeal to the list of squeals
+        squeals_list.push(newSqueal.id);
+
+
+        await mongoClient.connect();
+
+        if (newSqueal.reply_to != null && newSqueal.reply_to != "") {
+            // retrieve the squeal that is being replied to
+            const squeal_replied_to = await collection_squeals.findOne({
+                id: newSqueal.reply_to
+            });
+
+            // if the squeal is not found, return 404
+            if (squeal_replied_to === null) {
+                res.status(400).json({
+                    message: "the squeal you are replying to does not exist"
+                });
+                return;
+            }
+
+            // if the squeal is found, update the replies_num
+            const replies_num = squeal_replied_to.replies_num + 1;
+
+            // update the list of replies
+            const replies_list = squeal_replied_to.replies;
+            replies_list.push(newSqueal.id);
+
+            // update the squeal_replied_to's replies_num
+            await collection_squeals.updateOne({
+                id: squeal_replied_to.id
+            }, {
+                $set: {
+                    replies_num: replies_num,
+                    replies: replies_list
+                }
+            });
+        }
+
+        // update the author's squeals_num and squeals_list
+        await collection_profiles.updateOne({
+            name: profile_author.name
+        }, {
+            $set: {
+                squeals_num: squeals_num,
+                squeals_list: squeals_list,
+                credit: [
+                    g,
+                    s,
+                    m
+                ]
+            }
+        })
+
+        // Insert the new squeal in the database without converting it to a JSON string
+        const result = await collection_squeals.insertOne(newSqueal);
+
+        // Upload media if present
+        if (media != null) {
+
+            console.log("media: " + media.originalname);
+            const imported = await importPic(media, collection_squeals, newSqueal.id);
+
+            console.log("imported media: " + imported);
+        }
+
+        const channel_receiver = await collection_channels.findOne({
+            name: newSqueal.receiver
+        });
+
+        if (channel_receiver != null && channel_receiver != "") {
+            await axios.post('https://site222326.tw.cs.unibo.it/login', authData);
+
+            // add the squeal to the channel's squeals_list
+            axios.put("https://site222326.tw.cs.unibo.it/channels/" + channel_receiver.name + "/squeals_list", {
+                squeal_id: newSqueal.id
+            }).then(response => {
+                if (response.status == 200) {
+                    console.log("squeal added to channel");
+                } else {
+                    console.log("response status: " + response.status);
+
+                    axios.delete("https://site222326.tw.cs.unibo.it/squeals/" + newSqueal.id);
+
+                    res.status(500).json({
+                        message: "Error adding squeal to channel: " + response.status
+                    });
+                    return;
+                }
+            });
+
+        }
+
+        console.log('Squeal successfully uploaded: ', result.insertedId + '\n' + JSON.stringify(newSqueal));
+        res.status(200).send(JSON.stringify({
+            message: "squeal added successfully with db id:" + result.insertedId,
+            squeal_id: newSqueal.id,
+        }));
+
     }
     catch (error) {
         console.error('Error during character purchase or squeal upload: ', error);
