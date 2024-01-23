@@ -219,12 +219,12 @@ export default {
             let id = response.data.squeal_id;
             router.push({ path: `/squeal/${id}` });
           } else {
-            alert("an error has occurred: " + response.data.message);
+            alert("an error has occurred, please try again later");
           }
         })
         .catch((error) => {
           console.log(error);
-          alert("an error has occurred, please try again later");
+          alert("an error has occurred: " + error.response.data);
         });
     },
     updateCreditsOnScreen(newText) {
