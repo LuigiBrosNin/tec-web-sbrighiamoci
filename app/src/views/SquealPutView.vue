@@ -8,8 +8,8 @@ import NotLoggedIn from "@/components/NotLoggedIn.vue"
     <form @submit.prevent="submitForm" class="mt-5">
       <div class="input-group mb-3">
         <span class="input-group-text" id="basic-addon1">§</span>
-        <input type="text" id="receiver" aria-label="select-channel-to-squeal-to" placeholder="Select a channel to squeal to" v-model="receiver" required
-          class="form-control" />
+        <input type="text" id="receiver" aria-label="select-channel-to-squeal-to"
+          placeholder="Select a channel to squeal to" v-model="receiver" required class="form-control" />
       </div>
       <div class="profile_data">
         <img class="profile_img" :src="propic" />
@@ -25,18 +25,6 @@ import NotLoggedIn from "@/components/NotLoggedIn.vue"
               :class="{ positive: credit > 0, negative: credit <= 0 }">
               {{ creditLabels[index] }}: {{ credit }}&nbsp;&nbsp;
             </span>
-            <span v-if="Math.min(...Object.values(temp_credits)) < 0">
-              <button class="btn btn-primary">
-                Buy
-                {{ Math.abs(Math.min(...Object.values(temp_credits))) }} credits
-                for
-                {{
-                  (
-                    Math.abs(Math.min(...Object.values(temp_credits))) * 0.01
-                  ).toFixed(2)
-                }}€
-              </button>
-            </span>
           </div>
         </div>
       </div>
@@ -48,7 +36,7 @@ import NotLoggedIn from "@/components/NotLoggedIn.vue"
               Include Geolocation in your Squeal
             </button>
             <button v-if="location" @click.prevent="
-                                                                                    {
+            {
               location = null;
               if (map != null) {
                 destroyMap();
@@ -105,7 +93,15 @@ import NotLoggedIn from "@/components/NotLoggedIn.vue"
           <input type="number" name="delay" id="delay" v-model="delay" class="form-control" />
         </div>
       </div>
-      <button type="submit" class="btn btn-primary" style="background-color: #ff8900; color: white">
+      <button v-if="Math.min(...Object.values(temp_credits)) < 0" type="submit" class="btn btn-primary" style="background-color: #ff8900; color: white">
+        Buy
+        {{ Math.abs(Math.min(...Object.values(temp_credits))) }} credits
+        for
+        {{
+          (Math.abs(Math.min(...Object.values(temp_credits))) * 0.01).toFixed(2)
+        }}€
+      </button>
+      <button v-else type="submit" class="btn btn-primary" style="background-color: #ff8900; color: white">
         Submit
       </button>
     </form>
@@ -201,21 +197,29 @@ export default {
 
       console.log("sending body: ", formData);
 
+      let squealUrl;
+      if(Math.min(...Object.values(this.temp_credits)) < 0){
+        this.send_for_loop = false;
+        squealUrl = `https://site222326.tw.cs.unibo.it/profiles/${this.$user}/shopandpost`;
+      }
+      else {
+        squealUrl = "https://site222326.tw.cs.unibo.it/squeals/";
+      }
+
       if (this.send_for_loop) {
         this.loopPost(formData, this.delay, this.times);
         return;
       }
 
       // Send formData to server using axios or fetch
-      axios
-        .put("https://site222326.tw.cs.unibo.it/squeals/", formData)
+      axios.put(squealUrl, formData)
         .then((response) => {
           console.log(response.data);
           if (response.status == 200) {
             let id = response.data.squeal_id;
             router.push({ path: `/squeal/${id}` });
           } else {
-            alert("an error has occurred, please try again later");
+            alert("an error has occurred: " + response.data.message);
           }
         })
         .catch((error) => {
