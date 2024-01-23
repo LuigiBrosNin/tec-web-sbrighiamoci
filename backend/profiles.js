@@ -1615,8 +1615,6 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
         const profileName = req.params.name;
         const reqBody = JSON.parse(req.body.json);
 
-        console.log("media: " + media)
-
         const authorized = await isAuthorized(req.session.user, typeOfProfile.user) && req.session.user === profileName; // only a user can access this page, premium and smm can use /profiles/:name/shop
         const SMMauthorized = await isSMMAuthorized(req.session.user, profileName) && await isAuthorizedOrHigher(req.session.user, typeOfProfile.user);
         const adminAuthorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.admin);
