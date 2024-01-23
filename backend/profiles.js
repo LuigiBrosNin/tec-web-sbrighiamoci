@@ -1676,15 +1676,22 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
         const formData = new FormData();
         formData.append("json", JSON.stringify(reqBody));
         if (req.file) {
-            formData.append("file", req.file.buffer, {
-                filename: req.file.originalname,
-                contentType: req.file.mimetype,
-            });
+            // Convert the file's buffer to a stream
+            const fileStream = new Readable();
+            fileStream.push(req.file.buffer);
+            fileStream.push(null);
+        
+            // Append the file stream to formData
+            formData.append("file", fileStream, req.file.originalname);
         }
 
         // publish squeal
         let response = await fetch('https://site222326.tw.cs.unibo.it/squeals/', {
             method: 'PUT',
+            headers: {
+                "Content-Type": "multipart/form-data",
+                "Cookie": req.headers.cookie
+            },
             body: formData,
         })
         if (response.status == 200) {
