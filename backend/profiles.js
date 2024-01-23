@@ -1676,14 +1676,10 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
         // define formData
         const formData = new FormData();
         formData.append("json", JSON.stringify(reqBody));
+
         if (req.file) {
-            // Convert the file's buffer to a stream
-            const fileStream = new Readable();
-            fileStream.push(req.file.buffer);
-            fileStream.push(null);
-        
-            // Append the file stream to formData
-            formData.append("file", fileStream, req.file.originalname);
+            // Append the file buffer to formData
+            formData.append("file", req.file.buffer, req.file.originalname);
         }
 
         // publish squeal
