@@ -1692,8 +1692,8 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
             const resBody = await response.data;
             console.log("resBody: " + JSON.stringify(resBody))
             res.status(200).json({
-                message: "squeal added successfully with db id:" + resBody.squeal_id + ", character purchased: " + charToBuy,
-                squeal_id: resBody.squeal_id,
+                message: "squeal added successfully with db id:" + resBody.id + ", character purchased: " + charToBuy,
+                id: resBody.id,
             });
         }
         else {
