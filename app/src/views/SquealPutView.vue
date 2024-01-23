@@ -8,7 +8,7 @@ import NotLoggedIn from "@/components/NotLoggedIn.vue"
     <form @submit.prevent="submitForm" class="mt-5">
       <div class="input-group mb-3">
         <span class="input-group-text" id="basic-addon1">§</span>
-        <input type="text" id="receiver" placeholder="Select a channel to squeal to" v-model="receiver" required
+        <input type="text" id="receiver" aria-label="select-channel-to-squeal-to" placeholder="Select a channel to squeal to" v-model="receiver" required
           class="form-control" />
       </div>
       <div class="profile_data">

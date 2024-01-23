@@ -289,7 +289,7 @@ export class SquealPut extends Component {
           <form onSubmit={(e) => { e.preventDefault(); this.submitForm(); }} className="mt-5">
             <div className="input-group mb-3">
               <span className="input-group-text" id="basic-addon1">§</span>
-              <input type="text" name="receiver" id="receiver" placeholder="Select a channel to squeal to" value={this.state.receiver} required
+              <input type="text" name="receiver" id="receiver" aria-label="select-channel-to-squeal-to" placeholder="Select a channel to squeal to" value={this.state.receiver} required
                 className="form-control" onChange={e => this.setState({ receiver: e.target.value })} />
             </div>
             <div className="profile_data">
