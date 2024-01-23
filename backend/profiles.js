@@ -1675,7 +1675,12 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
         // define formData
         const formData = new FormData();
         formData.append("json", JSON.stringify(reqBody));
-        formData.append("file", req.file);
+        if (req.file) {
+            formData.append("file", req.file.buffer, {
+                filename: req.file.originalname,
+                contentType: req.file.mimetype,
+            });
+        }
 
         // publish squeal
         let response = await fetch('https://site222326.tw.cs.unibo.it/squeals/', {
