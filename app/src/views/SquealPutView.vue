@@ -224,7 +224,7 @@ export default {
         })
         .catch((error) => {
           console.log(error);
-          alert("an error has occurred: " + error.response.data);
+          alert("an error has occurred: " + error.response.data.message);
         });
     },
     updateCreditsOnScreen(newText) {
