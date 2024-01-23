@@ -1678,7 +1678,7 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
         formData.append("file", req.file);
 
         // publish squeal
-        let response = await axios.put(`https://site222326.tw.cs.unibo.it/squeals`, formData, {
+        let response = await axios.put(`https://site222326.tw.cs.unibo.it/squeals/`, formData, {
             headers: {
                 "Content-Type": `multipart/form-data`,
                 "Cookie": req.headers.cookie
