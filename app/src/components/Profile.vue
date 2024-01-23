@@ -235,6 +235,7 @@ export default {
     },
     fetchFollowers() {
       this.loadMoreIndex = 0;
+      this.allFollowersLoaded = false;
       this.tmpFollowersList = this.followersList.slice(this.loadMoreIndex, this.loadMoreIndex + this.pageDim);
     },
     loadMoreFollowers() {
@@ -248,6 +249,7 @@ export default {
 
     fetchFollowing() {
       this.loadMoreIndex = 0;
+      this.allFollowingLoaded = false;
       this.tmpFollowingList = this.followingList.slice(this.loadMoreIndex, this.loadMoreIndex + this.pageDim);
     },
     loadMoreFollowing() {
@@ -261,6 +263,7 @@ export default {
 
     fetchChannels() {
       this.loadMoreIndex = 0;
+      this.allChannelsLoaded = false;
       this.tmpChannelsList = this.channelFollowingList.slice(this.loadMoreIndex, this.loadMoreIndex + this.pageDim);
     },
     loadMoreChannels() {
