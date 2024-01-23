@@ -1702,7 +1702,7 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
         }
         // If all required fields are present, continue with the insertion
 
-        if (!authorized && !SMMAuthorized && !adminAuthorized) {
+        if (!authorized && !SMMauthorized && !adminAuthorized) {
             res.status(401).json({
                 message: "you must be logged in to add a squeal"
             });
