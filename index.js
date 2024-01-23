@@ -178,10 +178,10 @@ app.get(["/admin/:paths(*)", "/admin"], async (req, res) => {
       }
       console.log(url);
       const response = await axios.get(url); // Fetch the HTML content
-  
+
       // Load the HTML content into cheerio for easy manipulation
       const $ = cheerio.load(response.data); // naming it $ is a good practice
-  
+
       $('title').text('Squealer Admin');
       const scriptHead = '<script src="https://site222326.tw.cs.unibo.it/adminsrc/adminHead.js"></script>'
       $('head').prepend(scriptHead);
@@ -189,10 +189,10 @@ app.get(["/admin/:paths(*)", "/admin"], async (req, res) => {
       $('body').append(restoreCSS);
       const adminCSS = '<link rel="stylesheet" href="https://site222326.tw.cs.unibo.it/adminsrc/adminCss.css">'
       $('body').append(adminCSS);
-  
+
       // Get the modified HTML
       const modifiedHTML = $.html();
-  
+
       res.status(200).send(modifiedHTML);
     } catch (error) {
       res.status(500).send(error);
@@ -214,8 +214,14 @@ app.use('/bootstrap/js', express.static(path.join(global.rootDir, 'node_modules/
 
 // Publish source code:
 const serveIndex = require('serve-index');
-app.use('/source', serveIndex(global.rootDir, {'icons': true, 'view': 'details'}));
-app.use('/source', express.static(global.rootDir));
+app.use('/source', serveIndex(global.rootDir, { 'icons': true, 'view': 'details' }));
+app.use('/source', express.static(global.rootDir), {
+  setHeaders: function (res, path) {
+    if (path.endsWith(".html")) {
+      res.set("Content-type", "text/plain; charset=UTF-8");
+    }
+  }
+});
 
 // ci serve per pubblicare i nostri sorgenti
 // potremmo fare anche a mano
