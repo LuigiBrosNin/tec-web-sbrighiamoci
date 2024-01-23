@@ -84,7 +84,7 @@ const props = defineProps(["id", "profile_json"]);
     <div class="tab-content" id="pills-tabContent">
 
       <!-- Squeals Cards -->
-      <div class="tab-pane fade show active" id="pills-squeals" role="tabpanel" aria-labelledby="pills-squeals-tab">
+      <div class="tab-pane fade show active" id="pills-squeals" role="tabpanel" aria-label="pills-squeals-tab">
         <div v-if="squealsList.length > 0">
           <Squeal v-for="sq in validSquealsList" :squeal_json="sq"></Squeal>
         </div>

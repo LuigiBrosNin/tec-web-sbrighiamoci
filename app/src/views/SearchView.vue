@@ -40,13 +40,13 @@ onMounted(() => {
     </ul>
 
     <div class="tab-content" id="pills-tabContent">
-        <div class="tab-pane fade" :class="{ 'show active': activeTab === 'channels' }" id="search-channels" role="tabpanel" aria-labelledby="pills-channels-tab">
+        <div class="tab-pane fade" :class="{ 'show active': activeTab === 'channels' }" id="search-channels" role="tabpanel" aria-label="pills-channels-tab">
             <SearchChannelsView></SearchChannelsView>
         </div>
-        <div class="tab-pane fade" :class="{ 'show active': activeTab === 'profiles' }" id="search-profiles" role="tabpanel" aria-labelledby="pills-profiles-tab">
+        <div class="tab-pane fade" :class="{ 'show active': activeTab === 'profiles' }" id="search-profiles" role="tabpanel" aria-label="pills-profiles-tab">
             <SearchProfilesView></SearchProfilesView>
         </div>
-        <div class="tab-pane fade" :class="{ 'show active': activeTab === 'squeals' }" id="search-squeals" role="tabpanel" aria-labelledby="pills-squeals-tab">
+        <div class="tab-pane fade" :class="{ 'show active': activeTab === 'squeals' }" id="search-squeals" role="tabpanel" aria-label="pills-squeals-tab">
             <SearchSquealsView></SearchSquealsView>
         </div>
     </div>
