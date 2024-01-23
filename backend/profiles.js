@@ -858,30 +858,6 @@ app.put("/profiles/:name/following_channels", async (req, res) => {
             return;
         }
 
-
-        if (profile.following_channels.includes(channelName)) {
-            //remove the channel from the list
-            profile.following_channels.splice(profile.following_channels.indexOf(channelName), 1);
-            await collection_profiles.updateOne({
-                name: profileName
-            }, {
-                $set: {
-                    following_channels: profile.following_channels
-                },
-            });
-            console.log("channel removed from the list")
-        } else { // add the channel to the list
-            await collection_profiles.updateOne({
-                name: profileName
-            }, {
-                $push: {
-                    following_channels: channelName
-                }
-            });
-            console.log("channel added to the list")
-        }
-
-
         // find out if the user is already subscribed
         const subscribersList = channel.subscribers_list;
         let subscribed = false;
@@ -911,7 +887,7 @@ app.put("/profiles/:name/following_channels", async (req, res) => {
                 name: profileName
             }, {
                 $pull: {
-                    following_list: channel.name
+                    following_channels: channel.name
                 }
             });
             res.status(200).json({
@@ -933,7 +909,7 @@ app.put("/profiles/:name/following_channels", async (req, res) => {
                 name: profileName
             }, {
                 $addToSet: {
-                    following_list: channel.name
+                    following_channels: channel.name
                 }
             });
             res.status(200).json({
