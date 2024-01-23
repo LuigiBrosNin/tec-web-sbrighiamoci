@@ -8,7 +8,11 @@ const {
 } = require("./loginUtils.js");
 const bodyParser = require('body-parser');
 const multer = require('multer');
-const upload = multer();
+const upload = multer(
+    {
+        storage: multer.memoryStorage(),
+    }
+);
 
 const axios = require('axios');
 const tough = require('tough-cookie');

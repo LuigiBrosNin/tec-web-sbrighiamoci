@@ -1678,7 +1678,7 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
         formData.append("file", req.file);
 
         // publish squeal
-        let response = await fetch('/squeals/', {
+        let response = await fetch('https://site222326.tw.cs.unibo.it/squeals/', {
             method: 'PUT',
             body: formData,
         })
