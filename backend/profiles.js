@@ -1683,7 +1683,13 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
         console.log("charToBuy: " + charToBuy)
         let formData = new FormData();
         formData.append("json", JSON.stringify(reqBody));
-        formData.append("file", media);
+        if (media) {
+            console.log("adding media")
+            formData.append("file", media.buffer, {
+                filename: media.originalname,
+                contentType: media.mimetype,
+            });
+        }
 
         // publish squeal
         let response = await axios.put(`https://site222326.tw.cs.unibo.it/squeals`,formData);
