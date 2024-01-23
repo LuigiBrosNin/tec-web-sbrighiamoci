@@ -90,7 +90,7 @@ app.get("/channels", async (req, res) => {
     await mongoClient.connect();
     const channels = await collection_channels.find(search)
       .sort({
-        timestamp: -1
+        name: 1
       }) // ordered inverse chronological order
       .skip(startIndex) // starting from startIndex
       .limit(endIndex - startIndex + 1) // returns endIndex squeals

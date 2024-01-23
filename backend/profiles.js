@@ -261,7 +261,7 @@ app.get("/profiles/", async (req, res) => {
         await mongoClient.connect();
         let profiles = await collection_profiles.find(search)
             .sort({
-                timestamp: -1
+                name: 1
             }) // ordered inverse chronological order
             .skip(startIndex) // starting from startIndex
             .limit(endIndex - startIndex + 1) // returns endIndex squeals
