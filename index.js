@@ -212,6 +212,9 @@ app.use('/sounds', express.static(path.join(global.rootDir, 'sounds/')));
 app.use('/bootstrap/css', express.static(path.join(global.rootDir, 'node_modules/bootstrap/dist/css/bootstrap.css')));
 app.use('/bootstrap/js', express.static(path.join(global.rootDir, 'node_modules/bootstrap/dist/js/bootstrap.bundle.js')));
 
+// Publish source code:
+const serveIndex = require('serve-index');
+app.use('/source', serveIndex(global.rootDir, {'icons': true, 'hidden': true, 'view': 'details'}));
 
 // ci serve per pubblicare i nostri sorgenti
 // potremmo fare anche a mano
