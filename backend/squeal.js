@@ -218,6 +218,9 @@ app.put("/squeals/", upload.single('file'), bodyParser.urlencoded({
         const reqBody = JSON.parse(req.body.json);
 
         const media = req.file;
+
+        console.log("media: " + media)
+
         const location = reqBody.location;
 
         if (reqBody.author == null) {
