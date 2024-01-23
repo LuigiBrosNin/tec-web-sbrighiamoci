@@ -236,7 +236,7 @@ class Profile extends React.Component {
             </ul>
             <div className="tab-content" id="pills-tabContent">
               {/* Squeals Cards */}
-              <div className="tab-pane fade show active" id="pills-squeals" role="tabpanel" aria-labelledby="pills-squeals-tab">
+              <div className="tab-pane fade show active" id="pills-squeals" role="tabpanel" aria-label="pills-squeals-tab">
                 {this.state.squealsList.length > 0 && this.state.validSquealsList.map(sq => <Squeal squeal={sq} selectedAccount={this.props.selectedAccount} />)}
                 <div className="loadMoreContainer">
                   {!this.state.allSquealsLoaded && <button onClick={this.fetchMoreSqueals} className="btn btn-primary loadMoreBtn"> Load more</button>}

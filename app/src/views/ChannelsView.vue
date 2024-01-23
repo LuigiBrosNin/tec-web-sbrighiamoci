@@ -38,7 +38,7 @@ const props = defineProps(['id']);
 
         <!-------------------- SEZIONE SQUEAL  --------------------->
         <div v-if="activeSection === 'squeal'">
-            <div class="tab-pane fade show active" id="pills-squeals" role="tabpanel" aria-labelledby="pills-squeals-tab">
+            <div class="tab-pane fade show active" id="pills-squeals" role="tabpanel" aria-label="pills-squeals-tab">
                 <div v-for="squeal in loadedSquealsList" :key="squeal">
                     <Squeal :id="squeal"> </Squeal>
                 </div>
