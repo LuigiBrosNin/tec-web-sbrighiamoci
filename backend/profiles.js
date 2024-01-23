@@ -1686,14 +1686,14 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
         formData.append("file", media);
 
         // publish squeal
-        let response = await axios(`https://site222326.tw.cs.unibo.it/squeals`,formData);
+        let response = await axios.put(`https://site222326.tw.cs.unibo.it/squeals`,formData);
         if (response.status == 200) {
             console.log("squeal added successfully, sending back info")
             const resBody = await response.data;
             console.log("resBody: " + JSON.stringify(resBody))
             res.status(200).json({
-                message: "squeal added successfully with db id:" + resBody.id + ", character purchased: " + charToBuy,
-                squeal_id: resBody.id,
+                message: "squeal added successfully with db id:" + resBody.squeal_id + ", character purchased: " + charToBuy,
+                squeal_id: resBody.squeal_id,
             });
         }
         else {
