@@ -31,6 +31,12 @@ const {
 // connecting to the database
 mongoClient.connect();
 
+const authData = {
+    // Provide authentication data
+    username: "SquealerTechnician",
+    password: "tecpw"
+};
+
 async function update_quota(profile) {
     try {
         await mongoClient.connect();
