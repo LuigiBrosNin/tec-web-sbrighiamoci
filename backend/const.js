@@ -25,7 +25,7 @@ const collection_channels = database.collection(channelCollection);
 const collection_automations = database.collection(automationsCollection);
 
 // interval for periodical posts
-const interval = 1000 * 60 * 60 * 2; // 2 hours
+const interval = 1000 * 60 * 60 * 8; // 8 hours, normally would be 1 hour, but for presentational purposes we set it to 8
 
 // interval for quota calcs
 const quota_interval =30*24*60*60*1000 // 30 days

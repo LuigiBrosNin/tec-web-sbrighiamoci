@@ -251,9 +251,9 @@ async function update_profiles() {
   }
 }
 
-//! periodic function, activate when ready
-//setInterval(putPeriodicalSqueals, interval);
-//setInterval(putControversialPeriodicalSqueals, interval);
+// periodic functions
+setInterval(putPeriodicalSqueals, interval);
+setInterval(putControversialPeriodicalSqueals, interval);
 
 
 const now = new Date();
