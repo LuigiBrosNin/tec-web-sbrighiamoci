@@ -15,7 +15,7 @@ const props = defineProps(['id']);
 
     <!-- chat area -->
     <div class="chatBox container mx-0 mx-auto">
-      <button v-if="chat.length > 0" @click="loadMore" class="loadMoreBtn" aria-label="Load more messages"> Load more </button>
+      <button v-if="!all_msgs_loaded" @click="loadMore" class="loadMoreBtn" aria-label="Load more messages"> Load more </button>
       <div class="chatInner">
         <div :class="getMessageClass(message.author)" v-for="(message, index) in chat" :key="index">
           {{ message.text }}
@@ -52,7 +52,8 @@ export default {
       propic: null,
 
       isValid: false,
-      updateInterval: undefined
+      updateInterval: undefined,
+      all_msgs_loaded: false
     };
   },
 
@@ -79,6 +80,7 @@ export default {
       // resetto indici
       this.start_index = 0;
       this.end_index = 9;
+      this.all_msgs_loaded = false;
 
       // fetch della chat tra utente e amico
       this.chat = await fetch(`https://site222326.tw.cs.unibo.it/chat/?user1=${usr}&user2=${friend}&startindex=${this.start_index}&endindex=${this.end_index}`);
@@ -100,6 +102,10 @@ export default {
       // fetch della chat tra utente e amico
       let new_msgs = await fetch(`https://site222326.tw.cs.unibo.it/chat/?user1=${usr}&user2=${friend}&startindex=${this.start_index}&endindex=${this.end_index}`);
       new_msgs = await new_msgs.json();
+
+      if (new_msgs.length === 0) {
+        this.all_msgs_loaded = true;
+      }
 
       // inverto messaggi fetchati
       new_msgs = new_msgs.reverse();
