@@ -60,7 +60,7 @@ export default {
     this.isValid = await this.checkForValidUsers();
     if(this.isValid){
       this.fetchChat();
-      //this.updateInterval = setInterval(this.newMsgAvailable, 1000);
+      this.updateInterval = setInterval(this.newMsgAvailable, 1000);
     }
   },
   unmounted() {
