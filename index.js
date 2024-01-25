@@ -261,5 +261,5 @@ const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 
 const timeUntilMidnight = midnight - now;
 
 setTimeout(() => {
-  setInterval(update_profiles, interval * 24);
+  setInterval(update_profiles, 1000*60*60 * 24); // reset every 24 hours
 }, timeUntilMidnight);
