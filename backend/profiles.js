@@ -1647,7 +1647,7 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
             });
             if (buyRes.status != 200) {
                 res.status(buyRes.status).json({
-                    message: buyRes.data.message
+                    message: buyRes.data
                 });
                 return;
             }
