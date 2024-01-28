@@ -255,8 +255,6 @@ async function update_profiles() {
 setInterval(putPeriodicalSqueals, interval);
 setInterval(putControversialPeriodicalSqueals, interval);
 
-reset_credits_all(0);
-
 const now = new Date();
 const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0);
 const timeUntilMidnight = midnight - now;
