@@ -1635,20 +1635,74 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
             charToBuy = 0;
         } else { // if the user don't have enough credits, buy it
             charToBuy = - charToBuy;
-            let buyRes = await fetch(`https://site222326.tw.cs.unibo.it/profiles/${profileName}/shop`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Cookie": req.headers.cookie
-                },
-                body: JSON.stringify({
-                    credit: charToBuy
-                })
-            });
-            if (buyRes.status != 200) {
-                res.status(buyRes.status).json(buyRes.body);
+
+            // here's the entirety of the shop call
+            // because auths need to be different
+            console.log("credits to buy: " + req.body.credit)
+
+            const profileName = req.params.name;
+            const authorized = await isAuthorizedOrHigher(req.session.user, typeOfProfile.user) && req.session.user === profileName;
+            const SMMauthorized = await isSMMAuthorized(req.session.user, profileName) && await isAuthorizedOrHigher(req.session.user, typeOfProfile.user);
+    
+            if (!authorized && !SMMauthorized) {
+                res.status(401).json({
+                    message: "Unauthorized"
+                });
                 return;
             }
+    
+            mongoClient.connect();
+            const profile = await collection_profiles.findOne({
+                name: profileName
+            });
+    
+            if (profile.is_deleted || profile == null) {
+                res.status(404).json({
+                    message: "Profile not found."
+                });
+                return;
+            }
+    
+            if (req.body.credit == undefined) {
+                res.status(400).json({
+                    message: "Missing parameters"
+                });
+                return;
+            }
+    
+            const credit = [
+                req.body.credit + profile.credit[0],
+                req.body.credit + profile.credit[1],
+                req.body.credit + profile.credit[2]
+            ];
+    
+    
+            // process payment (real)
+    
+            const authData = {
+                // Provide authentication data
+                username: "SquealerTechnician",
+                password: "tecpw"
+            };
+    
+            await axios.post('https://site222326.tw.cs.unibo.it/login', authData);
+    
+            await axios.post('https://site222326.tw.cs.unibo.it/profiles/' + profileName, {
+                credit: credit
+            }).then(resPost => {
+                if (resPost.status == 201) {
+                    res.status(200).json({
+                        message: "Purchase successful"
+                    });
+                } else {
+                    console.log(resPost.status + " " + resPost.data.message);
+                    res.status(400).json({
+                        message: "Something went wrong :("
+                    });
+                }
+            })
+    
+            console.log("Purchase successful")
         }
 
         // here's the entirety of squeal put again, because
