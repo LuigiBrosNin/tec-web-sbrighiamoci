@@ -255,7 +255,7 @@ async function update_profiles() {
 setInterval(putPeriodicalSqueals, interval);
 setInterval(putControversialPeriodicalSqueals, interval);
 
-setInterval(update_profiles, 1000*60*60 * 24); // reset every 24 hours
+setInterval(update_profiles, 1000*60)//*60 * 24); // reset every 24 hours
 
 /*
 const now = new Date();
