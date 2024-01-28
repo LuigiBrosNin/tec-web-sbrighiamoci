@@ -97,6 +97,7 @@ async function reset_credits(profile, index_to_update) {
         const credit = profile.credit;
         credit[index_to_update] = profile.credit_limits[index_to_update];
 
+        print("credit: " + credit)
         await mongoClient.connect();
 
         await collection_profiles.updateOne({

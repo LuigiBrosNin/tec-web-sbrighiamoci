@@ -145,7 +145,7 @@ async function makeRequest(post) {
         if (post.json_fields && !post.is_body_media) {
             // get the fields we want from the response
             for (let field of post.json_fields) {
-                text = text + " " + data[field];
+                text = text + " " + response.data[field];
             }
         } else {
             text = " ";
