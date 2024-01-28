@@ -1663,7 +1663,7 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
                 return;
             }
     
-            if (req.body.credit == undefined) {
+            if (charToBuy == undefined) {
                 res.status(400).json({
                     message: "Missing parameters"
                 });
@@ -1671,9 +1671,9 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
             }
     
             const credit = [
-                req.body.credit + profile.credit[0],
-                req.body.credit + profile.credit[1],
-                req.body.credit + profile.credit[2]
+                charToBuy + profile.credit[0],
+                charToBuy + profile.credit[1],
+                charToBuy + profile.credit[2]
             ];
     
     
