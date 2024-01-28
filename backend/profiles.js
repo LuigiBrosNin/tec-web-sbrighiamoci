@@ -1646,8 +1646,8 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
                 })
             });
             if (buyRes.status != 200) {
-                res.status(500).json({
-                    message: "error during character purchase"
+                res.status(buyRes.status).json({
+                    message: buyRes.data.message
                 });
                 return;
             }
