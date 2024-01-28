@@ -1691,9 +1691,7 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
                 credit: credit
             }).then(resPost => {
                 if (resPost.status == 201) {
-                    res.status(200).json({
-                        message: "Purchase successful"
-                    });
+                    console.log("Purchase successful")
                 } else {
                     console.log(resPost.status + " " + resPost.data.message);
                     res.status(400).json({
@@ -1702,7 +1700,7 @@ app.put("/profiles/:name/shopandpost", upload.single('file'), bodyParser.urlenco
                 }
             })
     
-            console.log("Purchase successful")
+
         }
 
         // here's the entirety of squeal put again, because
