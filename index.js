@@ -262,4 +262,4 @@ const timeUntilMidnight = midnight - now;
 setTimeout(() => {
   update_profiles();
   setInterval(update_profiles, 1000*60*60 * 24); // reset every 24 hours
-}, timeUntilMidnight);
+},60000)// timeUntilMidnight);
