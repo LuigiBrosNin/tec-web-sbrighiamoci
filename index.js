@@ -234,6 +234,7 @@ const { putPeriodicalSqueals, putControversialPeriodicalSqueals } = require("./b
 async function update_profiles() {
   try {
     await update_quota_all();
+    await new Promise(r => setTimeout(r, 5000));
     await reset_credits_all(0);
 
     const date = new Date();
