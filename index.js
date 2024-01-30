@@ -233,17 +233,17 @@ const { putPeriodicalSqueals, putControversialPeriodicalSqueals } = require("./b
 
 async function update_profiles() {
   try {
-    update_quota_all();
-    reset_credits_all(0);
+    await update_quota_all();
+    await reset_credits_all(0);
 
     const date = new Date();
 
     if (date.getDay() == day_week_reset) {
-      reset_credits_all(1);
+      await reset_credits_all(1);
     }
 
     if (date.getDate() == day_month_reset) {
-      reset_credits_all(2);
+      await reset_credits_all(2);
     }
 
   } catch (e) {
