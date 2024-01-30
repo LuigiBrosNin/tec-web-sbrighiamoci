@@ -69,9 +69,14 @@ async function update_quota(profile) {
         // calculate the new quota
         const quota = Math.floor((positiveSqueals - negativeSqueals) / quota_threshold) / 100;
 
+        console.log("------------------");
+        console.log("name: " + profile.name);
+        console.log("quota: " + quota);
+        console.log("credit limits:");
         if(profile.credit_limits != null){
             for (let index in profile.credit_limits){
                 profile.credit_limits[index] = Math.floor(profile.credit_limits[index] + CREDIT_LIMITS[index] * quota);
+                console.log(profile.credit_limits[index]);
                 if(profile.credit_limits[index] == null || isNaN(profile.credit_limits[index]) || profile.credit_limits[index] < 0) {
                     profile.credit_limits[index] = 0;
                 }
@@ -81,10 +86,7 @@ async function update_quota(profile) {
             profile.credit_limits = [0, 0, 0];
         }
 
-        console.log("------------------");
-        console.log("name: " + profile.name);
-        console.log("quota: " + quota);
-        console.log("credit_limits: " + profile.credit_limits);
+
         console.log("------------------");
 
         // update the profile
