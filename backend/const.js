@@ -30,7 +30,7 @@ const interval = 1000 * 60 * 60 * 8; // 8 hours, normally would be 1 hour, but f
 // interval for quota calcs
 const quota_interval =30*24*60*60*1000 // 30 days
 
-const quota_threshold = 10
+const quota_threshold = 10  // cannot be 0!!
 
 const day_week_reset = 0;
 
