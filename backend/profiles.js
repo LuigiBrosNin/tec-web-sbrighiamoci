@@ -86,7 +86,6 @@ async function update_quota(profile) {
             profile.credit_limits = [0, 0, 0];
         }
 
-
         console.log("------------------");
 
         // update the profile
