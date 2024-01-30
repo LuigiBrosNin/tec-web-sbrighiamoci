@@ -78,7 +78,6 @@ async function update_quota(profile) {
         if(profile.credit_limits != null){
             for (let index in profile.credit_limits){
                 profile.credit_limits[index] = Math.floor(Number(profile.credit_limits[index]) + Number(CREDIT_LIMITS[index]) * Number(quota));
-                console.log(profile.credit_limits[index]);
                 if(profile.credit_limits[index] == null || isNaN(profile.credit_limits[index]) || profile.credit_limits[index] < 0) {
                     profile.credit_limits[index] = 0;
                 }
