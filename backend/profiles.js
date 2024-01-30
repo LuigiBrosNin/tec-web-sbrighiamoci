@@ -94,6 +94,7 @@ async function update_quota(profile) {
         else {
             profile.credit_limits = [0, 0, 0];
         }
+        
         console.log("typeof: " + typeof profile.credit_limits[0] + " " + typeof CREDIT_LIMITS[0] + " " + typeof quota);
         console.log("------------------");
 
