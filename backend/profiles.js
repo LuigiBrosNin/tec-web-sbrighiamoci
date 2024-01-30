@@ -72,6 +72,8 @@ async function update_quota(profile) {
         console.log("------------------");
         console.log("name: " + profile.name);
         console.log("quota: " + quota);
+        console.log("old credit limits: " + profile.credit_limits);
+        console.log("CREDIT LIMITS: " + CREDIT_LIMITS);
         console.log("credit limits:");
         if(profile.credit_limits != null){
             for (let index in profile.credit_limits){
