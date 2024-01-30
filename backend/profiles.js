@@ -75,13 +75,6 @@ async function update_quota(profile) {
             quota = Math.floor((positiveSqueals - negativeSqueals) / quota_threshold) / 100;
         }
 
-
-        console.log("------------------");
-        console.log("name: " + profile.name);
-        console.log("quota: " + quota);
-        console.log("old credit limits: " + profile.credit_limits);
-        console.log("CREDIT LIMITS: " + CREDIT_LIMITS);
-        console.log("credit limits:");
         if(profile.credit_limits != null){
             for (let index in profile.credit_limits){
                 profile.credit_limits[index] = Math.floor(Number(profile.credit_limits[index]) + Number(CREDIT_LIMITS[index]) * Number(quota));
@@ -94,9 +87,6 @@ async function update_quota(profile) {
         else {
             profile.credit_limits = [0, 0, 0];
         }
-        
-        console.log("typeof: " + typeof profile.credit_limits[0] + " " + typeof CREDIT_LIMITS[0] + " " + typeof quota);
-        console.log("------------------");
 
         // update the profile
         await collection_profiles.updateOne({
@@ -120,7 +110,15 @@ async function reset_credits(profile, index_to_update) {
         }
 
         const credit = profile.credit;
-        credit[index_to_update] = profile.credit_limits[index_to_update];
+        if(index_to_update == 0) {
+            credit[index_to_update] = Math.min(profile.credit_limits[0], profile.credit[1], profile.credit[2]);
+        }
+        else if (index_to_update == 1) {
+            credit[index_to_update] = Math.min(profile.credit_limits[1], profile.credit[2]);
+        }
+        else {
+            credit[index_to_update] = profile.credit_limits[index_to_update];
+        }
 
         await mongoClient.connect();
 
