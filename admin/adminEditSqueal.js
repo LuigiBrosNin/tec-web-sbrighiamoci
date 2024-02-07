@@ -65,17 +65,11 @@ document.getElementById('squeal_form').addEventListener('submit', async (e) => {
         changes.media = "";
     }
 
-    if (data.locationLat != null && data.locationLat != "" && data.locationLat != squeal.location.latitude) {
+    if (data.locationLat != null && data.locationLat != "" && data.locationLng != null && data.locationLng != "" && !(data.locationLng == squeal.location.longitude && data.locationLat == squeal.location.latitude)) {
         if (changes.location == null) {
             changes.location = {};
         }
         changes.location.latitude = data.locationLat;
-    }
-
-    if (data.locationLng != null && data.locationLng != "" && data.locationLng != squeal.location.longitude) {
-        if (changes.location == null) {
-            changes.location = {};
-        }
         changes.location.longitude = data.locationLng;
     }
 
